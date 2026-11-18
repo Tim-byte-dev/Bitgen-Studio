@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.837.0 units: Generate into a picked shape (closed: a frame; a line / open path: cut to it), ⬟ Convert to
  * Shape, and the LLM writing a document into a WP layer (lib/docAi.js + ext/imageeditdock/pcdocai.js).
- *   docAi cleanDoc / planDoc (a stand-in LLM) / extract (.txt, .docx through mammoth); pcdocai wants / toHtml / figureGrid;
+ *   docAi cleanDoc / planDoc (a stand-in LLM) / extract (.txt, .docx through mammoth); pcdocai wants / toHtml (2.838.0: figureGrid gone - test-838.js);
  *   the wiring (routes/index.js mounts it, not server.js; ext.json; the prompt docker's documents). */
 "use strict";
 const fs = require("fs"), path = require("path");
@@ -38,24 +38,19 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   let e4 = null; try { await A.extract("x.exe", Buffer.from("MZ")); } catch (e) { e4 = e; }
   check("extract: .md as text, .docx through mammoth, anything else refused", /world/.test(t1.text) && /Revenue rose 12 percent\./.test(t2.text) && /Costs fell/.test(t2.text) && e4 && e4.status === 400, [t1, t2]);
   // ---- the page's pure parts
-  const w1 = P.wants("Write a report from these documents with pictures"), w2 = P.wants("write a story about a dragon, about 1200 words"), w3 = P.wants("make the sky bluer"), w4 = P.wants("create a presentation about cats"), w5 = P.wants("draft a blog post on tea");
+  const w1 = P.wants("Write a report from these documents with pictures"), w2 = P.wants("write a story about a dragon, about 1200 words"), w3 = P.wants("make the sky bluer"), w4 = P.wants("create a presentation about cats"), w5 = P.wants("draft a blog post on tea"), w6 = P.wants("write a report from this spreadsheet"), w7 = P.wants("create a spreadsheet report of the sales");
   check("wants: write / create / draft … article / report / story = a document (its kind, words, pictures); other asks and slides are not",
-    w1 && w1.kind === "report" && w1.pictures && w2 && w2.kind === "story" && w2.words === 1200 && !w2.pictures && w3 === null && w4 === null && w5 && w5.kind === "article", [w1, w2, w5]);
+    w1 && w1.kind === "report" && w1.pictures && w2 && w2.kind === "story" && w2.words === 1200 && !w2.pictures && w3 === null && w4 === null && w5 && w5.kind === "article" && w6 && w6.kind === "report" && w7 === null, [w1, w2, w5, w6, w7]);
   const html = P.toHtml(Object.assign({}, d, { blocks: d.blocks.concat([{ type: "quote", text: "a < b & c" }]) }));
   check("toHtml: the title as h1, headings, list, a WP table (colgroup, thead), the chart as a caption line (figure 1), the text escaped",
     /^<h1>Q3 Sales<\/h1><h2>Summary<\/h2><p>Sales grew\.<\/p><ul><li>one<\/li><li>two<\/li><\/ul>/.test(html) && /<table style="width:100%;table-layout:fixed"><colgroup><col style="width:50%"><col style="width:50%"><\/colgroup><thead><tr><th>Region<\/th><th>Sales<\/th><\/tr><\/thead><tbody><tr><td>North<\/td>/.test(html)
     && /<p><i>Figure 1<\/i><\/p>/.test(html) && /<blockquote>a &lt; b &amp; c<\/blockquote>/.test(html), html);
-  const g0 = P.figureGrid({ x: 100, y: 100, w: 800, h: 1000 }, 0), g1 = P.figureGrid({ x: 100, y: 100, w: 800, h: 1000 }, 1), g3 = P.figureGrid({ x: 100, y: 100, w: 800, h: 1000 }, 3), g9 = P.figureGrid({ x: 0, y: 0, w: 800, h: 600 }, 9);
-  const inside = (g, fr) => g.cells.every((c) => c.x >= fr.x - 1 && c.x + c.w <= fr.x + fr.w + 1 && c.y >= fr.y + g.h && c.y + c.h <= fr.y + fr.h + 1);
-  check("figureGrid: no figures = the frame as it is; the figures under the shorter text frame, inside the old frame, the text keeps 40 %",
-    g0.h === 1000 && !g0.cells.length && g1.cells.length === 1 && g1.cells[0].w === 800 && g1.h < 1000 && g3.cells.length === 3 && g3.cells[0].y === g3.cells[1].y && g3.cells[2].y > g3.cells[0].y
-    && inside(g1, { x: 100, y: 100, w: 800, h: 1000 }) && inside(g3, { x: 100, y: 100, w: 800, h: 1000 }) && g9.h >= 240 && g9.cells.length === 9, [g1, g3]);
   // ---- the wiring
   const RI = read("routes/index.js"), SV = read("misc/server.js"), EX = JSON.parse(read("ext/imageeditdock/ext.json")), IE = read("ext/imageeditdock/imageedit.js"), PD = read("ext/promptdock/promptdock.js"), PH = read("ext/promptdock/dock.html"), AF = read("ext/imageeditdock/pcaifill.js"), DA = read("ext/imageeditdock/pcdocai.js");
   check("/api/docai mounted from routes/index.js (not server.js); pcdocai.js loaded and installed", /require\("\.\/docAi"\)\.mount\(app\)/.test(RI) && !/docai/i.test(SV) && EX.scripts.indexOf("pcdocai.js") > EX.scripts.indexOf("pcdoctext.js") && EX.scripts.indexOf("pcdocai.js") < EX.scripts.indexOf("imageedit.js") && /PCDocAi\.install\(E\)/.test(IE) && IE.indexOf("PCDocAi.install(E)") > IE.indexOf("PCDocText.install(E)"));
   check("the prompt docker: ＋ takes .txt / .md / .docx / .pdf, a WP layer picked = they are held for the write (H3DocAi.takeFile); the route goes first",
     /\.docx/.test(PH) && /\.pdf/.test(PH) && /window\.H3DocAi && window\.H3DocAi\.takeFile\(f\)\) continue;/.test(PD) && /root\.H3ChatRoutes = \[maybe\]\.concat/.test(DA));
-  check("the document: one undo (structOp) for the text, the frame and the figure layers; a WP group; charts from SheetChart, pictures from /api/genimage",
+  check("the document: one undo (structOp) for the text and the figure layers; a WP group; charts from SheetChart, pictures from /api/genimage",
     /E\.structOp\("✨ write the document"/.test(DA) && /D\.group\(S\.layers, ids, G\)/.test(DA) && /SC\.svg\(/.test(DA) && /\/api\/genimage/.test(DA) && /layer\.docai/.test(DA));
   check("pcaifill: a picked shape = H3ImageSize at its box; a closed shape takes the picture as its frame (placeResult), a line / open path cuts it (destination-in)",
     /isShape\(L\)/.test(AF) && /shape: true, closed:/.test(AF) && /E\.frames\.placeResult\(N, F\)/.test(AF) && /shapeArea\(F\)/.test(AF));

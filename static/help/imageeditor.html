@@ -2,6 +2,14 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="docfigs838">✅ The AI's charts and pictures in the text, a spreadsheet as the data (2.838.0)</h3>
+<ul>
+  <li><b>✨ Write With the AI</b> puts each chart and picture <b>in the text</b>, right after the paragraph that talks about it, with its caption under it. Each one is still a layer of its own in the "📄 title" group, and it <b>follows the text</b>: type more above it and it moves down, into the next linked frame or onto the next page. Make the frame narrower or wider and it is drawn again at the new width, sharp.</li>
+  <li>When the text runs past the last frame, a figure that has no room waits, hidden. Make the frame taller or add ＋ Next page and it comes back.</li>
+  <li>A <b>spreadsheet</b> can be the data: put an .xlsx or .csv on the prompt docker's ＋ (or in the box's 📎 documents) while a WP layer is picked, and its sheets go to the LLM as rows of cells, so the tables and charts use your numbers. "Write a report from this spreadsheet" writes the report. "Create a spreadsheet …" still goes to the spreadsheet.</li>
+  <li><b>File ▸ Export ▸ Word Document</b> puts the charts and pictures into the .docx as pictures, at their places in the text.</li>
+</ul>
+
 <h3 id="shapegen837">✅ Generate into shapes, Convert to Shape, documents written by the AI (2.837.0)</h3>
 <ul>
   <li>A <b>shape layer</b> picked (a rectangle, an ellipse, a polygon, or a path drawn with the Pen / Bézier / line tools) + <b>✨ Generate</b> in the prompt docker, no selection: the picture is made at the shape's box and fills the shape. A closed shape becomes a frame holding the picture (move or scale the shape and the picture goes with it); an open line gets a new layer above it with the picture cut to the area the line encloses.</li>

@@ -9497,6 +9497,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Layer ▸ ⬟ Convert to Shape** (also on the right-click): a vector line becomes a closed shape with a fill and a border you can change; a Paths-panel path becomes a shape layer.
 - **✨ Write With the AI**: a **WP layer** picked + "write a report from these documents" / "write an article about …" / "write a story about …" in the prompt docker. Documents on its ＋ (.txt, .md, .docx, .pdf) are what it is written from. Text and **tables** go into the WP layer; **charts** and **pictures** (when asked for) are layers of their own, all in a "📄 title" group. Also Layer ▸ ✨ Write With the AI…. Ctrl+Z takes it back.
 
+## 🖼 Image editor - the AI's figures in the text, a spreadsheet as the data (2.838.0)
+
+- **✨ Write With the AI** puts each chart and picture in the text right after the paragraph about it (its caption under it). Each is still its own layer in the "📄 title" group and follows the text - down the frame, into the next linked frame, onto the next page - drawn again sharp when the frame's width changes. A figure past the last frame waits, hidden, until there is room (a taller frame, ＋ Next page).
+- A **spreadsheet** (.xlsx / .csv) on the prompt docker's ＋ while a WP layer is picked is the data: its sheets go to the LLM as rows of cells. "Write a report from this spreadsheet".
+- **File ▸ Export ▸ Word Document** puts the figures into the .docx as pictures at their places.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

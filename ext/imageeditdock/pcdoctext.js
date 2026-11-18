@@ -53,7 +53,8 @@
 .pcdoc span[data-field]{background:#e3ecfa;border-radius:2px}
 .pcfn{font-size:9pt;line-height:1.15}
 .pcfn p{margin:0 0 2pt}
-.pcfnrule{width:33%;border-top:0.75px solid #555;margin:0 0 3pt}`;
+.pcfnrule{width:33%;border-top:0.75px solid #555;margin:0 0 3pt}
+.pcdoc p[data-fig]{margin:6pt 0 10pt;overflow:hidden}`;
   const TAGS = new Set(["P", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "PRE", "UL", "OL", "LI", "BR", "HR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE", "DEL",
     "SUB", "SUP", "SPAN", "A", "CODE", "MARK", "TABLE", "THEAD", "TBODY", "TR", "TD", "TH", "COLGROUP", "COL"]);   // 2.812.0: + colgroup / col (column widths)
   const STYLE_KEYS = ["font-family", "font-size", "font-weight", "font-style", "text-decoration", "text-decoration-line", "color", "background-color",
@@ -90,6 +91,9 @@
         if (n.tagName.toUpperCase() === "FONT") {
           const c = n.getAttribute("color"), f = n.getAttribute("face"); if (c && safeCss(c)) st.push("color:" + c); if (f && safeCss(f)) st.push("font-family:" + f);
         }
+        // 2.838.0: a figure's place in the story (pcdocai.js) - an empty paragraph as tall as the chart / picture layer kept on it
+        const fig = tag === "P" && n.getAttribute ? n.getAttribute("data-fig") : null;
+        if (fig && /^[\w-]{1,32}$/.test(fig)) { const fh = parseFloat(n.style && n.style.height); if (fh > 0) st.push("height:" + Math.min(4000, Math.round(fh)) + "px"); e.setAttribute("data-fig", fig); }
         if (st.length) e.setAttribute("style", st.join(";"));
         const ds = n.getAttribute && n.getAttribute("data-style"); if (ds && DATA_STYLES.has(ds) && tag === "P") e.setAttribute("data-style", ds);
         if (tag === "A") { const h = n.getAttribute("href") || ""; if (/^(https?:|mailto:)/i.test(h)) e.setAttribute("href", h); }
@@ -142,6 +146,20 @@
     return out;
   }
 
+  /** 2.838.0: the figures' places [{id, top, bottom, left, width}] (CSS px in the story) + the frames' windows + the frames
+   *  [{x, y, k, repH, h}] -> {id: {frame, x, y, w, h}} in canvas px (a place past the last frame's room = left out) */
+  function anchorBoxes(figs, wins, frames) {
+    const out = {};
+    for (const f of figs || []) {
+      let i = -1;
+      for (let j = 0; j < wins.length; j++) if (f.top >= wins[j].top - 0.5 && (j === wins.length - 1 || f.top < wins[j + 1].top - 0.5)) { i = j; break; }
+      if (i < 0) continue;
+      const F = frames[i], w = wins[i], k = F.k || 1, rep = F.repH || 0;
+      if (i === wins.length - 1 && (f.top - w.top + rep) * k >= F.h - 0.5) continue;      // past the end of the last frame
+      out[f.id] = { frame: i, x: Math.round(F.x + f.left * k), y: Math.round(F.y + (f.top - w.top + rep) * k), w: Math.max(1, Math.round(f.width * k)), h: Math.max(1, Math.round((f.bottom - f.top) * k)) };
+    }
+    return out;
+  }
   /* 2.815.0: footnotes - the marks numbered in story order; notes no mark points at any more dropped */
   function renumber(html, notes, document) {
     const d = document || root.document, box = d.createElement("div"); box.innerHTML = String(html || "");
@@ -166,7 +184,8 @@
     const s = doc.createElement("style"); s.id = "pcdocCss"; s.textContent = CSS + "\n.pcdocm{position:absolute;left:-100000px;top:0;visibility:hidden;pointer-events:none}" +
       "\n.pcdocedit{position:absolute;overflow:hidden;outline:1px dashed #2680eb;z-index:6;background:transparent}" +
       "\n.pcdocedit .pcdoc{transform-origin:0 0;caret-color:#2680eb;cursor:text}" +
-      "\n.pcdocedit .pcdoc ::selection{background:rgba(38,128,235,.3)}";
+      "\n.pcdocedit .pcdoc ::selection{background:rgba(38,128,235,.3)}" +
+      "\n.pcdocedit .pcdoc p[data-fig]{outline:1px dashed rgba(38,128,235,.5)}";
     doc.head.appendChild(s);
   }
   /** the story laid out at width wCss: its line bands (CSS px, from its top) */
@@ -199,7 +218,9 @@
     }
     // 2.815.0: where each footnote mark sits (story order)
     const refs = [...el.querySelectorAll("sup[data-fn]")].map((x) => ({ id: x.getAttribute("data-fn"), top: x.getBoundingClientRect().top - r0.top }));
-    return { bands: bands(rects), height: el.getBoundingClientRect().height, heads, refs };
+    // 2.838.0: where each figure's place sits (story order) - the layer anchored to it follows (anchorBoxes)
+    const figs = [...el.querySelectorAll("p[data-fig]")].map((x) => { const r = x.getBoundingClientRect(); return { id: x.getAttribute("data-fig"), top: r.top - r0.top, bottom: r.bottom - r0.top, left: r.left - r0.left, width: r.width }; });
+    return { bands: bands(rects), height: el.getBoundingClientRect().height, heads, refs, figs };
   }
   function xhtmlOf(doc, html) {
     const box = doc.createElement("div"); box.innerHTML = html;
@@ -259,6 +280,69 @@
       return m;
     }
     const storyOf = (L) => (L && L.doc && L.doc.flow ? stories().get(L.doc.flow.id) || [{ L, pl: places()[0] }] : [{ L, pl: places()[0] }]);
+    /** 2.838.0: layers anchored to a figure's place (L.anchor = {flow, fig, box, drawn}) follow it - onto the frame's page
+     *  (just above the frame, in its group) and to its spot; the pixels moved with them (scaled to the new box, kept in shape) */
+    function placeAnchors(arr, figs, boxes) {
+      const flowId = arr[0].L.doc.flow && arr[0].L.doc.flow.id; if (!flowId) return;
+      const all = places();
+      for (const { id } of figs) {
+        let at = null; for (const pl of all) { const L = pl.layers.find((x) => x.anchor && x.anchor.flow === flowId && x.anchor.fig === id); if (L) { at = { L, pl }; break; } }
+        if (!at) continue;
+        const b = boxes[id], fr = b && arr[b.frame];
+        if (!fr) { hideAnchor(at.L); continue; }                         // its place runs past the last frame: not shown until there is room
+        const L = at.L, a = L.anchor;
+        if (fr.pl.layers !== at.pl.layers) {                              // the place moved to another page: the layer goes with it
+          const src = at.pl.layers, i0 = src.indexOf(L); if (i0 >= 0) src.splice(i0, 1);
+          const dst = fr.pl.layers, fi = dst.indexOf(fr.L); L.parent = fr.L.parent != null ? fr.L.parent : null;
+          dst.splice(fi < 0 ? dst.length : fi + 1, 0, L);
+          if (at.pl.live && S.active >= S.layers.length) S.active = Math.max(0, S.layers.length - 1);
+          if ((at.pl.live || fr.pl.live) && E.renderLayersPanel && !S.drag) win.setTimeout(() => E.renderLayersPanel(), 0);
+        }
+        moveAnchor(L, b);
+      }
+    }
+    /** a layer anchored to a figure's place drawn from its source (a.src: an SVG / picture address) into its box, kept in
+     *  shape; the source loaded once (then drawn at once) -> a promise of whether it was drawn */
+    const srcImgs = new Map();
+    function anchorDraw(L) {
+      const a = L && L.anchor; if (!a || !a.src || !L.canvas) return Promise.resolve(false);
+      let im = srcImgs.get(a.src);
+      if (!im) {
+        im = new win.Image(); im._wait = []; srcImgs.set(a.src, im);
+        im.onload = () => { const w = im._wait; im._wait = []; for (const f of w) f(); };
+        im.onerror = () => { srcImgs.delete(a.src); const w = im._wait; im._wait = []; for (const f of w) f(true); };
+        im.src = a.src;
+      }
+      if (!im.complete || !im.naturalWidth) return new Promise((ok) => { im._wait.push((err) => ok(err ? false : paintAnchor(L, im))); });
+      return Promise.resolve(paintAnchor(L, im));
+    }
+    function paintAnchor(L, im) {
+      const a = L.anchor, b = a && a.box; if (!b || !im.naturalWidth) return false;
+      const G = L.canvas.getContext("2d"), s = Math.min(b.w / im.naturalWidth, b.h / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+      G.clearRect(0, 0, L.canvas.width, L.canvas.height); G.imageSmoothingQuality = "high";
+      G.drawImage(im, b.x + (b.w - w) / 2, b.y + (b.h - h) / 2, w, h);
+      a.drawn = true; L.ver = (L.ver || 0) + 1;
+      if (E.refresh && !paintAnchor.busy) { paintAnchor.busy = true; win.setTimeout(() => { paintAnchor.busy = false; E.refresh(); }, 0); }
+      return true;
+    }
+    function hideAnchor(L) {
+      const a = L.anchor; if (!a.box || !a.src) return;                   // (a layer with no source keeps its pixels where they are)
+      if (L.canvas) L.canvas.getContext("2d").clearRect(0, 0, L.canvas.width, L.canvas.height);
+      a.box = null; a.drawn = false; L.ver = (L.ver || 0) + 1;
+    }
+    function moveAnchor(L, b) {
+      const a = L.anchor, o = a.box, nb = { x: b.x, y: b.y, w: b.w, h: b.h };
+      if (o && o.x === nb.x && o.y === nb.y && o.w === nb.w && o.h === nb.h) return false;
+      if (a.src) { a.box = nb; anchorDraw(L); return true; }            // from its source: sharp at any size
+      if (o && a.drawn && L.canvas) {
+        const c = E.newCanvas(L.canvas.width, L.canvas.height), g = c.getContext("2d"); g.drawImage(L.canvas, 0, 0);
+        const G = L.canvas.getContext("2d"), s = Math.min(nb.w / o.w, nb.h / o.h), w = o.w * s, h = o.h * s;
+        G.clearRect(0, 0, L.canvas.width, L.canvas.height); G.imageSmoothingQuality = "high";
+        G.drawImage(c, o.x, o.y, o.w, o.h, nb.x + (nb.w - w) / 2, nb.y + (nb.h - h) / 2, w, h);
+        L.ver = (L.ver || 0) + 1;
+      }
+      a.box = nb; return true;
+    }
     /** the story laid out again; each frame's window set; drawn again where it changed. -> {overflow, empties} */
     function flowStory(arr) {
       const head = arr[0].L.doc, k = head.k || 1, w = head.w;
@@ -288,6 +372,7 @@
         if (fnOf[i].length) { const fh = notesBlock(fnOf[i]); if (d.fn !== fh) changed = true; d.fn = fh; d.fnH = fnH[i]; } else if (d.fn) { delete d.fn; delete d.fnH; changed = true; }
         D.rasterize(f.L);                          // 2.812.0: frames on other pages too (they were left stale)
       });
+      if (m.figs && m.figs.length) placeAnchors(arr, m.figs, anchorBoxes(m.figs, wins, arr.map((f) => ({ x: f.L.doc.x, y: f.L.doc.y, k, h: f.L.doc.h, repH: f.L.doc.rep ? f.L.doc.repH || 0 : 0 }))));
       const last = wins[wins.length - 1];
       return { overflow: !!(last && last.overflow), empties: arr.filter((f, i) => i > 0 && wins[i].lines === 0), changed };
     }
@@ -621,10 +706,10 @@
     { const lm = (E.ui.MENUS || []).find(([n]) => n === "Layer"), nw = lm && lm[1].find((x) => x && x.label === "New"); if (nw && !nw.items.includes("layer.newdocframe")) nw.items.splice(nw.items.indexOf("layer.newgroup") + 1, 0, "layer.newdocframe"); }
     E.ui.addCmd("layer.docedit", "✎ Type in This WP Layer", "", () => { const L = E.layer(); if (isDoc(L)) begin(L); }, { enabled: () => isDoc(E.layer()) });
     E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["layer.docedit"]);
-    E.docText = { wpMode, ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
+    E.docText = { anchorDraw, wpMode, ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
-  const PCDocText = { STYLES, CSS, sanitize, bands, windows, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true, viewOf: null };
+  const PCDocText = { STYLES, CSS, sanitize, bands, windows, anchorBoxes, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true, viewOf: null };
   if (typeof module !== "undefined" && module.exports) module.exports = PCDocText;
   if (root && root.document) root.PCDocText = PCDocText;
 })(typeof window !== "undefined" ? window : globalThis);

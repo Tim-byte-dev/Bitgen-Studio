@@ -100,29 +100,31 @@ function llmServer() {
     await p.route("**/api/jobs/t837job", (r) => r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "t837job", status: "done", outputs: ["t837c.png"] }) }));
     const g3 = await pngOf(64, 40, "#2050e0");
     await p.route("**/outputs/t837c.png*", (r) => r.fulfill({ status: 200, contentType: "image/png", body: Buffer.from(g3, "base64") }));
-    const w0 = await ev(() => { const E = window.imageEditorInstance.E; E.docText.addFrame(50, 40, 700, 520, {}, false); E.docText.end(); const W = E.layer();
+    // 2.838.0: a tall page so the text, the table, the chart and the picture all fit the one frame (figures sit IN the text now)
+    await ev(() => new Promise((ok) => { const c = document.createElement("canvas"); c.width = 1200; c.height = 2400; const g = c.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, 1200, 2400); window.imageEditorInstance.load(c.toDataURL("image/png"), "wp837"); setTimeout(() => { window.imageEditorInstance.E.fitView(); ok(); }, 800); }));
+    const w0 = await ev(() => { const E = window.imageEditorInstance.E; E.docText.addFrame(50, 40, 1100, 2300, {}, false); E.docText.end(); const W = E.layer();
       const sty = document.getElementById("styleSel"); if (sty && !sty.value && sty.options.length) sty.value = sty.options[0].value;
       if (sty && !sty.value) { const o = document.createElement("option"); o.value = "t837style"; o.textContent = "t"; sty.appendChild(o); sty.value = "t837style"; }
       const took = window.H3DocAi.takeFile(new File(["Apples 120 units, pears 80 units."], "sales.txt", { type: "text/plain" }));
-      return { id: W.id, type: W.type, took, h: W.doc.h, first: window.H3ChatRoutes[0] && window.H3ChatRoutes[0].toString().includes("wants(text)"), steps: E.S.history ? E.S.history.length : null }; });
+      return { id: W.id, type: W.type, took, h: W.doc.h, first: window.H3ChatRoutes.some((r) => r.toString().includes("wants(text)")), steps: E.S.history ? E.S.history.length : null }; });
     check("a WP layer picked: a .txt given on the prompt docker's ＋ is held for the write; the document route goes first", w0.type === "doc" && w0.took === true && w0.first, w0);
-    const reply = await ev(() => window.H3ChatRoutes[0]("Write a report on our fruit sales from this document, with pictures"));
+    const reply = await ev(async () => { for (const r of window.H3ChatRoutes) { const out = await r("Write a report on our fruit sales from this document, with pictures"); if (out != null) return out; } return null; });
     const llmAsk = asked.find((a) => /You write documents/.test(a)) || "";
     check("\"write a report … with pictures\" -> the LLM gets the request, the kind and the document's words", /a report of about/.test(llmAsk) && /Apples 120 units/.test(llmAsk) && /Up to 3 pictures/.test(llmAsk), llmAsk.slice(0, 600));
     await p.waitForTimeout(3500);
     const d1 = await ev((id) => { const E = window.imageEditorInstance.E, W = E.S.layers.find((x) => x.id === id), G = E.S.layers.find((x) => x.id === W.parent);
       const kids = G ? E.S.layers.filter((x) => x.parent === G.id) : [];
-      const fig = (k) => { const L = kids.find((x) => x.aidoc && x.aidoc.kind === k); if (!L) return null; const c = L.aidoc.cell, d = L.canvas.getContext("2d").getImageData(c.x, c.y, c.w, c.h).data; let n = 0, blue = 0; for (let i = 3; i < d.length; i += 16) { if (d[i] > 0) n++; if (d[i - 1] > 180 && d[i - 3] < 80) blue++; } return { name: L.name, n, blue, cell: c }; };
-      return { html: W.doc.html, h: W.doc.h, group: G && G.type === "group" && G.name, kids: kids.length, chart: fig("chart"), pic: fig("image") }; }, w0.id);
+      const fig = (k) => { const L = kids.find((x) => x.aidoc && x.aidoc.kind === k); if (!L || !L.anchor.box) return null; const c = L.anchor.box, d = L.canvas.getContext("2d").getImageData(c.x, c.y, c.w, c.h).data; let n = 0, blue = 0; for (let i = 3; i < d.length; i += 16) { if (d[i] > 0) n++; if (d[i - 1] > 180 && d[i - 3] < 80) blue++; } return { name: L.name, n, blue, cell: c }; };
+      return { html: W.doc.html, h: W.doc.h, fr: { x: W.doc.x, y: W.doc.y, w: W.doc.w }, group: G && G.type === "group" && G.name, kids: kids.length, chart: fig("chart"), pic: fig("image") }; }, w0.id);
     check("…the WP layer holds the title, headings, paragraphs and a real WP table (thead), the chart / picture as caption lines",
-      /<h1>Fruit sales<\/h1>/.test(d1.html) && /<h2>Summary<\/h2>/.test(d1.html) && /<table[^>]*>.*<thead>.*Fruit.*Apples.*<\/table>/.test(d1.html) && /<i>Figure 1: units sold<\/i>/.test(d1.html) && /Pears did well too/.test(d1.html), d1.html.slice(0, 700));
-    check("…a \"📄 Fruit sales\" WP group: the WP layer + the chart layer + the picture layer; the frame shorter to leave them room",
-      d1.group === "📄 Fruit sales" && d1.kids === 3 && d1.h < w0.h && d1.chart && d1.pic && d1.chart.cell.y >= 40 + d1.h, d1);
+      /<h1>Fruit sales<\/h1>/.test(d1.html) && /<h2>Summary<\/h2>/.test(d1.html) && /<table[^>]*>.*<thead>.*Fruit.*Apples.*<\/table>/.test(d1.html) && /<p data-fig="[^"]+" style="height: ?\d+px;?"><br><\/p><p><i>Figure 1: units sold<\/i>/.test(d1.html) && /Pears did well too/.test(d1.html), d1.html.slice(0, 700));
+    check("…a \"📄 Fruit sales\" WP group: the WP layer + the chart layer + the picture layer; each IN the text at its place (inside the frame, the chart above the picture), the frame left as it was",
+      d1.group === "📄 Fruit sales" && d1.kids === 3 && d1.h === w0.h && d1.chart && d1.pic && d1.chart.cell.y > d1.fr.y + 60 && d1.chart.cell.x >= d1.fr.x && d1.chart.cell.x + d1.chart.cell.w <= d1.fr.x + d1.fr.w + 1 && d1.pic.cell.y > d1.chart.cell.y + d1.chart.cell.h, d1);
     check("…the chart drawn by the spreadsheet's chart engine in its layer; the picture made with the prompt docker's image style and put in its box",
       d1.chart.n > 50 && jobs.length === 1 && /an apple orchard/.test(jobs[0].prompt) && !!jobs[0].style_id && d1.pic.blue > 50, { chart: d1.chart, pic: d1.pic, jobs });
     check("…the reply in the chat says what was made", /Fruit sales/.test(reply) && /table/.test(reply) && /group/.test(reply), reply);
-    const u1 = await ev((id) => { const E = window.imageEditorInstance.E; E.undo(); E.undo(); E.undo(); const W = E.S.layers.find((x) => x.id === id); return { html: W.doc.html, parent: W.parent, groups: E.S.layers.filter((x) => x.name === "📄 Fruit sales").length }; }, w0.id);
-    check("…Ctrl+Z (picture, chart, then the text) takes it all back: the WP layer as it was, no group", !/Fruit sales/.test(u1.html) && !u1.groups, u1);
+    const u1 = await ev((id) => { const E = window.imageEditorInstance.E; E.undo(); const W = E.S.layers.find((x) => x.id === id); return { html: W.doc.html, parent: W.parent, groups: E.S.layers.filter((x) => x.name === "📄 Fruit sales").length }; }, w0.id);
+    check("…one Ctrl+Z takes it all back (the text, the chart and the picture): the WP layer as it was, no group", !/Fruit sales/.test(u1.html) && !u1.groups, u1);
     const dl = await ev(() => { const E = window.imageEditorInstance.E; const ok = E.ui.CMD.get("layer.docai") && E.ui.CMD.get("layer.docai").enabled(); E.ui.run("layer.docai"); const d = document.querySelector(".kxdlg.pcd"); const r = { ok, title: d && d.querySelector("h4").textContent, ask: !!(d && d.querySelector("#pdaAsk")), files: !!(d && d.querySelector("#pdaFiles")) }; if (d) d.querySelector(".cn").click(); return r; });
     check("Layer ▸ ✨ Write With the AI… opens its box (the request, kind, words, tables / charts / pictures, documents)", dl.ok && dl.title === "✨ Write With the AI" && dl.ask && dl.files, dl);
     check("no page errors", !errs.length, errs);

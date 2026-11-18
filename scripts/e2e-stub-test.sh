@@ -14302,6 +14302,13 @@ node scripts/test-837.js > /tmp/t837.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui837-ui.js > /tmp/ui837.log 2>&1 \
   && ok "2.837.0 browser test: Generate into a closed shape (a frame) and an open line (cut), Convert to Shape, a report written into a WP layer with a table, a chart and a picture in a WP group (undo)" \
   || { bad "2.837.0 shapes + Write With the AI browser test"; grep -a "^FAIL" -A1 /tmp/ui837.log | head -12; }
+# ---- 2.838.0 (Tim: "yes, please go ahead with the next step" - the AI's figures in the text + a spreadsheet as the data)
+node scripts/test-838.js > /tmp/t838.log 2>&1 \
+  && ok "2.838.0 toHtml places / figHeight, sanitize keeps a place, anchorBoxes, .xlsx extract, Word export pictures, the wiring" \
+  || { bad "2.838.0 figures in the text units"; grep -a "^FAIL" -A1 /tmp/t838.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui838-ui.js > /tmp/ui838.log 2>&1 \
+  && ok "2.838.0 browser test: an anchored figure follows the text into the next frame + onto the next page, redrawn at a new width; a .xlsx as the data; the chart in the Word export" \
+  || { bad "2.838.0 figures in the text browser test"; grep -a "^FAIL" -A1 /tmp/ui838.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

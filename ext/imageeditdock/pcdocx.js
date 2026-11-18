@@ -149,6 +149,7 @@
         const tag = n.nodeType === 1 ? n.tagName : null;
         if (tag && (BLOCK.has(tag) || isList(n) || tag === "TABLE" || tag === "HR")) {
           flush();
+          if (tag === "P" && n.getAttribute("data-fig")) { out.push({ t: "img", fig: n.getAttribute("data-fig") }); continue; }   // 2.838.0: a figure's place (its picture filled in by modelOf)
           if (BLOCK.has(tag)) { const p = paraOf(n); p.runs = runsOf(n); out.push(p); }
           else if (isList(n)) listItems(n, 0, out);
           else if (tag === "TABLE") out.push(tableOf(n, blocksIn));
@@ -235,6 +236,20 @@
       const hs = heads(); if (!hs.length) return null;
       return { model: modelOf(hs[0]), more: hs.length - 1 };
     }
+    /** 2.838.0: each figure's place gets the pixels of the layer anchored to it (on any page) as a PNG at its size in the
+     *  text; a place with no drawn layer is left out */
+    function figsInto(blocks, h) {
+      const flow = h.doc.flow && h.doc.flow.id, k = h.doc.k || 1;
+      const lists = [S.layers].concat(S.pages && S.pages.list ? S.pages.list.map((pg) => pg.st && pg.st.layers).filter(Boolean) : []);
+      for (let i = blocks.length - 1; i >= 0; i--) {
+        const b = blocks[i]; if (b.t !== "img") continue;
+        let L = null; for (const ls of lists) { L = ls.find((x) => x.anchor && x.anchor.flow === flow && x.anchor.fig === b.fig && x.anchor.box && x.anchor.drawn); if (L) break; }
+        if (!L) { blocks.splice(i, 1); continue; }
+        const bx = L.anchor.box, c = doc.createElement("canvas"); c.width = bx.w; c.height = bx.h;
+        c.getContext("2d").drawImage(L.canvas, bx.x, bx.y, bx.w, bx.h, 0, 0, bx.w, bx.h);
+        b.png = c.toDataURL("image/png").split(",")[1]; b.w = bx.w / k; b.h = bx.h / k; delete b.fig;
+      }
+    }
     /** a story's model (its first frame) */
     function modelOf(h) {
       const { dpi, name } = pageSetup();
@@ -246,6 +261,7 @@
       walk(blocks);
       const comments = (h.doc.comments || []).filter((c) => used.has(c.id)).map((c) => ({ id: c.id, author: c.author, text: c.text, date: c.date }));
       const footnotes = {}; for (const id of fns) footnotes[id] = String((h.doc.notes || {})[id] || "");
+      figsInto(blocks, h);
       return { title: S.name || name || "Document", page: pageOf(S.w, S.h, dpi, h.doc), blocks, header: hf.header, footer: hf.footer, comments, footnotes };
     }
     async function exportDocx() {
