@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "f2ed33e82884",
- "count": 10659,
+ "v": "0127ad7712d0",
+ "count": 10662,
  "patternCount": 1272,
  "strings": {
   "(Select all)": "(すべて選択)",
@@ -4888,6 +4888,7 @@
   "Page 1 of 1": "1 / 1 ページ",
   "Page Numbers": "ページ番号",
   "Page Setup": "ページ設定",
+  "Page Width": "ページ幅",
   "Page centre": "ページの中央",
   "Page edge": "ページの端",
   "Page errors": "ページエラー",
@@ -4896,6 +4897,7 @@
   "Page name": "ページ名",
   "Page numbers on every page: format, numbers, position, font, size, colour": "全ページのページ番号：書式、数字、位置、フォント、サイズ、色",
   "Page setup": "ページ設定",
+  "Page width - the page's width fills the view (Shift+Ctrl+0)": "ページ幅 - ページの幅を表示いっぱいに（Shift+Ctrl+0）",
   "Page {page}": "Page {page}",
   "Page {page} of {pages}": "Page {page} of {pages}",
   "Pages": "ページ",
@@ -10608,6 +10610,7 @@
   "✨ Write With the AI": "✨ AI で書く",
   "✨ Write With the AI…": "✨ AI で書く…",
   "✨ the LLM is designing…": "✨ LLM が設計中…",
+  "⟷ Page Width": "⟷ ページ幅",
   "⤓ .zip of the last build": "⤓ 前回作ったサイトの .zip",
   "⧉ Copy": "⧉ コピー",
   "⬇ Download": "⬇ ダウンロード",

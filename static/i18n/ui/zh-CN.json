@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "bc2faf231fb6",
- "count": 10659,
+ "v": "e5fdf46a1afa",
+ "count": 10662,
  "patternCount": 1272,
  "strings": {
   "(Select all)": "(全选)",
@@ -4888,6 +4888,7 @@
   "Page 1 of 1": "第 1 页，共 1 页",
   "Page Numbers": "页码",
   "Page Setup": "页面设置",
+  "Page Width": "页面宽度",
   "Page centre": "页面中心",
   "Page edge": "页面边缘",
   "Page errors": "页面错误",
@@ -4896,6 +4897,7 @@
   "Page name": "页面名称",
   "Page numbers on every page: format, numbers, position, font, size, colour": "每页的页码：格式、数字、位置、字体、字号、颜色",
   "Page setup": "页面设置",
+  "Page width - the page's width fills the view (Shift+Ctrl+0)": "页面宽度——页面宽度填满视图（Shift+Ctrl+0）",
   "Page {page}": "Page {page}",
   "Page {page} of {pages}": "Page {page} of {pages}",
   "Pages": "页面",
@@ -10608,6 +10610,7 @@
   "✨ Write With the AI": "✨ 用 AI 撰写",
   "✨ Write With the AI…": "✨ 用 AI 撰写…",
   "✨ the LLM is designing…": "✨ LLM 正在设计…",
+  "⟷ Page Width": "⟷ 页面宽度",
   "⤓ .zip of the last build": "⤓ 上次构建的 .zip",
   "⧉ Copy": "⧉ 复制",
   "⬇ Download": "⬇ 下载",

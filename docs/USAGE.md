@@ -9536,6 +9536,10 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - 📝 **WP View**: the pages one below another and a writing ribbon (Home, Insert, Layout, Mailings, Review, Export), with no tool column. ✒ **Vector View**: the colour palette, the dockers, rulers and the Move tool. 🖼 **Image View**: the tools, Color, Properties and Layers.
 - 🌐 **Web View**: each page is a web page. 🌐 New Website (a 1440 × 900 px Home page), ＋ Web Page (its name = its menu title), 🌐 Build Website…, ⚡ Quick Preview, ⤓ .zip, and a preview inside the editor at 🖥 Desktop / ▭ Tablet / 📱 Phone width.
 
+## ⟷ Image editor - zoom to the page width (2.845.0)
+
+- **⟷ Page Width** makes the page's width fill the canvas. It is in the Zoom tool's settings, on the top strip beside ⤢, in View ▸ Page Width, on Shift+Ctrl+0 and in the WP View's Layout ribbon. The line at the top of the view stays at the top.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

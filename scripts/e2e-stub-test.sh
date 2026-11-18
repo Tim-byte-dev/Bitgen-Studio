@@ -14351,6 +14351,13 @@ node scripts/test-844.js > /tmp/t844.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui844-ui.js > /tmp/ui844.log 2>&1 \
   && ok "2.844.0 browser test: 🖼 / ✒ / 📝 / 🌐 clicked - palette, dockers, WP ribbon Bold + H1, pages in a column, New Website, ＋ Web Page, ⚡ Quick Preview at 📱 phone width" \
   || { bad "2.844.0 views browser test"; grep -a "^FAIL" -A1 /tmp/ui844.log | head -12; }
+# ---- 2.845.0 (Tim: "in zoom settings, add zoom to page width")
+node scripts/test-845.js > /tmp/t845.log 2>&1 \
+  && ok "2.845.0 Page Width: widthView (fills the width, the top line kept), the command / buttons / shortcut wiring" \
+  || { bad "2.845.0 page width units"; grep -a "^FAIL" -A1 /tmp/t845.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui845-ui.js > /tmp/ui845.log 2>&1 \
+  && ok "2.845.0 browser test: ⟷ Page Width from the Zoom tool's settings, the top strip, View menu, Shift+Ctrl+0" \
+  || { bad "2.845.0 page width browser test"; grep -a "^FAIL" -A1 /tmp/ui845.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

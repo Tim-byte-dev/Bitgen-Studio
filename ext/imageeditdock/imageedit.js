@@ -716,6 +716,17 @@
   .kxstatus{font-size:11px;color:var(--pc-dim);padding:2px 8px;border-top:1px solid var(--pc-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--pc-panel)}`;
 
   let uid = 0;
+  /** 2.845.0 (Tim: "in zoom settings, add zoom to page width"): the zoom that makes the page's width fill the view -
+   *  {zoom, panX, panY}. The page sits between the left / right padding; the line of the page at the top of the view stays
+   *  there (reading on, as a word processor does), the page's top when the view showed above it. */
+  function widthView(viewW, pageW, pageH, cur, pad) {
+    const pd = Object.assign({ left: 16, right: 16, top: 16 }, pad || {});
+    const aw = Math.max(50, viewW - pd.left - pd.right), zoom = Math.max(0.02, Math.min(32, aw / Math.max(1, pageW)));
+    const c = cur || {}, z0 = c.zoom > 0 ? c.zoom : zoom;
+    const yTop = Math.max(0, Math.min(pageH || 0, (pd.top - (c.panY == null ? pd.top : c.panY)) / z0));   // the page line at the view's top
+    return { zoom, panX: Math.round(pd.left + (aw - pageW * zoom) / 2), panY: Math.round(pd.top - yTop * zoom) };
+  }
+
   function mount(host, api) {
     if (!host || host.dataset.mounted) return null;
     host.dataset.mounted = "1";
@@ -760,6 +771,7 @@
             <span id="kxZoom" style="min-width:38px;text-align:center;color:var(--pc-dim);font-size:11px">100%</span>
             <button class="ghost" id="kxZin" title="Zoom in (Ctrl++)">+</button>
             <button class="ghost" id="kxFit" title="Fit on screen (Ctrl+0)">⤢</button>
+            <button class="ghost" id="kxPageW" title="Page width - the page's width fills the view (Shift+Ctrl+0)">⟷</button>
             <button class="ghost" id="kx100" title="100 % (Ctrl+1)">1:1</button>
             <button class="ghost" id="ieOpen" title="Open a picture (Ctrl+O; or drop one onto the canvas; Shift+drop adds it as a layer)">📂</button>
             <button class="ghost" id="ieSave" title="Save the picture (all visible layers, flattened) into the project's Images and the Gallery, in the format beside it (Ctrl+S)">💾</button>
@@ -1222,6 +1234,14 @@
       S.userView = true; applyView();
       say("⊡ zoomed to " + what.trim() + " (" + Math.round(S.zoom * 100) + " %)");
       return b;
+    }
+    /** 2.845.0: ⟷ Page Width - the page's width fills the view (the rulers left room) */
+    function fitWidth() {
+      if (!S.w) return null;
+      const ruled = kx.classList.contains("rulers"), v = widthView(stage.clientWidth, S.w, S.h, { zoom: S.zoom, panY: S.panY }, { left: ruled ? 30 : 16, right: 16, top: ruled ? 30 : 16 });
+      S.zoom = v.zoom; S.panX = v.panX; S.panY = v.panY; S.userView = true; applyView();
+      say("⟷ page width (" + Math.round(S.zoom * 100) + " %)");
+      return v;
     }
     function zoomAt(f, cx, cy) {
       const z = Math.max(0.02, Math.min(32, S.zoom * f));
@@ -2000,7 +2020,7 @@
     /* ---------------- buttons ---------------- */
     $("kxUndo").onclick = undo; $("kxRedo").onclick = redo;
     $("kxZin").onclick = () => zoomAt(1.25); $("kxZout").onclick = () => zoomAt(0.8);
-    $("kxFit").onclick = () => { S.userView = false; fitView(); }; $("kx100").onclick = () => zoomAt(1 / S.zoom);
+    $("kxFit").onclick = () => { S.userView = false; fitView(); }; $("kxPageW").onclick = () => fitWidth(); $("kx100").onclick = () => zoomAt(1 / S.zoom);
     $("ieOpen").onclick = () => { $("ieFile").dataset.layer = ""; $("ieFile").click(); };
     $("ieFile").onchange = (e) => { const f = e.target.files[0]; if (f) load(URL.createObjectURL(f), f.name, !!$("ieFile").dataset.layer); e.target.value = ""; };
     /* 2.604.0 (Tim: "when user clicks save to images in image-editor, save all the visible the file as a tmp file then
@@ -2964,7 +2984,7 @@
     // the shared surface the tools (pctools.js) and the UI (pcui.js) build on
     Object.assign(E, {
       makeLayer, newMask, target, onMask, whichOf, canPaint, snapStruct, putStruct, snapDoc, putDoc, push, undo, redo, historyTo, beginPx, endPx, pxOp,
-      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, zoomAt, zoomToSel, pos,
+      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, fitWidth, zoomAt, zoomToSel, pos,
       openDoc, openImage, load, blankDoc, setFgNone, addLayer, addImageLayer, flatten, flattenCache, renderLayersPanel, structOp, setActive, newLayer, duplicateLayer,
       deleteLayer, moveLayer, moveLayerEnd, dropLayer, groupActive, newGroup, ungroupActive, toggleClip, mergeDown, mergeVisible, rasterizeLayer,
       layerFromSelection, addMask, deleteMask, toggleMask, selectFrom, newAdjust, newFill, liveSet, commitLive, cancelLive, setLayer, setTool, renderOptions,
@@ -3073,7 +3093,7 @@
              openFilter, repeatFilter, controlFromImage, controlImage, renderControls, paintControlNets, E };
   }
 
-  const api = { P, mount, TOOLS, PAINT, MODES, CSS };
+  const api = { P, mount, TOOLS, PAINT, MODES, CSS, widthView };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ImageEdit = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -299,6 +299,7 @@
     cmd("view.zoomout", "Zoom Out", "Ctrl+-", () => E.zoomAt(0.8), { enabled: docOpen });
     cmd("view.fit", "Fit on Screen", "Ctrl+0", () => { S.userView = false; E.fitView(); }, { enabled: docOpen });
     cmd("view.100", "100%", "Ctrl+1", () => E.zoomAt(1 / S.zoom), { enabled: docOpen });
+    cmd("view.pagewidth", "Page Width", "Shift+Ctrl+0", () => E.fitWidth(), { enabled: docOpen });   // 2.845.0: the page's width fills the view
     cmd("view.zoomsel", "Zoom to Selection", "Ctrl+Alt+0", () => E.zoomToSel(), { enabled: docOpen });   // 2.648.0
     cmd("view.rulers", "Rulers", "Ctrl+R", () => { kx.classList.toggle("rulers"); store.set("rulers", kx.classList.contains("rulers")); rulers(); }, { checked: () => kx.classList.contains("rulers") });
     cmd("view.grid", "Grid", "Ctrl+'", () => { S.grid = !S.grid; store.set("grid", S.grid); E.drawOverlay(); }, { checked: () => !!S.grid });
@@ -341,7 +342,7 @@
       ["Select", ["sel.all", "sel.none", "sel.reselect", "sel.inverse", sep, "sel.range", sep, sub("Modify", ["sel.border", "sel.smooth", "sel.expand", "sel.contract", "sel.feather"]), sep,
         "sel.loadlayer", "sel.loadmask", sep, "sel.qm"]],
       ["Filter", filterMenu()],
-      ["View", ["view.zoomin", "view.zoomout", "view.fit", "view.100", "view.zoomsel", sep, "view.rulers", "view.grid", "view.maskov", sep, "view.full"]],
+      ["View", ["view.zoomin", "view.zoomout", "view.fit", "view.pagewidth", "view.100", "view.zoomsel", sep, "view.rulers", "view.grid", "view.maskov", sep, "view.full"]],
       ["Window", [...TABS.map(([id]) => "win." + id), sep, "win.tools", "win.options", "win.panels", sep, sub("Theme", ["theme.bitgen", "theme.pro", "theme.studio", "theme.classic"]), "win.reset"]],
       ["Help", ["help.guide", "help.keys", "help.palette", "help.about"]],
     ];

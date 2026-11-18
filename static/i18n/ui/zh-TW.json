@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "99a653f5a788",
- "count": 10659,
+ "v": "2d26a484880c",
+ "count": 10662,
  "patternCount": 1272,
  "strings": {
   "(Select all)": "(全選)",
@@ -4888,6 +4888,7 @@
   "Page 1 of 1": "第 1 頁，共 1 頁",
   "Page Numbers": "頁碼",
   "Page Setup": "頁面設定",
+  "Page Width": "頁面寬度",
   "Page centre": "頁面中心",
   "Page edge": "頁面邊緣",
   "Page errors": "頁面錯誤",
@@ -4896,6 +4897,7 @@
   "Page name": "頁面名稱",
   "Page numbers on every page: format, numbers, position, font, size, colour": "每頁的頁碼：格式、數字、位置、字型、字號、顏色",
   "Page setup": "頁面設定",
+  "Page width - the page's width fills the view (Shift+Ctrl+0)": "頁面寬度——頁面寬度填滿檢視（Shift+Ctrl+0）",
   "Page {page}": "Page {page}",
   "Page {page} of {pages}": "Page {page} of {pages}",
   "Pages": "頁面",
@@ -10608,6 +10610,7 @@
   "✨ Write With the AI": "✨ 用 AI 撰寫",
   "✨ Write With the AI…": "✨ 用 AI 撰寫…",
   "✨ the LLM is designing…": "✨ LLM 正在設計…",
+  "⟷ Page Width": "⟷ 頁面寬度",
   "⤓ .zip of the last build": "⤓ 上次建構的 .zip",
   "⧉ Copy": "⧉ 複製",
   "⬇ Download": "⬇ 下載",

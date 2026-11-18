@@ -710,7 +710,7 @@
       ]
     },
     {
-      "en": "5a3af014c65b",
+      "en": "a7194d72392f",
       "title": "图像编辑器 - View 菜单",
       "rows": [
         [
@@ -724,6 +724,10 @@
         [
           "Ctrl+0",
           "Fit on Screen（按屏幕大小缩放）"
+        ],
+        [
+          "Shift+Ctrl+0",
+          "Page Width（按页面宽度缩放）"
         ],
         [
           "Ctrl+1",

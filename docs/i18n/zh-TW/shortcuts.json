@@ -710,7 +710,7 @@
       ]
     },
     {
-      "en": "5a3af014c65b",
+      "en": "a7194d72392f",
       "title": "影像編輯器 - View 選單",
       "rows": [
         [
@@ -724,6 +724,10 @@
         [
           "Ctrl+0",
           "Fit on Screen（按螢幕大小縮放）"
+        ],
+        [
+          "Shift+Ctrl+0",
+          "Page Width（按頁面寬度縮放）"
         ],
         [
           "Ctrl+1",

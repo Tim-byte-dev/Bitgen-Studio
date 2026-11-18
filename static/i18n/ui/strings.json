@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6334,
+ "count": 6337,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -58420,6 +58420,36 @@
    ],
    "where": [
     "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Page Width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor zoom - Page Width (2.845.0)"
+   ]
+  },
+  {
+   "s": "⟷ Page Width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor zoom - Page Width (2.845.0)"
+   ]
+  },
+  {
+   "s": "Page width - the page's width fills the view (Shift+Ctrl+0)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor zoom - Page Width (2.845.0)"
    ]
   }
  ]

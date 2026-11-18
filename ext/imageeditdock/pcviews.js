@@ -74,7 +74,7 @@
       { id: "layout", label: "Layout", groups: [
         { label: "Page", show: 2, items: [["cmd", "layer.docmargins", "Margins", "📏"], ["act", "pagesetup", "Page Setup", "📐"]] },
         { label: "Arrange", show: 4, items: [["cmd", "figure.full", "Figure: Full Width", "▭"], ["cmd", "figure.left", "Figure Left", "◧"], ["cmd", "figure.right", "Figure Right", "◨"], ["cmd", "flow.wrap", "Text Wrap", "⧉"], ["cmd", "figure.bigger", "Figure Bigger", "＋"], ["cmd", "figure.smaller", "Figure Smaller", "－"]] },
-        { label: "Pages", show: 4, items: [["cmd", "view.pages.column", "One Below Another", "▯"], ["cmd", "view.pages.one", "One Page", "▢"], ["cmd", "view.pages.two", "Two Pages", "▢▢"], ["cmd", "view.pages.many", "Many Pages", "▦"], ["cmd", "win.pages", "Pages Panel", "▤"]] },
+        { label: "Pages", show: 5, items: [["cmd", "view.pagewidth", "Page Width", "⟷"], ["cmd", "view.pages.column", "One Below Another", "▯"], ["cmd", "view.pages.one", "One Page", "▢"], ["cmd", "view.pages.two", "Two Pages", "▢▢"], ["cmd", "view.pages.many", "Many Pages", "▦"], ["cmd", "win.pages", "Pages Panel", "▤"]] },
       ] },
       { id: "mailings", label: "Mailings", groups: [
         { label: "Mail Merge", show: 4, items: [["cmd", "doc.merge.source", "Data Source", "📇"], ["cmd", "doc.merge.field", "Insert Merge Field", "«»"], ["cmd", "doc.merge.preview", "Preview Results", "👁"], ["cmd", "doc.merge.prev", "Previous Record", "◀"], ["cmd", "doc.merge.next", "Next Record", "▶"], ["cmd", "doc.merge.finish", "Finish & Merge", "🖨"]] },

@@ -711,6 +711,10 @@
           "Fit on Screen"
         ],
         [
+          "Shift+Ctrl+0",
+          "Page Width"
+        ],
+        [
           "Ctrl+1",
           "100%"
         ],
