@@ -12,6 +12,9 @@
 //   {scope project|external, name?, importLocal?} · POST /api/web/db/unlink. While linked, /api/web/records for clients / bookings /
 //   orders / messages read + write that database (posts / products stay in www/data/content.json).
 //   2.859.0 🧩: GET /api/web/skills · POST /api/web/skills/add {id} -> {copied, kept, head, scripts, snippet} · POST /api/web/skills/ai {ask, skills?}
+//   2.860.0 📤 the www folder straight onto the host by FTP / FTPS (lib/hostFtp.js - cPanel, Plesk): GET /api/web/host (settings) ·
+//   POST /api/web/host {host, port, user, dir, secure, anyName, password?, forget?} · POST /api/web/host/test · POST /api/web/host/send
+//   {full?, keepGone?, config missing|always|never, withPassword?} -> started · GET /api/web/host/progress {running, total, done, file, result|error}
 //   GET  /web-preview/<path>           the site as files (the Preview + WYSIWYG tabs; no PHP is run)
 "use strict";
 const express = require("express");
@@ -41,6 +44,12 @@ function mount(app) {
   // 2.858.0: ⤴ publish www to GitHub (lib/sitePublish.js pushDir - the same rules as Build Website's publish)
   app.get("/api/web/publish", wrap(() => require("../lib/sitePublish").wwwSettings()));
   app.post("/api/web/publish", J, wrap((req) => require("../lib/sitePublish").publishWww(req.body || {})));
+  const HF = () => require("../lib/hostFtp");
+  app.get("/api/web/host", wrap(() => HF().settings()));
+  app.post("/api/web/host", J, wrap((req) => HF().save(req.body || {})));
+  app.post("/api/web/host/test", J, wrap((req) => HF().test(req.body || {})));
+  app.post("/api/web/host/send", J, wrap((req) => HF().start(req.body || {})));
+  app.get("/api/web/host/progress", wrap(() => HF().progress()));
   app.post("/api/web/db/create", J, wrap((req) => DB().create(req.body || {})));
   app.post("/api/web/db/unlink", J, wrap(() => DB().unlink()));
   app.get(/^\/web-preview(\/.*)?$/, (req, res) => {

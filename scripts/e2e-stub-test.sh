@@ -14474,6 +14474,16 @@ node scripts/test-859-live.js > /tmp/t859l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui859-ui.js > /tmp/ui859.log 2>&1 \
   && ok "2.859.0 browser test: ＋ gallery on the page + the viewer, the catalogue's chips + cart, ✨ a section" \
   || { bad "2.859.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui859.log | head -12; }
+# ---- 2.860.0 (📤 the www folder onto the host by FTP / FTPS)
+node scripts/test-860.js > /tmp/t860.log 2>&1 \
+  && ok "2.860.0 📤 host units: settings + password encrypted, only changed files, deleted ones taken off, config missing / always / never ± the DB password, cPanel failures in words, siteHost" \
+  || { bad "2.860.0 units"; grep -a "^FAIL" -A1 /tmp/t860.log | head -12; }
+node scripts/test-860-live.js > /tmp/t860l.log 2>&1 \
+  && ok "2.860.0 LIVE (pyftpdlib FTPS, a cert for another name): refused + named, another name accepted, files land, only changed next, plain FTP" \
+  || { bad "2.860.0 live"; grep -a "^FAIL" -A1 /tmp/t860l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui860-ui.js > /tmp/ui860.log 2>&1 \
+  && ok "2.860.0 browser test: 📤 Host ✓ Test + Send against a real FTP server, kept settings, the DB form's cPanel part" \
+  || { bad "2.860.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui860.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -9633,6 +9633,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✨ Write the section**: say what you want - the AI writes one section with the ticked skills (or the ones your words point to); scripts and inline handlers are taken out of its answer.
 - The shop uses the CRM's 🛍 Products. **Checkout** (checkout.php) prices the order again on the server from the products - never the browser's prices - and saves it in the CRM's 🗄 database, so it shows in 🧾 Orders. **Login** (login.php, register.php, account.php, logout) hashes passwords, uses safe session cookies, a CSRF token on every form, and makes you wait 10 minutes after 5 wrong tries. Both need PHP and the CRM's database on the host.
 
+## 📤 Send the website to your host (2.860.0)
+
+- **🌐 Web editor ▸ 📤 Host** sends the www folder straight onto your host by FTP / FTPS - cPanel (GoDaddy and most shared hosts) or Plesk - with no GitHub in between. Put in the **server** (cPanel ▸ FTP Accounts ▸ Configure FTP Client shows it, often ftp.yourdomain.com), the **FTP user** (your cPanel login, or name@yourdomain.com), its **password** (kept encrypted on this computer) and the **folder** (public_html on cPanel; an add-on domain has its own, e.g. public_html/tigerart.shop; httpdocs on Plesk).
+- **✓ Test** logs in and says what is in the folder. **📤 Send to host** sends only the files that changed since the last send (☐ every file again), with a bar; files bitGen sent before and you deleted here are taken off the host - nothing else there is touched.
+- 🔒 **FTPS** is on by default. Shared hosts often show a certificate made out to the server's own name (e.g. *.secureserver.net): bitGen says the name - use it as the server, or tick **Accept the certificate under another name** (the certificate is still checked, only its name is not).
+- **inc/config.php** (the database settings, the admin's setup key) goes only when the host has none - or **send it again** / **never**. Tick **with the database password** to have it filled in from the CRM's 🌐 server - on the host only, never in the project.
+- **The site's database on cPanel**: make the database and its user in cPanel ▸ MySQL Databases (their names start with your cPanel user and _), give the user All Privileges, and add this computer's internet address in cPanel ▸ Remote MySQL. Put the server (your domain), that user and its password in 🗄 Database ▸ ⚙ Your server, then 🗂 CRM ▸ 🗄 Create the site's database… ▸ 🌐 Your server with the database's full name. **The site reaches it as** is localhost - the database is on the same server as the site.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

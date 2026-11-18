@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6722,
+ "count": 6746,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62300,6 +62300,246 @@
    ],
    "where": [
     "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Send the www folder straight onto your host by FTP / FTPS (cPanel, Plesk) - only the files that changed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Send www to your host (FTP / FTPS)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Server",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "ftp.yourdomain.com (cPanel ▸ FTP Accounts ▸ Configure FTP Client)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "FTP user",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "your cPanel login, or name@yourdomain.com",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Forget the kept password",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "FTPS - the login and files go encrypted (untick only if the host has no FTPS)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Accept the certificate under another name (shared hosts often give the server's own name, not yours)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "only when the host has none",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "send it again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "never",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "with the database password (the CRM's 🌐 server's - put in on the host only, never in the project)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Send every file again (not only the changed ones)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "The password is kept encrypted on this computer. Files bitGen sent before and you deleted here are taken off the host - nothing else there is touched.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Send to host",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "The site reaches it as",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "What the site's own PHP connects to - on cPanel and Plesk the database is on the same server as the site, so localhost",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "cPanel (GoDaddy and most shared hosts): make the database and its user in cPanel ▸ MySQL Databases first (their names start with your cPanel user and _), give the user All Privileges on it, and add this computer's internet address in cPanel ▸ Remote MySQL - then put the server, that user and its password in 🗄 Database ▸ ⚙ Your server (the server = your domain, e.g. tigerart.shop). Type the database's full name above.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "www/inc/config.php gets the database's host, name and user for the site's PHP - never the password (set DB_PASS on the server, or tick \"with the database password\" when you 📤 Send to host).",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "the FTP account's password",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "the CRM is not linked to your server's database (🗂 CRM ▸ 🗄)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "logging in",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "the password is forgotten",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host (2.860.0)"
    ]
   }
  ]

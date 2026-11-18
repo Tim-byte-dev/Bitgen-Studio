@@ -12,6 +12,9 @@
  *   🗄 2.857.0   Tim: "have the crm create the sites database and then link to it so it will be live" - 🗄 Create the site's database…
  *                (this project's MariaDB, or your server = the live site's) makes the site's tables, brings the project's records in and
  *                links the CRM: Clients / Bookings / Orders / Messages are then read from + written to it (⟳ every 30 s while shown)
+ *   📤 2.860.0    📤 Host = the www folder straight onto the host by FTP / FTPS (lib/hostFtp.js; cPanel / Plesk) - ✓ Test, only the changed
+ *                files, inc/config.php only when the host has none (± the database password), a bar while it sends; the DB form's 🌐
+ *                server gets "the site reaches it as" (localhost on cPanel) + the cPanel steps
  *   ⤴ 2.858.0    ⤴ Publish = the www folder to GitHub (the same rules as Build Website's publish: only changed files, never
  *                inc/config.php); 🌐 Build Website ▸ ☑ Into this project's www folder puts a build here
  *   🧩 2.859.0   Tim: "add skills/scripts for galleries - picture,video-audio-3d models, layout, css, ajax, login, categories, product
@@ -244,7 +247,7 @@
         if (!st.server) { m.textContent = "MariaDB is needed - the 🗄 Database docker asks to download it"; if (root.H3Db) { root.H3Db.show(); if (!(await root.H3Db.ready())) return; } else return; }
       }
       $("wbDbGo").disabled = true; m.textContent = "🗄 making the database…";
-      const r = await api("/api/web/db/create", { scope, name: $("wbDbName").value.trim() || undefined, importLocal: $("wbDbImport").checked });
+      const r = await api("/api/web/db/create", { scope, name: $("wbDbName").value.trim() || undefined, importLocal: $("wbDbImport").checked, siteHost: scope === "external" ? $("wbDbSite").value.trim() || undefined : undefined });
       $("wbDbForm").classList.remove("on");
       const im = r.imported ? Object.entries(r.imported).filter(([, n]) => n).map(([k, n]) => n + " " + k).join(", ") : "";
       msg(`🗄 ${r.name} ${r.made ? "made" : "ready"} and linked${im ? " - brought in " + im : ""}${r.config ? " · www/" + r.config + " points the site at it" : ""}`);
@@ -318,6 +321,47 @@
     $("wbPubGo").disabled = false;
   }
 
+  /* ---------------- 📤 send www to the host (2.860.0, lib/hostFtp.js) */
+  const hoForm = () => ({ host: $("wbHoServer").value.trim(), port: $("wbHoPort").value.trim(), user: $("wbHoUser").value.trim(), dir: $("wbHoDir").value.trim() || "public_html", secure: $("wbHoSecure").checked, anyName: $("wbHoAny").checked, password: $("wbHoPass").value || undefined });
+  async function hoOpen() {
+    const f = $("wbHostForm"); if (f.classList.contains("on")) { f.classList.remove("on"); return; }
+    let st; try { st = await api("/api/web/host"); } catch (e) { return msg("✗ " + e.message, true); }
+    $("wbHoServer").value = st.host; $("wbHoPort").value = st.port; $("wbHoUser").value = st.user; $("wbHoDir").value = st.dir; $("wbHoSecure").checked = st.secure; $("wbHoAny").checked = st.anyName;
+    $("wbHoPass").value = ""; $("wbHoPass").placeholder = st.hasPassword ? "kept on this computer (encrypted) - type a new one to change it" : "the FTP account's password"; $("wbHoForget").disabled = !st.hasPassword;
+    const live = St.db && St.db.linked && St.db.scope === "external"; $("wbHoWithPass").disabled = !live; $("wbHoWithPass").checked = false;
+    $("wbHoWithPass").parentNode.title = live ? "" : "the CRM is not linked to your server's database (🗂 CRM ▸ 🗄)";
+    $("wbHoBar").style.display = "none";
+    $("wbHoOut").textContent = st.last ? `Last sent ${new Date(st.last.at).toLocaleString()} to ${st.last.host}/${st.last.dir}: ${st.last.sent} file(s)` : "";
+    f.classList.add("on");
+  }
+  async function hoTest() {
+    $("wbHoTest").disabled = true; $("wbHoOut").textContent = "✓ logging in…";
+    try {
+      await api("/api/web/host", hoForm());
+      const r = await api("/api/web/host/test", {}); $("wbHoPass").value = ""; $("wbHoForget").disabled = false;
+      $("wbHoOut").textContent = `✓ logged in${r.secure ? " (encrypted)" : " - NOT encrypted"} - ${r.pwd}: ${r.count} item(s)${r.hasIndex ? ", a home page already there" : ""}${r.hasConfig ? ", inc/config.php there (kept)" : ""}`;
+    } catch (e) { $("wbHoOut").textContent = "✗ " + e.message; }
+    $("wbHoTest").disabled = false;
+  }
+  async function hoGo() {
+    if (St.dirty && root.confirm(`${St.path} has changes that are not saved - save them first?`)) await save();
+    $("wbHoGo").disabled = true; $("wbHoOut").textContent = "📤 logging in…"; const bar = $("wbHoBar"); bar.style.display = ""; bar.removeAttribute("value");
+    try {
+      await api("/api/web/host", hoForm()); $("wbHoPass").value = "";
+      await api("/api/web/host/send", { full: $("wbHoFull").checked, config: $("wbHoCfg").value, withPassword: $("wbHoWithPass").checked });
+      let p; do {
+        await new Promise((r) => setTimeout(r, 400)); p = await api("/api/web/host/progress");
+        if (p.total) { bar.max = p.total; bar.value = p.done; } if (p.file) $("wbHoOut").textContent = `📤 ${p.done} / ${p.total} - ${p.file}`;
+      } while (p.running);
+      if (p.error) throw new Error(p.error);
+      const r = p.result; bar.max = 1; bar.value = 1;
+      $("wbHoOut").textContent = r.nothing ? `✓ nothing changed since the last send (${r.same} the same)` : `✓ ${r.sent} file(s) sent, ${r.same} the same${r.removed ? `, ${r.removed} taken off` : ""} - inc/config.php ${r.config} · ${r.host}/${r.dir}`;
+      msg("📤 sent to " + r.host);
+      if (root.H3TestEvent) { try { root.H3TestEvent("web_host", r.host); } catch (e) { /* the 🧪 list */ } }
+    } catch (e) { $("wbHoOut").textContent = "✗ " + e.message; bar.style.display = "none"; }
+    $("wbHoGo").disabled = false;
+  }
+
   /* ---------------- wiring */
   function show() { const d = $("webdock"); if (d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("webdock", "tX_webdock"); }
   function wire() {
@@ -330,6 +374,10 @@
     on("wbSk", "click", skOpen); on("wbSkNo", "click", () => $("wbSkForm").classList.remove("on")); on("wbSkAi", "click", skAi);
     on("wbSkAsk", "keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") skAi(); });
     on("wbSkList", "click", (e) => { const b = e.target.closest("[data-skadd]"); if (b) skAdd(b.dataset.skadd); });
+    on("wbHost", "click", hoOpen); on("wbHoTest", "click", hoTest); on("wbHoGo", "click", hoGo); on("wbHoNo", "click", () => $("wbHostForm").classList.remove("on"));
+    on("wbHoForget", "click", async () => { try { await api("/api/web/host", Object.assign(hoForm(), { password: undefined, forget: true })); $("wbHoForget").disabled = true; $("wbHoOut").textContent = "the password is forgotten"; } catch (e) { $("wbHoOut").textContent = "✗ " + e.message; } });
+    ["wbHoServer", "wbHoPort", "wbHoUser", "wbHoPass", "wbHoDir", "wbDbSite"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));
+    doc.querySelectorAll('input[name="wbDbScope"]').forEach((r) => r.addEventListener("change", () => { $("wbDbExt").style.display = r.value === "external" && r.checked ? "flex" : (doc.querySelector('input[name="wbDbScope"]:checked').value === "external" ? "flex" : "none"); }));
     on("wbPub", "click", pubOpen); on("wbPubGo", "click", pubGo); on("wbPubNo", "click", () => $("wbPubForm").classList.remove("on"));
     on("wbPubForget", "click", async () => { try { await api("/api/sites/publish/token", { token: "" }); $("wbPubForget").disabled = true; $("wbPubOut").textContent = "the token is forgotten"; } catch (e) { $("wbPubOut").textContent = "✗ " + e.message; } });
     ["wbPubTok", "wbPubOwner", "wbPubRepo", "wbPubBranch", "wbPubMsg"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));

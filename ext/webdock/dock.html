@@ -61,6 +61,11 @@
           #wbSkList .sk { border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
           #wbSkList .sk p { margin: 0; color: var(--dim); font-size: 11px; }
           #wbSkList .sk .wbbar { margin-top: auto; }
+          #wbHostForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; }
+          #wbHostForm.on { display: flex; }
+          #wbHostForm label { display: flex; gap: 6px; align-items: center; }
+          #wbHostForm label > span { width: 80px; color: var(--dim); }
+          #wbHostForm input:not([type=checkbox]), #wbHostForm select { flex: 1; min-width: 0; }
           #wbPubForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; }
           #wbPubForm.on { display: flex; }
           #wbPubForm label { display: flex; gap: 6px; align-items: center; }
@@ -88,6 +93,7 @@
             <button class="ghost" type="button" id="wbSave" title="Save the open file (Ctrl+S)">💾 Save</button>
             <button class="ghost" type="button" id="wbSk" title="Galleries, layout, theme, AJAX, login, shop - add one to the open page, or ✨ have the AI write a section with them">🧩 Skills</button>
             <button class="ghost" type="button" id="wbPub" title="Send the www folder to a GitHub repository - your host deploys it (Plesk ▸ Git or FTP)">⤴ Publish</button>
+            <button class="ghost" type="button" id="wbHost" title="Send the www folder straight onto your host by FTP / FTPS (cPanel, Plesk) - only the files that changed">📤 Host</button>
           </span>
           <span id="wbMsg"></span>
         </div>
@@ -107,6 +113,22 @@
           <label><span>Message</span><input id="wbPubMsg" placeholder="what changed (optional)"></label>
           <div style="font-size:11px;color:var(--dim)">Only the files that changed go up. inc/config.php (the database settings, the admin's setup key) stays on this computer - the repository gets inc/config.sample.php, .gitignore and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host).</div>
           <div class="wbbar"><button class="go" type="button" id="wbPubGo">⤴ Publish</button><button class="ghost" type="button" id="wbPubNo">Close</button><span id="wbPubOut" style="font-size:11px"></span></div>
+        </div>
+        <div id="wbHostForm">
+          <b>📤 Send www to your host (FTP / FTPS)</b>
+          <label><span>Server</span><input id="wbHoServer" placeholder="ftp.yourdomain.com (cPanel ▸ FTP Accounts ▸ Configure FTP Client)"><span style="width:auto">Port</span><input id="wbHoPort" style="max-width:60px" value="21"></label>
+          <label><span>FTP user</span><input id="wbHoUser" autocomplete="off" placeholder="your cPanel login, or name@yourdomain.com"></label>
+          <label><span>Password</span><input id="wbHoPass" type="password" autocomplete="off"><button class="ghost" type="button" id="wbHoForget" title="Forget the kept password">✕</button></label>
+          <label><span>Folder</span><input id="wbHoDir" placeholder="public_html"></label>
+          <label><input type="checkbox" id="wbHoSecure" checked> 🔒 FTPS - the login and files go encrypted (untick only if the host has no FTPS)</label>
+          <label><input type="checkbox" id="wbHoAny"> Accept the certificate under another name (shared hosts often give the server's own name, not yours)</label>
+          <label><span>inc/config.php</span><select id="wbHoCfg"><option value="missing">only when the host has none</option><option value="always">send it again</option><option value="never">never</option></select></label>
+          <label><input type="checkbox" id="wbHoWithPass"> with the database password (the CRM's 🌐 server's - put in on the host only, never in the project)</label>
+          <label><input type="checkbox" id="wbHoFull"> Send every file again (not only the changed ones)</label>
+          <div style="font-size:11px;color:var(--dim)">The password is kept encrypted on this computer. Files bitGen sent before and you deleted here are taken off the host - nothing else there is touched.</div>
+          <div class="wbbar"><button class="ghost" type="button" id="wbHoTest">✓ Test</button><button class="go" type="button" id="wbHoGo">📤 Send to host</button><button class="ghost" type="button" id="wbHoNo">Close</button></div>
+          <progress id="wbHoBar" max="1" value="0" style="width:100%;display:none"></progress>
+          <div id="wbHoOut" style="font-size:11px"></div>
         </div>
         <div id="wbNoSite">
           <div>This project has no website yet.</div>
@@ -138,7 +160,11 @@
                     <label><input type="radio" name="wbDbScope" value="external"> 🌐 Your server - the live site's database (🗄 Database ▸ ⚙ Your server)</label>
                     <label><span>Database name</span><input id="wbDbName" placeholder="mysite_site"></label>
                     <label><input type="checkbox" id="wbDbImport" checked> Bring the records kept in the project so far</label>
-                    <div style="font-size:11px;color:var(--dim)">www/inc/config.php gets the database's host, name and user for the site's PHP - never the password (set DB_PASS on the server).</div>
+                    <div id="wbDbExt" style="display:none;flex-direction:column;gap:5px">
+                      <label><span>The site reaches it as</span><input id="wbDbSite" value="localhost" title="What the site's own PHP connects to - on cPanel and Plesk the database is on the same server as the site, so localhost"></label>
+                      <div style="font-size:11px;color:var(--dim)">cPanel (GoDaddy and most shared hosts): make the database and its user in cPanel ▸ MySQL Databases first (their names start with your cPanel user and _), give the user All Privileges on it, and add this computer's internet address in cPanel ▸ Remote MySQL - then put the server, that user and its password in 🗄 Database ▸ ⚙ Your server (the server = your domain, e.g. tigerart.shop). Type the database's full name above.</div>
+                    </div>
+                    <div style="font-size:11px;color:var(--dim)">www/inc/config.php gets the database's host, name and user for the site's PHP - never the password (set DB_PASS on the server, or tick "with the database password" when you 📤 Send to host).</div>
                     <div class="wbbar"><button class="go" type="button" id="wbDbGo">🗄 Create and link</button><button class="ghost" type="button" id="wbDbNo">Cancel</button><span id="wbDbMsg" style="font-size:11px"></span></div>
                   </div>
                   <div id="wbCrmForm"></div>
