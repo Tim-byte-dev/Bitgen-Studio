@@ -9530,6 +9530,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Each page of the document is a web page (its name = its menu title); text layers stay text, WP layers keep their formatting, the rest goes in as pictures.
 - **File ▸ 🌐 Build Website…**: Static HTML / CSS or PHP + MySQL; ✨ the AI writes each page's responsive HTML / CSS with your exact words and pictures (checked; bitGen lays a page out itself if not). PHP + MySQL adds a shared header / footer, a contact form saved to MySQL, `schema.sql` and a README. A preview opens; ⤓ .zip downloads it.
 
+## 📝 Image editor - WP View, Vector View, Image View and Web View (2.844.0)
+
+- Four views on the editor's top strip (and Window ▸ Workspace) lay it out for one kind of work; every menu, tool and panel stays reachable.
+- 📝 **WP View**: the pages one below another and a writing ribbon (Home, Insert, Layout, Mailings, Review, Export), with no tool column. ✒ **Vector View**: the colour palette, the dockers, rulers and the Move tool. 🖼 **Image View**: the tools, Color, Properties and Layers.
+- 🌐 **Web View**: each page is a web page. 🌐 New Website (a 1440 × 900 px Home page), ＋ Web Page (its name = its menu title), 🌐 Build Website…, ⚡ Quick Preview, ⤓ .zip, and a preview inside the editor at 🖥 Desktop / ▭ Tablet / 📱 Phone width.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

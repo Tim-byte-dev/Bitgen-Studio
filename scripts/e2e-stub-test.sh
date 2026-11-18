@@ -14344,6 +14344,13 @@ node scripts/test-843.js > /tmp/t843.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui843-ui.js > /tmp/ui843.log 2>&1 \
   && ok "2.843.0 browser test: a 2-page document collected, built by the AI (stand-in) as a static site + previewed, PHP + MySQL zip" \
   || { bad "2.843.0 website browser test"; grep -a "^FAIL" -A1 /tmp/ui843.log | head -12; }
+# ---- 2.844.0 (Tim: "when in image-editor add views to the top toolstrip ... just call them WP View, Vector View and Image View, add web view")
+node scripts/test-844.js > /tmp/t844.log 2>&1 \
+  && ok "2.844.0 views: plans, tools, device scale, web page size, the ribbons' commands, One Below Another, the wiring" \
+  || { bad "2.844.0 views units"; grep -a "^FAIL" -A1 /tmp/t844.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui844-ui.js > /tmp/ui844.log 2>&1 \
+  && ok "2.844.0 browser test: 🖼 / ✒ / 📝 / 🌐 clicked - palette, dockers, WP ribbon Bold + H1, pages in a column, New Website, ＋ Web Page, ⚡ Quick Preview at 📱 phone width" \
+  || { bad "2.844.0 views browser test"; grep -a "^FAIL" -A1 /tmp/ui844.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

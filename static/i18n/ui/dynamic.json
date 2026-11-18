@@ -14524,131 +14524,135 @@
   },
   {
    "s": "Pages",
-   "src": "ext/imageeditdock/pcpages.js:532"
+   "src": "ext/imageeditdock/pcpages.js:541"
   },
   {
    "s": "No document open",
-   "src": "ext/imageeditdock/pcpages.js:532"
+   "src": "ext/imageeditdock/pcpages.js:541"
   },
   {
    "s": "Click: this page · drag: move · double-click the name: rename",
-   "src": "ext/imageeditdock/pcpages.js:535"
+   "src": "ext/imageeditdock/pcpages.js:544"
   },
   {
    "s": "Master",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Odd",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Even",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Facing",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Page setup",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Hide (Window ▸ Pages shows it again)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Back to the pages (the pages that use this master are made again)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "This master for every page",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "This master for the odd pages (1, 3, 5 … right-hand)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "This master for the even pages (2, 4, 6 … left-hand)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Show and export the pages as spreads (page 1 alone on the right)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "How page numbers are written",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Page numbers on every page: format, numbers, position, font, size, colour",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "A new page after this one, the same size - its own layers",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "A copy of this page with its layers",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Move this page up",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Move this page down",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Delete this page (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
-   "src": "ext/imageeditdock/pcpages.js:538"
+   "src": "ext/imageeditdock/pcpages.js:547"
   },
   {
    "s": "Double-click: rename",
-   "src": "ext/imageeditdock/pcpages.js:542"
+   "src": "ext/imageeditdock/pcpages.js:551"
   },
   {
    "s": "Edit this master - what is on it shows under its pages",
-   "src": "ext/imageeditdock/pcpages.js:542"
+   "src": "ext/imageeditdock/pcpages.js:551"
   },
   {
    "s": "Delete this master (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:542"
+   "src": "ext/imageeditdock/pcpages.js:551"
   },
   {
    "s": "W × H mm",
-   "src": "ext/imageeditdock/pcpages.js:623"
+   "src": "ext/imageeditdock/pcpages.js:632"
   },
   {
    "s": "dpi",
-   "src": "ext/imageeditdock/pcpages.js:623"
+   "src": "ext/imageeditdock/pcpages.js:632"
   },
   {
    "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
-   "src": "ext/imageeditdock/pcpages.js:648"
+   "src": "ext/imageeditdock/pcpages.js:657"
   },
   {
    "s": "Pages: One Page",
-   "src": "ext/imageeditdock/pcpageview.js:15"
+   "src": "ext/imageeditdock/pcpageview.js:16"
   },
   {
    "s": "Pages: Two Pages",
-   "src": "ext/imageeditdock/pcpageview.js:15"
+   "src": "ext/imageeditdock/pcpageview.js:16"
   },
   {
    "s": "Pages: Many Pages",
-   "src": "ext/imageeditdock/pcpageview.js:15"
+   "src": "ext/imageeditdock/pcpageview.js:16"
+  },
+  {
+   "s": "Pages: One Below Another",
+   "src": "ext/imageeditdock/pcpageview.js:16"
   },
   {
    "s": "Color palette",
@@ -17667,6 +17671,146 @@
    "src": "ext/imageeditdock/pcunreal.js:223"
   },
   {
+   "s": "WP View",
+   "src": "ext/imageeditdock/pcviews.js:31"
+  },
+  {
+   "s": "WP View - a word processor: the pages one below another, the writing ribbon (Home, Insert, Layout, Mailings, Review, Export), Paragraph and Layers",
+   "src": "ext/imageeditdock/pcviews.js:31"
+  },
+  {
+   "s": "Vector View",
+   "src": "ext/imageeditdock/pcviews.js:33"
+  },
+  {
+   "s": "Vector View - drawing: the tools, the colour palette, the dockers (Transform, Shaping, Align, Object), Properties and Layers",
+   "src": "ext/imageeditdock/pcviews.js:33"
+  },
+  {
+   "s": "Image View",
+   "src": "ext/imageeditdock/pcviews.js:35"
+  },
+  {
+   "s": "Image View - photo editing: the tools, Color, Properties and Layers",
+   "src": "ext/imageeditdock/pcviews.js:35"
+  },
+  {
+   "s": "Web View",
+   "src": "ext/imageeditdock/pcviews.js:37"
+  },
+  {
+   "s": "Web View - each page is a web page: the Pages panel, the web ribbon (new site, web pages, build, preview at desktop / tablet / phone width), Align, Properties and Layers",
+   "src": "ext/imageeditdock/pcviews.js:37"
+  },
+  {
+   "s": "Document",
+   "src": "ext/imageeditdock/pcviews.js:60"
+  },
+  {
+   "s": "Illustrations",
+   "src": "ext/imageeditdock/pcviews.js:70"
+  },
+  {
+   "s": "Header & Footer",
+   "src": "ext/imageeditdock/pcviews.js:72"
+  },
+  {
+   "s": "Mailings",
+   "src": "ext/imageeditdock/pcviews.js:79"
+  },
+  {
+   "s": "Mail Merge",
+   "src": "ext/imageeditdock/pcviews.js:80"
+  },
+  {
+   "s": "Templates",
+   "src": "ext/imageeditdock/pcviews.js:81"
+  },
+  {
+   "s": "Review",
+   "src": "ext/imageeditdock/pcviews.js:83"
+  },
+  {
+   "s": "Comments",
+   "src": "ext/imageeditdock/pcviews.js:84"
+  },
+  {
+   "s": "Footnotes",
+   "src": "ext/imageeditdock/pcviews.js:85"
+  },
+  {
+   "s": "Web",
+   "src": "ext/imageeditdock/pcviews.js:93"
+  },
+  {
+   "s": "Site",
+   "src": "ext/imageeditdock/pcviews.js:94"
+  },
+  {
+   "s": "Build",
+   "src": "ext/imageeditdock/pcviews.js:95"
+  },
+  {
+   "s": "Content",
+   "src": "ext/imageeditdock/pcviews.js:97"
+  },
+  {
+   "s": "Data",
+   "src": "ext/imageeditdock/pcviews.js:99"
+  },
+  {
+   "s": "A document whose pages are web pages, 1440 × 900 px each. The first page is Home; ＋ Web Page adds the next one (its name is its title in the site's menu). Then 🌐 Build Website",
+   "src": "ext/imageeditdock/pcviews.js:153"
+  },
+  {
+   "s": "Page name",
+   "src": "ext/imageeditdock/pcviews.js:164"
+  },
+  {
+   "s": "The name is the page's title in the site's menu",
+   "src": "ext/imageeditdock/pcviews.js:164"
+  },
+  {
+   "s": "About, Products, Contact",
+   "src": "ext/imageeditdock/pcviews.js:164"
+  },
+  {
+   "s": "Rebuild",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Build With the AI",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Build again without the AI (quick) and show it",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Build with the AI making each page responsive, then show it",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Open the preview in the browser",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Close the preview",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Website preview",
+   "src": "ext/imageeditdock/pcviews.js:191"
+  },
+  {
+   "s": "Nothing built yet - ⚡ Rebuild (quick) or ✨ Build With the AI",
+   "src": "ext/imageeditdock/pcviews.js:205"
+  },
+  {
+   "s": "Views",
+   "src": "ext/imageeditdock/pcviews.js:266"
+  },
+  {
    "s": "Outline width (px) - 0 = none",
    "src": "ext/imageeditdock/pcvline.js:135"
   },
@@ -18975,10 +19119,6 @@
    "src": "ext/pushpulldock/ppdock.js:163"
   },
   {
-   "s": "Build",
-   "src": "ext/pushpulldock/ppdock.js:310"
-  },
-  {
    "s": "Paint (B) - click a wall's inside or outside, a floor, glass",
    "src": "ext/pushpulldock/ppdock.js:319"
   },
@@ -19420,10 +19560,6 @@
   },
   {
    "s": "One view per page",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:56"
-  },
-  {
-   "s": "Views",
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
   {
@@ -23665,10 +23801,6 @@
   {
    "s": "Forget the cut-out (the marks stay)",
    "src": "ext/timelinedock/tlcutout.js:198"
-  },
-  {
-   "s": "Data",
-   "src": "ext/timelinedock/tldata.js:128"
   },
   {
    "s": "fields",
@@ -28482,15 +28614,15 @@
   },
   {
    "p": "{0} ({1} × {2} mm)",
-   "src": "ext/imageeditdock/pcpages.js:623"
+   "src": "ext/imageeditdock/pcpages.js:632"
   },
   {
    "p": "{0} × {1} px",
-   "src": "ext/imageeditdock/pcpages.js:633"
+   "src": "ext/imageeditdock/pcpages.js:642"
   },
   {
    "p": "Page {0} - click to work on it",
-   "src": "ext/imageeditdock/pcpageview.js:66"
+   "src": "ext/imageeditdock/pcpageview.js:67"
   },
   {
    "p": "{0} - click: fill (the foreground colour) · right-click: outline (the background colour)",
@@ -28815,6 +28947,14 @@
   {
    "p": "{0} of {1} object(s) have a picture",
    "src": "ext/imageeditdock/pcunreal.js:171"
+  },
+  {
+   "p": "{0} · {1} × {2} px · shown at {3} %",
+   "src": "ext/imageeditdock/pcviews.js:182"
+  },
+  {
+   "p": "{0} · {1} × {2} px",
+   "src": "ext/imageeditdock/pcviews.js:182"
   },
   {
    "p": "For \"{0}\" - it becomes a vector line",

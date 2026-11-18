@@ -7,13 +7,14 @@
  *   again when something changes. A click on another page brings it to the front where it is; zoom (Ctrl+wheel / the
  *   zoom tool) and scrolling move the whole spread. One Page goes back to the single page, fitted.
  *   Pages of different sizes sit in cells the size of the biggest page.
+ *   2.844.0: One Below Another (the WP View, pcviews.js) - every page in one column, fitted to the window's width.
  *
  * Pure (Node: scripts/test-pageview813.js): COLS, layout(sizes, mode, gap).
  */
 (function (root) {
   "use strict";
-  const MODES = [["one", "Pages: One Page"], ["two", "Pages: Two Pages"], ["many", "Pages: Many Pages"]];
-  const COLS = { one: 1, two: 2, many: 4 };
+  const MODES = [["one", "Pages: One Page"], ["two", "Pages: Two Pages"], ["many", "Pages: Many Pages"], ["column", "Pages: One Below Another"]];
+  const COLS = { one: 1, two: 2, many: 4, column: 1 };   // 2.844.0: column = the pages one below another (the WP View's, a word processor's way)
   /** each page's place (doc px) in the spread: sizes [{w, h}] -> [{x, y, w, h}] (cells the size of the biggest page) */
   function layout(sizes, mode, gap) {
     const cols = COLS[mode] || 1, W = Math.max(1, ...sizes.map((s) => s.w)), H = Math.max(1, ...sizes.map((s) => s.h)), g = gap == null ? Math.round(W * 0.06) : gap;
@@ -89,12 +90,12 @@
       if (!multi()) { lastCur = E.pages.cur(); view = null; E.fitView(); place(); return; }
       const L = layout(sizes(), mode), cols = COLS[mode], W = Math.max(...L.slice(0, cols).map((p) => p.x + p.w)), rows = Math.ceil(L.length / cols), H = Math.max(...L.map((p) => p.y + p.h));
       const aw = Math.max(50, E.stage.clientWidth - 40), ah = Math.max(50, E.stage.clientHeight - 40);
-      const z = Math.min(1, aw / W, rows <= 2 ? ah / H : ah / (L[0].h * 1.15));
+      const z = mode === "column" ? Math.min(1, aw / W) : Math.min(1, aw / W, rows <= 2 ? ah / H : ah / (L[0].h * 1.15));
       const cur = E.pages.cur(), p = L[cur];
       S.zoom = z; S.panX = (E.stage.clientWidth - W * z) / 2 + p.x * z; S.panY = 20 + p.y * z - (rows <= 2 ? 0 : 0); S.userView = true;
       lastCur = cur; E.applyView(); snap();
     }
-    function setMode(m) { mode = COLS[m] ? m : "one"; store.set("pv.mode", mode); if (mode !== "one" && E.pages.count() < 2) say("the document has one page - Two / Many Pages show when it has more"); fit(); }
+    function setMode(m, quiet) { mode = COLS[m] ? m : "one"; store.set("pv.mode", mode); if (!quiet && mode !== "one" && E.pages.count() < 2) say("the document has one page - Two / Many Pages show when it has more"); fit(); }
     E.overlayHooks.push(() => { if (!follow()) place(); });
     const prevPush = E.onPush; E.onPush = function () { if (prevPush) prevPush.apply(this, arguments); if (multi()) soon(); };
     const prevUndo = E.onUndo; E.onUndo = function () { if (prevUndo) prevUndo.apply(this, arguments); if (multi()) soon(); };
@@ -106,7 +107,7 @@
       follow();
     }, true);
     for (const [m, n] of MODES) E.ui.addCmd("view.pages." + m, n, "", () => setMode(m), { checked: () => mode === m });
-    const V = E.ui.MENUS.find(([x]) => x === "View"); if (V) V[1].push(E.ui.sep, "view.pages.one", "view.pages.two", "view.pages.many");
+    const V = E.ui.MENUS.find(([x]) => x === "View"); if (V) V[1].push(E.ui.sep, ...MODES.map(([m]) => "view.pages." + m));
     E.pageView = { mode: () => mode, setMode, fit, snap, layout: () => layout(sizes(), mode), ready: () => !busy && (!multi() || shots.size === E.pages.count() - 1) };
   }
 

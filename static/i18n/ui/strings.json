@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6247,
+ "count": 6334,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -57550,6 +57550,876 @@
    ],
    "where": [
     "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "Pages: One Below Another",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "WP View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "WP View - a word processor: the pages one below another, the writing ribbon (Home, Insert, Layout, Mailings, Review, Export), Paragraph and Layers",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Vector View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Vector View - drawing: the tools, the colour palette, the dockers (Transform, Shaping, Align, Object), Properties and Layers",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Image View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Image View - photo editing: the tools, Color, Properties and Layers",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Web View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Web View - each page is a web page: the Pages panel, the web ribbon (new site, web pages, build, preview at desktop / tablet / phone width), Align, Properties and Layers",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Document",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Illustrations",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Header & Footer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Mailings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Mail Merge",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Templates",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Review",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Comments",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Footnotes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Web",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Site",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Content",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "A document whose pages are web pages, 1440 × 900 px each. The first page is Home; ＋ Web Page adds the next one (its name is its title in the site's menu). Then 🌐 Build Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Page name",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "The name is the page's title in the site's menu",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "About, Products, Contact",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Rebuild",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Build With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Build again without the AI (quick) and show it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Build with the AI making each page responsive, then show it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Open the preview in the browser",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Close the preview",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Website preview",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Nothing built yet - ⚡ Rebuild (quick) or ✨ Build With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "New From Template",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Write With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Clear Formatting",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Decrease Indent",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Increase Indent",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Align Left",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Align Right",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Add Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Frame on the Next Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "WP Layer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Add Frame Here",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Footnote",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Master Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Page Setup",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Figure: Full Width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Figure Left",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Figure Right",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Text Wrap",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Figure Bigger",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Figure Smaller",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "One Below Another",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "One Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Two Pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Many Pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Pages Panel",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Data Source",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Previous Record",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Next Record",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Fill This Template",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Save as Template",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Insert Footnote",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Word Document",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "PDF / AI / SVG",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "New Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Web Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Build Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Quick Preview",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Download .zip",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Desktop",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Tablet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Phone",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Open in the Browser",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "Text Block",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "🌐 New Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "🌐 Make It",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "＋ Web Page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "＋ Add",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "📝 WP View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "✒ Vector View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "🖼 Image View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "🌐 Web View",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "⚡ Rebuild",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
+   ]
+  },
+  {
+   "s": "✨ Build With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor views - pcviews.js (2.844.0)"
    ]
   }
  ]

@@ -522,8 +522,17 @@
     function showPanel() {
       if (E.pdfSession && E.pdfSession.get()) { say("this is a PDF's page - its own Pages strip is on the left (File ▸ PDF Pages)"); return; }
       css();
-      if (!panel) { panel = doc.createElement("div"); panel.className = "pgpanel"; panel.id = "pcPagesPanel"; kx.appendChild(panel); }
-      panel.style.display = ""; paint();
+      if (!panel) {
+        panel = doc.createElement("div"); panel.className = "pgpanel"; panel.id = "pcPagesPanel"; kx.appendChild(panel);
+        // 2.844.0: over the canvas's own corner - below a ribbon / the tool options, right of the tools (it covered the WP / Web View's ribbon)
+        if (root.ResizeObserver && E.stage) new root.ResizeObserver(placePanel).observe(E.stage); else if (root.addEventListener) root.addEventListener("resize", placePanel);
+      }
+      panel.style.display = ""; placePanel(); paint();
+    }
+    function placePanel() {
+      if (!panel || !E.stage || !E.stage.getBoundingClientRect) return;
+      const st = E.stage.getBoundingClientRect(), k = kx.getBoundingClientRect(); if (!st.width) return;
+      panel.style.top = Math.round(st.top - k.top + 4) + "px"; panel.style.left = Math.round(st.left - k.left + 4) + "px";
     }
     const shown = () => !!(panel && panel.style.display !== "none");
     function hidePanel() { if (panel) panel.style.display = "none"; }

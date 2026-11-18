@@ -718,7 +718,8 @@
     { const lm = (E.ui.MENUS || []).find(([n]) => n === "Layer"), nw = lm && lm[1].find((x) => x && x.label === "New"); if (nw && !nw.items.includes("layer.newdocframe")) nw.items.splice(nw.items.indexOf("layer.newgroup") + 1, 0, "layer.newdocframe"); }
     E.ui.addCmd("layer.docedit", "✎ Type in This WP Layer", "", () => { const L = E.layer(); if (isDoc(L)) begin(L); }, { enabled: () => isDoc(E.layer()) });
     E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["layer.docedit"]);
-    E.docText = { anchorDraw, wpMode, ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
+    E.docText = { anchorDraw, wpMode, ed: () => ed, restoreSel, keepSel, live, exec, setStyle, indent,   // 2.844.0: + setStyle / indent (the WP View's ribbon)
+       sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
   const PCDocText = { STYLES, CSS, sanitize, bands, windows, anchorBoxes, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true, viewOf: null };
