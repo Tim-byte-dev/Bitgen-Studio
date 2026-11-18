@@ -85,6 +85,23 @@
     if (!open && L && L.blender && L.shown) return "open";
     return "";
   }
+  /** 2.851.0: the recent list with p first (pure): no doubles, 5 at most */
+  function recentWith(list, p) { const out = [String(p)]; for (const x of list || []) if (typeof x === "string" && x && x !== p && out.length < 5) out.push(x); return out; }
+  /** 2.851.0: the 🟧 ▾ menu (pure). s = {open, has (a scene in the tools), layer (a Blender layer's name), recent} */
+  function menuItems(s) {
+    const x = s || {}, base = (p) => String(p).split(/[\\/]/).pop();
+    const it = [{ k: "new", label: "🆕 New scene…", tip: "Blender makes an empty scene and the scene tools open it" },
+      { k: "open", label: "📂 Open…", tip: "A .blend - Blender reads it and the scene tools open it" },
+      { k: "save", label: "💾 Save", off: !x.has, tip: x.has ? "Save the scene's changes (as the scene tools' Save mode says)" : "open a scene first" },
+      { k: "import", label: "⤒ Import model…", off: !x.has, tip: x.has ? "A .glb / .gltf into the open scene" : "open a scene first" }];
+    const rc = (x.recent || []).slice(0, 5);
+    if (rc.length) { it.push({ sep: true }, { head: "Recent" }); rc.forEach((p, i) => it.push({ k: "recent", path: p, label: `${i + 1}  ${base(p)}` })); }
+    it.push({ sep: true });
+    if (x.open) it.push({ k: "close", label: "✕ Close the scene tools", tip: "The view stays on its Blender layer" });
+    else if (x.layer) it.push({ k: "tools", label: "🟧 Scene tools - " + x.layer, tip: "Open the picked Blender layer's scene again" });
+    else it.pop();
+    return it;
+  }
   /** a new picture for a scene of w x h: the long side 1280, at least 64 */
   function docSize(w, h) {
     const W = Math.max(1, +w || 16), H = Math.max(1, +h || 9), k = 1280 / Math.max(W, H);
@@ -114,21 +131,20 @@
     wrap.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); leave(); } e.stopPropagation(); });
     ["pointerdown", "wheel", "contextmenu"].forEach((t) => wrap.addEventListener(t, (e) => e.stopPropagation()));
 
-    /* ---- the 🟧 Blender tab (Properties group): our part on top, the timeline's Properties under it while open */
-    const grp = kx.querySelector('.pcgrp .pctabs [data-tab="kxCtl"]');
-    let body = null;
-    if (grp) {
-      const tabs = grp.parentElement, holder = tabs.parentElement;
-      const b = doc.createElement("button"); b.type = "button"; b.dataset.tab = "kbl"; b.dataset.grp = "props"; b.textContent = "🟧 Blender";
-      b.onclick = () => E.ui.showTab("kbl");
-      grp.after(b);
-      body = doc.createElement("div"); body.className = "pcbody kxsec"; body.dataset.body = "kbl"; body.id = "kblBody";
-      body.innerHTML = '<div id="kblOwn"></div><div id="kblTl"></div>';
-      holder.appendChild(body);
+    /* ---- the Blender layer's settings: 2.851.0 (Tim: "remove the blender tab") at the foot of the Properties tab while a
+       Blender layer is picked or the scene tools are open - our part on top, the timeline's Properties under it while open */
+    const body = doc.createElement("div"); body.className = "kxsec"; body.id = "kblBody";
+    body.innerHTML = '<div style="font-weight:600;margin:8px 0 2px;border-top:1px solid var(--pc-line);padding-top:6px">🟧 Blender</div><div id="kblOwn"></div><div id="kblTl"></div>';
+    if (E.ui.propsFoot) E.ui.propsFoot(body, () => open || !!cur());
+    {
       const css = doc.createElement("style");
-      css.textContent = "#kblBody{padding:6px 8px;font-size:11px}#kblOwn .r{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}#kblOwn .r>span:first-child{min-width:54px;color:var(--pc-dim)}"
+      css.textContent = "#kblBody{padding:0 0 6px;font-size:11px}#kblOwn .r{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}#kblOwn .r>span:first-child{min-width:54px;color:var(--pc-dim)}"
         + "#kblOwn .dim{color:var(--pc-dim)}#kblOwn button.on{background:var(--pc-accent);color:#000}#kblMsg{color:var(--pc-dim);min-height:14px;margin-top:4px}"
-        + "#kblBtn.on{background:#f5792c;color:#000;border-color:#f5792c}";
+        + "#kblBtn.on{background:#f5792c;color:#000;border-color:#f5792c}"
+        + "#kblMenu{position:fixed;z-index:10070;min-width:230px;background:var(--pc-panel,#222);border:1px solid var(--pc-line,#444);border-radius:5px;padding:4px 0;box-shadow:0 6px 18px rgba(0,0,0,.45);font-size:12px}"
+        + "#kblMenu button{display:block;width:100%;text-align:left;background:none;border:0;padding:5px 12px;color:var(--pc-text,#ddd);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}"
+        + "#kblMenu button:hover:not(:disabled){background:var(--pc-accent,#f59e2c);color:#000}#kblMenu button:disabled{opacity:.45;cursor:default}"
+        + "#kblMenu .sep{height:1px;background:var(--pc-line,#444);margin:4px 0}#kblMenu .hd{padding:3px 12px;color:var(--pc-dim,#999);font-size:11px}";
       doc.head.appendChild(css);
     }
     let msg = "";
@@ -192,16 +208,19 @@
     }
 
     /* ---- open / close the scene tools */
-    function start() {
-      const tb = TB();
+    function start(opts) {
+      const o = opts || {}, tb = TB();
       if (!tb || !tb.attach) { say("the Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded"); paint(); return null; }
-      target = cur();
+      target = o.path ? null : cur();     // 2.851.0: New / Open / a recent file = a new Blender layer
+      if (o.path && open) leave(false, false);
       open = true; fit(); wrap.style.display = "block";
-      if (E.ui.showTab) E.ui.showTab("kbl");
-      const host = { wrap, props: $("kblTl") || body, onShow: (on) => { if (!on && open) leave(true); }, onTaken: () => { if (open) leave(true, true); } };
+      if (E.ui.showTab) E.ui.showTab("pcProps");
+      if (E.ui.placeExtras) E.ui.placeExtras();
+      const host = { wrap, props: body.querySelector("#kblTl") || body, onShow: (on) => { if (!on && open) leave(true); }, onTaken: () => { if (open) leave(true, true); } };
       paint();
       say("🟧 the Blender scene tools: 📂 Open a .blend (or the open scene), drag = orbit · right-drag = pan · wheel / Alt+drag = zoom · ⌖ (Z) zoom to the object · click an object, G / R / S - ✕ or Esc keeps the view as a layer");
       const p = tb.attach(host).then((st) => {
+        if (o.path) return tb.open(o.path).then((s2) => { remember(o.path); afterLoad(); return s2; }, (e) => { if (/not there|not a Blender file/i.test(String(e && e.message))) forget(o.path); throw e; });
         if (st && st.stem) { if (target && target.bscene && target.bscene.stem !== st.stem && target.bscene.source) return tb.open(target.bscene.source).then(afterLoad); afterLoad(); }
         // 2.618.0: the scene was closed (its layer hidden / deleted, then shown / undone) - this layer's scene opens again
         else if (target && target.bscene && target.bscene.source) return tb.open(target.bscene.source).then(afterLoad);
@@ -355,24 +374,110 @@
     if (typeof prevPanel === "function") E.renderLayersPanel = function () { const r = prevPanel.apply(this, arguments); try { root.setTimeout(followPick, 0); } catch (e) { /* fine */ } return r; };
     root.setInterval(() => { try { followPick(); } catch (e) { /* fine */ } }, 700);
 
-    /* ---- the button + the command; the tab follows the picked layer */
+    /* ---- 2.851.0 THE 🟧 BLENDER ▾ MENU (Tim: "make the blender button a dropdown with new scene, open, save, import and up to
+       5 recent files. open and new scene will start blender"): 🆕 New scene (Blender makes an empty scene - lib/blendNew.js),
+       📂 Open… (a .blend), 💾 Save, ⤒ Import model… (a .glb / .gltf into the open scene), the last 5 scenes opened; New, Open and
+       a recent file start the scene tools (Blender reads the scene) and make a new Blender layer */
+    const RECENT = "bl.recent";
+    const recent = () => { const r = store.get(RECENT, []); return Array.isArray(r) ? r.filter((x) => typeof x === "string" && x).slice(0, 5) : []; };
+    function remember(p) { if (!p) return; store.set(RECENT, recentWith(recent(), p)); }
+    function forget(p) { store.set(RECENT, recent().filter((x) => x !== p)); }
+    const post = (u, x) => root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(x || {}) }).then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || r.statusText); return j; }));
+    function needTools() { if (TB() && TB().attach) return true; say("the Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded"); return false; }
+    function openFile(p) {
+      if (!needTools() || !p) return null;
+      say("🟧 Blender is reading " + String(p).split(/[\\/]/).pop() + " …");
+      return start({ path: p });
+    }
+    function openDialog() {
+      if (!needTools()) return;
+      const FD = root.FileDialog;
+      if (!FD || !FD.open) { E.ui.dialog("📂 Open a Blender Scene", '<div class="rw"><span>The .blend file</span><input id="kblPath" style="flex:1" placeholder="C:\\scenes\\room.blend"></div>', (d) => { const v = d.querySelector("#kblPath").value.trim(); if (v) openFile(v); return true; }, { okLabel: "Open" }); return; }
+      FD.open({ mode: "file", title: "Open a Blender scene", okLabel: "Open", key: "blend", filters: [{ label: "Blender scenes", exts: [".blend"] }] }).then((r) => { if (r && r.path) openFile(r.path); });
+    }
+    function newScene() {
+      if (!needTools()) return;
+      E.ui.dialog("🆕 New Blender Scene", '<div class="rw"><span>Name</span><input id="kblNewName" value="New scene" maxlength="60" style="flex:1"></div><div style="color:var(--pc-dim);margin:4px 0">Blender makes an empty scene - a ground, the sun and a camera - in the project\'s blender/scenes folder, and the scene tools open it.</div>', (d) => {
+        const name = d.querySelector("#kblNewName").value.trim() || "New scene";
+        say("🟧 Blender is making " + name + " …"); status("Blender is making the scene …");
+        post("/api/blendview/new", { name }).then((r) => { say("🟧 " + r.name + " made - opening it"); return openFile(r.path); })
+          .catch((e) => { status("Blender: " + (e.message || e)); say("🟧 " + (e.message || e)); });
+        return true;
+      }, { okLabel: "Make it" });
+    }
+    function saveScene() {
+      const tb = TB(); if (!open || !tb || !sceneInfo()) return say("open a Blender scene first (🟧 ▾ New scene / Open)");
+      tb.save(); say("🟧 Blender is saving " + sceneInfo().stem + " …");
+    }
+    function importModel() {
+      const tb = TB(); if (!open || !tb || !sceneInfo()) return say("open a Blender scene first - Import puts a model into it");
+      root.fetch("/api/tlcanvas/models").then((r) => r.json()).then((j) => {
+        const list = (j.models || []).map((m) => (typeof m === "string" ? m : m.name)).filter((n) => /\.(glb|gltf)$/i.test(n || ""));
+        E.ui.dialog("⤒ Import a 3D Model", `<div class="rw"><span>From the project</span><select id="kblImp" style="flex:1">${list.length ? list.map((n) => `<option>${esc(n)}</option>`).join("") : '<option value="">- no .glb / .gltf models yet -</option>'}</select></div>
+          <div class="rw"><button type="button" class="ghost" id="kblImpPc">📁 From this computer…</button><span id="kblImpNote" style="color:var(--pc-dim)"></span><input type="file" id="kblImpFile" accept=".glb,.gltf" style="display:none"></div>
+          <div style="color:var(--pc-dim);margin:4px 0">The model goes into the open scene, 1 m tall, on the ground where the view looks - move it with G / R / S.</div>`, (d) => {
+          const n = d.querySelector("#kblImp").value; if (!n) return say("pick a model (or 📁 From this computer)"), false;
+          tb.addModel(n).then((id) => say(id ? `🟧 ${n} is in the scene as ${id}` : "the model did not go in"));
+          return true;
+        }, { okLabel: "Import", init: (d) => {
+          const f = d.querySelector("#kblImpFile");
+          d.querySelector("#kblImpPc").onclick = () => f.click();
+          f.onchange = async () => {
+            const file = f.files && f.files[0]; if (!file) return;
+            d.querySelector("#kblImpNote").textContent = "sending " + file.name + " …";
+            try {
+              const r = await root.fetch("/api/tlcanvas/model?name=" + encodeURIComponent(file.name), { method: "POST", body: file });
+              const jj = await r.json(); if (!r.ok) throw new Error(jj.error || r.statusText);
+              const sel = d.querySelector("#kblImp"), nm = jj.name || file.name;
+              if (![...sel.options].some((o) => o.value === nm)) { if (sel.options.length === 1 && !sel.options[0].value) sel.innerHTML = ""; sel.insertAdjacentHTML("afterbegin", `<option>${esc(nm)}</option>`); }
+              sel.value = nm; d.querySelector("#kblImpNote").textContent = "✓ " + nm + " - Import puts it in";
+            } catch (e) { d.querySelector("#kblImpNote").textContent = "✗ " + (e.message || e); }
+          };
+        } });
+      }).catch((e) => say("the project's models did not load: " + (e.message || e)));
+    }
+    let menuEl = null;
+    function closeMenu() { if (menuEl) { menuEl.remove(); menuEl = null; } }
+    function menu(at) {
+      if (menuEl) { closeMenu(); return; }
+      const has = open && !!sceneInfo(), L = cur();
+      const items = menuItems({ open, has, layer: L ? L.name : "", recent: recent() });
+      menuEl = doc.createElement("div"); menuEl.id = "kblMenu";
+      menuEl.innerHTML = items.map((it) => (it.sep ? '<div class="sep"></div>' : it.head ? `<div class="hd">${esc(it.head)}</div>`
+        : `<button type="button" data-k="${esc(it.k)}"${it.path ? ` data-p="${esc(it.path)}"` : ""}${it.off ? " disabled" : ""} title="${esc(it.tip || it.path || "")}">${esc(it.label)}</button>`)).join("");
+      doc.body.appendChild(menuEl);
+      const r = at.getBoundingClientRect(), mw = menuEl.offsetWidth;
+      menuEl.style.left = Math.max(4, Math.min(r.left, (root.innerWidth || 1600) - mw - 4)) + "px"; menuEl.style.top = Math.round(r.bottom + 2) + "px";
+      menuEl.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-k]"); if (!b || b.disabled) return;
+        const k = b.dataset.k, p = b.dataset.p; closeMenu();
+        if (k === "new") newScene(); else if (k === "open") openDialog(); else if (k === "save") saveScene(); else if (k === "import") importModel();
+        else if (k === "recent") openFile(p); else if (k === "tools") start(); else if (k === "close") leave();
+      });
+      const off = (e) => { if (menuEl && (menuEl.contains(e.target) || at.contains(e.target))) return; closeMenu(); doc.removeEventListener("pointerdown", off, true); };
+      root.setTimeout(() => doc.addEventListener("pointerdown", off, true), 0);
+    }
+    doc.addEventListener("keydown", (e) => { if (menuEl && e.key === "Escape") { e.stopPropagation(); closeMenu(); } }, true);
     const mr = $("kxFull") ? $("kxFull").parentNode : null;
     if (mr) {
-      const b = doc.createElement("button"); b.className = "ghost"; b.id = "kblBtn"; b.type = "button"; b.textContent = "🟧";
-      b.title = "Blender scene tools (as in the timeline) - open a .blend, look around, move objects; the view becomes a Blender layer, and ▾ Edit in the prompt docker makes a picture from it";
-      b.onclick = () => (open ? leave() : start());
+      const b = doc.createElement("button"); b.className = "ghost"; b.id = "kblBtn"; b.type = "button"; b.textContent = "🟧 ▾";
+      b.title = "Blender: New scene, Open, Save, Import a model, the last 5 scenes - the scene tools open over the canvas and the view becomes a Blender layer";
+      b.onclick = () => menu(b);
       mr.insertBefore(b, $("kxFull"));
     }
     E.ui.addCmd("layer.newblend", "New Blender Layer (Scene Tools)…", "", () => start(), {}, ["Layer", null, true]);
     const prevHist = E.ui.history;
     E.ui.history = function () { const r = prevHist ? prevHist.apply(this, arguments) : undefined; try { paint(); } catch (er) { /* fine */ } return r; };
     const prevShow = E.ui.showTab;
-    E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "kbl") paint(); return r; };
+    E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "kbl" || id === "pcProps") paint(); return r; };
     paint();
-    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, putView, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
+    E.ui.addCmd("file.blendnew", "🟧 New Blender Scene…", "", () => newScene(), {}, ["File", null, true]);
+    E.ui.addCmd("file.blendopen", "🟧 Open Blender Scene…", "", () => openDialog(), {}, ["File", "file.blendnew"]);
+    E.blendLayer = { menu: (at) => menu(at || $("kblBtn")), closeMenu, newScene, openFile, openDialog, saveScene, importModel, recent, remember,
+      isCurrent: () => !!cur(), current: cur, start, leave, putView, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
   }
 
-  const PCBlendLayer = { REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, genHow, strengthOf, liveStep, install };
+  const PCBlendLayer = { recentWith, menuItems, REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, genHow, strengthOf, liveStep, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCBlendLayer;
   else root.PCBlendLayer = PCBlendLayer;
 })(typeof window !== "undefined" ? window : globalThis);

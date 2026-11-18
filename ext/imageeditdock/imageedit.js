@@ -811,7 +811,9 @@
               <div class="pcbody" data-body="dkProps" id="dkProps"></div>
             </div>
             <div class="pcgrp" data-g="props">
-              <div class="pctabs">${tab("props", "pcProps", "Properties", true)}${tab("props", "pcAdjs", "Adjustments")}${tab("props", "kxAi", "✨ AI")}${tab("props", "kxCtl", "◈ Control")}</div>
+              <div class="pctabs">${tab("props", "pcProps", "Properties", true)}${tab("props", "pcAdjs", "Adjustments")}${tab("props", "kxCtl", "◈ Control")}</div>
+              <!-- 2.851.0: no ✨ AI tab (Tim: "remove the ai tab, inpaint and outpaint are in the prompt docker edit mode") - its
+                   pane stays, never shown: the editor's AI code keeps its settings there (the edit model, results, strength) -->
               <div class="pcbody on" data-body="pcProps" id="pcProps"></div>
               <div class="pcbody" data-body="pcAdjs" id="pcAdjs"></div>
               <div class="pcbody kxsec" data-body="kxAi" id="kxAi">

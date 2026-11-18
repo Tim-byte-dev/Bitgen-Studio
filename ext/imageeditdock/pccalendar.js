@@ -142,7 +142,7 @@
           + `<td><input type="color" data-st="${k}.color" value="${s.color}"></td><td><input type="color" data-st="${k}.bg" value="${s.bg || "#ffffff"}"><label title="No background"><input type="checkbox" data-st="${k}.nobg"${s.bg ? "" : " checked"}>⊘</label></td>`
           + `<td><input type="checkbox" data-st="${k}.bold"${s.bold ? " checked" : ""}></td><td><input type="number" data-st="${k}.radius" value="${s.radius}" min="0" max="40" style="width:48px"></td></tr>`; };
       const tab = (id, t, on, bk) => `<button type="button" class="ghost${on ? " on" : ""}" data-ctab="${id}"${bk ? " data-bk" : ""}>${t}</button>`;
-      const html = `<div class="pccal-tabs" style="display:flex;gap:4px;margin-bottom:8px">${tab("gen", "General", true)}${tab("hours", "Opening hours", false, true)}${tab("rules", "Services & rules", false, true)}${tab("style", "Style")}${tab("db", "Database", false, true)}${tab("book", "Bookings", false, true)}</div>
+      const html = `<div class="pccal"><div class="pccal-tabs" style="display:flex;gap:4px;margin-bottom:8px">${tab("gen", "General", true)}${tab("hours", "Opening hours", false, true)}${tab("rules", "Services & rules", false, true)}${tab("style", "Style")}${tab("db", "Database", false, true)}${tab("book", "Bookings", false, true)}</div>
         <div data-cpane="gen">
           <div class="rw"><span>Mode</span><select id="pccMode"><option value="booking"${cur.mode !== "print" ? " selected" : ""}>🌐 Website booking calendar</option><option value="print"${cur.mode === "print" ? " selected" : ""}>🖨 Printed calendar (a month)</option></select><span>Month</span><input type="month" id="pccMonth" value="${esc(cur.month || "")}" title="The month shown on the page - empty = this month"></div>
           <div class="rw"><span>Name</span><input id="pccName" value="${esc(cur.name)}" style="flex:1"><span>Kind</span><select id="pccKind">${kinds}</select></div>
@@ -174,7 +174,7 @@
           <details><summary>The SQL</summary><textarea id="pccSql" readonly rows="10" style="width:100%;font:11px monospace"></textarea></details>
           <div style="color:var(--pc-dim);margin-top:6px">The website's schema.sql has the same tables - import it on your host. The bookings: the view bg_cal_upcoming.</div>
         </div>
-        <div data-cpane="book" style="display:none"><div class="rw"><button type="button" class="ghost" id="pccBookLoad">⟳ Load the bookings</button><span id="pccBookNote" style="color:var(--pc-dim)"></span></div><div id="pccBooks" style="max-height:44vh;overflow:auto"></div></div>`;
+        <div data-cpane="book" style="display:none"><div class="rw"><button type="button" class="ghost" id="pccBookLoad">⟳ Load the bookings</button><span id="pccBookNote" style="color:var(--pc-dim)"></span></div><div id="pccBooks" style="max-height:44vh;overflow:auto"></div></div></div>`;
       const read = (d) => {
         const v = (id) => d.querySelector("#" + id), n = JSON.parse(JSON.stringify(cur));
         n.name = v("pccName").value; n.kind = v("pccKind").value; n.slot = +v("pccSlot").value; n.cap = +v("pccCap").value; n.days = +v("pccDays").value; n.lead = +v("pccLead").value;
@@ -202,6 +202,7 @@
         else if (dbChanged || !n.dbOk) upload(L); else say(`📅 ${n.name}: the style kept - 🌐 Build Website gives the site the same look`);
         return true;
       }, { okLabel: "OK", wide: true, cancel: () => { L.cal = c0; L.canvas = canvas0; refresh(); }, init: (d) => {
+        d.classList.add("pccalDlg");   // 2.851.0: its own layout (the dialogs' two-column rows squeezed every field)
         d.querySelectorAll("[data-ctab]").forEach((b) => { b.onclick = () => { d.querySelectorAll("[data-ctab]").forEach((x) => x.classList.toggle("on", x === b)); d.querySelectorAll("[data-cpane]").forEach((p) => { p.style.display = p.dataset.cpane === b.dataset.ctab ? "" : "none"; }); }; });
         let t = 0; const later = () => { clearTimeout(t); t = setTimeout(() => { modeTabs(d); preview(d); }, 120); };
         d.addEventListener("input", (e) => { if (e.target.matches("input,select")) later(); }); d.addEventListener("change", (e) => { if (e.target.matches("input,select")) later(); });
@@ -222,7 +223,14 @@
       } });
     }
     const css = doc.createElement("style");
-    css.textContent = ".pccal-tabs button.on{border-color:var(--pc-accent);color:var(--pc-accent)}.pccal-style,.pccal-hours,.pccal-books{border-collapse:collapse;font-size:11px}.pccal-style td,.pccal-style th,.pccal-hours td,.pccal-books td,.pccal-books th{padding:2px 4px;text-align:left;white-space:nowrap}.pccal-style input[type=color]{width:30px;height:20px;padding:0}.pccal-svc{border-collapse:collapse;font-size:11px}.pccal-svc td,.pccal-svc th{padding:2px 4px;text-align:left}";
+    // 2.851.0 (Tim: "fix the calendar settings dialog"): a dialog of its own size; rows that flow (a label, its field, the next
+    // pair) instead of the editor dialogs' two-column grid; a pane taller than the window scrolls
+    css.textContent = ".kxdlg.pccalDlg{width:780px;max-width:96vw}.pccal{font-size:12px;color:var(--pc-text)}"
+      + ".pccal .rw{display:flex!important;flex-wrap:wrap;align-items:center;gap:5px 8px;margin:6px 0;color:var(--pc-text)}"
+      + ".pccal .rw>span{color:var(--pc-dim)}.pccal .rw>span:first-child{min-width:104px}.pccal .rw label{display:inline-flex;align-items:center;gap:5px;grid-column:auto;color:var(--pc-text)}"
+      + ".pccal .rw input,.pccal .rw select{min-width:0;max-width:100%}.pccal .rw input[type=checkbox]{margin:0}.pccal [data-cpane]{max-height:62vh;overflow:auto;padding-right:4px}"
+      + ".pccal .pccal-hours input[type=time]{width:104px}.pccal .pccal-hours td{padding:3px 6px 3px 0}.pccal .pccal-svc th{color:var(--pc-dim);font-weight:500}"
+      + ".pccal-tabs button.on{border-color:var(--pc-accent);color:var(--pc-accent)}.pccal-style,.pccal-hours,.pccal-books{border-collapse:collapse;font-size:11px}.pccal-style td,.pccal-style th,.pccal-hours td,.pccal-books td,.pccal-books th{padding:2px 4px;text-align:left;white-space:nowrap}.pccal-style input[type=color]{width:30px;height:20px;padding:0}.pccal-svc{border-collapse:collapse;font-size:11px}.pccal-svc td,.pccal-svc th{padding:2px 4px;text-align:left}";
     doc.head.appendChild(css);
 
     /* ---- drag and drop onto the canvas (data type application/x-bitgen-calendar) */

@@ -99,8 +99,9 @@
     }
     /* the panel beside the editor */
     let panel = null;
+    function closePanel() { if (panel) { panel.remove(); panel = null; } }
     function openPanel(force) {
-      if (panel && !force) { panel.remove(); panel = null; return; }
+      if (panel && !force) { closePanel(); return; }
       if (!panel) {
         panel = doc.createElement("div"); panel.className = "pdcPanel";
         panel.style.cssText = "position:absolute;right:8px;top:48px;width:270px;max-height:70%;overflow:auto;z-index:30;background:var(--pc-panel,#222);color:var(--pc-text,#ddd);border:1px solid var(--pc-line,#444);border-radius:6px;padding:6px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.4)";
@@ -108,7 +109,8 @@
         panel.addEventListener("mousedown", (e) => { if (e.target.closest("button,.pdcItem")) e.preventDefault(); });
         panel.addEventListener("click", (e) => {
           const b = e.target.closest("[data-act]"), it = e.target.closest(".pdcItem");
-          if (b) { const id = b.closest(".pdcItem").dataset.cid, a = b.dataset.act; if (a === "edit") editComment(id); else if (a === "done") resolveComment(id); else if (a === "del") deleteComment(id); else if (a === "close") { panel.remove(); panel = null; } return; }
+          // 2.851.0 (Tim: "the comments panel won't close"): ✕ is not in a comment - it threw on .pdcItem before it was read
+          if (b) { const a = b.dataset.act; if (a === "close") { closePanel(); return; } const row = b.closest(".pdcItem"), id = row ? row.dataset.cid : ""; if (!id) return; if (a === "edit") editComment(id); else if (a === "done") resolveComment(id); else if (a === "del") deleteComment(id); return; }
           if (it) showComment(it.dataset.cid);
         });
       }
@@ -188,7 +190,7 @@
     };
     // the panel follows the frame being edited
     win.addEventListener("h3docready", () => { if (panel) paintPanel(); });
-    E.docNotes = { newComment, editComment, resolveComment, deleteComment, openPanel, newFootnote, editFootnote, panel: () => panel, clean };
+    E.docNotes = { newComment, editComment, resolveComment, deleteComment, openPanel, closePanel, newFootnote, editFootnote, panel: () => panel, clean };
   }
 
   const PCDocNotes = { newId, clean, wrapRange, install };

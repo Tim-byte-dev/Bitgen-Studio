@@ -14,6 +14,7 @@
 //   GET  /api/blendview/render/:id                {state, done, of, error, name, job, note, realrefs, objects2d}
 //   POST /api/blendview/still     {stem, frame, view?, engine, w, h} -> {id}   2.542.0: one frame as a PNG (the image editor)
 //   GET  /api/blendview/still/:id                 {state, error, png, w, h};   GET /api/blendview/still/:id/png  the picture
+//   POST /api/blendview/new       {name}          2.851.0: 🆕 an empty scene made by Blender (lib/blendNew.js) -> {path, name}
 "use strict";
 const bv = require("../lib/blendView");
 
@@ -21,6 +22,7 @@ function mount(app) {
   const express = require("express");
   const J = express.json({ limit: "16mb" });
   const fail = (res, e) => res.status(e.status || 500).json({ error: String((e && e.message) || e) });
+  app.post("/api/blendview/new", J, async (req, res) => { try { res.json(await require("../lib/blendNew").create(req.body || {})); } catch (e) { fail(res, e); } });
   app.post("/api/blendview/open", J, async (req, res) => {
     try { res.json(await bv.open((req.body || {}).path, { fresh: !!(req.body || {}).fresh })); } catch (e) { fail(res, e); }
   });

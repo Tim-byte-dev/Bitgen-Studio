@@ -45,6 +45,7 @@ const check = (n, cond, got) => {
       E.docs.setTabs(true);
       E.openDoc(200, 150, "pl.png", (g) => { g.fillStyle = "#ffffff"; g.fillRect(0, 0, 200, 150); });
       const L = E.makeLayer("Paint", 200, 150); E.addLayer(L, "t", false);
+      { const g = L.canvas.getContext("2d"); g.fillStyle = "#00ff00"; g.fillRect(0, 0, 3, 3); }   // 2.851.0: not empty (an empty layer = the prompt docker's own Generate, 2.836.0)
       E.selectAll(); E.deselect();
       const a = new Uint8Array(200 * 150); for (let y = 40; y < 110; y++) a.fill(255, y * 200 + 50, y * 200 + 150); E.applyShape(a, "replace", "t");
       // an image style list with the Qwen edit in it (the e2e install may not have it)
@@ -53,18 +54,16 @@ const check = (n, cond, got) => {
       if (document.getElementById("genModeSel").value !== "image") { document.getElementById("genModeSel").value = "image"; document.getElementById("genModeSel").onchange(); }
       window.__styleBefore = sel.value === "zzq21" ? (sel.options[0] || {}).value : sel.value;
       sel.value = window.__styleBefore;
-      E.ui.showTab("kxAi");
     });
     await p.waitForTimeout(300);
     const btn = (sel) => ev((s) => { const x = document.querySelector(s); return x ? getComputedStyle(x).display !== "none" && x.getClientRects().length > 0 : false; }, sel);
 
-    /* 1 the Edit tab: the prompt docker's style = Qwen Image 2.1 edit, its button = Edit, the panel's button + model gone */
-    await ev(() => document.querySelector('#kxModes [data-mode="edit"]').click()); await p.waitForTimeout(300);
-    const e1 = await ev(() => ({ style: document.getElementById("styleSel").selectedOptions[0].textContent, go: document.getElementById("go").textContent, note: document.getElementById("kxPdNote").textContent }));
-    const hidden = { run: await btn("#kxRun"), model: await btn("#kxRowEdit"), prompt: await btn("#iePrompt"), note: await btn("#kxPdNote") };
+    /* 1 2.851.0: no ✨ AI tab - the prompt docker's ▾ Edit (pcimgop.js) drives the editor's edit */
+    const noTab = await ev(() => !document.querySelector('#imageeditdock .pctabs [data-tab="kxAi"]'));
+    await ev(() => window.imageEditorInstance.E.imgOp.set("edit")); await p.waitForTimeout(300);
+    const e1 = await ev(() => ({ op: window.imageEditorInstance.E.imgOp.get(), go: document.getElementById("go").textContent }));
     await shot("1-edit");
-    check("the ✨ AI panel's Edit tab: the prompt docker's image style becomes Qwen Image 2.1 edit, its button reads ✏ Edit", /qwen image 2\.1 edit/i.test(e1.style) && e1.go === "✏ Edit", e1);
-    check("...the panel's own ✨ Edit button, its model row and its prompt box are gone; a line says to use the prompt docker", !hidden.run && !hidden.model && !hidden.prompt && hidden.note && /prompt docker/.test(e1.note), hidden);
+    check("2.851.0: no ✨ AI tab; the prompt docker's ▾ Edit picked - its button says Edit", noTab && e1.op === "edit" && /Edit/.test(e1.go), { noTab, e1 });
     const q0 = await ev(() => GENQUEUE.waiting(GQ).length + (GENQUEUE.running(GQ) ? 1 : 0));
     const nE = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await ev(() => { document.getElementById("prompt").value = "make it red"; runGenerate(); });
@@ -73,10 +72,10 @@ const check = (n, cond, got) => {
     check("...the prompt docker's Edit runs the EDITOR's edit with its prompt (nothing goes into the generate queue) - 2.543.0: the result a new layer", r1.req && r1.req.mode === "edit" && r1.req.prompt === "make it red" && r1.q === q0 && r1.top.some((n) => /edit: make it red/.test(n)), { r1, q0 });
     await ev(() => { const E = window.imageEditorInstance.E, i = E.S.layers.findIndex((L) => /edit: make it red/.test(L.name)); if (i >= 0) { E.S.layers.splice(i, 1); E.S.active = E.S.layers.findIndex((L) => L.name === "Paint"); E.refresh(); E.renderLayersPanel(); } });
 
-    /* 2 the Generate tab: the style back, the button Generate; it renders into the selection; ✔ Apply blends into the layer */
-    await ev(() => document.querySelector('#kxModes [data-mode="generate"]').click()); await p.waitForTimeout(300);
-    const g1 = await ev(() => ({ style: document.getElementById("styleSel").value, was: window.__styleBefore, go: document.getElementById("go").textContent }));
-    check("the Generate tab: the prompt docker's style is put back, its button reads ✨ Generate (the panel's own button gone too)", g1.style === g1.was && g1.go === "✨ Generate" && !(await btn("#kxRun")), g1);
+    /* 2 ▾ Generate: it renders into the selection as a new layer */
+    await ev(() => window.imageEditorInstance.E.imgOp.set("generate")); await p.waitForTimeout(300);
+    const g1 = await ev(() => ({ op: window.imageEditorInstance.E.imgOp.get(), go: document.getElementById("go").textContent }));
+    check("the prompt docker's ▾ Generate picked - its button says Generate", g1.op === "generate" && /Generate/.test(g1.go), g1);
     const n0 = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await ev(() => { document.getElementById("prompt").value = "a red ball"; runGenerate(); });
     // 2.549.0 (Tim: "when in image-edit mode a generated image is becoming the canvas instead of a new layer"): a NEW LAYER
@@ -92,11 +91,10 @@ const check = (n, cond, got) => {
     const u = await ev(() => { const E = window.imageEditorInstance.E; E.undo(); return E.S.layers.length; });
     check("...one undo takes it out", u === n0, u);
 
-    /* 3 another tab: not linked - the prompt docker as before */
-    await ev(() => window.imageEditorInstance.E.ui.showTab("pcProps")); await p.waitForTimeout(300);
+    /* 3 no selection: not taken - the prompt docker as before */
     // 2.834.0 (Tim: a selection + Generate = into the selection, the panel showing or not): with no selection it is not taken
     const o3 = await ev(() => { window.imageEditorInstance.E.deselect(); return { go: document.getElementById("go").textContent, take: window.H3TakeGenerate("image", "x") }; });
-    check("the ✨ AI panel not showing, no selection: the button is the prompt docker's own again and its Generate is not taken", !/Edit|✨/.test(o3.go) && o3.take === false, o3);
+    check("no selection: the prompt docker's Generate is not taken by the editor (a new picture the usual way)", o3.take === false, o3);
 
     /* 4 ⚙ at the right of the editor's menu bar: the editor's settings */
     const g4 = await ev(() => { const mr = document.querySelector("#imageeditdock .pcmenu .mr"); return { last: mr && mr.lastElementChild && mr.lastElementChild.id, cmd: window.imageEditorInstance.E.ui.CMD.has("edit.prefs") }; });

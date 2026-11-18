@@ -44,7 +44,7 @@ const api = async (u, b) => { const r = await fetch(URL_.replace(/\/$/, "") + u,
     await ev(() => { const g = document.getElementById("genModeSel"); g.value = "video"; g.onchange && g.onchange(); document.querySelector('#kxModes button[data-mode="refine"]').click(); });
     await p.waitForTimeout(200);
     const st = () => ev(() => { const s = document.getElementById("styleSel"); return { gm: document.getElementById("genModeSel").value, style: s.selectedOptions[0] ? s.selectedOptions[0].textContent : "", go: document.getElementById("go").textContent.trim(),
-      run: getComputedStyle(document.getElementById("kxRun")).display, model: getComputedStyle(document.getElementById("kxRowEdit")).display, open: !!window.imageEditorInstance.E.S.w }; });
+      run: document.getElementById("kxRun").offsetParent ? "shown" : "none", model: document.getElementById("kxRowEdit").offsetParent ? "shown" : "none", open: !!window.imageEditorInstance.E.S.w }; });
     await ev(() => document.querySelector('#kxModes button[data-mode="edit"]').click()); await p.waitForTimeout(500);
     const e1 = await st();
     await shot("1-edit");

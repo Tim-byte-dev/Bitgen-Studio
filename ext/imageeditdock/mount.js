@@ -99,7 +99,7 @@ function mountImageEditor() {
       return out ? `/outputs/${encodeURIComponent(out)}?v=${Date.now()}` : null;
     },
     aiedit: async (req, say) => {
-      if (!req.style_id) { say(req.mode === "edit" ? "pick an Edit model in the ✨ AI panel" : "pick a style in the ✨ AI panel (Settings → Image makes more)"); return null; }
+      if (!req.style_id) { say(req.mode === "edit" ? "pick an edit style in the prompt docker (✏ Edit)" : "pick an image style in the prompt docker (Settings → Image makes more)"); return null; }
       if (!req.prompt && req.mode !== "remove") { say(req.mode === "edit" ? "write the edit instruction first" : "write what should appear in the selection first"); return null; }
       // 2.807.0: this computer's ComfyUI started first (it was not - "cannot reach ComfyUI at http://127.0.0.1:8188"); a pod render skips it
       if (!req.live && window.H3PodRoute && H3PodRoute.ready && !(await H3PodRoute.ready("image", req.style_id))) { say("ComfyUI is not running and could not be started - Settings ▸ ComfyUI"); return null; }
@@ -134,7 +134,7 @@ function mountImageEditor() {
     },
     // 2.390.0: ✨ Compose - the picked layers as Picture 1..3 for an edit model (routes/aiedit.js /api/aiedit/compose)
     compose: async (req, say) => {
-      if (!req.style_id) { say("pick an Edit model in the ✨ AI panel (Qwen Image Edit 2511 ...)"); return null; }
+      if (!req.style_id) { say("pick an edit style in the prompt docker (Qwen Image Edit 2511 ...)"); return null; }
       if (window.H3PodRoute && H3PodRoute.ready && !(await H3PodRoute.ready("image", req.style_id))) { say("ComfyUI is not running and could not be started - Settings ▸ ComfyUI"); return null; }   // 2.807.0
       const fd = new FormData();
       req.pics.forEach((b, i) => fd.append(`pic${i}`, b, `pic${i}.png`));

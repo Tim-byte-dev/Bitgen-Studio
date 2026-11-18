@@ -70,7 +70,7 @@
     box.innerHTML = `<div class="pph" id="ppHead" title="⏳ Pending - drag to move (it stays inside the editor)"><b>⏳ Pending</b><span id="ppN"></span>
       <button type="button" id="ppAll" title="Apply every finished result (each a layer in its layer's changes group)">✔ all</button>
       <button type="button" id="ppDelAll" title="Delete every result here">🗑 all</button>
-      <button type="button" id="ppHide" title="Hide (⏳ in the ✨ AI panel brings it back)">✕</button></div>
+      <button type="button" id="ppHide" title="Hide (Window ▸ ⏳ Pending brings it back)">✕</button></div>
       <div class="ppl" id="ppList"></div>`;
     kx.appendChild(box);
     const $p = (id) => box.querySelector("#" + id);
@@ -208,6 +208,8 @@
     function applyAll() { let n = 0; for (const it of items.slice()) if (it.layer && apply(it)) n++; E.say(n ? `${n} result(s) applied` : "nothing finished yet"); return n; }
     E.pending = { auto: !!win.__H3_PENDING_AUTO, items, add, ready, fail, apply, remove, clear, applyAll, show, hide, render, moveTo,
                   track: () => { running++; render(); }, untrack: () => { running = Math.max(0, running - 1); render(); }, running: () => running, panel: box };
+    // 2.851.0: the ✨ AI tab (and its ⏳ button) is gone - Window ▸ ⏳ Pending brings the panel back
+    if (E.ui && E.ui.addCmd) { try { E.ui.addCmd("win.pending", "⏳ Pending", "", () => show(), { checked: () => !box.classList.contains("off") }, ["Window"]); } catch (e) { /* older */ } }
     render();
   }
   const PCPending = Object.assign({ install }, pure);

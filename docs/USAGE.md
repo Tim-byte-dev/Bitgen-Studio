@@ -9576,6 +9576,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - An order is placed all at once: the stock checked and taken, the client added, its number, items, status history and a pending payment; the buyer and the shop are e-mailed.
 - Products, coupons, shipping, orders and the shop's settings (tax included or added, bank details, who hears of new orders) are in /admin/.
 
+## 🟧 Image editor - the Blender menu, Properties, tables (2.851.0)
+
+- **🟧 ▾ Blender** is a menu: New scene, Open, Save, Import model and the last 5 scenes. New scene and Open start Blender and open the scene tools; the view becomes a Blender layer.
+- No Blender or ✨ AI tab: a Blender layer's settings are at the foot of Properties; Generate / Edit / Inpaint / Outpaint are in the prompt docker; Window ▸ ⏳ Pending shows the results.
+- A picked table aligns with ⯇ ↔ ⯈, Ctrl+L / E / R or the align buttons. Properties shows in WP View; the Comments list closes with ✕; the Calendar Settings dialog fits its fields.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

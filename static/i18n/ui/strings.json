@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6508,
+ "count": 6553,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -60160,6 +60160,456 @@
    ],
    "where": [
     "image editor - 🌐 Build Website ▸ 🛒 Shop (2.850.0)"
+   ]
+  },
+  {
+   "s": "Blender makes an empty scene and the scene tools open it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "A .blend - Blender reads it and the scene tools open it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Import model",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "The view stays on its Blender layer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Open the picked Blender layer's scene again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "The .blend file",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "C:\\scenes\\room.blend",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Blender makes an empty scene - a ground, the sun and a camera - in the project's blender/scenes folder, and the scene tools open it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "From the project",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "The model goes into the open scene, 1 m tall, on the ground where the view looks - move it with G / R / S",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "no .glb / .gltf models yet -",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Blender: New scene, Open, Save, Import a model, the last 5 scenes - the scene tools open over the canvas and the view becomes a Blender layer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Align the table left (Ctrl+L)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Centre the table (Ctrl+E)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Align the table right (Ctrl+R)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Hide (Window ▸ ⏳ Pending brings it back)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "drag = a new box · drag a box = move it · its edges / corners = size it · Delete removes the picked one · say what goes in each in Properties ▸ 🔲 Zones",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🆕 New scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "New scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "New scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "📂 Open…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Open…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "⤒ Import model…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Import model…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Recent",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "✕ Close the scene tools",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Save the scene's changes (as the scene tools' Save mode says)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "open a scene first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "A .glb / .gltf into the open scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🆕 New Blender Scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "New Blender Scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "⤒ Import a 3D Model",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Import a 3D Model",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "📂 Open a Blender Scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Open a Blender Scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Make it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "📁 From this computer…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "From this computer…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🟧 New Blender Scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "New Blender Scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🟧 Open Blender Scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Open Blender Scene…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "⏳ Pending",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🟧 Blender",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "🟧 ▾",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
    ]
   }
  ]

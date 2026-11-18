@@ -617,7 +617,7 @@
             + `<button class="ghost" id="pdqNext" title="Continue this story in a frame on the next page (a new page if this is the last)">⤵ Next page</button>` : `<span style="color:var(--pc-dim)">drag a box to make a document frame - or File ▸ New Text Document…</span>`);
       },
       bindOptions(o) {
-        o.querySelectorAll("[data-dq]").forEach((b) => { b.onmousedown = (e) => e.preventDefault(); b.onclick = () => { const id = b.dataset.dq; if (id === "indent" || id === "outdent") indent(id === "indent" ? 1 : -1); else if (id === "removeFormat") { exec("removeFormat"); setStyle("normal"); } else exec(id); }; });
+        o.querySelectorAll("[data-dq]").forEach((b) => { b.onmousedown = (e) => e.preventDefault(); b.onclick = () => { const id = b.dataset.dq; if (id === "indent" || id === "outdent") indent(id === "indent" ? 1 : -1); else if (id === "removeFormat") { exec("removeFormat"); setStyle("normal"); } else (E.docText && E.docText.exec ? E.docText.exec : exec)(id); }; });   // 2.851.0: through E.docText.exec (a picked table takes the align buttons)
         const q = (id) => o.querySelector("#" + id);
         q("pdqStyle").onchange = (e) => setStyle(e.target.value);
         q("pdqFont").onchange = (e) => { const f = e.target.value; if (f) exec("fontName", (D.FONT_STACK && D.FONT_STACK[f]) || f); };

@@ -360,7 +360,8 @@
     }, true);
     doc.addEventListener("pointerdown", (e) => {
       if (e.button !== 0 || (ui && ui.contains(e.target)) || edgeAt(e)) return;
-      const g = rowEdgeAt(e); if (!g) { if (tsel && !(ui && ui.contains(e.target))) deselect(); return; }
+      // 2.851.0: only a press on the page lets the table go - the ribbon's / bar's buttons (align …) work on it
+      const g = rowEdgeAt(e); if (!g) { const e0 = ed(); if (tsel && !(ui && ui.contains(e.target)) && ((E.stage && E.stage.contains(e.target)) || (e0 && e0.contains(e.target)))) deselect(); return; }
       e.preventDefault(); e.stopPropagation();
       rowDrag = { tr: g.tr, y0: e.clientY, h0: g.tr.getBoundingClientRect().height, k: kScale(g.t) };
     }, true);
@@ -370,10 +371,11 @@
     function mkUi() {
       if (ui) return ui;
       ui = doc.createElement("div"); ui.id = "pcdtUi";
-      ui.innerHTML = `<button type="button" class="pcdt-h" title="Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)">⊞</button><div class="pcdt-box"><button type="button" class="pcdt-st" title="Table Style…">🎨</button><button type="button" class="pcdt-del" title="Delete the table (Del)">🗑</button><span class="pcdt-grip" title="Drag to resize the table (width and row heights)">◢</span></div>`;
+      ui.innerHTML = `<button type="button" class="pcdt-h" title="Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)">⊞</button><div class="pcdt-box"><button type="button" class="pcdt-al" data-al="left" title="Align the table left (Ctrl+L)">⯇</button><button type="button" class="pcdt-al" data-al="center" title="Centre the table (Ctrl+E)">↔</button><button type="button" class="pcdt-al" data-al="right" title="Align the table right (Ctrl+R)">⯈</button><button type="button" class="pcdt-st" title="Table Style…">🎨</button><button type="button" class="pcdt-del" title="Delete the table (Del)">🗑</button><span class="pcdt-grip" title="Drag to resize the table (width and row heights)">◢</span></div>`;
       const st = doc.createElement("style");
       st.textContent = "#pcdtUi .pcdt-h{position:fixed;z-index:60;width:18px;height:18px;padding:0;font-size:12px;line-height:16px;border:1px solid #2680eb;background:#fff;color:#2680eb;border-radius:3px;cursor:pointer;display:none}"
         + "#pcdtUi .pcdt-box{position:fixed;z-index:59;border:2px solid #2680eb;pointer-events:none;display:none}#pcdtUi .pcdt-box button{pointer-events:auto;position:absolute;top:-24px;height:20px;padding:0 5px;font-size:12px;border:1px solid #2680eb;background:#fff;border-radius:3px;cursor:pointer}"
+        + "#pcdtUi .pcdt-al[data-al=left]{left:0}#pcdtUi .pcdt-al[data-al=center]{left:26px}#pcdtUi .pcdt-al[data-al=right]{left:52px}#pcdtUi .pcdt-al.on{background:#2680eb;color:#fff}"
         + "#pcdtUi .pcdt-st{right:28px}#pcdtUi .pcdt-del{right:0}#pcdtUi .pcdt-grip{pointer-events:auto;position:absolute;right:-9px;bottom:-9px;width:16px;height:16px;line-height:14px;text-align:center;font-size:12px;color:#fff;background:#2680eb;border-radius:3px;cursor:nwse-resize}";
       doc.head.appendChild(st); (E.kx || (E.stage && E.stage.closest && E.stage.closest(".kx")) || doc.body).appendChild(ui);   // in the editor: above its page, under its dialogs
       const h = ui.querySelector(".pcdt-h");
@@ -382,6 +384,7 @@
       ui.querySelector(".pcdt-st").onmousedown = (e) => e.preventDefault();
       ui.querySelector(".pcdt-st").onclick = () => { if (tsel) styleDialog(tsel); };
       ui.querySelector(".pcdt-del").onclick = () => delSel();
+      ui.querySelectorAll(".pcdt-al").forEach((b) => { b.onmousedown = (e) => e.preventDefault(); b.onclick = () => alignSel(b.dataset.al); });
       ui.querySelector(".pcdt-grip").addEventListener("pointerdown", (e) => {
         if (!tsel) return; e.preventDefault(); e.stopPropagation();
         const r = tsel.getBoundingClientRect(), e0 = ed();
@@ -400,9 +403,20 @@
       const r = t.getBoundingClientRect(), h = ui.querySelector(".pcdt-h");
       ui._t = t; h.style.display = "block"; h.style.left = Math.round(r.left - 20) + "px"; h.style.top = Math.round(r.top - 20) + "px";
     }
+    /** 2.851.0 (Tim: "allow user to align the table when user selects the table"): the picked table left / centre / right in its
+     *  frame - the box's ⯇ ↔ ⯈, Ctrl+L / E / R, and the ribbon's / formatting bar's align buttons while it is picked */
+    function alignSel(a) {
+      const t = tsel; if (!t || !t.isConnected) return false;
+      const al = ["left", "center", "right"].includes(a) ? a : "left", ts = tsOf(t);
+      if (ts.w >= 100 && al !== "left") ts.w = 80;            // a full-width table has nowhere to go - it gets narrower first
+      ts.align = al; applyTableStyle(t, ts); X.live(); paintSel();
+      say(`▦ table ${al === "center" ? "centred" : "aligned " + al}${ts.w < 100 ? ` (${ts.w} % of the frame - ◢ resizes it)` : ""}`);
+      return true;
+    }
     function paintSel() {
       if (!ui) return; const box = ui.querySelector(".pcdt-box");
       if (!tsel || !tsel.isConnected) { box.style.display = "none"; return; }
+      const al = tsOf(tsel).align; ui.querySelectorAll(".pcdt-al").forEach((b) => b.classList.toggle("on", b.dataset.al === al));
       const r = tsel.getBoundingClientRect(); Object.assign(box.style, { display: "block", left: r.left - 2 + "px", top: r.top - 2 + "px", width: r.width + 4 + "px", height: r.height + 4 + "px" });
       ui.querySelector(".pcdt-h").style.display = "none";
     }
@@ -420,6 +434,8 @@
     win.addEventListener("keydown", (e) => {
       if (!tsel) return;
       if (!ed() || !tsel.isConnected) { deselect(); return; }
+      const AL = { l: "left", e: "center", r: "right" }, k = String(e.key || "").toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && AL[k]) { e.preventDefault(); e.stopImmediatePropagation(); alignSel(AL[k]); return; }
       if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopImmediatePropagation(); delSel(); }
       else if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); deselect(); }
       else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) deselect();
@@ -442,7 +458,14 @@
     doc.addEventListener("selectionchange", () => { const c = here(); if (c && !tsel) showHandle(c.closest("table")); });
     add("doc.table.select", "⊞ Select Table", () => { const c = here(); if (c) select(c.closest("table")); }, { enabled: inT });
     add("doc.table.style", "🎨 Table Style…", () => styleDialog(), { enabled: inT });
-    E.docTable = Object.assign(E.docTable || {}, { select, deselect, selected: () => tsel, styleDialog, delSel, showHandle });
+    E.docTable = Object.assign(E.docTable || {}, { select, deselect, selected: () => tsel, styleDialog, delSel, showHandle, alignSel });
+    // the align buttons (ribbon, formatting bar) align the PICKED table instead of a paragraph
+    const JUST = { justifyLeft: "left", justifyCenter: "center", justifyRight: "right" };
+    if (E.docText && typeof E.docText.exec === "function" && !E.docText.exec._tbl) {
+      const ex0 = E.docText.exec;
+      E.docText.exec = function (cmd) { if (tsel && tsel.isConnected && JUST[cmd]) return alignSel(JUST[cmd]); return ex0.apply(this, arguments); };
+      E.docText.exec._tbl = true;
+    }
   }
 
   const PCDocTable = { TS_DEFAULT, cleanTs, tsOf, applyTableStyle, setRowHeight, tableHtml, grid, cellPos, insertRow, insertCol, deleteRow, deleteCol, mergeCells, splitCell, setHeader, colWidths, setColWidths, setBorders, install };

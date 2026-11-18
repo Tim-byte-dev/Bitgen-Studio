@@ -309,7 +309,7 @@
     cmd("view.maskov", "Mask Overlay", "\\", () => { S.maskOverlay = !S.maskOverlay; store.set("maskov", S.maskOverlay); E.renderLayers();
       say(S.maskOverlay ? "mask overlay ON - red shows what the mask hides while the mask is selected (\\ turns it off)" : "mask overlay only while painting a mask (\\ keeps it on)"); }, { checked: () => !!S.maskOverlay });
     // Window
-    const TABS = [["pcColor", "Color"], ["pcSwatches", "Swatches"], ["pcChar", "Character"], ["pcPara", "Paragraph"], ["pcProps", "Properties"], ["pcAdjs", "Adjustments"], ["kxAi", "✨ AI"], ["kxCtl", "◈ Control Layers"], ["pcLayers", "Layers"], ["pcPaths", "Paths"], ["pcChannels", "Channels"], ["pcHistory", "History"], ["pcActions", "Actions"], ["pcComps", "Layer Comps"]];
+    const TABS = [["pcColor", "Color"], ["pcSwatches", "Swatches"], ["pcChar", "Character"], ["pcPara", "Paragraph"], ["pcProps", "Properties"], ["pcAdjs", "Adjustments"], ["kxCtl", "◈ Control Layers"], ["pcLayers", "Layers"], ["pcPaths", "Paths"], ["pcChannels", "Channels"], ["pcHistory", "History"], ["pcActions", "Actions"], ["pcComps", "Layer Comps"]];
     for (const [id, n] of TABS) cmd("win." + id, n, id === "pcLayers" ? "F7" : "", () => showTab(id));
     cmd("win.tools", "Tools", "", () => { kx.classList.toggle("tools-off"); }, { checked: () => !kx.classList.contains("tools-off") });
     cmd("win.options", "Options", "", () => { kx.classList.toggle("opts-off"); }, { checked: () => !kx.classList.contains("opts-off") });
@@ -499,6 +499,10 @@
 
     /* ---------------- panels: tabs ---------------- */
     function showTab(id) {
+      // 2.851.0 (Tim: "remove the blender tab ... remove the ai tab"): the ✨ AI tab is gone (Generate / Edit / Inpaint /
+      // Outpaint are the prompt docker's) - asking for it changes nothing; the 🟧 Blender tab's settings are in Properties
+      if (id === "kxAi") return;
+      if (id === "kbl") id = "pcProps";
       const b = kx.querySelector(`.pctabs [data-tab="${id}"]`); if (!b) return;
       const grp = b.closest(".pcgrp"); grp.classList.remove("off"); kx.classList.remove("side-off");
       grp.querySelectorAll(".pctabs button").forEach((x) => x.classList.toggle("on", x === b));
@@ -742,10 +746,24 @@
       const ap = $("ppMApply"); if (ap) ap.onclick = () => E.deleteMask(true);
       $("ppMDel").onclick = () => E.deleteMask(false);
     }
+    /* 2.851.0: parts other files keep at the foot of the Properties tab (the 🟧 Blender layer's settings, 🔲 Zones) - put back
+       after each repaint, each shown only while its when() says so: E.ui.propsFoot(node, when) */
+    const extras = [];
+    function placeExtras() {
+      const box = $("pcProps"); if (!box) return;
+      for (const x of extras) {
+        if (x.node.parentNode !== box) box.appendChild(x.node);
+        let on = false; try { on = !!x.when(); } catch (e) { on = false; }
+        const d = on ? "" : "none"; if (x.node.style.display !== d) x.node.style.display = d;
+      }
+    }
+    E.ui.propsFoot = (node, when) => { extras.push({ node, when: typeof when === "function" ? when : () => true }); placeExtras(); };
+    E.ui.placeExtras = placeExtras;
+    root.setInterval(() => { try { placeExtras(); } catch (e) { /* fine */ } }, 500);
     function props() {
       const box = $("pcProps"); if (!box || !box.classList.contains("on")) return;
       const A = L();
-      if (!A) { box.innerHTML = `<div style="color:var(--pc-dim)">No properties - open a picture.</div>`; propsFor = null; return; }
+      if (!A) { box.innerHTML = `<div style="color:var(--pc-dim)">No properties - open a picture.</div>`; propsFor = null; placeExtras(); return; }
       if (propsFor === A && box.contains(doc.activeElement) && doc.activeElement.tagName !== "BUTTON") return;   // typing / dragging in it
       propsFor = A;
       let h = `<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><b>${esc(A.type === "adjust" ? (FX.byId(A.adj.kind) || {}).name || "Adjustment" : A.type === "pixel" ? "Pixel layer" : A.type === "smart" ? "Smart object" : A.type[0].toUpperCase() + A.type.slice(1) + " layer")}</b><span style="color:var(--pc-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(A.name)}</span></div>`;
@@ -843,6 +861,7 @@
       if (E.ui.bindVmask) E.ui.bindVmask(A);
       for (const f of E.ui.propsExtra || []) { try { f(A, box); } catch (e) { /* a module's row */ } }   // 2.437.0: modules' rows (pcgenfill.js)
       box.querySelectorAll("input,textarea,select").forEach((el) => el.addEventListener("keydown", (e) => e.stopPropagation()));
+      placeExtras();
     }
     E.ui.props = props;
 

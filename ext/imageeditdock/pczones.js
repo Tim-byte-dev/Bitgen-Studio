@@ -138,7 +138,7 @@
     const hex = (name) => (COLORS.find(([n]) => n === name) || COLORS[0])[1];
     const blankNow = () => { if (!S.w) return true; try { const f = E.flatten(), k = Math.min(1, 96 / Math.max(S.w, S.h)), c = E.newCanvas(Math.max(1, Math.round(S.w * k)), Math.max(1, Math.round(S.h * k))), g = c.getContext("2d"); g.drawImage(f, 0, 0, c.width, c.height); return isBlank(g.getImageData(0, 0, c.width, c.height).data); } catch (e) { return false; } };
 
-    /* ---- the panel: in the ✨ AI panel, under ✨ Generate */
+    /* ---- the panel (2.851.0: in the Properties tab) */
     const box = doc.createElement("details"); box.id = "kxZones"; box.className = "kxzones";
     box.innerHTML = `<summary title="Boxes on the canvas, each with what goes in it - the AI puts each thing in its box">🔲 Zones <span id="pzN" class="pzn"></span></summary>
       <div class="pzb">
@@ -153,7 +153,10 @@
         <div class="pzhint" id="pzHint"></div>
         <button class="ghost kxrun" id="pzGo" type="button">✨ Generate zones</button>
       </div>`;
-    const run = $("kxRun"); run.parentNode.insertBefore(box, ($("kxResBtns") || run).nextSibling);
+    // 2.851.0: the ✨ AI tab is gone - the Zones box sits at the foot of the Properties tab while the 🔲 Zones tool is in hand
+    // or there are boxes (pcui.js propsFoot)
+    if (E.ui && E.ui.propsFoot) E.ui.propsFoot(box, () => !!S.w && (S.tool === "zones" || zones().length > 0));
+    else { const run = $("kxRun"); run.parentNode.insertBefore(box, ($("kxResBtns") || run).nextSibling); }
     const css = doc.createElement("style"); css.id = "pczCss";
     css.textContent = ".kxzones{margin-top:6px;border:1px solid var(--pc-line,#3a3a3a);border-radius:5px;padding:2px 6px}.kxzones>summary{cursor:pointer;font-weight:600;padding:2px 0}.kxzones .pzn{font-weight:400;color:var(--pc-dim,#999)}"
       + ".kxzones .pzb{display:flex;flex-direction:column;gap:4px;padding:4px 0}.kxzones .pzrow{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.kxzones .pzlist{display:flex;flex-direction:column;gap:3px}"
@@ -218,7 +221,7 @@
       q("pzList").querySelectorAll(".sw").forEach((b) => { b.onclick = () => { picked = +b.parentNode.dataset.z; paintList(); E.drawOverlay(); }; });
     }
     /** the ✨ AI panel shown (it is a tab of the panel column) and the Zones section open */
-    function showPanel() { try { if (E.ui && E.ui.showTab) E.ui.showTab("kxAi"); } catch (e) { /* no tabs */ } if (!box.open) box.open = true; }
+    function showPanel() { try { if (E.ui && E.ui.showTab) E.ui.showTab("pcProps"); if (E.ui.placeExtras) E.ui.placeExtras(); } catch (e) { /* no tabs */ } if (!box.open) box.open = true; }
     function removeZone(i) { zones().splice(i, 1); picked = -1; paintList(); E.drawOverlay(); }
     q("pzDraw").onclick = () => { E.setTool("zones"); if (!box.open) box.open = true; say("🔲 drag on the canvas for a box - then say what goes in it"); };
     q("pzShow").onchange = () => { show = q("pzShow").checked; store.set("zones.show", show); E.drawOverlay(); };
@@ -234,12 +237,12 @@
     /* ---- the tool */
     E.tools.zones = {
       id: "zones", name: "Zones", cursor: "crosshair",
-      options: () => `<span class="tn">🔲 Zones</span><span style="color:var(--pc-dim)">drag = a new box · drag a box = move it · its edges / corners = size it · Delete removes the picked one · say what goes in each in the ✨ AI panel ▸ 🔲 Zones</span>`,
+      options: () => `<span class="tn">🔲 Zones</span><span style="color:var(--pc-dim)">drag = a new box · drag a box = move it · its edges / corners = size it · Delete removes the picked one · say what goes in each in Properties ▸ 🔲 Zones</span>`,
       down(e, x, y) {
         if (!S.w) return false;
         const h = hitZone(zones(), x, y, 6 / (S.zoom || 1));
         if (h) { picked = h.i; drag = { i: h.i, part: h.part, x0: x, y0: y, z0: Object.assign({}, zones()[h.i]) }; paintList(); E.drawOverlay(); return true; }
-        if (zones().length >= MAX) { say(`${MAX} boxes at most - ✕ one in the ✨ AI panel ▸ 🔲 Zones`); return false; }
+        if (zones().length >= MAX) { say(`${MAX} boxes at most - ✕ one in Properties ▸ 🔲 Zones`); return false; }
         drag = { make: true, x0: x, y0: y };
         return true;
       },
@@ -314,7 +317,7 @@
         g.lineWidth = lw;
         for (const z of zs) { g.strokeStyle = hex(z.color); g.strokeRect(z.x + lw / 2, z.y + lw / 2, Math.max(1, z.w - lw), Math.max(1, z.h - lw)); }
         const editStyle = $("ieEditStyle") ? $("ieEditStyle").value : "";
-        if (!editStyle) return say("pick an Edit model in the ✨ AI panel (Qwen Image Edit / FLUX.2 Klein …)");
+        if (!editStyle) return say("pick an edit style in the prompt docker (Qwen Image Edit / FLUX.2 Klein …)");
         return E.runAI({ zone: true, mode: "edit", source: c, prompt: instruction(zs, scene, blankNow()), editStyle, noRefs: true, label: "🔲 zones (edit model)", autoApply, direct: !(E.pending && !E.pending.auto) });
       }
       // ▦ regional: a new picture from the boxes

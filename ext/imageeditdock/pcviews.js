@@ -29,7 +29,7 @@
    *  the tool column, the colour palette, the rulers, the Pages panel; pageMode: View ▸ Pages; ribbon: its tabs; tool */
   const VIEWS = [
     { id: "wp", icon: "📝", label: "WP View", title: "WP View - a word processor: the pages one below another, the writing ribbon (Home, Insert, Layout, Mailings, Review, Export), Paragraph and Layers",
-      groups: { color: true, dock: false, props: false, layers: true }, tabs: ["pcPara", "pcLayers"], tools: false, palette: false, rulers: true, pages: false, pageMode: "column", ribbon: "wp", tool: "doctext" },
+      groups: { color: true, dock: false, props: true, layers: true }, tabs: ["pcPara", "pcProps", "pcLayers"], tools: false, palette: false, rulers: true, pages: false, pageMode: "column", ribbon: "wp", tool: "doctext" },
     { id: "vector", icon: "✒", label: "Vector View", title: "Vector View - drawing: the tools, the colour palette, the dockers (Transform, Shaping, Align, Object), Properties and Layers",
       groups: { color: false, dock: true, props: true, layers: true }, tabs: ["dkXf", "pcProps", "pcLayers"], tools: true, palette: true, rulers: true, pages: null, pageMode: "one", ribbon: null, tool: "move" },
     { id: "image", icon: "🖼", label: "Image View", title: "Image View - photo editing: the tools, Color, Properties and Layers",

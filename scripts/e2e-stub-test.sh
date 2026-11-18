@@ -14405,6 +14405,13 @@ node scripts/test-850-live.js > /tmp/t850l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui850-ui.js > /tmp/ui850.log 2>&1 \
   && ok "2.850.0 browser test: Build Website's 🛒 Shop tick (PHP + the admin area picked) -> the shop's pages in the .zip, remembered" \
   || { bad "2.850.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui850.log | head -12; }
+# ---- 2.851.0 (Tim: "the properties tab has dissappeared, the comments panel won't close. remove the blender tab, make the blender button a dropdown ...")
+node scripts/test-851.js > /tmp/t851.log 2>&1 \
+  && ok "2.851.0 the 🟧 ▾ menu (pure), lib/blendNew.js, the tabs gone, the Properties foot, the comments' ✕, the calendar dialog's layout, table alignment" \
+  || { bad "2.851.0 units"; grep -a "^FAIL" -A1 /tmp/t851.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui851-ui.js > /tmp/ui851.log 2>&1 \
+  && ok "2.851.0 browser test: no AI / Blender tab, Properties everywhere, the 🟧 ▾ menu + recent files, Blender + Zones in Properties, comments ✕, table aligned, calendar dialog" \
+  || { bad "2.851.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui851.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -87,8 +87,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await press("fill", "a red ball");
     await p.waitForFunction(() => document.querySelectorAll("#kxResults .kxth").length > 0, null, { timeout: 20000 });
     const f1 = await ev(() => ({ last: window.__rq[window.__rq.length - 1], ai: document.getElementById("kxAi").classList.contains("on"), th: document.querySelectorAll("#kxResults .kxth .kxthok").length }));
-    check("🪣 Fill with a selection: the editor's Generate (100 %) into it, the results in the ✨ AI panel's gallery, each with its own ✔",
-      f1.last.mode === "generate" && f1.last.prompt === "a red ball" && f1.last.strength === 100 && f1.ai && f1.th === 1, f1);
+    check("🪣 Fill with a selection: the editor's Generate (100 %) into it, the results in the results gallery (2.851.0: no ✨ AI tab any more - the app puts them in ⏳ Pending), each with its own ✔",
+      f1.last.mode === "generate" && f1.last.prompt === "a red ball" && f1.last.strength === 100 && f1.th === 1, f1);
     const fn0 = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await ev(() => document.querySelector("#kxResults .kxth .kxthok").click()); await p.waitForTimeout(400);
     const fap = await ev(() => ({ n: window.imageEditorInstance.E.S.layers.length, left: document.querySelectorAll("#kxResults .kxth").length }));

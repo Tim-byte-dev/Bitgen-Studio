@@ -10792,211 +10792,211 @@
   },
   {
    "s": "Brush presets",
-   "src": "ext/imageeditdock/imageedit.js:1590"
+   "src": "ext/imageeditdock/imageedit.js:1592"
   },
   {
    "s": "Feather",
-   "src": "ext/imageeditdock/imageedit.js:1600"
-  },
-  {
-   "s": "Soft edge of the next selection (px) - Select ▸ Modify ▸ Feather does an existing one",
-   "src": "ext/imageeditdock/imageedit.js:1600"
-  },
-  {
-   "s": "Tolerance",
-   "src": "ext/imageeditdock/imageedit.js:1601"
-  },
-  {
-   "s": "Contiguous",
-   "src": "ext/imageeditdock/imageedit.js:1601"
-  },
-  {
-   "s": "Magic-wand tolerance (0-255)",
-   "src": "ext/imageeditdock/imageedit.js:1601"
-  },
-  {
-   "s": "Selection brush size",
    "src": "ext/imageeditdock/imageedit.js:1602"
   },
   {
-   "s": "Inverse",
+   "s": "Soft edge of the next selection (px) - Select ▸ Modify ▸ Feather does an existing one",
+   "src": "ext/imageeditdock/imageedit.js:1602"
+  },
+  {
+   "s": "Tolerance",
    "src": "ext/imageeditdock/imageedit.js:1603"
+  },
+  {
+   "s": "Contiguous",
+   "src": "ext/imageeditdock/imageedit.js:1603"
+  },
+  {
+   "s": "Magic-wand tolerance (0-255)",
+   "src": "ext/imageeditdock/imageedit.js:1603"
+  },
+  {
+   "s": "Selection brush size",
+   "src": "ext/imageeditdock/imageedit.js:1604"
+  },
+  {
+   "s": "Inverse",
+   "src": "ext/imageeditdock/imageedit.js:1605"
   },
   {
    "s": "Deselect",
-   "src": "ext/imageeditdock/imageedit.js:1603"
+   "src": "ext/imageeditdock/imageedit.js:1605"
   },
   {
    "s": "Select all (Ctrl+A)",
-   "src": "ext/imageeditdock/imageedit.js:1603"
+   "src": "ext/imageeditdock/imageedit.js:1605"
   },
   {
    "s": "Inverse (Shift+Ctrl+I)",
-   "src": "ext/imageeditdock/imageedit.js:1603"
+   "src": "ext/imageeditdock/imageedit.js:1605"
   },
   {
    "s": "Deselect (Ctrl+D)",
-   "src": "ext/imageeditdock/imageedit.js:1603"
+   "src": "ext/imageeditdock/imageedit.js:1605"
   },
   {
    "s": "Brush size ([ and ])",
-   "src": "ext/imageeditdock/imageedit.js:1606"
-  },
-  {
-   "s": "Stroke opacity (1-0 keys: 10-100 %)",
-   "src": "ext/imageeditdock/imageedit.js:1607"
-  },
-  {
-   "s": "Flow",
    "src": "ext/imageeditdock/imageedit.js:1608"
   },
   {
-   "s": "Fill tolerance when there is no selection",
+   "s": "Stroke opacity (1-0 keys: 10-100 %)",
+   "src": "ext/imageeditdock/imageedit.js:1609"
+  },
+  {
+   "s": "Flow",
    "src": "ext/imageeditdock/imageedit.js:1610"
   },
   {
-   "s": "Sample",
+   "s": "Fill tolerance when there is no selection",
    "src": "ext/imageeditdock/imageedit.js:1612"
+  },
+  {
+   "s": "Sample",
+   "src": "ext/imageeditdock/imageedit.js:1614"
   },
   {
    "s": "All layers",
-   "src": "ext/imageeditdock/imageedit.js:1612"
+   "src": "ext/imageeditdock/imageedit.js:1614"
   },
   {
    "s": "Current layer",
-   "src": "ext/imageeditdock/imageedit.js:1612"
+   "src": "ext/imageeditdock/imageedit.js:1614"
   },
   {
    "s": "Auto-select layer",
-   "src": "ext/imageeditdock/imageedit.js:1614"
-  },
-  {
-   "s": "A click picks the topmost layer with pixels there",
-   "src": "ext/imageeditdock/imageedit.js:1614"
-  },
-  {
-   "s": "Align the layer horizontal centres to the selection (or the canvas)",
-   "src": "ext/imageeditdock/imageedit.js:1615"
-  },
-  {
-   "s": "Align the layer vertical centres to the selection (or the canvas)",
-   "src": "ext/imageeditdock/imageedit.js:1615"
-  },
-  {
-   "s": "Transform",
    "src": "ext/imageeditdock/imageedit.js:1616"
   },
   {
+   "s": "A click picks the topmost layer with pixels there",
+   "src": "ext/imageeditdock/imageedit.js:1616"
+  },
+  {
+   "s": "Align the layer horizontal centres to the selection (or the canvas)",
+   "src": "ext/imageeditdock/imageedit.js:1617"
+  },
+  {
+   "s": "Align the layer vertical centres to the selection (or the canvas)",
+   "src": "ext/imageeditdock/imageedit.js:1617"
+  },
+  {
+   "s": "Transform",
+   "src": "ext/imageeditdock/imageedit.js:1618"
+  },
+  {
    "s": "Scribble",
-   "src": "ext/imageeditdock/imageedit.js:2164"
+   "src": "ext/imageeditdock/imageedit.js:2166"
   },
   {
    "s": "Line art",
-   "src": "ext/imageeditdock/imageedit.js:2164"
+   "src": "ext/imageeditdock/imageedit.js:2166"
   },
   {
    "s": "Soft edge",
-   "src": "ext/imageeditdock/imageedit.js:2164"
+   "src": "ext/imageeditdock/imageedit.js:2166"
   },
   {
    "s": "Canny edge",
-   "src": "ext/imageeditdock/imageedit.js:2165"
+   "src": "ext/imageeditdock/imageedit.js:2167"
   },
   {
    "s": "Depth",
-   "src": "ext/imageeditdock/imageedit.js:2165"
+   "src": "ext/imageeditdock/imageedit.js:2167"
   },
   {
    "s": "Normal map",
-   "src": "ext/imageeditdock/imageedit.js:2165"
+   "src": "ext/imageeditdock/imageedit.js:2167"
   },
   {
    "s": "Pose",
-   "src": "ext/imageeditdock/imageedit.js:2165"
+   "src": "ext/imageeditdock/imageedit.js:2167"
   },
   {
    "s": "Segmentation",
-   "src": "ext/imageeditdock/imageedit.js:2165"
+   "src": "ext/imageeditdock/imageedit.js:2167"
   },
   {
    "s": "No control layers. Pick a type and ＋ layer, then draw on it or ⟲ From image",
-   "src": "ext/imageeditdock/imageedit.js:2200"
+   "src": "ext/imageeditdock/imageedit.js:2202"
   },
   {
    "s": "auto - none found",
-   "src": "ext/imageeditdock/imageedit.js:2205"
+   "src": "ext/imageeditdock/imageedit.js:2207"
   },
   {
    "s": "From image",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "end",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Use this control layer on the next ✨ run",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Select the layer",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Make it an ordinary layer again",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Where in the sampling the control starts guiding",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Where it stops guiding",
-   "src": "ext/imageeditdock/imageedit.js:2207"
+   "src": "ext/imageeditdock/imageedit.js:2209"
   },
   {
    "s": "Back to the defaults",
-   "src": "ext/imageeditdock/imageedit.js:2337"
+   "src": "ext/imageeditdock/imageedit.js:2339"
   },
   {
    "s": "Click the picture to pick the colour",
-   "src": "ext/imageeditdock/imageedit.js:2366"
+   "src": "ext/imageeditdock/imageedit.js:2368"
   },
   {
    "s": "Click the picture to put the centre there",
-   "src": "ext/imageeditdock/imageedit.js:2378"
+   "src": "ext/imageeditdock/imageedit.js:2380"
   },
   {
    "s": "no edit-capable style",
-   "src": "ext/imageeditdock/imageedit.js:2477"
+   "src": "ext/imageeditdock/imageedit.js:2479"
   },
   {
    "s": "failed - see the job log",
-   "src": "ext/imageeditdock/imageedit.js:2818"
+   "src": "ext/imageeditdock/imageedit.js:2820"
   },
   {
    "s": "rendering",
-   "src": "ext/imageeditdock/imageedit.js:2818"
+   "src": "ext/imageeditdock/imageedit.js:2820"
   },
   {
    "s": "Add as a layer",
-   "src": "ext/imageeditdock/imageedit.js:2927"
+   "src": "ext/imageeditdock/imageedit.js:2929"
   },
   {
    "s": "Open as a new document",
-   "src": "ext/imageeditdock/imageedit.js:2927"
+   "src": "ext/imageeditdock/imageedit.js:2929"
   },
   {
    "s": "Leave full screen (F or Esc)",
-   "src": "ext/imageeditdock/imageedit.js:2972"
+   "src": "ext/imageeditdock/imageedit.js:2974"
   },
   {
    "s": "Full screen editor - bitGen's bars stay (F; Esc leaves)",
-   "src": "ext/imageeditdock/imageedit.js:2972"
+   "src": "ext/imageeditdock/imageedit.js:2974"
   },
   {
    "s": "The image editor's status",
-   "src": "ext/imageeditdock/imageedit.js:2983"
+   "src": "ext/imageeditdock/imageedit.js:2985"
   },
   {
    "s": "no inpaint-capable image style",
@@ -11607,60 +11607,112 @@
    "src": "ext/imageeditdock/pcblendlayer.js:50"
   },
   {
-   "s": "Blender",
-   "src": "ext/imageeditdock/pcblendlayer.js:122"
+   "s": "Blender makes an empty scene and the scene tools open it",
+   "src": "ext/imageeditdock/pcblendlayer.js:93"
   },
   {
-   "s": "The Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded here",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "s": "A .blend - Blender reads it and the scene tools open it",
+   "src": "ext/imageeditdock/pcblendlayer.js:94"
+  },
+  {
+   "s": "Import model",
+   "src": "ext/imageeditdock/pcblendlayer.js:96"
   },
   {
    "s": "Close the scene tools",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:100"
+  },
+  {
+   "s": "The view stays on its Blender layer",
+   "src": "ext/imageeditdock/pcblendlayer.js:100"
+  },
+  {
+   "s": "Open the picked Blender layer's scene again",
+   "src": "ext/imageeditdock/pcblendlayer.js:101"
+  },
+  {
+   "s": "Blender",
+   "src": "ext/imageeditdock/pcblendlayer.js:137"
+  },
+  {
+   "s": "The Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded here",
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Blender layer",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Edit from",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Scene strength",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Live - pick the layer = its scene",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Blender mode: pick this layer, type in the prompt docker, ✨ Generate (the scene + the prompt + the References docker's pictures) or ▾ Edit / Refine - each result comes in as a new layer above it",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Generate with a picture style (SDXL, FLUX …): how much of the scene it redraws - low keeps the scene, high makes it new",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Picking a Blender layer opens its scene again (live); picking another layer closes the tools and the layer keeps the view",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "the scene becomes a Blender layer when it is open",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "no Blender layer picked - 🟧 makes one",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
    "s": "Scene tools",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
   },
   {
-   "s": "Blender scene tools (as in the timeline) - open a .blend, look around, move objects; the view becomes a Blender layer, and ▾ Edit in the prompt docker makes a picture from it",
-   "src": "ext/imageeditdock/pcblendlayer.js:362"
+   "s": "The .blend file",
+   "src": "ext/imageeditdock/pcblendlayer.js:395"
+  },
+  {
+   "s": "C:\\scenes\\room.blend",
+   "src": "ext/imageeditdock/pcblendlayer.js:395"
+  },
+  {
+   "s": "Open a Blender scene",
+   "src": "ext/imageeditdock/pcblendlayer.js:396"
+  },
+  {
+   "s": "Blender scenes",
+   "src": "ext/imageeditdock/pcblendlayer.js:396"
+  },
+  {
+   "s": "Blender makes an empty scene - a ground, the sun and a camera - in the project's blender/scenes folder, and the scene tools open it",
+   "src": "ext/imageeditdock/pcblendlayer.js:400"
+  },
+  {
+   "s": "From the project",
+   "src": "ext/imageeditdock/pcblendlayer.js:416"
+  },
+  {
+   "s": "The model goes into the open scene, 1 m tall, on the ground where the view looks - move it with G / R / S",
+   "src": "ext/imageeditdock/pcblendlayer.js:416"
+  },
+  {
+   "s": "no .glb / .gltf models yet -",
+   "src": "ext/imageeditdock/pcblendlayer.js:416"
+  },
+  {
+   "s": "Blender: New scene, Open, Save, Import a model, the last 5 scenes - the scene tools open over the canvas and the view becomes a Blender layer",
+   "src": "ext/imageeditdock/pcblendlayer.js:464"
   },
   {
    "s": "These",
@@ -12244,19 +12296,19 @@
   },
   {
    "s": "not made - see the status line",
-   "src": "ext/imageeditdock/pccalendar.js:214"
+   "src": "ext/imageeditdock/pccalendar.js:215"
   },
   {
    "s": "Email",
-   "src": "ext/imageeditdock/pccalendar.js:218"
+   "src": "ext/imageeditdock/pccalendar.js:219"
   },
   {
    "s": "Phone",
-   "src": "ext/imageeditdock/pccalendar.js:218"
+   "src": "ext/imageeditdock/pccalendar.js:219"
   },
   {
    "s": "Calendar - drag it onto the page (a click puts it in the middle). In 🌐 Web View a website's booking calendar, else a printed month; double-click it for its settings",
-   "src": "ext/imageeditdock/pccalendar.js:251"
+   "src": "ext/imageeditdock/pccalendar.js:259"
   },
   {
    "s": "Drag: to another place in the column, or out of it (it floats again)",
@@ -12716,35 +12768,35 @@
   },
   {
    "s": "No comments yet - select words in the document text and press 💬",
-   "src": "ext/imageeditdock/pcdocnotes.js:122"
+   "src": "ext/imageeditdock/pcdocnotes.js:124"
   },
   {
    "s": "Reopen",
-   "src": "ext/imageeditdock/pcdocnotes.js:123"
+   "src": "ext/imageeditdock/pcdocnotes.js:125"
   },
   {
    "s": "Delete the comment (the words stay)",
-   "src": "ext/imageeditdock/pcdocnotes.js:123"
+   "src": "ext/imageeditdock/pcdocnotes.js:125"
   },
   {
    "s": "Resolve",
-   "src": "ext/imageeditdock/pcdocnotes.js:123"
+   "src": "ext/imageeditdock/pcdocnotes.js:125"
   },
   {
    "s": "Note",
-   "src": "ext/imageeditdock/pcdocnotes.js:182"
+   "src": "ext/imageeditdock/pcdocnotes.js:184"
   },
   {
    "s": "New comment on the selected words (Ctrl+Alt+M)",
-   "src": "ext/imageeditdock/pcdocnotes.js:182"
+   "src": "ext/imageeditdock/pcdocnotes.js:184"
   },
   {
    "s": "The comments list",
-   "src": "ext/imageeditdock/pcdocnotes.js:182"
+   "src": "ext/imageeditdock/pcdocnotes.js:184"
   },
   {
    "s": "Insert a footnote at the caret (Ctrl+Alt+F); double-click a mark to edit its note",
-   "src": "ext/imageeditdock/pcdocnotes.js:182"
+   "src": "ext/imageeditdock/pcdocnotes.js:184"
   },
   {
    "s": "Open documents",
@@ -12852,67 +12904,79 @@
   },
   {
    "s": "Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)",
-   "src": "ext/imageeditdock/pcdoctable.js:373"
+   "src": "ext/imageeditdock/pcdoctable.js:374"
+  },
+  {
+   "s": "Align the table left (Ctrl+L)",
+   "src": "ext/imageeditdock/pcdoctable.js:374"
+  },
+  {
+   "s": "Centre the table (Ctrl+E)",
+   "src": "ext/imageeditdock/pcdoctable.js:374"
+  },
+  {
+   "s": "Align the table right (Ctrl+R)",
+   "src": "ext/imageeditdock/pcdoctable.js:374"
   },
   {
    "s": "Table Style",
-   "src": "ext/imageeditdock/pcdoctable.js:373"
+   "src": "ext/imageeditdock/pcdoctable.js:374"
   },
   {
    "s": "Delete the table (Del)",
-   "src": "ext/imageeditdock/pcdoctable.js:373"
+   "src": "ext/imageeditdock/pcdoctable.js:374"
   },
   {
    "s": "Drag to resize the table (width and row heights)",
-   "src": "ext/imageeditdock/pcdoctable.js:373"
+   "src": "ext/imageeditdock/pcdoctable.js:374"
   },
   {
    "s": "Width",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "of the frame",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Cell padding",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "px",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "own colour",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "filled",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Banded rows",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Header row",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "own text colour",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Rows: drag a row's bottom edge. Columns: drag a column's right edge. The whole table: ⊞ picks it, ◢ resizes it (Shift = the width only), Del deletes it",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "as is",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Centre",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "s": "Normal",
@@ -15647,7 +15711,7 @@
    "src": "ext/imageeditdock/pcpending.js:70"
   },
   {
-   "s": "Hide (⏳ in the ✨ AI panel brings it back)",
+   "s": "Hide (Window ▸ ⏳ Pending brings it back)",
    "src": "ext/imageeditdock/pcpending.js:70"
   },
   {
@@ -17788,259 +17852,259 @@
   },
   {
    "s": "Edit the foreground colour",
-   "src": "ext/imageeditdock/pcui.js:531"
+   "src": "ext/imageeditdock/pcui.js:535"
   },
   {
    "s": "Swap the foreground and background colours (X) - a plain Background takes the new background colour",
-   "src": "ext/imageeditdock/pcui.js:531"
+   "src": "ext/imageeditdock/pcui.js:535"
   },
   {
    "s": "Edit the background colour",
-   "src": "ext/imageeditdock/pcui.js:531"
+   "src": "ext/imageeditdock/pcui.js:535"
   },
   {
    "s": "Hex",
-   "src": "ext/imageeditdock/pcui.js:531"
+   "src": "ext/imageeditdock/pcui.js:535"
   },
   {
    "s": "Click a colour",
-   "src": "ext/imageeditdock/pcui.js:531"
+   "src": "ext/imageeditdock/pcui.js:535"
   },
   {
    "s": "Add foreground",
-   "src": "ext/imageeditdock/pcui.js:553"
+   "src": "ext/imageeditdock/pcui.js:557"
   },
   {
    "s": "Add the foreground colour",
-   "src": "ext/imageeditdock/pcui.js:553"
+   "src": "ext/imageeditdock/pcui.js:557"
   },
   {
    "s": "Add an adjustment layer (it changes everything below it - the pixels stay as they are; its mask limits it)",
-   "src": "ext/imageeditdock/pcui.js:564"
+   "src": "ext/imageeditdock/pcui.js:568"
   },
   {
    "s": "Solid colour fill",
-   "src": "ext/imageeditdock/pcui.js:564"
+   "src": "ext/imageeditdock/pcui.js:568"
   },
   {
    "s": "Gradient fill",
-   "src": "ext/imageeditdock/pcui.js:564"
+   "src": "ext/imageeditdock/pcui.js:568"
   },
   {
    "s": "Show / hide (Alt-click: show only this one)",
-   "src": "ext/imageeditdock/pcui.js:606"
-  },
-  {
-   "s": "Open / close the group",
-   "src": "ext/imageeditdock/pcui.js:609"
-  },
-  {
-   "s": "Open / close the frame (what is inside it)",
-   "src": "ext/imageeditdock/pcui.js:609"
-  },
-  {
-   "s": "Clipped to the layer below",
    "src": "ext/imageeditdock/pcui.js:610"
   },
   {
+   "s": "Open / close the group",
+   "src": "ext/imageeditdock/pcui.js:613"
+  },
+  {
+   "s": "Open / close the frame (what is inside it)",
+   "src": "ext/imageeditdock/pcui.js:613"
+  },
+  {
+   "s": "Clipped to the layer below",
+   "src": "ext/imageeditdock/pcui.js:614"
+  },
+  {
    "s": "Text layer",
-   "src": "ext/imageeditdock/pcui.js:612"
+   "src": "ext/imageeditdock/pcui.js:616"
   },
   {
    "s": "Smart object - double-click: Edit Contents",
-   "src": "ext/imageeditdock/pcui.js:612"
+   "src": "ext/imageeditdock/pcui.js:616"
   },
   {
    "s": "WP",
-   "src": "ext/imageeditdock/pcui.js:617"
-  },
-  {
-   "s": "A WP (word processor) layer - double-click its thumbnail (or its text with the Move tool) to type in it; move it up and down the stack like any layer",
-   "src": "ext/imageeditdock/pcui.js:617"
-  },
-  {
-   "s": "Layer mask - click to paint on it (white shows, black hides); Alt-click views it; Shift-click disables it; Ctrl-click loads it as the selection",
    "src": "ext/imageeditdock/pcui.js:621"
   },
   {
+   "s": "A WP (word processor) layer - double-click its thumbnail (or its text with the Move tool) to type in it; move it up and down the stack like any layer",
+   "src": "ext/imageeditdock/pcui.js:621"
+  },
+  {
+   "s": "Layer mask - click to paint on it (white shows, black hides); Alt-click views it; Shift-click disables it; Ctrl-click loads it as the selection",
+   "src": "ext/imageeditdock/pcui.js:625"
+  },
+  {
    "s": "Layer styles - double-click to edit",
-   "src": "ext/imageeditdock/pcui.js:636"
+   "src": "ext/imageeditdock/pcui.js:640"
   },
   {
    "s": "Color label",
-   "src": "ext/imageeditdock/pcui.js:674"
+   "src": "ext/imageeditdock/pcui.js:678"
   },
   {
    "s": "Pass Through",
-   "src": "ext/imageeditdock/pcui.js:701"
+   "src": "ext/imageeditdock/pcui.js:705"
   },
   {
    "s": "Add a layer mask",
-   "src": "ext/imageeditdock/pcui.js:724"
+   "src": "ext/imageeditdock/pcui.js:728"
   },
   {
    "s": "painting on it",
-   "src": "ext/imageeditdock/pcui.js:726"
+   "src": "ext/imageeditdock/pcui.js:730"
   },
   {
    "s": "Invert the mask",
-   "src": "ext/imageeditdock/pcui.js:726"
+   "src": "ext/imageeditdock/pcui.js:730"
   },
   {
    "s": "Load it as the selection",
-   "src": "ext/imageeditdock/pcui.js:726"
+   "src": "ext/imageeditdock/pcui.js:730"
   },
   {
    "s": "Bake it into the pixels",
-   "src": "ext/imageeditdock/pcui.js:726"
+   "src": "ext/imageeditdock/pcui.js:730"
   },
   {
    "s": "No properties - open a picture",
-   "src": "ext/imageeditdock/pcui.js:748"
+   "src": "ext/imageeditdock/pcui.js:766"
   },
   {
    "s": "Clipped",
-   "src": "ext/imageeditdock/pcui.js:756"
+   "src": "ext/imageeditdock/pcui.js:774"
   },
   {
    "s": "Only change the layer below it (Alt+Ctrl+G)",
-   "src": "ext/imageeditdock/pcui.js:756"
+   "src": "ext/imageeditdock/pcui.js:774"
   },
   {
    "s": "Clip to the layer below",
-   "src": "ext/imageeditdock/pcui.js:756"
+   "src": "ext/imageeditdock/pcui.js:774"
   },
   {
    "s": "Solid colour",
-   "src": "ext/imageeditdock/pcui.js:759"
+   "src": "ext/imageeditdock/pcui.js:777"
   },
   {
    "s": "linear",
-   "src": "ext/imageeditdock/pcui.js:760"
+   "src": "ext/imageeditdock/pcui.js:778"
   },
   {
    "s": "radial",
-   "src": "ext/imageeditdock/pcui.js:760"
+   "src": "ext/imageeditdock/pcui.js:778"
   },
   {
    "s": "click: Edit",
-   "src": "ext/imageeditdock/pcui.js:762"
+   "src": "ext/imageeditdock/pcui.js:780"
   },
   {
    "s": "offset",
-   "src": "ext/imageeditdock/pcui.js:764"
+   "src": "ext/imageeditdock/pcui.js:782"
   },
   {
    "s": "The pattern library",
-   "src": "ext/imageeditdock/pcui.js:764"
+   "src": "ext/imageeditdock/pcui.js:782"
   },
   {
    "s": "T tool: click the text to type in it",
-   "src": "ext/imageeditdock/pcui.js:769"
+   "src": "ext/imageeditdock/pcui.js:787"
   },
   {
    "s": "fx Layer Style",
-   "src": "ext/imageeditdock/pcui.js:769"
+   "src": "ext/imageeditdock/pcui.js:787"
   },
   {
    "s": "Warp, round a circle, along a path, 3D",
-   "src": "ext/imageeditdock/pcui.js:769"
+   "src": "ext/imageeditdock/pcui.js:787"
   },
   {
    "s": "Bevel, overlays, Gold / Chrome / Neon",
-   "src": "ext/imageeditdock/pcui.js:769"
+   "src": "ext/imageeditdock/pcui.js:787"
   },
   {
    "s": "Stroke width",
-   "src": "ext/imageeditdock/pcui.js:776"
+   "src": "ext/imageeditdock/pcui.js:794"
   },
   {
    "s": "A path shape (? anchors) - edit it with the Pen (P) / Direct Selection (A)",
-   "src": "ext/imageeditdock/pcui.js:776"
+   "src": "ext/imageeditdock/pcui.js:794"
   },
   {
    "s": "Free Transform (Ctrl+T)",
-   "src": "ext/imageeditdock/pcui.js:786"
+   "src": "ext/imageeditdock/pcui.js:804"
   },
   {
    "s": "empty · a ◈ control layer",
-   "src": "ext/imageeditdock/pcui.js:786"
+   "src": "ext/imageeditdock/pcui.js:804"
   },
   {
    "s": "Percent",
-   "src": "ext/imageeditdock/pcui.js:903"
+   "src": "ext/imageeditdock/pcui.js:922"
   },
   {
    "s": "Constrain proportions",
-   "src": "ext/imageeditdock/pcui.js:903"
+   "src": "ext/imageeditdock/pcui.js:922"
   },
   {
    "s": "Anchor",
-   "src": "ext/imageeditdock/pcui.js:915"
+   "src": "ext/imageeditdock/pcui.js:934"
   },
   {
    "s": "New room on a Background layer is the background colour; elsewhere transparent",
-   "src": "ext/imageeditdock/pcui.js:915"
+   "src": "ext/imageeditdock/pcui.js:934"
   },
   {
    "s": "Fills the selection",
-   "src": "ext/imageeditdock/pcui.js:922"
+   "src": "ext/imageeditdock/pcui.js:941"
   },
   {
    "s": "Nothing selected - fills the whole layer",
-   "src": "ext/imageeditdock/pcui.js:922"
+   "src": "ext/imageeditdock/pcui.js:941"
   },
   {
    "s": "Center",
-   "src": "ext/imageeditdock/pcui.js:939"
+   "src": "ext/imageeditdock/pcui.js:958"
   },
   {
    "s": "Outside",
-   "src": "ext/imageeditdock/pcui.js:939"
+   "src": "ext/imageeditdock/pcui.js:958"
   },
   {
    "s": "Sample radius (px)",
-   "src": "ext/imageeditdock/pcui.js:947"
+   "src": "ext/imageeditdock/pcui.js:966"
   },
   {
    "s": "Expand by (px)",
-   "src": "ext/imageeditdock/pcui.js:947"
+   "src": "ext/imageeditdock/pcui.js:966"
   },
   {
    "s": "Contract by (px)",
-   "src": "ext/imageeditdock/pcui.js:947"
+   "src": "ext/imageeditdock/pcui.js:966"
   },
   {
    "s": "Fuzziness",
-   "src": "ext/imageeditdock/pcui.js:951"
+   "src": "ext/imageeditdock/pcui.js:970"
   },
   {
    "s": "Selects every pixel near the colour (all visible layers). Tip: the Eyedropper (I) sets the foreground colour first",
-   "src": "ext/imageeditdock/pcui.js:951"
+   "src": "ext/imageeditdock/pcui.js:970"
   },
   {
    "s": "pick a look —",
-   "src": "ext/imageeditdock/pcui.js:985"
+   "src": "ext/imageeditdock/pcui.js:1004"
   },
   {
    "s": "Blending",
-   "src": "ext/imageeditdock/pcui.js:985"
+   "src": "ext/imageeditdock/pcui.js:1004"
   },
   {
    "s": "Fill opacity (%)",
-   "src": "ext/imageeditdock/pcui.js:985"
+   "src": "ext/imageeditdock/pcui.js:1004"
   },
   {
    "s": "Lossless (every pixel kept exactly)",
-   "src": "ext/imageeditdock/pcui.js:1037"
+   "src": "ext/imageeditdock/pcui.js:1056"
   },
   {
    "s": "Type a command or a tool",
-   "src": "ext/imageeditdock/pcui.js:1087"
+   "src": "ext/imageeditdock/pcui.js:1106"
   },
   {
    "s": "click adds, drag moves, double-click removes",
-   "src": "ext/imageeditdock/pcui.js:1110"
+   "src": "ext/imageeditdock/pcui.js:1129"
   },
   {
    "s": "Level",
@@ -18676,39 +18740,39 @@
   },
   {
    "s": "no ComfyUI image style",
-   "src": "ext/imageeditdock/pczones.js:175"
+   "src": "ext/imageeditdock/pczones.js:178"
   },
   {
    "s": "a blank canvas: each thing is drawn into white - ▦ Regional or ✎ Edit makes the whole scene",
-   "src": "ext/imageeditdock/pczones.js:183"
+   "src": "ext/imageeditdock/pczones.js:186"
   },
   {
    "s": "each box = one ✨ Generate (Add content) with the fill style above; all queued at once into ⏳ Pending",
-   "src": "ext/imageeditdock/pczones.js:183"
+   "src": "ext/imageeditdock/pczones.js:186"
   },
   {
    "s": "one render by the Edit model (pick one above): the boxes are drawn on a copy of the picture and it is told what goes in each colour",
-   "src": "ext/imageeditdock/pczones.js:183"
+   "src": "ext/imageeditdock/pczones.js:186"
   },
   {
    "s": "a NEW picture from the boxes in one ComfyUI pass - the scene over the whole, each box's words only inside it (best with SDXL-type styles); it lands as a layer. 🎭 on a box = a character LoRA only inside it (two different ones at most - Settings ▸ Add-ons ▸ Nougan Nodes)",
-   "src": "ext/imageeditdock/pczones.js:183"
+   "src": "ext/imageeditdock/pczones.js:186"
   },
   {
    "s": "no boxes yet - 🔲 Draw boxes, then drag on the canvas",
-   "src": "ext/imageeditdock/pczones.js:190"
+   "src": "ext/imageeditdock/pczones.js:193"
   },
   {
    "s": "loras\\character.safetensors",
-   "src": "ext/imageeditdock/pczones.js:195"
+   "src": "ext/imageeditdock/pczones.js:198"
   },
   {
-   "s": "drag = a new box · drag a box = move it · its edges / corners = size it · Delete removes the picked one · say what goes in each in the ✨ AI panel ▸ 🔲 Zones",
-   "src": "ext/imageeditdock/pczones.js:237"
+   "s": "drag = a new box · drag a box = move it · its edges / corners = size it · Delete removes the picked one · say what goes in each in Properties ▸ 🔲 Zones",
+   "src": "ext/imageeditdock/pczones.js:240"
   },
   {
    "s": "zones (edit model)",
-   "src": "ext/imageeditdock/pczones.js:318"
+   "src": "ext/imageeditdock/pczones.js:321"
   },
   {
    "s": "New account",
@@ -21749,14 +21813,6 @@
   {
    "s": "Segment end = this frame",
    "src": "ext/timelinedock/blendview.js:100"
-  },
-  {
-   "s": "Open a Blender scene",
-   "src": "ext/timelinedock/blendview.js:138"
-  },
-  {
-   "s": "Blender scenes",
-   "src": "ext/timelinedock/blendview.js:138"
   },
   {
    "s": "Open a .blend",
@@ -28750,27 +28806,27 @@
   },
   {
    "p": "Align the layer {0} edges to the selection (or the canvas)",
-   "src": "ext/imageeditdock/imageedit.js:1615"
+   "src": "ext/imageeditdock/imageedit.js:1617"
   },
   {
    "p": "auto ({0})",
-   "src": "ext/imageeditdock/imageedit.js:2205"
-  },
-  {
-   "p": "Make it from the picture (the {0} preprocessor on the visible layers)",
    "src": "ext/imageeditdock/imageedit.js:2207"
   },
   {
+   "p": "Make it from the picture (the {0} preprocessor on the visible layers)",
+   "src": "ext/imageeditdock/imageedit.js:2209"
+  },
+  {
    "p": "rendering{0}",
-   "src": "ext/imageeditdock/imageedit.js:2818"
+   "src": "ext/imageeditdock/imageedit.js:2820"
   },
   {
    "p": "result {0}1 (seed {1})",
-   "src": "ext/imageeditdock/imageedit.js:2822"
+   "src": "ext/imageeditdock/imageedit.js:2824"
   },
   {
    "p": "Apply result {0}1 as a layer",
-   "src": "ext/imageeditdock/imageedit.js:2827"
+   "src": "ext/imageeditdock/imageedit.js:2829"
   },
   {
    "p": "Daz · {0}",
@@ -28822,7 +28878,15 @@
   },
   {
    "p": "{0} in the References docker",
-   "src": "ext/imageeditdock/pcblendlayer.js:139"
+   "src": "ext/imageeditdock/pcblendlayer.js:155"
+  },
+  {
+   "p": "sending {0}",
+   "src": "ext/imageeditdock/pcblendlayer.js:427"
+  },
+  {
+   "p": "{0} - Import puts it in",
+   "src": "ext/imageeditdock/pcblendlayer.js:433"
   },
   {
    "p": "All closed profiles ({0}, holes cut out)",
@@ -28850,11 +28914,11 @@
   },
   {
    "p": "in \"{0}\" ({1} statements)",
-   "src": "ext/imageeditdock/pccalendar.js:214"
+   "src": "ext/imageeditdock/pccalendar.js:215"
   },
   {
    "p": "{0} booking(s) from today on",
-   "src": "ext/imageeditdock/pccalendar.js:217"
+   "src": "ext/imageeditdock/pccalendar.js:218"
   },
   {
    "p": "The picked dimension ({0} px) measures",
@@ -28910,11 +28974,11 @@
   },
   {
    "p": "Comments ({0})",
-   "src": "ext/imageeditdock/pcdocnotes.js:122"
+   "src": "ext/imageeditdock/pcdocnotes.js:124"
   },
   {
    "p": "{0} · {1} · ✓ resolved",
-   "src": "ext/imageeditdock/pcdocnotes.js:123"
+   "src": "ext/imageeditdock/pcdocnotes.js:125"
   },
   {
    "p": "{0} (not saved)",
@@ -28926,11 +28990,11 @@
   },
   {
    "p": "px {0}",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "p": "pt {0}",
-   "src": "ext/imageeditdock/pcdoctable.js:431"
+   "src": "ext/imageeditdock/pcdoctable.js:447"
   },
   {
    "p": "{0} (next)",
@@ -29366,59 +29430,59 @@
   },
   {
    "p": "{0} (yours - right-click removes) - click = foreground, Alt-click = background",
-   "src": "ext/imageeditdock/pcui.js:553"
+   "src": "ext/imageeditdock/pcui.js:557"
   },
   {
    "p": "{0} - click = foreground, Alt-click = background",
-   "src": "ext/imageeditdock/pcui.js:553"
+   "src": "ext/imageeditdock/pcui.js:557"
   },
   {
    "p": "{0} — a CONTROL layer (guides the ✨ AI, never part of the picture) — double-click to rename",
-   "src": "ext/imageeditdock/pcui.js:633"
+   "src": "ext/imageeditdock/pcui.js:637"
   },
   {
    "p": "{0} — double-click to rename",
-   "src": "ext/imageeditdock/pcui.js:633"
+   "src": "ext/imageeditdock/pcui.js:637"
   },
   {
    "p": "Picture {0}1 (Ctrl-click to un-pick)",
-   "src": "ext/imageeditdock/pcui.js:645"
+   "src": "ext/imageeditdock/pcui.js:649"
   },
   {
    "p": "{0} stops - click: Edit",
-   "src": "ext/imageeditdock/pcui.js:762"
+   "src": "ext/imageeditdock/pcui.js:780"
   },
   {
    "p": "{0} (not in this library)",
-   "src": "ext/imageeditdock/pcui.js:764"
+   "src": "ext/imageeditdock/pcui.js:782"
   },
   {
    "p": "A path shape ({0} anchors) - edit it with the Pen (P) / Direct Selection (A)",
-   "src": "ext/imageeditdock/pcui.js:776"
+   "src": "ext/imageeditdock/pcui.js:794"
   },
   {
    "p": "{0} layer(s). Blend mode Pass Through lets its adjustment layers change what is under the group too",
-   "src": "ext/imageeditdock/pcui.js:783"
+   "src": "ext/imageeditdock/pcui.js:801"
   },
   {
    "p": "content {0} × {1} at {2}, {3} · a ◈ control layer",
-   "src": "ext/imageeditdock/pcui.js:786"
+   "src": "ext/imageeditdock/pcui.js:804"
   },
   {
    "p": "content {0} × {1} at {2}, {3}",
-   "src": "ext/imageeditdock/pcui.js:786"
+   "src": "ext/imageeditdock/pcui.js:804"
   },
   {
    "p": "Click a step to go back (or forward) to it. {0} step(s), the last 80 are kept",
-   "src": "ext/imageeditdock/pcui.js:856"
+   "src": "ext/imageeditdock/pcui.js:875"
   },
   {
    "p": "{0} × {1} px · {2} · {3} MB",
-   "src": "ext/imageeditdock/pcui.js:1059"
+   "src": "ext/imageeditdock/pcui.js:1078"
   },
   {
    "p": "{0} × {1} px · {2} · {3} KB",
-   "src": "ext/imageeditdock/pcui.js:1059"
+   "src": "ext/imageeditdock/pcui.js:1078"
   },
   {
    "p": "Unreal {0} · {1}",
@@ -29454,19 +29518,19 @@
   },
   {
    "p": "one render by the Edit model ({0}): the boxes are drawn on a copy of the picture and it is told what goes in each colour",
-   "src": "ext/imageeditdock/pczones.js:183"
+   "src": "ext/imageeditdock/pczones.js:186"
   },
   {
    "p": "Box {0}1 ({1}) - click to pick it",
-   "src": "ext/imageeditdock/pczones.js:191"
+   "src": "ext/imageeditdock/pczones.js:194"
   },
   {
    "p": "a character LoRA only inside box {0}1 (▦ Regional; two different LoRAs at most - Settings ▸ Add-ons ▸ Nougan Nodes)",
-   "src": "ext/imageeditdock/pczones.js:193"
+   "src": "ext/imageeditdock/pczones.js:196"
   },
   {
    "p": "Remove box {0}1",
-   "src": "ext/imageeditdock/pczones.js:194"
+   "src": "ext/imageeditdock/pczones.js:197"
   },
   {
    "p": "{0} needs an app password",
