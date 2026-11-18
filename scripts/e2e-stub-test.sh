@@ -14309,6 +14309,13 @@ node scripts/test-838.js > /tmp/t838.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui838-ui.js > /tmp/ui838.log 2>&1 \
   && ok "2.838.0 browser test: an anchored figure follows the text into the next frame + onto the next page, redrawn at a new width; a .xlsx as the data; the chart in the Word export" \
   || { bad "2.838.0 figures in the text browser test"; grep -a "^FAIL" -A1 /tmp/ui838.log | head -12; }
+# ---- 2.839.0 (Tim: "Drag a figure's layer to move its place in the text. Let text wrap beside a figure ...")
+node scripts/test-839.js > /tmp/t839.log 2>&1 \
+  && ok "2.839.0 pcdocfig blockIndexAt / relocate / layout / modeOf / tidy, sanitize keeps a figure's float, the wiring" \
+  || { bad "2.839.0 figures moved / beside the text units"; grep -a "^FAIL" -A1 /tmp/t839.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui839-ui.js > /tmp/ui839.log 2>&1 \
+  && ok "2.839.0 browser test: a figure dragged with the Move tool moves its place (undo), left / bigger / right by drag / full width" \
+  || { bad "2.839.0 figures moved / beside the text browser test"; grep -a "^FAIL" -A1 /tmp/ui839.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

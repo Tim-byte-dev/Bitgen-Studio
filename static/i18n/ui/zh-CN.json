@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "667bdb39b950",
- "count": 10469,
+ "v": "e42b48e34594",
+ "count": 10474,
  "patternCount": 1256,
  "strings": {
   "(Select all)": "(全选)",
@@ -10445,8 +10445,11 @@
   "¹ Insert Footnote": "¹ 插入脚注",
   "¹ Note": "¹ 脚注",
   "⏷ filter: ▾ on a heading picks the values shown": "⏷ 筛选：标题上的 ▾ 选择要显示的值",
+  "▭ Figure: Full Width": "▭ 图：全宽",
   "▶ Next Record": "▶ 下一条记录",
   "◀ Previous Record": "◀ 上一条记录",
+  "◧ Figure: Left - Text Beside": "◧ 图：左 - 正文在旁",
+  "◨ Figure: Right - Text Beside": "◨ 图：右 - 正文在旁",
   "⚙ Settings ▸ Remote generation": "⚙ 设置 ▸ 远程生成",
   "✂ Cut": "✂ 剪切",
   "✂ cut - paste where it goes": "✂ 已剪切 - 粘贴到目标位置",
@@ -10472,7 +10475,9 @@
   "🕺 Motion in the preview bar: a video of a person becomes 3D motion - an animated skeleton (.fbx) and SMPL-H (.npz) in the project's models3d, for the timeline's 3D layers, Blender, Daz or Unreal. ⚠ NON-COMMERCIAL USE ONLY: it needs the SMPL-H body model and Meta's SAM 3D Body / VGGT-Omega, whose licences forbid commercial use": "预览栏中的 🕺 动作：把有人物的视频变成 3D 动作 - 带动画的骨架（.fbx）和 SMPL-H（.npz）存入项目的 models3d，可用于时间线的 3D 图层、Blender、Daz 或 Unreal。⚠ 仅限非商业用途：它需要 SMPL-H 人体模型以及 Meta 的 SAM 3D Body / VGGT-Omega，这些许可证禁止商业使用",
   "🖨 Finish & Merge…": "🖨 完成并合并…",
   "🖨 Merge": "🖨 合并",
-  "🧠 LLM": "🧠 LLM"
+  "🧠 LLM": "🧠 LLM",
+  "＋ Figure Bigger": "＋ 图放大",
+  "－ Figure Smaller": "－ 图缩小"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",

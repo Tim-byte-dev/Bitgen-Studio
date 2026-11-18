@@ -54,7 +54,9 @@
 .pcfn{font-size:9pt;line-height:1.15}
 .pcfn p{margin:0 0 2pt}
 .pcfnrule{width:33%;border-top:0.75px solid #555;margin:0 0 3pt}
-.pcdoc p[data-fig]{margin:6pt 0 10pt;overflow:hidden}`;
+.pcdoc p[data-fig]{margin:6pt 0 10pt;overflow:hidden;box-sizing:content-box}
+.pcdoc p[data-fig][style*="float"]{margin-top:2pt;margin-bottom:6pt;font-size:9pt}
+.pcdoc p[data-fig] i{display:block;font-size:9pt;line-height:1.2;padding-top:2pt}`;
   const TAGS = new Set(["P", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "PRE", "UL", "OL", "LI", "BR", "HR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE", "DEL",
     "SUB", "SUP", "SPAN", "A", "CODE", "MARK", "TABLE", "THEAD", "TBODY", "TR", "TD", "TH", "COLGROUP", "COL"]);   // 2.812.0: + colgroup / col (column widths)
   const STYLE_KEYS = ["font-family", "font-size", "font-weight", "font-style", "text-decoration", "text-decoration-line", "color", "background-color",
@@ -93,7 +95,14 @@
         }
         // 2.838.0: a figure's place in the story (pcdocai.js) - an empty paragraph as tall as the chart / picture layer kept on it
         const fig = tag === "P" && n.getAttribute ? n.getAttribute("data-fig") : null;
-        if (fig && /^[\w-]{1,32}$/.test(fig)) { const fh = parseFloat(n.style && n.style.height); if (fh > 0) st.push("height:" + Math.min(4000, Math.round(fh)) + "px"); e.setAttribute("data-fig", fig); }
+        if (fig && /^[\w-]{1,32}$/.test(fig)) {
+          const fh = parseFloat(n.style && n.style.height); if (fh > 0) st.push("height:" + Math.min(4000, Math.round(fh)) + "px");
+          // 2.839.0: a figure beside the text (float + width) with its picture above its caption (padding-top) - pcdocfig.js
+          const fs = n.style || {}, fl = String(fs.float || fs.cssFloat || "").toLowerCase(); if (fl === "left" || fl === "right") st.push("float:" + fl);
+          const pt = parseFloat(fs.paddingTop); if (pt > 0) st.push("padding-top:" + Math.min(4000, Math.round(pt)) + "px");
+          const mr = parseFloat(fs.marginRight); if (mr > 0) st.push("margin-right:" + Math.min(200, Math.round(mr)) + "px");
+          e.setAttribute("data-fig", fig);
+        }
         if (st.length) e.setAttribute("style", st.join(";"));
         const ds = n.getAttribute && n.getAttribute("data-style"); if (ds && DATA_STYLES.has(ds) && tag === "P") e.setAttribute("data-style", ds);
         if (tag === "A") { const h = n.getAttribute("href") || ""; if (/^(https?:|mailto:)/i.test(h)) e.setAttribute("href", h); }
@@ -219,8 +228,11 @@
     // 2.815.0: where each footnote mark sits (story order)
     const refs = [...el.querySelectorAll("sup[data-fn]")].map((x) => ({ id: x.getAttribute("data-fn"), top: x.getBoundingClientRect().top - r0.top }));
     // 2.838.0: where each figure's place sits (story order) - the layer anchored to it follows (anchorBoxes)
-    const figs = [...el.querySelectorAll("p[data-fig]")].map((x) => { const r = x.getBoundingClientRect(); return { id: x.getAttribute("data-fig"), top: r.top - r0.top, bottom: r.bottom - r0.top, left: r.left - r0.left, width: r.width }; });
-    return { bands: bands(rects), height: el.getBoundingClientRect().height, heads, refs, figs };
+    // 2.839.0: a place with its caption inside (padding-top = the picture) - the picture is the padding only
+    const figs = [...el.querySelectorAll("p[data-fig]")].map((x) => { const r = x.getBoundingClientRect(), pt = parseFloat((doc.defaultView || root).getComputedStyle(x).paddingTop) || 0; return { id: x.getAttribute("data-fig"), top: r.top - r0.top, bottom: pt > 0 ? r.top - r0.top + pt : r.bottom - r0.top, left: r.left - r0.left, width: r.width }; });
+    // 2.839.0: the story's top-level blocks (where a figure dragged lands - pcdocfig.js)
+    const blocks = [...el.children].map((x) => { const r = x.getBoundingClientRect(); return { top: r.top - r0.top, bottom: r.bottom - r0.top, fig: x.getAttribute("data-fig") || null }; });
+    return { bands: bands(rects), height: el.getBoundingClientRect().height, heads, refs, figs, blocks };
   }
   function xhtmlOf(doc, html) {
     const box = doc.createElement("div"); box.innerHTML = html;

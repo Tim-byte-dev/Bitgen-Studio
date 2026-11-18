@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "68fad55eb64a",
- "count": 10469,
+ "v": "328471d59c09",
+ "count": 10474,
  "patternCount": 1256,
  "strings": {
   "(Select all)": "(すべて選択)",
@@ -10445,8 +10445,11 @@
   "¹ Insert Footnote": "¹ 脚注を挿入",
   "¹ Note": "¹ 脚注",
   "⏷ filter: ▾ on a heading picks the values shown": "⏷ フィルター：見出しの ▾ で表示する値を選択",
+  "▭ Figure: Full Width": "▭ 図：全幅",
   "▶ Next Record": "▶ 次のレコード",
   "◀ Previous Record": "◀ 前のレコード",
+  "◧ Figure: Left - Text Beside": "◧ 図：左 - 横に本文",
+  "◨ Figure: Right - Text Beside": "◨ 図：右 - 横に本文",
   "⚙ Settings ▸ Remote generation": "⚙ 設定 ▸ リモート生成",
   "✂ Cut": "✂ 切り取り",
   "✂ cut - paste where it goes": "✂ 切り取りました - 移動先に貼り付けてください",
@@ -10472,7 +10475,9 @@
   "🕺 Motion in the preview bar: a video of a person becomes 3D motion - an animated skeleton (.fbx) and SMPL-H (.npz) in the project's models3d, for the timeline's 3D layers, Blender, Daz or Unreal. ⚠ NON-COMMERCIAL USE ONLY: it needs the SMPL-H body model and Meta's SAM 3D Body / VGGT-Omega, whose licences forbid commercial use": "プレビューバーの 🕺 モーション：人が映った動画を 3D の動きに - アニメーション付きのスケルトン（.fbx）と SMPL-H（.npz）をプロジェクトの models3d に。タイムラインの 3D レイヤー、Blender、Daz、Unreal で使えます。⚠ 非営利目的のみ：SMPL-H ボディモデルと Meta の SAM 3D Body / VGGT-Omega が必要で、それらのライセンスは商用利用を禁じています",
   "🖨 Finish & Merge…": "🖨 完了と差し込み…",
   "🖨 Merge": "🖨 差し込む",
-  "🧠 LLM": "🧠 LLM"
+  "🧠 LLM": "🧠 LLM",
+  "＋ Figure Bigger": "＋ 図を大きく",
+  "－ Figure Smaller": "－ 図を小さく"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",

@@ -16,13 +16,13 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   const d = { title: "Sales", blocks: [{ type: "p", text: "Apples sold best." }, { type: "chart", caption: "Figure 1: units", chart: { type: "column", cats: ["A"], series: [{ name: "u", values: [1] }] } },
     { type: "p", text: "An orchard." }, { type: "image", caption: "Figure 2: orchard", picture: "an orchard" }] };
   const html = P.toHtml(d, { colW: 500, frameH: 700, figId: (n) => "x" + n });
-  check("toHtml with a column width: each figure's place right where the LLM put it (a data-fig paragraph as tall as it), its caption under it",
-    /<p>Apples sold best\.<\/p><p data-fig="x1" style="height:280px"><br><\/p><p><i>Figure 1: units<\/i><\/p><p>An orchard\.<\/p><p data-fig="x2" style="height:310px"><br><\/p><p><i>Figure 2: orchard<\/i><\/p>/.test(html), html);
+  check("toHtml with a column width: each figure's place right where the LLM put it (a data-fig paragraph, the picture as its padding-top, its caption inside under it - 2.839.0)",
+    /<p>Apples sold best\.<\/p><p data-fig="x1" style="padding-top:280px"><i>Figure 1: units<\/i><\/p><p>An orchard\.<\/p><p data-fig="x2" style="padding-top:310px"><i>Figure 2: orchard<\/i><\/p>/.test(html), html);
   check("figHeight: a chart 0.56 of the column, a picture 0.62, never over 70 % of the frame, at least 40 px",
     P.figHeight("chart", 1000) === 560 && P.figHeight("image", 1000) === 620 && P.figHeight("image", 1000, 500) === 350 && P.figHeight("chart", 10) === 40);
   const sa = T.sanitize(html + '<p data-fig="bad id!" style="height:99px">x</p><p data-fig="y" style="height:99999px;position:fixed"><br></p><span data-fig="z">w</span>', doc);
   check("pcdoctext sanitize keeps a figure's place (its id, its height up to 4000 px) - a bad id dropped, nothing else let through",
-    /<p data-fig="x1" style="height: ?280px;?"><br><\/p>/.test(sa) && /<p data-fig="y" style="height: ?4000px;?"><br><\/p>/.test(sa) && !/bad id/.test(sa) && !/position/.test(sa) && !/data-fig="z"/.test(sa) && (sa.match(/data-fig=/g) || []).length === 3, sa);
+    /<p data-fig="x1" style="padding-top: ?280px;?"><i>Figure 1: units<\/i><\/p>/.test(sa) && /<p data-fig="y" style="height: ?4000px;?"><br><\/p>/.test(sa) && !/bad id/.test(sa) && !/position/.test(sa) && !/data-fig="z"/.test(sa) && (sa.match(/data-fig=/g) || []).length === 3, sa);
   // anchorBoxes: two frames 400 tall (k = 2, so 200 CSS px each), windows at 0 and 190
   const wins = [{ top: 0 }, { top: 190 }], frames = [{ x: 10, y: 20, k: 2, h: 400 }, { x: 600, y: 20, k: 2, h: 400, repH: 12 }];
   const ab = T.anchorBoxes([{ id: "a", top: 50, bottom: 150, left: 0, width: 250 }, { id: "b", top: 200, bottom: 300, left: 5, width: 240 }, { id: "c", top: 395, bottom: 450, left: 0, width: 250 }], wins, frames);

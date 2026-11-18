@@ -149,7 +149,11 @@
         const tag = n.nodeType === 1 ? n.tagName : null;
         if (tag && (BLOCK.has(tag) || isList(n) || tag === "TABLE" || tag === "HR")) {
           flush();
-          if (tag === "P" && n.getAttribute("data-fig")) { out.push({ t: "img", fig: n.getAttribute("data-fig") }); continue; }   // 2.838.0: a figure's place (its picture filled in by modelOf)
+          if (tag === "P" && n.getAttribute("data-fig")) {   // 2.838.0: a figure's place (its picture filled in by modelOf); 2.839.0: + its caption inside
+            out.push({ t: "img", fig: n.getAttribute("data-fig") });
+            const cap = runsOf(n).filter((r) => !r.br); if (cap.some((r) => String(r.text || "").trim())) out.push({ t: "p", runs: cap, align: "center" });
+            continue;
+          }
           if (BLOCK.has(tag)) { const p = paraOf(n); p.runs = runsOf(n); out.push(p); }
           else if (isList(n)) listItems(n, 0, out);
           else if (tag === "TABLE") out.push(tableOf(n, blocksIn));

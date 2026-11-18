@@ -9503,6 +9503,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - A **spreadsheet** (.xlsx / .csv) on the prompt docker's ＋ while a WP layer is picked is the data: its sheets go to the LLM as rows of cells. "Write a report from this spreadsheet".
 - **File ▸ Export ▸ Word Document** puts the figures into the .docx as pictures at their places.
 
+## 🖼 Image editor - figures moved in the text, figures beside the text (2.839.0)
+
+- Drag a document's figure with the **Move tool**: its place moves in the text to where you let go (any frame of the story on this page), and it snaps in there. Ctrl+Z puts it back.
+- Right-click a figure: **◧ Left - Text Beside** / **◨ Right - Text Beside** (the text flows round it), **＋ Bigger** / **－ Smaller** (a quarter to three quarters of the column), **▭ Full Width**. A figure beside the text dragged to the frame's other half goes to that side. The caption stays under the picture.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

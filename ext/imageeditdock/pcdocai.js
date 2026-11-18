@@ -58,8 +58,10 @@
           + `<tbody>${rows.slice(head ? 1 : 0).map((r) => `<tr>${r.map((x) => `<td>${esc(x) || "<br>"}</td>`).join("")}</tr>`).join("")}</tbody></table>`);
       } else if (b.type === "chart" || b.type === "image") {
         fig++;
-        if (o.colW) out.push(`<p data-fig="${esc(o.figId ? o.figId(fig) : "f" + fig)}" style="height:${figHeight(b.type, o.colW, o.frameH)}px"><br></p>`);
-        out.push("<p><i>" + esc(b.caption || "Figure " + fig) + "</i></p>");   // the LLM's caption ("Figure 1: …") under its place
+        const cap = "<i>" + esc(b.caption || "Figure " + fig) + "</i>";      // the LLM's caption ("Figure 1: …")
+        // 2.839.0: the caption INSIDE the place, under the picture (padding-top = the picture) - it moves / floats with it
+        if (o.colW) out.push(`<p data-fig="${esc(o.figId ? o.figId(fig) : "f" + fig)}" style="padding-top:${figHeight(b.type, o.colW, o.frameH)}px">${cap}</p>`);
+        else out.push("<p>" + cap + "</p>");
       }
     }
     return out.join("");
