@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6241,
+ "count": 6247,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -57496,6 +57496,60 @@
    ],
    "where": [
     "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build Website…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build Website",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "✨ The AI makes each page responsive (else bitGen lays it out)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "⤓ .zip of the last build",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
+   ]
+  },
+  {
+   "s": "👁 Preview the last build",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor website (2.843.0)"
    ]
   }
  ]

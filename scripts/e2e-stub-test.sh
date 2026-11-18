@@ -14337,6 +14337,13 @@ node scripts/test-842.js > /tmp/t842.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui842-ui.js > /tmp/ui842.log 2>&1 \
   && ok "2.842.0 browser test: the 🗄 button, \"create a database for my shop\" -> the SQL shown, ▶ Run, tables / view / keys, rows, ⌨ SQL" \
   || { bad "2.842.0 database browser test"; grep -a "^FAIL" -A1 /tmp/ui842.log | head -12; }
+# ---- 2.843.0 (Tim: "now everything is is place for an ai website builder, we can build the website in image editor and make it in the language the user needs like php/mysql")
+node scripts/test-843.js > /tmp/t843.log 2>&1 \
+  && ok "2.843.0 siteBuild save / build (AI checked, own layout) / static + PHP + MySQL / zip / preview, pcsite alphaBox / plainColour / figHtml, the wiring" \
+  || { bad "2.843.0 website units"; grep -a "^FAIL" -A1 /tmp/t843.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui843-ui.js > /tmp/ui843.log 2>&1 \
+  && ok "2.843.0 browser test: a 2-page document collected, built by the AI (stand-in) as a static site + previewed, PHP + MySQL zip" \
+  || { bad "2.843.0 website browser test"; grep -a "^FAIL" -A1 /tmp/ui843.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

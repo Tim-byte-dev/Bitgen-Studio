@@ -15787,6 +15787,38 @@
    "src": "ext/imageeditdock/pcshapeops.js:471"
   },
   {
+   "s": "Site title",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "Built with",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "Static HTML / CSS",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "PHP + MySQL",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "Language",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "The AI makes each page responsive (else bitGen lays it out)",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "zip of the last build",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
+   "s": "Preview the last build",
+   "src": "ext/imageeditdock/pcsite.js:101"
+  },
+  {
    "s": "Two points",
    "src": "ext/imageeditdock/pcsketchcad.js:49"
   },
@@ -28563,6 +28595,10 @@
   {
    "p": "{0} - click: a new one, Shift+click: the picked shape becomes it, Ctrl+click: add to it, Alt+click: subtract from it (U)",
    "src": "ext/imageeditdock/pcshapeops.js:364"
+  },
+  {
+   "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
+   "src": "ext/imageeditdock/pcsite.js:101"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

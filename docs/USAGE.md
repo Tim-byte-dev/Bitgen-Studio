@@ -9525,6 +9525,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✨ Design**: describe what it is for; the LLM writes the tables, fields, keys, links, indexes and views as SQL you read first, then **▶ Run**. Or in the prompt docker: "create a database for my shop with customers and orders".
 - The tables and views on the left, **📋 Data** (their rows), **⌨ SQL** (any SQL).
 
+## 🌐 Image editor - build a website from your pages (2.843.0)
+
+- Each page of the document is a web page (its name = its menu title); text layers stay text, WP layers keep their formatting, the rest goes in as pictures.
+- **File ▸ 🌐 Build Website…**: Static HTML / CSS or PHP + MySQL; ✨ the AI writes each page's responsive HTML / CSS with your exact words and pictures (checked; bitGen lays a page out itself if not). PHP + MySQL adds a shared header / footer, a contact form saved to MySQL, `schema.sql` and a README. A preview opens; ⤓ .zip downloads it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
