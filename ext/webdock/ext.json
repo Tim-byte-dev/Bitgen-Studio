@@ -1,0 +1,9 @@
+{
+  "id": "webdock",
+  "name": "Web editor",
+  "order": 98,
+  "html": "dock.html",
+  "scripts": [
+    "webdock.js"
+  ]
+}

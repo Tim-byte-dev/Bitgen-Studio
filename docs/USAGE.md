@@ -9606,6 +9606,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🧰 Blender tools…**: LODs, UV pack, bake maps, export for Unreal / Unity / Godot, toon look, time of day, weather, turntable, QA - on a copy of the open scene.
 - Blender older than 5.2 = a box with ⬇ Download. The skills: blender-skills by EL4CTEO (MIT).
 
+## 🌐 The Web editor (2.856.0)
+
+- **🌐 Web editor** (the top bar's 🌐) edits the open project's **www** folder - the website itself. **Project ▸ ✚ New ▸ ☑ Website** makes it for a new project: www with css, js, images, fonts, media, inc, admin, data and uploads, starter pages (index, about, contact, 404), a style sheet, a script, robots.txt and .htaccess. A project without one: **🌐 Make the www folder**.
+- **Files** on the right (▸ collapses it): the www tree - folders open and shut; ＋📄 new file, ＋📁 new folder, ⤒ add files from this computer, ✎ rename / move, 🗑 delete (moved to the project's web/trash), ⟳ read again. Click a file to open it.
+- **🗂 CRM** - Content: 📄 Pages (each page's title, description and main heading; ✎ Open edits the whole page), 📰 Posts and 🛍 Products (www/data/content.json - the site reads it). Customers: 👤 Clients, 📅 Bookings, 🧾 Orders, ✉ Messages (the project's web/crm.json - private, never on the site). Search, ＋ New, click a row to change it.
+- **✎ WYSIWYG** - the open page as it looks, with its own style sheet: type on it; bold / italic / underline, headings, lists, alignment, 🔗 links, 🖼 the site's pictures. The page's scripts do not run here. Your edits go back into the page's body - its head stays as written.
+- **</> Code** - the open file's text (Tab = two spaces, Ctrl+S saves). **👁 Preview** - the site as a browser shows it (unsaved changes drawn from the text), 🖥 Desktop / ▭ Tablet / 📱 Phone width, ↗ Open in a browser tab. The ● beside the file name = not saved; 💾 Save (Ctrl+S) writes it - a file changed on disk since you opened it is not overwritten.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

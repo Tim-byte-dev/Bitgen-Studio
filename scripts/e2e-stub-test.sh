@@ -14440,6 +14440,13 @@ node scripts/test-855.js > /tmp/t855.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui855-ui.js > /tmp/ui855.log 2>&1 \
   && ok "2.855.0 browser test: the 🟧 ▾ items, the Download box, the script shown before ▶ Run, the result + 🟧 Open, the tools" \
   || { bad "2.855.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui855.log | head -12; }
+# ---- 2.856.0 (🌐 the Web editor docker + ☑ Website on New project)
+node scripts/test-856.js > /tmp/t856.log 2>&1 \
+  && ok "2.856.0 🌐 Web editor: www made with its folders, paths kept inside, files, CMS pages / posts / products, the private CRM, the docker's parts" \
+  || { bad "2.856.0 units"; grep -a "^FAIL" -A1 /tmp/t856.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui856-ui.js > /tmp/ui856.log 2>&1 \
+  && ok "2.856.0 browser test: the 🌐 docker, Make www, the files panel, Code + Ctrl+S, WYSIWYG back into the body, Preview, CRM, New project ☑ Website" \
+  || { bad "2.856.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui856.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

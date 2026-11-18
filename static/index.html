@@ -3399,6 +3399,9 @@
     <label for="npDesc">DESCRIPTION</label>
     <textarea id="npDesc" maxlength="2000" placeholder="What this project is for — shown under the menu bar."></textarea>
   </div>
+  <div class="fld">
+    <label title="Makes a www folder inside the project with the website's folders (css, js, images, fonts, media, inc, admin, data, uploads) and starter pages - edit it in the 🌐 Web editor"><input type="checkbox" id="npWeb"> 🌐 Website - a www folder with the site's folders</label>
+  </div>
   <div id="newprjhint"></div>
   <div class="rowbtns" style="justify-content:flex-end">
     <button class="ghost" id="npCancel" type="button">Cancel</button>
@@ -13596,6 +13599,7 @@ function paintProject(name, data) {
 $("projNew").onclick = () => {
   $("npName").value = "";
   $("npDesc").value = "";
+  $("npWeb").checked = false;   // 2.856.0
   $("newprjhint").textContent = "";
   if (!$("newprjdlg").open) $("newprjdlg").showModal();
   $("npName").focus();
@@ -13613,7 +13617,7 @@ $("npCreate").onclick = async () => {
     await saveLeavingState();                // 2.371.0: the project being left keeps where it was
     const res = await fetch("/api/projects/new", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description: $("npDesc").value }),
+      body: JSON.stringify({ name, description: $("npDesc").value, website: $("npWeb").checked }),   // 2.856.0: ☑ Website = projects/<name>/www
     });
     const j = await res.json();
     // the server owns the name rules, so its message is shown as-is rather

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6620,
+ "count": 6688,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -61280,6 +61280,686 @@
    ],
    "where": [
     "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Web editor",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "CRM",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "WYSIWYG",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Content (pages, posts, products) and customers (clients, bookings, orders, messages)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Edit the open page as it looks - type on it, the toolbar formats",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "The open file's code (Ctrl+S saves)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "The site as a browser shows it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "The open file",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "no file open",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Save the open file (Ctrl+S)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "This project has no website yet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Make the www folder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "projects/<project>/www with css, js, images, fonts, media, inc, admin, data, uploads and starter pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Project ▸ ✚ New ▸ ☑ Website makes it for a new project",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Posts",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Products",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Customers",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Clients",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Orders",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Messages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Bulleted list",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Numbered list",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "List",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "1. List",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Make the selected words a link",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Put a picture of the site where the cursor is",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "WYSIWYG edits .html pages - open one from the files",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "open a file from the files on the right",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Desktop width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Tablet width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Phone width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Show it again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Open the saved page in a browser tab",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Show / hide the files",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "New file (in the picked folder)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "New folder (in the picked folder)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Add files from this computer (into the picked folder)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Rename / move the picked file or folder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Delete the picked file or folder (kept in the project's web/trash)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Read the folder again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the 🌐 button on the top bar shows it again)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Website - a www folder with the site's folders",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Makes a www folder inside the project with the website's folders (css, js, images, fonts, media, inc, admin, data, uploads) and starter pages - edit it in the 🌐 Web editor",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Title (the browser tab + search results)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Description (search results)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Main heading",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Address name",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Picture (e.g. images/post.jpg)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Published",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Sale price",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "In stock",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "In the shop",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Company",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Tags",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Client",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Order number",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Items",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Received",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "showing your unsaved changes - 💾 Save to keep them",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Kept in www/data/content.json - the site reads it (public)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Kept in the project's web/crm.json - private, never put on the site",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "no pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "none yet - ＋ New",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "Open the page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "nothing matches",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "this project has no website yet - 🌐 Make the www folder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor (2.856.0)"
    ]
   }
  ]

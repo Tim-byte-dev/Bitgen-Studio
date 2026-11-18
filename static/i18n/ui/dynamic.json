@@ -1380,131 +1380,131 @@
   },
   {
    "s": "a project name is required",
-   "src": "index.html:9978"
+   "src": "index.html:9979"
   },
   {
    "s": "could not create the project",
-   "src": "index.html:9989"
+   "src": "index.html:9990"
   },
   {
    "s": "right-click: ↺ Reset pin",
-   "src": "index.html:10498"
+   "src": "index.html:10499"
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10999"
+   "src": "index.html:11000"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:11097"
-  },
-  {
-   "s": "Checkpoints",
-   "src": "index.html:11097"
-  },
-  {
-   "s": "Text encoders",
    "src": "index.html:11098"
   },
   {
-   "s": "CLIP vision",
+   "s": "Checkpoints",
+   "src": "index.html:11098"
+  },
+  {
+   "s": "Text encoders",
    "src": "index.html:11099"
   },
   {
-   "s": "Embeddings",
+   "s": "CLIP vision",
    "src": "index.html:11100"
   },
   {
-   "s": "Upscale models",
+   "s": "Embeddings",
    "src": "index.html:11101"
+  },
+  {
+   "s": "Upscale models",
+   "src": "index.html:11102"
   },
   {
    "s": "Configs",
-   "src": "index.html:11101"
+   "src": "index.html:11102"
   },
   {
    "s": "folder, or a name under the base folder",
-   "src": "index.html:11103"
+   "src": "index.html:11104"
   },
   {
    "s": "Select folder",
-   "src": "index.html:11103"
+   "src": "index.html:11104"
   },
   {
    "s": "Select Folder",
-   "src": "index.html:11127"
+   "src": "index.html:11128"
   },
   {
    "s": "the folder dialog could not open — type the path",
-   "src": "index.html:11130"
+   "src": "index.html:11131"
   },
   {
    "s": "pick the base folder first",
-   "src": "index.html:11135"
+   "src": "index.html:11136"
   },
   {
    "s": "standard folders filled — 💾 to write them",
-   "src": "index.html:11138"
+   "src": "index.html:11139"
   },
   {
    "s": "writing",
-   "src": "index.html:11143"
+   "src": "index.html:11144"
   },
   {
    "s": "refused",
-   "src": "index.html:11148"
-  },
-  {
-   "s": "written: nothing new · restart ComfyUI to pick the folders up",
    "src": "index.html:11149"
   },
   {
+   "s": "written: nothing new · restart ComfyUI to pick the folders up",
+   "src": "index.html:11150"
+  },
+  {
    "s": "new graph —",
-   "src": "index.html:11192"
+   "src": "index.html:11193"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11199"
+   "src": "index.html:11200"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11216"
+   "src": "index.html:11217"
   },
   {
    "s": "label",
-   "src": "index.html:11223"
+   "src": "index.html:11224"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11223"
+   "src": "index.html:11224"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11223"
+   "src": "index.html:11224"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11223"
+   "src": "index.html:11224"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11253"
+   "src": "index.html:11254"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11292"
+   "src": "index.html:11293"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11423"
+   "src": "index.html:11424"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11500"
+   "src": "index.html:11501"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11500"
+   "src": "index.html:11501"
   },
   {
    "s": "Version",
@@ -26177,6 +26177,98 @@
   {
    "s": "The LLM writes the scenes from your brief, then every scene gets its storyboard picture (with the references ticked here: character sheets, locations, reference images)",
    "src": "ext/videodock/storyboard.js:92"
+  },
+  {
+   "s": "Title (the browser tab + search results)",
+   "src": "ext/webdock/webdock.js:46"
+  },
+  {
+   "s": "Description (search results)",
+   "src": "ext/webdock/webdock.js:46"
+  },
+  {
+   "s": "Main heading",
+   "src": "ext/webdock/webdock.js:46"
+  },
+  {
+   "s": "Address name",
+   "src": "ext/webdock/webdock.js:47"
+  },
+  {
+   "s": "Picture (e.g. images/post.jpg)",
+   "src": "ext/webdock/webdock.js:47"
+  },
+  {
+   "s": "Published",
+   "src": "ext/webdock/webdock.js:47"
+  },
+  {
+   "s": "Sale price",
+   "src": "ext/webdock/webdock.js:48"
+  },
+  {
+   "s": "In stock",
+   "src": "ext/webdock/webdock.js:48"
+  },
+  {
+   "s": "In the shop",
+   "src": "ext/webdock/webdock.js:48"
+  },
+  {
+   "s": "Company",
+   "src": "ext/webdock/webdock.js:49"
+  },
+  {
+   "s": "Tags",
+   "src": "ext/webdock/webdock.js:49"
+  },
+  {
+   "s": "Client",
+   "src": "ext/webdock/webdock.js:50"
+  },
+  {
+   "s": "Order number",
+   "src": "ext/webdock/webdock.js:51"
+  },
+  {
+   "s": "Items",
+   "src": "ext/webdock/webdock.js:51"
+  },
+  {
+   "s": "Received",
+   "src": "ext/webdock/webdock.js:52"
+  },
+  {
+   "s": "no file open",
+   "src": "ext/webdock/webdock.js:91"
+  },
+  {
+   "s": "showing your unsaved changes - 💾 Save to keep them",
+   "src": "ext/webdock/webdock.js:154"
+  },
+  {
+   "s": "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page",
+   "src": "ext/webdock/webdock.js:163"
+  },
+  {
+   "s": "Kept in www/data/content.json - the site reads it (public)",
+   "src": "ext/webdock/webdock.js:163"
+  },
+  {
+   "s": "Kept in the project's web/crm.json - private, never put on the site",
+   "src": "ext/webdock/webdock.js:163"
+  },
+  {
+   "s": "no pages",
+   "src": "ext/webdock/webdock.js:172"
+  },
+  {
+   "s": "none yet - ＋ New",
+   "src": "ext/webdock/webdock.js:172"
+  },
+  {
+   "s": "Open the page",
+   "src": "ext/webdock/webdock.js:177"
   }
  ],
  "patterns": [
@@ -27126,75 +27218,75 @@
   },
   {
    "p": "preview · {0}",
-   "src": "index.html:10120"
+   "src": "index.html:10121"
   },
   {
    "p": "{0}s (from {1}s)",
-   "src": "index.html:10251"
+   "src": "index.html:10252"
   },
   {
    "p": "{0} · right-click: ↺ Reset pin",
-   "src": "index.html:10498"
+   "src": "index.html:10499"
   },
   {
    "p": "{0} dock",
-   "src": "index.html:10899"
+   "src": "index.html:10900"
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10956"
+   "src": "index.html:10957"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10961"
+   "src": "index.html:10962"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:11103"
+   "src": "index.html:11104"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11149"
+   "src": "index.html:11150"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11149"
+   "src": "index.html:11150"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11149"
+   "src": "index.html:11150"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11201"
+   "src": "index.html:11202"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11292"
+   "src": "index.html:11293"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11348"
+   "src": "index.html:11349"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11348"
+   "src": "index.html:11349"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11457"
+   "src": "index.html:11458"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11521"
+   "src": "index.html:11522"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11649"
+   "src": "index.html:11650"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11650"
+   "src": "index.html:11651"
   },
   {
    "p": "The credits could not be read: {0}",
@@ -31375,6 +31467,14 @@
   {
    "p": "step {0} of {1}",
    "src": "ext/videodock/storyboard.js:168"
+  },
+  {
+   "p": "{0} MB",
+   "src": "ext/webdock/webdock.js:77"
+  },
+  {
+   "p": "{0} KB",
+   "src": "ext/webdock/webdock.js:77"
   }
  ]
 }

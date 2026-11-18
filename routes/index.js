@@ -123,6 +123,7 @@ function mount(app) {
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   // 2.832.0: BEFORE express.json - workbooks and decks are often bigger than its 100 KB (pictures in a deck): the global parser
   // refused them with 413 "the request is too big" before their own 45 / 90 MB parsers ran (▦ saves of big workbooks too)
+  require("./webEditor").mount(app);   // 2.856.0: 🌐 the Web editor docker - projects/<p>/www (lib/webProject.js)
   require("./sheets").mount(app);      // 2.822.0: ▦ Spreadsheet - workbooks (.bgs) in projects/<p>/sheets
   require("./slides").mount(app);      // 2.831.0: 🎞 Slides - decks (.bgk) in projects/<p>/slides, .pptx in / out, PDF kept
   require("./docAi").mount(app);       // 2.837.0: 📄 ✨ a document by the LLM into a WP layer (lib/docAi.js) - before the 100 KB json parser
@@ -2832,7 +2833,7 @@ const trap = require("../lib/trap");
   // there, which is right for saving and very wrong for "New".
   app.post("/api/projects/new", (req, res) => {
     const b = req.body || {};
-    try { res.json(projects.create(b.name, b.description)); }
+    try { const out = projects.create(b.name, b.description); if (b.website) out.www = require("../lib/webProject").create(out.name); res.json(out); }   // 2.856.0: ☑ Website = projects/<name>/www + its folders
     catch (e) { res.status(e.status || 400).json({ error: e.message }); }
   });
   app.post("/api/projects/load", (req, res) => {

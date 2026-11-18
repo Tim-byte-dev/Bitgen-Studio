@@ -1,0 +1,160 @@
+    <div class="bdock" id="webdock" data-own-space="1">
+      <div class="bhead" data-collapse="webdock">▾ 🌐 Web editor<button id="wbMaxBtn" class="maxbtn" data-max="webdock" type="button" title="Maximize" aria-label="Maximize" style="margin-left:auto">⛶</button><button id="wbCloseBtn" class="ghost" type="button" title="Close the docker (the 🌐 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="wbBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.856.0 (Tim: "please make a separate docker for web editor, separate it into 4 tabs, CRM, WYSIWYG, code, preview, add a
+             collapsible files panel on the right hand side off the docker"): the open project's www folder (lib/webProject.js,
+             routes/webEditor.js); the page side is webdock.js (window.H3Web). -->
+        <style>
+          #webdock .bbody { padding: 4px; }
+          .wbbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
+          .wbbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
+          .wbbar button { padding: 2px 8px; }
+          .wbtab.on { border-color: var(--tiger); color: var(--tiger); }
+          #wbFileName { font: 12px monospace; color: var(--dim); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          #wbFileName.dirty::after { content: " ●"; color: var(--tiger); }
+          #wbWrap { flex: 1; display: flex; min-height: 0; gap: 4px; }
+          #wbMain { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+          .wbpane { display: none; flex: 1; min-height: 0; flex-direction: column; gap: 4px; }
+          .wbpane.on { display: flex; }
+          #wbFiles { width: 230px; display: flex; flex-direction: column; border-left: 1px solid var(--line); padding-left: 4px; min-height: 0; }
+          #wbFiles.shut { width: 22px; }
+          #wbFiles.shut > :not(#wbFilesHead) { display: none; }
+          #wbFiles.shut #wbFilesHead span { writing-mode: vertical-rl; }
+          #wbFilesHead { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; user-select: none; }
+          #wbFiles.shut #wbFilesHead { flex-direction: column; }
+          #wbTree { flex: 1; overflow: auto; font-size: 12px; min-height: 0; }
+          #wbTree .it { display: flex; gap: 4px; align-items: center; padding: 1px 4px; cursor: pointer; white-space: nowrap; border-radius: 3px; }
+          #wbTree .it:hover { background: var(--panel-2); }
+          #wbTree .it.sel { background: color-mix(in srgb, var(--tiger) 18%, transparent); }
+          #wbTree .it.cur { color: var(--tiger); }
+          #wbTree .it .sz { margin-left: auto; color: var(--dim); font-size: 10px; }
+          #wbAskRow { display: none; gap: 3px; }
+          #wbAskRow.on { display: flex; }
+          #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          #wbCode { flex: 1; min-height: 120px; font: 12.5px/1.5 Consolas, "Courier New", monospace; tab-size: 2; white-space: pre; resize: none; background: var(--ink); color: var(--text); border: 1px solid var(--line); padding: 6px; }
+          #wbPic { display: none; flex: 1; overflow: auto; text-align: center; background: var(--ink); border: 1px solid var(--line); }
+          #wbPic img { max-width: 100%; margin: 8px auto; }
+          .wbframe { flex: 1; min-height: 120px; border: 1px solid var(--line); background: #fff; width: 100%; }
+          #wbPrevBox { flex: 1; display: flex; justify-content: center; min-height: 0; background: var(--ink); }
+          #wbPrev { transition: width .2s; flex: none; max-width: 100%; }
+          #wbCrm { flex: 1; display: flex; gap: 6px; min-height: 0; }
+          #wbCrmNav { width: 140px; display: flex; flex-direction: column; gap: 2px; font-size: 12px; overflow: auto; }
+          #wbCrmNav .grp { color: var(--dim); font-size: 10px; text-transform: uppercase; margin: 6px 0 2px; }
+          #wbCrmNav button { text-align: left; }
+          #wbCrmNav button.on { border-color: var(--tiger); color: var(--tiger); }
+          #wbCrmBody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+          #wbCrmList { flex: 1; overflow: auto; min-height: 0; }
+          #wbCrmList table { width: 100%; border-collapse: collapse; font-size: 12px; }
+          #wbCrmList th, #wbCrmList td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+          #wbCrmList tr.r { cursor: pointer; }
+          #wbCrmList tr.r:hover { background: var(--panel-2); }
+          #wbCrmForm { display: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px; gap: 4px; flex-direction: column; max-height: 55%; overflow: auto; }
+          #wbCrmForm.on { display: flex; }
+          #wbCrmForm label { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; }
+          #wbCrmForm label > span { width: 110px; flex: none; color: var(--dim); padding-top: 3px; }
+          #wbCrmForm input, #wbCrmForm select, #wbCrmForm textarea { flex: 1; min-width: 0; font-size: 12px; }
+          #wbNoSite { display: none; flex: 1; align-items: center; justify-content: center; flex-direction: column; gap: 8px; text-align: center; color: var(--dim); }
+          #webdock.nosite #wbNoSite { display: flex; }
+          #webdock.nosite #wbWrap, #webdock.nosite .wbtabs { display: none; }
+          #wbMsg { font-size: 11px; color: var(--dim); margin-left: auto; }
+          #wbMsg.err { color: #ff6b6b; }
+        </style>
+        <div class="wbbar">
+          <span class="wbtabs" style="display:contents">
+            <button class="ghost wbtab on" type="button" data-tab="crm" title="Content (pages, posts, products) and customers (clients, bookings, orders, messages)">🗂 CRM</button>
+            <button class="ghost wbtab" type="button" data-tab="wys" title="Edit the open page as it looks - type on it, the toolbar formats">✎ WYSIWYG</button>
+            <button class="ghost wbtab" type="button" data-tab="code" title="The open file's code (Ctrl+S saves)">&lt;/&gt; Code</button>
+            <button class="ghost wbtab" type="button" data-tab="prev" title="The site as a browser shows it">👁 Preview</button>
+            <span class="sep"></span>
+            <span id="wbFileName" title="The open file">no file open</span>
+            <button class="ghost" type="button" id="wbSave" title="Save the open file (Ctrl+S)">💾 Save</button>
+          </span>
+          <span id="wbMsg"></span>
+        </div>
+        <div id="wbNoSite">
+          <div>This project has no website yet.</div>
+          <button class="go" type="button" id="wbMake">🌐 Make the www folder</button>
+          <div style="font-size:11px">projects/&lt;project&gt;/www with css, js, images, fonts, media, inc, admin, data, uploads and starter pages.<br>(Project ▸ ✚ New ▸ ☑ Website makes it for a new project.)</div>
+        </div>
+        <div id="wbWrap">
+          <div id="wbMain">
+            <div class="wbpane on" data-pane="crm">
+              <div id="wbCrm">
+                <div id="wbCrmNav">
+                  <div class="grp">Content</div>
+                  <button class="ghost on" type="button" data-kind="pages">📄 Pages</button>
+                  <button class="ghost" type="button" data-kind="posts">📰 Posts</button>
+                  <button class="ghost" type="button" data-kind="products">🛍 Products</button>
+                  <div class="grp">Customers</div>
+                  <button class="ghost" type="button" data-kind="clients">👤 Clients</button>
+                  <button class="ghost" type="button" data-kind="bookings">📅 Bookings</button>
+                  <button class="ghost" type="button" data-kind="orders">🧾 Orders</button>
+                  <button class="ghost" type="button" data-kind="messages">✉ Messages</button>
+                </div>
+                <div id="wbCrmBody">
+                  <div class="wbbar"><input id="wbCrmFind" placeholder="🔍 Search" style="flex:1;min-width:80px"><button class="ghost" type="button" id="wbCrmNew">＋ New</button><span id="wbCrmCount" style="color:var(--dim)"></span></div>
+                  <div id="wbCrmForm"></div>
+                  <div id="wbCrmList"></div>
+                  <div id="wbCrmNote" style="font-size:11px;color:var(--dim)"></div>
+                </div>
+              </div>
+            </div>
+            <div class="wbpane" data-pane="wys">
+              <div class="wbbar" id="wbWysBar">
+                <button class="ghost" type="button" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+                <button class="ghost" type="button" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+                <button class="ghost" type="button" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+                <span class="sep"></span>
+                <button class="ghost" type="button" data-block="h1" title="Heading 1">H1</button>
+                <button class="ghost" type="button" data-block="h2" title="Heading 2">H2</button>
+                <button class="ghost" type="button" data-block="h3" title="Heading 3">H3</button>
+                <button class="ghost" type="button" data-block="p" title="Paragraph">¶</button>
+                <span class="sep"></span>
+                <button class="ghost" type="button" data-cmd="insertUnorderedList" title="Bulleted list">• List</button>
+                <button class="ghost" type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+                <button class="ghost" type="button" data-cmd="justifyLeft" title="Align left">⯇</button>
+                <button class="ghost" type="button" data-cmd="justifyCenter" title="Centre">↔</button>
+                <button class="ghost" type="button" data-cmd="justifyRight" title="Align right">⯈</button>
+                <span class="sep"></span>
+                <button class="ghost" type="button" id="wbLink" title="Make the selected words a link">🔗 Link</button>
+                <select id="wbImg" title="Put a picture of the site where the cursor is"><option value="">🖼 Picture…</option></select>
+                <button class="ghost" type="button" data-cmd="removeFormat" title="Clear the formatting">⌫ Clear</button>
+                <input id="wbLinkUrl" placeholder="https://… or about.html" style="display:none;width:200px">
+              </div>
+              <div id="wbWysNote" style="display:none;font-size:12px;color:var(--dim);padding:20px;text-align:center">WYSIWYG edits .html pages - open one from the files.</div>
+              <iframe id="wbWys" class="wbframe" sandbox="allow-same-origin" title="WYSIWYG"></iframe>
+            </div>
+            <div class="wbpane" data-pane="code">
+              <textarea id="wbCode" spellcheck="false" placeholder="open a file from the files on the right"></textarea>
+              <div id="wbPic"></div>
+            </div>
+            <div class="wbpane" data-pane="prev">
+              <div class="wbbar">
+                <button class="ghost wbw on" type="button" data-w="100%" title="Desktop width">🖥 Desktop</button>
+                <button class="ghost wbw" type="button" data-w="820px" title="Tablet width">▭ Tablet</button>
+                <button class="ghost wbw" type="button" data-w="390px" title="Phone width">📱 Phone</button>
+                <span class="sep"></span>
+                <button class="ghost" type="button" id="wbReload" title="Show it again">⟳</button>
+                <button class="ghost" type="button" id="wbOpenTab" title="Open the saved page in a browser tab">↗ Open</button>
+                <span id="wbPrevNote" style="font-size:11px;color:var(--dim)"></span>
+              </div>
+              <div id="wbPrevBox"><iframe id="wbPrev" class="wbframe" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-same-origin" title="Preview"></iframe></div>
+            </div>
+          </div>
+          <div id="wbFiles">
+            <div id="wbFilesHead" title="Show / hide the files"><span id="wbFilesArrow">▸</span><span>Files</span></div>
+            <div class="wbbar">
+              <button class="ghost" type="button" id="wbNewFile" title="New file (in the picked folder)">＋📄</button>
+              <button class="ghost" type="button" id="wbNewDir" title="New folder (in the picked folder)">＋📁</button>
+              <button class="ghost" type="button" id="wbUpload" title="Add files from this computer (into the picked folder)">⤒</button>
+              <button class="ghost" type="button" id="wbRename" title="Rename / move the picked file or folder">✎</button>
+              <button class="ghost" type="button" id="wbDelete" title="Delete the picked file or folder (kept in the project's web/trash)">🗑</button>
+              <button class="ghost" type="button" id="wbRefresh" title="Read the folder again">⟳</button>
+              <input type="file" id="wbUpFile" multiple style="display:none">
+            </div>
+            <div id="wbAskRow"><input id="wbAsk"><button class="ghost" type="button" id="wbAskOk">✔</button><button class="ghost" type="button" id="wbAskNo">✕</button></div>
+            <div id="wbTree"></div>
+          </div>
+        </div>
+      </div>
+    </div>

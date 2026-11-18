@@ -14,7 +14,7 @@
 (function () {
   "use strict";
   // [button id, icon, name] in order; group 1 = the office-style apps, group 2 = the 3D apps
-  const APPS = [["tIE", "🖼", "Image editor"], ["tX_maildock", "✉", "Mail"], ["tX_sheetdock", "▦", "Spreadsheet"], ["tX_slidesdock", "🎞", "Slides"], ["tX_dbdock", "🗄", "Database"]];
+  const APPS = [["tIE", "🖼", "Image editor"], ["tX_maildock", "✉", "Mail"], ["tX_sheetdock", "▦", "Spreadsheet"], ["tX_slidesdock", "🎞", "Slides"], ["tX_dbdock", "🗄", "Database"], ["tX_webdock", "🌐", "Web editor"]];
   const MINI = [["tX_solidcraftdock", "📐", "SolidCraft"], ["tX_pushpulldock", "📏", "Sketcher"]];
   let strip = null;
   function build() {
