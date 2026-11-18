@@ -719,12 +719,13 @@
   /** 2.845.0 (Tim: "in zoom settings, add zoom to page width"): the zoom that makes the page's width fill the view -
    *  {zoom, panX, panY}. The page sits between the left / right padding; the line of the page at the top of the view stays
    *  there (reading on, as a word processor does), the page's top when the view showed above it. */
-  function widthView(viewW, pageW, pageH, cur, pad) {
-    const pd = Object.assign({ left: 16, right: 16, top: 16 }, pad || {});
-    const aw = Math.max(50, viewW - pd.left - pd.right), zoom = Math.max(0.02, Math.min(32, aw / Math.max(1, pageW)));
+  function widthView(viewW, pageW, pageH, cur, pad, crop) {
+    const pd = Object.assign({ left: 16, right: 16, top: 16 }, pad || {}), cl = Math.max(0, (crop && crop.left) || 0), cr = Math.max(0, (crop && crop.right) || 0);
+    const span = Math.max(1, pageW - cl - cr);          // 2.847.0: margins off = the area between the left and right margins fills the width
+    const aw = Math.max(50, viewW - pd.left - pd.right), zoom = Math.max(0.02, Math.min(32, aw / span));
     const c = cur || {}, z0 = c.zoom > 0 ? c.zoom : zoom;
     const yTop = Math.max(0, Math.min(pageH || 0, (pd.top - (c.panY == null ? pd.top : c.panY)) / z0));   // the page line at the view's top
-    return { zoom, panX: Math.round(pd.left + (aw - pageW * zoom) / 2), panY: Math.round(pd.top - yTop * zoom) };
+    return { zoom, panX: Math.round(pd.left + (aw - span * zoom) / 2 - cl * zoom), panY: Math.round(pd.top - yTop * zoom) };
   }
 
   function mount(host, api) {
@@ -772,6 +773,7 @@
             <button class="ghost" id="kxZin" title="Zoom in (Ctrl++)">+</button>
             <button class="ghost" id="kxFit" title="Fit on screen (Ctrl+0)">⤢</button>
             <button class="ghost" id="kxPageW" title="Page width - the page's width fills the view (Shift+Ctrl+0)">⟷</button>
+            <button class="ghost" id="kxPageWM" title="Page width shows the margins (on) - off: the area between the margins fills the width" aria-pressed="true">⟷▯</button>
             <button class="ghost" id="kx100" title="100 % (Ctrl+1)">1:1</button>
             <button class="ghost" id="ieOpen" title="Open a picture (Ctrl+O; or drop one onto the canvas; Shift+drop adds it as a layer)">📂</button>
             <button class="ghost" id="ieSave" title="Save the picture (all visible layers, flattened) into the project's Images and the Gallery, in the format beside it (Ctrl+S)">💾</button>
@@ -1214,8 +1216,9 @@
       drawOverlay(); info();
       if (E.ui.rulers) E.ui.rulers();
     }
+    let lastFit = "";   // 2.847.0: "width" while the view is the page width (the margins toggle redoes it)
     function fitView() {
-      if (!S.w) return;
+      if (!S.w) return; lastFit = "";
       const aw = Math.max(50, stage.clientWidth - 24), ah = Math.max(50, stage.clientHeight - 24);
       S.zoom = Math.min(1, aw / S.w, ah / S.h) || 1;
       S.panX = (stage.clientWidth - S.w * S.zoom) / 2; S.panY = (stage.clientHeight - S.h * S.zoom) / 2;
@@ -1235,15 +1238,28 @@
       say("⊡ zoomed to " + what.trim() + " (" + Math.round(S.zoom * 100) + " %)");
       return b;
     }
+    const paintPW = () => { const on = store.get("pw.margins", true) !== false; for (const id of ["kxPageWM", "ptZPWM"]) { const b = $(id); if (b) { b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); } } };
+    /** 2.847.0: the margins in the page-width view on / off (redone at once when the view is the page width) */
+    function toggleWidthMargins(v) { const on = v == null ? store.get("pw.margins", true) === false : !!v; store.set("pw.margins", on); paintPW(); if (lastFit === "width") fitWidth(); else say(`⟷ page width ${on ? "shows" : "leaves out"} the margins`); return on; }
     /** 2.845.0: ⟷ Page Width - the page's width fills the view (the rulers left room) */
     function fitWidth() {
       if (!S.w) return null;
-      const ruled = kx.classList.contains("rulers"), v = widthView(stage.clientWidth, S.w, S.h, { zoom: S.zoom, panY: S.panY }, { left: ruled ? 30 : 16, right: 16, top: ruled ? 30 : 16 });
+      // 2.847.0 (Tim: "when zoomed to width add a toggle button to show margins - if off then zoom to page width without the margins"):
+      // store pw.margins (on = the whole page; off = the page's margins - Page Properties, else its WP frame - left out at the sides)
+      const withM = store.get("pw.margins", true) !== false, pg = E.pages && E.pages.current ? E.pages.current() : null;
+      let crop = null;
+      if (!withM) {
+        const m = pg && pg.margins, dpi = (pg && pg.dpi) || 150, F = S.layers.find((l) => l.type === "doc" && l.doc);
+        if (m && (m.left || m.right)) crop = { left: Math.round(m.left / 25.4 * dpi), right: Math.round(m.right / 25.4 * dpi) };
+        else if (F) crop = { left: F.doc.x, right: S.w - F.doc.x - F.doc.w };
+      }
+      const ruled = kx.classList.contains("rulers"), v = widthView(stage.clientWidth, S.w, S.h, { zoom: S.zoom, panY: S.panY }, { left: ruled ? 30 : 16, right: 16, top: ruled ? 30 : 16 }, crop);
+      lastFit = "width";
       S.zoom = v.zoom; S.panX = v.panX; S.panY = v.panY; S.userView = true; applyView();
-      say("⟷ page width (" + Math.round(S.zoom * 100) + " %)");
+      say("⟷ page width" + (crop ? " without the margins" : "") + " (" + Math.round(S.zoom * 100) + " %)"); paintPW();
       return v;
     }
-    function zoomAt(f, cx, cy) {
+    function zoomAt(f, cx, cy) { lastFit = "";
       const z = Math.max(0.02, Math.min(32, S.zoom * f));
       const px = cx == null ? stage.clientWidth / 2 : cx, py = cy == null ? stage.clientHeight / 2 : cy;
       S.panX = px - (px - S.panX) * (z / S.zoom); S.panY = py - (py - S.panY) * (z / S.zoom); S.zoom = z;
@@ -2020,7 +2036,7 @@
     /* ---------------- buttons ---------------- */
     $("kxUndo").onclick = undo; $("kxRedo").onclick = redo;
     $("kxZin").onclick = () => zoomAt(1.25); $("kxZout").onclick = () => zoomAt(0.8);
-    $("kxFit").onclick = () => { S.userView = false; fitView(); }; $("kxPageW").onclick = () => fitWidth(); $("kx100").onclick = () => zoomAt(1 / S.zoom);
+    $("kxFit").onclick = () => { S.userView = false; fitView(); }; $("kxPageW").onclick = () => fitWidth(); $("kxPageWM").onclick = () => toggleWidthMargins(); paintPW(); $("kx100").onclick = () => zoomAt(1 / S.zoom);
     $("ieOpen").onclick = () => { $("ieFile").dataset.layer = ""; $("ieFile").click(); };
     $("ieFile").onchange = (e) => { const f = e.target.files[0]; if (f) load(URL.createObjectURL(f), f.name, !!$("ieFile").dataset.layer); e.target.value = ""; };
     /* 2.604.0 (Tim: "when user clicks save to images in image-editor, save all the visible the file as a tmp file then
@@ -2984,7 +3000,7 @@
     // the shared surface the tools (pctools.js) and the UI (pcui.js) build on
     Object.assign(E, {
       makeLayer, newMask, target, onMask, whichOf, canPaint, snapStruct, putStruct, snapDoc, putDoc, push, undo, redo, historyTo, beginPx, endPx, pxOp,
-      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, fitWidth, zoomAt, zoomToSel, pos,
+      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, fitWidth, toggleWidthMargins, zoomAt, zoomToSel, pos,
       openDoc, openImage, load, blankDoc, setFgNone, addLayer, addImageLayer, flatten, flattenCache, renderLayersPanel, structOp, setActive, newLayer, duplicateLayer,
       deleteLayer, moveLayer, moveLayerEnd, dropLayer, groupActive, newGroup, ungroupActive, toggleClip, mergeDown, mergeVisible, rasterizeLayer,
       layerFromSelection, addMask, deleteMask, toggleMask, selectFrom, newAdjust, newFill, liveSet, commitLive, cancelLive, setLayer, setTool, renderOptions,

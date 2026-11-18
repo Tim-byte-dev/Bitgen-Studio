@@ -487,8 +487,8 @@
     /* ---------------- zoom ---------------- */
     T.zoom = {
       id: "zoom", name: "Zoom", cursor: "zoom-in",
-      options: () => `<button class="ghost" id="ptZ100" title="100 % (Ctrl+1)">100%</button><button class="ghost" id="ptZFit" title="Fit on screen (Ctrl+0)">Fit Screen</button><button class="ghost" id="ptZPW" title="Page width - the page's width fills the view (Shift+Ctrl+0)">⟷ Page Width</button><span style="color:var(--pc-dim)">click zooms in, Alt-click out</span>`,
-      bindOptions(o) { o.querySelector("#ptZ100").onclick = () => E.zoomAt(1 / S.zoom); o.querySelector("#ptZFit").onclick = () => { S.userView = false; E.fitView(); }; o.querySelector("#ptZPW").onclick = () => E.fitWidth(); },
+      options: () => `<button class="ghost" id="ptZ100" title="100 % (Ctrl+1)">100%</button><button class="ghost" id="ptZFit" title="Fit on screen (Ctrl+0)">Fit Screen</button><button class="ghost" id="ptZPW" title="Page width - the page's width fills the view (Shift+Ctrl+0)">⟷ Page Width</button><button class="ghost" id="ptZPWM" title="Page width shows the margins (on) - off: the area between the margins fills the width">▯ Margins</button><span style="color:var(--pc-dim)">click zooms in, Alt-click out</span>`,
+      bindOptions(o) { o.querySelector("#ptZ100").onclick = () => E.zoomAt(1 / S.zoom); o.querySelector("#ptZFit").onclick = () => { S.userView = false; E.fitView(); }; o.querySelector("#ptZPW").onclick = () => E.fitWidth(); o.querySelector("#ptZPWM").onclick = () => E.toggleWidthMargins(); { const b = o.querySelector("#ptZPWM"), on = E.store.get("pw.margins", true) !== false; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); } },
       down(e) { const r = E.stage.getBoundingClientRect(); E.zoomAt(e.altKey ? 1 / 1.5 : 1.5, e.clientX - r.left, e.clientY - r.top); return false; },
     };
 

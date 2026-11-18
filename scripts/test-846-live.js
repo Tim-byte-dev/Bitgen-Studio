@@ -48,7 +48,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       const formP = await req("GET", `/index.php?cal=dr-o-neil-s-clinic&d=${d}&t=10:00`), tok = (/name="token" value="([0-9a-f]+)"/.exec(formP.body) || [])[1];
       const body = (t) => `cal=dr-o-neil-s-clinic&d=${d}&t=10:00&token=${t}&name=Tim&email=tim%40example.com&phone=0400&notes=first+visit`;
       const b1 = await req("POST", `/index.php?cal=dr-o-neil-s-clinic&d=${d}&t=10:00`, body(tok));
-      check("LIVE: the form (CSRF token) books 10:00 - said on the page, the row in bg_cal_bookings", !!tok && /Booked: [^<]* at 10:00/.test(b1.body), b1.body.match(/bgcal-msg[^<]*<|Booked[^<]*/) || b1.body.slice(-300));
+      check("LIVE: the form (CSRF token) books 10:00 - said on the page, the row in bg_cal_bookings", !!tok && /Booked: [^<]*, 10:00 – 10:30/.test(b1.body), b1.body.match(/bgcal-msg[^<]*<|Booked[^<]*/) || b1.body.slice(-300));
       const formQ = await req("GET", `/index.php?cal=dr-o-neil-s-clinic&d=${d}&t=10:00`), tok2 = (/name="token" value="([0-9a-f]+)"/.exec(formQ.body) || [])[1];
       const b2 = await req("POST", `/index.php?cal=dr-o-neil-s-clinic&d=${d}&t=10:00`, body(tok2));
       const bad = await req("POST", `/index.php?cal=dr-o-neil-s-clinic&d=${d}&t=11:00`, `cal=dr-o-neil-s-clinic&d=${d}&t=11:00&token=nope&name=X&email=x%40y.z`);

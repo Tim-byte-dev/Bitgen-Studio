@@ -67,6 +67,12 @@
       slot: num(o.slot, 5, 480, K.slot), days: num(o.days, 1, 730, 60), lead: num(o.lead, 0, 720, 2), cap: num(o.cap, 1, 500, K.cap), weekStart: num(o.weekStart, 0, 6, 1),
       tz: /^[A-Za-z_]+(\/[A-Za-z0-9_+-]+){0,2}$|^UTC$/.test(String(o.tz || "")) ? String(o.tz) : "UTC",
       hours: cleanHours(o.hours), phone: o.phone !== false, notes: o.notes !== false,
+      // 2.847.0: printed (a month on any page) or a website's booking calendar; the booking rules
+      mode: o.mode === "print" ? "print" : "booking", month: /^\d{4}-\d{2}$/.test(String(o.month || "")) ? o.month : "",
+      services: (Array.isArray(o.services) ? o.services : []).map((v) => ({ name: String((v && v.name) || "").trim().slice(0, 80), mins: num(v && v.mins, 5, 720, 30), price: String((v && v.price) || "").trim().slice(0, 20) })).filter((v) => v.name).slice(0, 20),
+      buffer: num(o.buffer, 0, 240, 0), maxDay: num(o.maxDay, 0, 500, 0), approve: !!o.approve, cancelHours: num(o.cancelHours, 0, 720, 24),
+      emails: !!o.emails, owner: /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(String(o.owner || "")) ? String(o.owner) : "", from: /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(String(o.from || "")) ? String(o.from) : "",
+      closed: (Array.isArray(o.closed) ? o.closed : []).map((v) => ({ day: /^\d{4}-\d{2}-\d{2}$/.test(String(v && v.day)) ? v.day : "", reason: String((v && v.reason) || "").slice(0, 200) })).filter((v) => v.day).slice(0, 400),
       db: { scope: ["project", "global", "external"].includes(db.scope) ? db.scope : "project", name: /^[\w$]{1,64}$/.test(String(db.name || "")) ? String(db.name) : "website" },
       style: cleanStyle(o.style), lang: /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(String(o.lang || "")) ? o.lang : "en",
     };
@@ -78,19 +84,24 @@
     for (let w = 0; w < 6; w++) { const row = []; for (let i = 0; i < 7; i++, t += 864e5) { const d = new Date(t); row.push({ y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), iso: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`, inMonth: d.getUTCMonth() === m - 1, wd: d.getUTCDay() }); } out.push(row); }
     return out;
   }
-  /** the times of day `iso` ("YYYY-MM-DD"): [{time, free, left}] - opening hours in slot steps (a slot must end by closing),
-   *  free = not before now + the notice, not past the days ahead, fewer bookings than people per time.
-   *  now = {iso, min} (the calendar's own time zone); taken = {"HH:MM": n}; closed = a Set of closed days */
-  function slotsFor(cal, iso, now, taken, closed) {
-    const c = cal, d = new Date(iso + "T00:00:00Z"), wd = d.getUTCDay(), out = [];
+  /** the times of day `iso` ("YYYY-MM-DD"): [{time, free, left}] - opening hours in steps of the slot (a booking of `len`
+   *  minutes - a service's, else the slot - must end by closing); free = not before now + the notice, within the days ahead,
+   *  fewer than people-per-time bookings OVERLAPPING it (each widened by the buffer), the day under its most bookings.
+   *  now = {iso, min} (the calendar's time zone); busy = [[startMin, endMin], …] that day's bookings (an old {"HH:MM": n}
+   *  map = slot-long bookings); closed = a Set of closed days. The website's PHP (lib/siteCalPhp.js) keeps the same rules. */
+  function slotsFor(cal, iso, now, busy0, closed, len0) {
+    const c = cal, d = new Date(iso + "T00:00:00Z"), wd = d.getUTCDay(), out = [], len = Math.max(5, len0 || c.slot), buf = c.buffer || 0;
     if (closed && closed.has && closed.has(iso)) return out;
+    let busy = busy0 || [];
+    if (!Array.isArray(busy)) { const b = []; for (const [k, n] of Object.entries(busy)) for (let i = 0; i < n; i++) b.push([mins(k), mins(k) + c.slot]); busy = b; }
     const dayN = Math.round((Date.parse(iso + "T00:00:00Z") - Date.parse(now.iso + "T00:00:00Z")) / 864e5);
+    const full = c.maxDay > 0 && busy.length >= c.maxDay;
     for (const [a, b] of c.hours[wd] || []) {
-      for (let t = mins(a); t + c.slot <= mins(b); t += c.slot) {
-        const k = pad(Math.floor(t / 60)) + ":" + pad(t % 60), n = (taken && taken[k]) || 0;
+      for (let t = mins(a); t + len <= mins(b); t += c.slot) {
+        const k = pad(Math.floor(t / 60)) + ":" + pad(t % 60), n = busy.filter(([s, e]) => s - buf < t + len && e + buf > t).length;
         const soon = dayN * 1440 + t - now.min;
-        const free = dayN >= 0 && dayN <= c.days && soon >= c.lead * 60 && n < c.cap;
-        out.push({ time: k, free, left: Math.max(0, c.cap - n) });
+        const free = dayN >= 0 && dayN <= c.days && soon >= c.lead * 60 && n < c.cap && !full;
+        out.push({ time: k, free, left: full ? 0 : Math.max(0, c.cap - n) });
       }
     }
     return out;
@@ -104,13 +115,13 @@
    *  {selected, cells: [{iso, x, y, w, h, kind}]} (what it drew, for tests and hit tests) */
   function draw(g, cal0, box, o0) {
     const c = clean(cal0), st = c.style, o = o0 || {}, now = o.now || nowIn(c.tz), k = box.w / 420;
-    const [Y, M] = (o.month && /^\d{4}-\d{2}$/.test(o.month) ? o.month : now.iso.slice(0, 7)).split("-").map(Number);
+    const mo = o.month || c.month, [Y, M] = (mo && /^\d{4}-\d{2}$/.test(mo) ? mo : now.iso.slice(0, 7)).split("-").map(Number);
     const box0 = { x: box.x, y: box.y, w: box.w, h: box.h }, P = Math.round(12 * k);
     // the frame
     rr(g, box0.x + 0.5, box0.y + 0.5, box0.w - 1, box0.h - 1, st.frame.radius * k);
     if (st.frame.bg) { g.fillStyle = st.frame.bg; g.fill(); }
     g.lineWidth = Math.max(1, k); g.strokeStyle = st.frame.color; g.stroke();
-    const showTimes = box.h / box.w >= 0.95;
+    const print = c.mode === "print", showTimes = !print && box.h / box.w >= 0.95;   // 2.847.0: a printed calendar = the month only
     const headH = Math.round(Math.max(st.month.size, st.nav.size) * k * 2), wdH = Math.round(st.weekday.size * k * 2);
     const gridTop = box.y + P + headH + wdH, timesH = showTimes ? Math.round(box.h * 0.27) : 0, gridH = box.y + box.h - P - timesH - gridTop;
     const cw = (box.w - 2 * P) / 7, ch = gridH / 6;
@@ -128,17 +139,18 @@
     const cells = [], weeks = monthGrid(Y, M, c.weekStart), taken = o.taken || {};
     let selected = o.selected || null;
     const kindOf = (cell) => {
+      if (print) return cell.inMonth ? "date" : "past";
       if (!cell.inMonth || cell.iso < now.iso || (Date.parse(cell.iso) - Date.parse(now.iso)) / 864e5 > c.days) return "past";
       return slotsFor(c, cell.iso, now, taken[cell.iso], null).some((s) => s.free) ? "available" : "full";
     };
-    if (!selected) { for (const w of weeks) for (const cell of w) if (!selected && kindOf(cell) === "available") selected = cell.iso; }
+    if (!selected && !print) { for (const w of weeks) for (const cell of w) if (!selected && kindOf(cell) === "available") selected = cell.iso; }
     weeks.forEach((w, r) => w.forEach((cell, i) => {
       const kd = kindOf(cell), x = box.x + P + cw * i, y = gridTop + ch * r, isT = cell.iso === now.iso, sel = cell.iso === selected;
-      const ss = sel ? st.selected : kd === "available" ? st.available : kd === "full" ? st.full : st.past;
+      const ss = sel ? st.selected : kd === "available" ? st.available : kd === "full" ? st.full : kd === "date" ? st.date : st.past;
       const inset = Math.max(1, Math.round(2 * k));
       chip(ss, x + inset, y + inset, cw - 2 * inset, ch - 2 * inset);
       if (isT && !sel) { g.lineWidth = Math.max(1, 1.5 * k); g.strokeStyle = st.today.color; rr(g, x + inset, y + inset, cw - 2 * inset, ch - 2 * inset, st.today.radius * k); g.stroke(); }
-      text(String(cell.d), isT && !sel ? Object.assign({}, ss, { color: st.today.color, bold: st.today.bold, font: st.today.font, size: st.today.size }) : kd === "full" || kd === "past" || sel || kd === "available" ? ss : st.date, x + cw / 2, y + ch / 2);
+      text(String(cell.d), isT && !sel ? Object.assign({}, ss, { color: st.today.color, bold: st.today.bold, font: st.today.font, size: st.today.size }) : ss, x + cw / 2, y + ch / 2);
       cells.push({ iso: cell.iso, x, y, w: cw, h: ch, kind: sel ? "selected" : kd, today: isT });
     }));
     // the chosen day's times + the Book button
@@ -178,7 +190,23 @@ CREATE TABLE IF NOT EXISTS bg_calendars (
   week_start TINYINT UNSIGNED NOT NULL DEFAULT 1,
   timezone VARCHAR(64) NOT NULL DEFAULT 'UTC',
   ask_phone TINYINT(1) NOT NULL DEFAULT 1,
-  ask_notes TINYINT(1) NOT NULL DEFAULT 1
+  ask_notes TINYINT(1) NOT NULL DEFAULT 1,
+  buffer_minutes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  max_per_day SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  approve TINYINT(1) NOT NULL DEFAULT 0,
+  cancel_hours SMALLINT UNSIGNED NOT NULL DEFAULT 24,
+  send_emails TINYINT(1) NOT NULL DEFAULT 0,
+  notify_email VARCHAR(200) NOT NULL DEFAULT '',
+  from_email VARCHAR(200) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS bg_cal_services (
+  calendar_id INT UNSIGNED NOT NULL,
+  sort TINYINT UNSIGNED NOT NULL,
+  name VARCHAR(80) NOT NULL,
+  minutes SMALLINT UNSIGNED NOT NULL,
+  price VARCHAR(20) NOT NULL DEFAULT '',
+  PRIMARY KEY (calendar_id, sort),
+  CONSTRAINT fk_bg_cal_services FOREIGN KEY (calendar_id) REFERENCES bg_calendars(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE IF NOT EXISTS bg_cal_hours (
   calendar_id INT UNSIGNED NOT NULL,
@@ -204,24 +232,40 @@ CREATE TABLE IF NOT EXISTS bg_cal_bookings (
   email VARCHAR(200) NOT NULL,
   phone VARCHAR(40) NOT NULL DEFAULT '',
   notes TEXT,
+  service VARCHAR(80) NOT NULL DEFAULT '',
   status VARCHAR(12) NOT NULL DEFAULT 'booked',
+  token CHAR(32) NOT NULL DEFAULT '',
+  cancelled_at DATETIME NULL,
   ip VARCHAR(45) NOT NULL DEFAULT '',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX bg_cal_when (calendar_id, starts_at),
+  INDEX bg_cal_token (token),
   CONSTRAINT fk_bg_cal_bookings FOREIGN KEY (calendar_id) REFERENCES bg_calendars(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE OR REPLACE VIEW bg_cal_upcoming AS
-  SELECT c.name AS calendar, b.starts_at, b.ends_at, b.name, b.email, b.phone, b.notes, b.created_at
+  SELECT c.name AS calendar, b.starts_at, b.ends_at, b.service, b.status, b.name, b.email, b.phone, b.notes, b.created_at
   FROM bg_cal_bookings b JOIN bg_calendars c ON c.id = b.calendar_id
-  WHERE b.status = 'booked' AND b.starts_at >= NOW() ORDER BY b.starts_at;
+  WHERE b.status IN ('booked', 'pending') AND b.starts_at >= NOW() ORDER BY b.starts_at;
 `;
   function schemaSql() { return SCHEMA; }
+  /** 2.847.0: the columns a 2.846.0 database lacks - each run on its own, "duplicate column" = already there (MySQL has no
+   *  ADD COLUMN IF NOT EXISTS) */
+  const UPGRADE = ["ALTER TABLE bg_calendars ADD COLUMN buffer_minutes SMALLINT UNSIGNED NOT NULL DEFAULT 0", "ALTER TABLE bg_calendars ADD COLUMN max_per_day SMALLINT UNSIGNED NOT NULL DEFAULT 0",
+    "ALTER TABLE bg_calendars ADD COLUMN approve TINYINT(1) NOT NULL DEFAULT 0", "ALTER TABLE bg_calendars ADD COLUMN cancel_hours SMALLINT UNSIGNED NOT NULL DEFAULT 24",
+    "ALTER TABLE bg_calendars ADD COLUMN send_emails TINYINT(1) NOT NULL DEFAULT 0", "ALTER TABLE bg_calendars ADD COLUMN notify_email VARCHAR(200) NOT NULL DEFAULT ''",
+    "ALTER TABLE bg_calendars ADD COLUMN from_email VARCHAR(200) NOT NULL DEFAULT ''", "ALTER TABLE bg_cal_bookings ADD COLUMN service VARCHAR(80) NOT NULL DEFAULT ''",
+    "ALTER TABLE bg_cal_bookings ADD COLUMN token CHAR(32) NOT NULL DEFAULT ''", "ALTER TABLE bg_cal_bookings ADD COLUMN cancelled_at DATETIME NULL", "ALTER TABLE bg_cal_bookings ADD INDEX bg_cal_token (token)"];
+  function upgradeSql() { return UPGRADE.slice(); }
   /** this calendar's row + its opening hours (run again = updated, bookings kept) */
   function seedSql(cal0) {
-    const c = clean(cal0), id = `(SELECT id FROM bg_calendars WHERE slug = ${sq(c.slug)})`;
-    const out = [`INSERT INTO bg_calendars (slug, name, kind, slot_minutes, days_ahead, lead_hours, capacity, week_start, timezone, ask_phone, ask_notes) VALUES (${sq(c.slug)}, ${sq(c.name)}, ${sq(c.kind)}, ${c.slot}, ${c.days}, ${c.lead}, ${c.cap}, ${c.weekStart}, ${sq(c.tz)}, ${c.phone ? 1 : 0}, ${c.notes ? 1 : 0}) ON DUPLICATE KEY UPDATE name = VALUES(name), kind = VALUES(kind), slot_minutes = VALUES(slot_minutes), days_ahead = VALUES(days_ahead), lead_hours = VALUES(lead_hours), capacity = VALUES(capacity), week_start = VALUES(week_start), timezone = VALUES(timezone), ask_phone = VALUES(ask_phone), ask_notes = VALUES(ask_notes);`,
-      `DELETE FROM bg_cal_hours WHERE calendar_id = ${id};`];
-    c.hours.forEach((day, wd) => day.forEach(([a, b]) => out.push(`INSERT INTO bg_cal_hours (calendar_id, weekday, opens, closes) SELECT id, ${wd}, '${a}:00', '${b === "24:00" ? "23:59:59" : b + ":00"}' FROM bg_calendars WHERE slug = ${sq(c.slug)};`)));
+    const c = clean(cal0), id = `(SELECT id FROM bg_calendars WHERE slug = ${sq(c.slug)})`, sel = `FROM bg_calendars WHERE slug = ${sq(c.slug)}`;
+    const cols = "slug, name, kind, slot_minutes, days_ahead, lead_hours, capacity, week_start, timezone, ask_phone, ask_notes, buffer_minutes, max_per_day, approve, cancel_hours, send_emails, notify_email, from_email";
+    const vals = [sq(c.slug), sq(c.name), sq(c.kind), c.slot, c.days, c.lead, c.cap, c.weekStart, sq(c.tz), c.phone ? 1 : 0, c.notes ? 1 : 0, c.buffer, c.maxDay, c.approve ? 1 : 0, c.cancelHours, c.emails ? 1 : 0, sq(c.owner), sq(c.from)];
+    const out = [`INSERT INTO bg_calendars (${cols}) VALUES (${vals.join(", ")}) ON DUPLICATE KEY UPDATE ${cols.split(", ").slice(1).map((k) => `${k} = VALUES(${k})`).join(", ")};`,
+      `DELETE FROM bg_cal_hours WHERE calendar_id = ${id};`, `DELETE FROM bg_cal_services WHERE calendar_id = ${id};`, `DELETE FROM bg_cal_closed WHERE calendar_id = ${id};`];
+    c.hours.forEach((day, wd) => day.forEach(([a, b]) => out.push(`INSERT INTO bg_cal_hours (calendar_id, weekday, opens, closes) SELECT id, ${wd}, '${a}:00', '${b === "24:00" ? "23:59:59" : b + ":00"}' ${sel};`)));
+    c.services.forEach((v, i) => out.push(`INSERT INTO bg_cal_services (calendar_id, sort, name, minutes, price) SELECT id, ${i}, ${sq(v.name)}, ${v.mins}, ${sq(v.price)} ${sel};`));
+    for (const v of c.closed) out.push(`INSERT INTO bg_cal_closed (calendar_id, day, reason) SELECT id, '${v.day}', ${sq(v.reason)} ${sel};`);
     return out.join("\n") + "\n";
   }
   const fam = (f) => (f === "system-ui" ? "system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" : `'${f}',system-ui,sans-serif`);
@@ -264,7 +308,7 @@ ${r} .bgcal-msg{margin:10px 0 0;font-weight:600}
       + `<div class="bgcal-grid">${dayNames(c.lang, c.weekStart).map((n) => `<span class="bgcal-wd">${esc(n)}</span>`).join("")}${cells}</div>`
       + `<p class="bgcal-msg">${esc(c.name)}: booking opens on the PHP + MySQL website.</p></div>`;
   }
-  const api = { KINDS, FONTS, STYLE_TYPES, DEFAULT_STYLE, clean, cleanStyle, cleanHours, slugOf, monthGrid, slotsFor, nowIn, draw, monthName, dayNames, schemaSql, seedSql, cssFor, staticHtml };
+  const api = { KINDS, FONTS, STYLE_TYPES, DEFAULT_STYLE, clean, cleanStyle, cleanHours, slugOf, monthGrid, slotsFor, nowIn, draw, monthName, dayNames, schemaSql, upgradeSql, seedSql, cssFor, staticHtml };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.H3SiteCal = api;
 })(typeof window !== "undefined" ? window : globalThis);

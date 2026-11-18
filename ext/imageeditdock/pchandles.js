@@ -205,7 +205,9 @@
     stage.addEventListener("pointermove", (e) => {
       const d = st.drag; if (!d) return;
       e.stopImmediatePropagation();
-      d.m = matrixFor(st.mode, d.h, d.b, d.p0, E.pos(e), { shift: e.shiftKey, alt: e.altKey });
+      // 2.847.0: the dragged handle snaps (guidelines / objects / WP frames - pcguides.js) while scaling / skewing
+      const hp = E.snapPoint && st.mode !== "rotate" && !e.ctrlKey ? E.snapPoint(E.pos(e), d.L) : E.pos(e);
+      d.m = matrixFor(st.mode, d.h, d.b, d.p0, hp, { shift: e.shiftKey, alt: e.altKey });
       E.drawOverlay();
     }, true);
     const finish = (e) => {

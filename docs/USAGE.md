@@ -9548,6 +9548,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **📅 Calendar Settings** (double-click): General, Opening hours, Style (each object type: font, size, colour, background, bold, corners), Database and Bookings.
 - **🌐 Build Website → PHP + MySQL**: visitors pick a day, see its free and taken times, and book with their name and email. The form has a check against forged posts, and a time is never booked twice.
 
+## 🧲 Image editor - snap buttons, page width without margins, tables, calendars anywhere (2.847.0)
+
+- **🧲 Snap buttons** on the top strip: 🧲 on / off, ┼ guidelines, ◰ objects, ▤ WP frames and margins. Moving, transforming and drawing snap; hold Ctrl to move freely.
+- **⟷ Page Width** + **▯**: with ▯ off, the space between the page's margins fills the view instead of the whole page.
+- **▦ Tables**: click ⊞ at a table's corner to pick it. Then Del deletes it, ◢ resizes it (Shift = width only) and 🎨 Table Style sets its width, alignment, borders, padding, colours and banded rows. Drag a row's bottom edge or a column's right edge to resize just that row or column.
+- **📅 Calendar** on any page: in the Web View it's a booking calendar, elsewhere a printed month (no database). Switch with Mode in its settings.
+- **📅 Services & rules**: services with their own length and price, a buffer around bookings, the most bookings a day, approval, how late visitors can cancel online, e-mails, and closed days. Each booking on the website gets a link to see it, add it to a calendar (.ics) or cancel it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -64,7 +64,7 @@
 
     /* ---- ⤒ the tables in the database (⬇ MariaDB first when it is not installed) */
     async function upload(L, quiet) {
-      if (!isCal(L)) return null;
+      if (!isCal(L) || L.cal.mode === "print") return null;   // 2.847.0: a printed calendar has no database
       try {
         const r = await api("/api/sitecal/install", { cal: L.cal });
         L.cal.dbOk = true;
@@ -95,23 +95,27 @@
     }
 
     /* ---- a calendar onto the canvas */
+    /** 2.847.0: a calendar goes on any page - in 🌐 Web View a website's booking calendar, else a printed month */
+    const modeNow = (o) => (o && (o.mode === "print" || o.mode === "booking") ? o.mode : E.views && E.views.current && E.views.current() === "web" ? "booking" : "print");
     async function create(x, y, opt) {
-      if (!S.w) return say("make a page first - 🌐 New Website, or File ▸ New");
+      if (!S.w) return say("make a page first - File ▸ New, 📄 New Text Document or 🌐 New Website");
       await ready();
-      const o = opt || {}, K = C().KINDS[o.kind] || C().KINDS.appointments;
-      const name = uniqueName(o.name || K.label, cals().map((L) => L.cal.name));
-      const w = Math.round(Math.min(S.w * 0.45, Math.max(300, S.w * 0.32))), h = Math.round(w * 1.08);
-      const bx = Math.round(Math.max(0, Math.min(S.w - w, (x == null ? S.w / 2 : x) - w / 2))), by = Math.round(Math.max(0, Math.min(S.h - h, (y == null ? S.h / 2 : y) - h / 2)));
+      const o = opt || {}, K = C().KINDS[o.kind] || C().KINDS.appointments, mode = modeNow(o), print = mode === "print";
+      const name = uniqueName(o.name || (print ? "Calendar" : K.label), cals().map((L) => L.cal.name));
+      const w = Math.round(Math.min(S.w * 0.45, Math.max(300, S.w * 0.32))), h = Math.round(w * (print ? 0.9 : 1.08));
+      let bx = Math.round(Math.max(0, Math.min(S.w - w, (x == null ? S.w / 2 : x) - w / 2))), by = Math.round(Math.max(0, Math.min(S.h - h, (y == null ? S.h / 2 : y) - h / 2)));
+      if (x != null && E.snapPoint) { const p = E.snapPoint([bx, by], null); bx = Math.round(p[0]); by = Math.round(p[1]); }   // snaps like any object
       let tz = "UTC"; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch (e) { /* UTC */ }
-      const site = lastSite();
-      const cal = C().clean({ name, kind: o.kind || "appointments", tz, lang: site.lang || "en", db: { scope: "project", name: dbNameOf(site.name || S.name) } });
+      const site = lastSite(), now = new Date();
+      const cal = C().clean({ name, kind: o.kind || "appointments", mode, tz, lang: site.lang || "en", db: { scope: "project", name: dbNameOf(site.name || S.name) },
+        month: print ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}` : "" });
       cal.box = { x: bx, y: by, w, h };
       const L = E.makeLayer("📅 " + name, S.w, S.h); L.cal = cal;
       render(L, false);
       E.addLayer(L, "📅 calendar");
       refresh();
-      say(`📅 ${name} on the page - making its tables in the database "${cal.db.name}" …`);
-      upload(L);
+      if (print) say(`📅 ${name}: a printed month on the page - double-click it for its month, style and mode (🌐 a website booking calendar)`);
+      else { say(`📅 ${name} on the page - making its tables in the database "${cal.db.name}" …`); upload(L); }
       return L;
     }
     const addCentre = () => create(null, null);
@@ -128,14 +132,17 @@
       const hourRow = (i) => { const r = cur.hours[i] || [], a = r[0] || ["09:00", "17:00"], b = r[1] || ["", ""];
         return `<tr><td><label><input type="checkbox" data-hopen="${i}"${r.length ? " checked" : ""}> ${wdFull[i]}</label></td><td><input type="time" data-h="${i}.0.0" value="${a[0]}"> – <input type="time" data-h="${i}.0.1" value="${a[1]}"></td><td>and <input type="time" data-h="${i}.1.0" value="${b[0]}"> – <input type="time" data-h="${i}.1.1" value="${b[1]}"></td></tr>`; };
       const order = [1, 2, 3, 4, 5, 6, 0];
+      const svcRow = (v) => `<tr data-svc><td><input data-sv="name" value="${esc(v.name)}" maxlength="80" style="width:150px"></td><td><input type="number" data-sv="mins" value="${v.mins}" min="5" max="720" style="width:56px"></td><td><input data-sv="price" value="${esc(v.price)}" maxlength="20" style="width:70px"></td><td><button type="button" class="ghost" data-rm title="Remove">✕</button></td></tr>`;
+      const closedRow = (v) => `<tr data-closed><td><input type="date" data-cd="day" value="${esc(v.day)}"></td><td><input data-cd="reason" value="${esc(v.reason)}" maxlength="200" style="width:200px"></td><td><button type="button" class="ghost" data-rm title="Remove">✕</button></td></tr>`;
       const fontOpts = (f) => H.FONTS.map((x) => `<option${x === f ? " selected" : ""}>${x}</option>`).join("");
       const styleRow = ([k, label, what]) => { const s = cur.style[k];
         return `<tr title="${esc(what)}"><td>${esc(label)}</td><td><select data-st="${k}.font">${fontOpts(s.font)}</select></td><td><input type="number" data-st="${k}.size" value="${s.size}" min="8" max="48" style="width:52px"></td>`
           + `<td><input type="color" data-st="${k}.color" value="${s.color}"></td><td><input type="color" data-st="${k}.bg" value="${s.bg || "#ffffff"}"><label title="No background"><input type="checkbox" data-st="${k}.nobg"${s.bg ? "" : " checked"}>⊘</label></td>`
           + `<td><input type="checkbox" data-st="${k}.bold"${s.bold ? " checked" : ""}></td><td><input type="number" data-st="${k}.radius" value="${s.radius}" min="0" max="40" style="width:48px"></td></tr>`; };
-      const tab = (id, t, on) => `<button type="button" class="ghost${on ? " on" : ""}" data-ctab="${id}">${t}</button>`;
-      const html = `<div class="pccal-tabs" style="display:flex;gap:4px;margin-bottom:8px">${tab("gen", "General", true)}${tab("hours", "Opening hours")}${tab("style", "Style")}${tab("db", "Database")}${tab("book", "Bookings")}</div>
+      const tab = (id, t, on, bk) => `<button type="button" class="ghost${on ? " on" : ""}" data-ctab="${id}"${bk ? " data-bk" : ""}>${t}</button>`;
+      const html = `<div class="pccal-tabs" style="display:flex;gap:4px;margin-bottom:8px">${tab("gen", "General", true)}${tab("hours", "Opening hours", false, true)}${tab("rules", "Services & rules", false, true)}${tab("style", "Style")}${tab("db", "Database", false, true)}${tab("book", "Bookings", false, true)}</div>
         <div data-cpane="gen">
+          <div class="rw"><span>Mode</span><select id="pccMode"><option value="booking"${cur.mode !== "print" ? " selected" : ""}>🌐 Website booking calendar</option><option value="print"${cur.mode === "print" ? " selected" : ""}>🖨 Printed calendar (a month)</option></select><span>Month</span><input type="month" id="pccMonth" value="${esc(cur.month || "")}" title="The month shown on the page - empty = this month"></div>
           <div class="rw"><span>Name</span><input id="pccName" value="${esc(cur.name)}" style="flex:1"><span>Kind</span><select id="pccKind">${kinds}</select></div>
           <div class="rw"><span>Each booking</span><input type="number" id="pccSlot" value="${cur.slot}" min="5" max="480" style="width:64px"> min<span>People per time</span><input type="number" id="pccCap" value="${cur.cap}" min="1" max="500" style="width:64px"></div>
           <div class="rw"><span>Book up to</span><input type="number" id="pccDays" value="${cur.days}" min="1" max="730" style="width:64px"> days ahead<span>Notice</span><input type="number" id="pccLead" value="${cur.lead}" min="0" max="720" style="width:64px"> hours</div>
@@ -143,7 +150,19 @@
           <div class="rw"><span>Language</span><input id="pccLang" value="${esc(cur.lang)}" style="width:60px"><label><input type="checkbox" id="pccPhone"${cur.phone ? " checked" : ""}> Ask for a phone number</label><label><input type="checkbox" id="pccNotes"${cur.notes ? " checked" : ""}> Ask for notes</label></div>
           <div style="color:var(--pc-dim);margin-top:6px">Visitors see the free times of each day - opening hours in steps of one booking, from the notice on, up to the days ahead - and book one with their name and email. A time is never booked twice (or more than its people per time).</div>
         </div>
-        <div data-cpane="hours" style="display:none"><table class="pccal-hours">${order.map(hourRow).join("")}</table><div style="color:var(--pc-dim);margin-top:6px">A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close a single day on the website: a row in bg_cal_closed.</div></div>
+        <div data-cpane="rules" style="display:none">
+          <div style="font-weight:600;margin:2px 0 4px">Services</div>
+          <table class="pccal-svc" id="pccSvc"><tr><th>Service</th><th>Minutes</th><th>Price</th><th></th></tr>${(cur.services || []).map(svcRow).join("")}</table>
+          <div class="rw"><button type="button" class="ghost" id="pccSvcAdd">＋ Service</button><span style="color:var(--pc-dim)">None = every booking is one slot. With services a visitor picks one first; it takes its own minutes.</span></div>
+          <div class="rw"><span>Buffer</span><input type="number" id="pccBuffer" value="${cur.buffer}" min="0" max="240" style="width:56px"> min round each booking<span>Most a day</span><input type="number" id="pccMaxDay" value="${cur.maxDay}" min="0" max="500" style="width:56px" title="0 = no limit"></div>
+          <div class="rw"><label><input type="checkbox" id="pccApprove"${cur.approve ? " checked" : ""}> Bookings wait for my approval</label><span>Cancel online up to</span><input type="number" id="pccCancelH" value="${cur.cancelHours}" min="0" max="720" style="width:56px"> hours before</div>
+          <div class="rw"><label><input type="checkbox" id="pccEmails"${cur.emails ? " checked" : ""}> Send e-mails</label><span>To me</span><input id="pccOwner" type="email" value="${esc(cur.owner)}" placeholder="you@your-site" style="width:150px"><span>From</span><input id="pccFrom" type="email" value="${esc(cur.from)}" placeholder="bookings@your-site" style="width:150px"></div>
+          <div style="font-weight:600;margin:8px 0 4px">Closed days</div>
+          <table class="pccal-svc" id="pccClosed"><tr><th>Day</th><th>Why (for you)</th><th></th></tr>${(cur.closed || []).map(closedRow).join("")}</table>
+          <div class="rw"><button type="button" class="ghost" id="pccClosedAdd">＋ Closed day</button></div>
+          <div style="color:var(--pc-dim);margin-top:6px">Each booking gets a link to see it, add it to a calendar (.ics) or cancel it. E-mails go out with the host's PHP mail() - the visitor's, and yours for each new or cancelled booking.</div>
+        </div>
+        <div data-cpane="hours" style="display:none"><table class="pccal-hours">${order.map(hourRow).join("")}</table><div style="color:var(--pc-dim);margin-top:6px">A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close single days: Services & rules ▸ Closed days.</div></div>
         <div data-cpane="style" style="display:none;max-height:52vh;overflow:auto"><table class="pccal-style"><tr><th>Object</th><th>Font</th><th>Size</th><th>Colour</th><th>Background</th><th>Bold</th><th>Corners</th></tr>${H.STYLE_TYPES.map(styleRow).join("")}</table>
           <div class="rw" style="margin-top:6px"><button type="button" class="ghost" id="pccStyleReset">↺ Default style</button><span style="color:var(--pc-dim)">The canvas shows each change; the website's CSS is made from the same style.</span></div></div>
         <div data-cpane="db" style="display:none">
@@ -160,33 +179,46 @@
         n.hours = [0, 1, 2, 3, 4, 5, 6].map((i) => (d.querySelector(`[data-hopen="${i}"]`).checked ? [0, 1].map((r) => [d.querySelector(`[data-h="${i}.${r}.0"]`).value, d.querySelector(`[data-h="${i}.${r}.1"]`).value]).filter(([a, b]) => a && b) : []));
         for (const [k] of H.STYLE_TYPES) { const q = (p) => d.querySelector(`[data-st="${k}.${p}"]`); n.style[k] = { font: q("font").value, size: +q("size").value, color: q("color").value, bg: q("nobg").checked ? "" : q("bg").value, bold: q("bold").checked, radius: +q("radius").value }; }
         n.db = { scope: v("pccScope").value, name: v("pccDb").value.trim() };
-        const c = H.clean(n); c.box = cur.box; c.drawn = cur.drawn; c.month = cur.month; c.dbOk = cur.dbOk; return c;
+        n.mode = v("pccMode").value; n.month = v("pccMonth").value;
+        n.services = [...d.querySelectorAll("[data-svc]")].map((r) => ({ name: r.querySelector('[data-sv="name"]').value, mins: +r.querySelector('[data-sv="mins"]').value, price: r.querySelector('[data-sv="price"]').value }));
+        n.closed = [...d.querySelectorAll("[data-closed]")].map((r) => ({ day: r.querySelector('[data-cd="day"]').value, reason: r.querySelector('[data-cd="reason"]').value }));
+        n.buffer = +v("pccBuffer").value; n.maxDay = +v("pccMaxDay").value; n.approve = v("pccApprove").checked; n.cancelHours = +v("pccCancelH").value;
+        n.emails = v("pccEmails").checked; n.owner = v("pccOwner").value.trim(); n.from = v("pccFrom").value.trim();
+        const c = H.clean(n); c.box = cur.box; c.drawn = cur.drawn; c.dbOk = cur.dbOk; return c;
       };
+      const dbPart = (n) => [n.mode, n.name, n.slug, n.kind, n.slot, n.cap, n.days, n.lead, n.weekStart, n.tz, n.hours, n.phone, n.notes, n.db, n.services, n.buffer, n.maxDay, n.approve, n.cancelHours, n.emails, n.owner, n.from, n.closed];
+      const modeTabs = (d) => { const pr = d.querySelector("#pccMode").value === "print"; d.querySelectorAll("[data-bk]").forEach((b) => { b.style.display = pr ? "none" : ""; }); d.querySelectorAll("#pccSlot,#pccCap,#pccDays,#pccLead,#pccPhone,#pccNotes").forEach((x) => { const r = x.closest(".rw"); if (r) r.style.opacity = pr ? ".45" : ""; }); };
       const preview = (d) => { cur = read(d); L.cal = cur; render(L, false); refresh(); const t = d.querySelector("#pccSql"); if (t) t.value = H.schemaSql() + "\n" + H.seedSql(cur); };
       E.ui.dialog("📅 Calendar Settings - " + c0.name, html, (d) => {
         const n = read(d); L.cal = c0; L.canvas = canvas0;
-        const dbChanged = JSON.stringify([n.name, n.slug, n.kind, n.slot, n.cap, n.days, n.lead, n.weekStart, n.tz, n.hours, n.phone, n.notes, n.db]) !== JSON.stringify([c0.name, c0.slug, c0.kind, c0.slot, c0.cap, c0.days, c0.lead, c0.weekStart, c0.tz, c0.hours, c0.phone, c0.notes, c0.db]);
+        const dbChanged = JSON.stringify(dbPart(n)) !== JSON.stringify(dbPart(c0));
         E.structOp("📅 calendar settings", () => { L.cal = n; L.name = "📅 " + n.name; render(L, false); });
         refresh();
-        if (dbChanged || !n.dbOk) upload(L); else say(`📅 ${n.name}: the style kept - 🌐 Build Website gives the site the same look`);
+        if (n.mode === "print") say(`📅 ${n.name}: a printed month (${n.month || "this month"})`);
+        else if (dbChanged || !n.dbOk) upload(L); else say(`📅 ${n.name}: the style kept - 🌐 Build Website gives the site the same look`);
         return true;
       }, { okLabel: "OK", wide: true, cancel: () => { L.cal = c0; L.canvas = canvas0; refresh(); }, init: (d) => {
         d.querySelectorAll("[data-ctab]").forEach((b) => { b.onclick = () => { d.querySelectorAll("[data-ctab]").forEach((x) => x.classList.toggle("on", x === b)); d.querySelectorAll("[data-cpane]").forEach((p) => { p.style.display = p.dataset.cpane === b.dataset.ctab ? "" : "none"; }); }; });
-        let t = 0; const later = () => { clearTimeout(t); t = setTimeout(() => preview(d), 120); };
-        d.querySelectorAll("input,select").forEach((el) => { el.addEventListener("input", later); el.addEventListener("change", later); });
+        let t = 0; const later = () => { clearTimeout(t); t = setTimeout(() => { modeTabs(d); preview(d); }, 120); };
+        d.addEventListener("input", (e) => { if (e.target.matches("input,select")) later(); }); d.addEventListener("change", (e) => { if (e.target.matches("input,select")) later(); });
+        modeTabs(d);
+        const addRow = (tbl, html) => { const tb = d.querySelector(tbl).tBodies[0] || d.querySelector(tbl); tb.insertAdjacentHTML("beforeend", html); later(); };
+        d.querySelector("#pccSvcAdd").onclick = () => { if (d.querySelectorAll("[data-svc]").length < 20) addRow("#pccSvc", svcRow({ name: "Service " + (d.querySelectorAll("[data-svc]").length + 1), mins: cur.slot, price: "" })); };
+        d.querySelector("#pccClosedAdd").onclick = () => { const t0 = new Date(); addRow("#pccClosed", closedRow({ day: t0.toISOString().slice(0, 10), reason: "" })); };
+        d.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest("[data-rm]"); if (b) { b.closest("tr").remove(); later(); } });
         d.querySelector("#pccStyleReset").onclick = () => { for (const [k] of H.STYLE_TYPES) { const s = H.DEFAULT_STYLE[k], q = (p) => d.querySelector(`[data-st="${k}.${p}"]`); q("font").value = s.font; q("size").value = s.size; q("color").value = s.color; q("bg").value = s.bg || "#ffffff"; q("nobg").checked = !s.bg; q("bold").checked = s.bold; q("radius").value = s.radius; } preview(d); };
         d.querySelector("#pccMake").onclick = async () => { const note = d.querySelector("#pccDbNote"); note.textContent = "…"; cur = read(d); L.cal = cur; const r = await upload(L); note.textContent = r ? `✓ in "${r.db}" (${r.statements} statements)` : "✗ not made - see the status line"; };
         d.querySelector("#pccBookLoad").onclick = async () => {
           const note = d.querySelector("#pccBookNote"), box = d.querySelector("#pccBooks"); note.textContent = "…";
           try { const r = await api("/api/sitecal/bookings", { cal: read(d) }); note.textContent = r.rows.length + " booking(s) from today on";
-            box.innerHTML = r.rows.length ? `<table class="pccal-books"><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Notes</th><th>Status</th></tr>${r.rows.map((x) => `<tr><td>${esc(x.starts)}</td><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${esc(x.phone)}</td><td>${esc(x.notes)}</td><td>${esc(x.status)}</td></tr>`).join("")}</table>` : ""; }
+            box.innerHTML = r.rows.length ? `<table class="pccal-books"><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Notes</th><th>Status</th></tr>${r.rows.map((x) => `<tr><td>${esc(x.starts)}${x.service ? " · " + esc(x.service) : ""}</td><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${esc(x.phone)}</td><td>${esc(x.notes)}</td><td>${esc(x.status)}</td></tr>`).join("")}</table>` : ""; }
           catch (e) { note.textContent = "✗ " + e.message; }
         };
         const t2 = d.querySelector("#pccSql"); if (t2) t2.value = H.schemaSql() + "\n" + H.seedSql(cur);
       } });
     }
     const css = doc.createElement("style");
-    css.textContent = ".pccal-tabs button.on{border-color:var(--pc-accent);color:var(--pc-accent)}.pccal-style,.pccal-hours,.pccal-books{border-collapse:collapse;font-size:11px}.pccal-style td,.pccal-style th,.pccal-hours td,.pccal-books td,.pccal-books th{padding:2px 4px;text-align:left;white-space:nowrap}.pccal-style input[type=color]{width:30px;height:20px;padding:0}";
+    css.textContent = ".pccal-tabs button.on{border-color:var(--pc-accent);color:var(--pc-accent)}.pccal-style,.pccal-hours,.pccal-books{border-collapse:collapse;font-size:11px}.pccal-style td,.pccal-style th,.pccal-hours td,.pccal-books td,.pccal-books th{padding:2px 4px;text-align:left;white-space:nowrap}.pccal-style input[type=color]{width:30px;height:20px;padding:0}.pccal-svc{border-collapse:collapse;font-size:11px}.pccal-svc td,.pccal-svc th{padding:2px 4px;text-align:left}";
     doc.head.appendChild(css);
 
     /* ---- drag and drop onto the canvas (data type application/x-bitgen-calendar) */
@@ -195,10 +227,10 @@
     E.stage.addEventListener("dragover", (e) => { if (!ours(e)) return; e.preventDefault(); e.stopImmediatePropagation(); e.dataTransfer.dropEffect = "copy"; }, true);
     E.stage.addEventListener("drop", (e) => {
       if (!ours(e)) return; e.preventDefault(); e.stopImmediatePropagation();
-      const [x, y] = E.pos(e); create(x, y, { kind: e.dataTransfer.getData(TYPE) || "appointments" });
+      const [x, y] = E.pos(e), [kind, mode] = String(e.dataTransfer.getData(TYPE) || "appointments").split(":"); create(x, y, { kind, mode });
     }, true);
     /** make an element a drag source of a calendar */
-    function dragSource(el, kind) { if (!el || el._pccal) return; el._pccal = true; el.draggable = true; el.addEventListener("dragstart", (e) => { e.dataTransfer.setData(TYPE, kind || "appointments"); e.dataTransfer.setData("text/plain", "📅 calendar"); e.dataTransfer.effectAllowed = "copy"; }); }
+    function dragSource(el, kind, mode) { if (!el || el._pccal) return; el._pccal = true; el.draggable = true; el.addEventListener("dragstart", (e) => { e.dataTransfer.setData(TYPE, (kind || "appointments") + (mode ? ":" + mode : "")); e.dataTransfer.setData("text/plain", "📅 calendar"); e.dataTransfer.effectAllowed = "copy"; }); }
     // double-click a calendar (Move tool / no tool) = its settings
     E.stage.addEventListener("dblclick", (e) => {
       if (!["move", "none", "", null, undefined].includes(S.tool)) return;
@@ -207,7 +239,15 @@
     }, true);
 
     const C2 = E.ui.addCmd;
-    C2("layer.newcalendar", "📅 Calendar (booking, for a website)", "", addCentre, { enabled: () => !!S.w });
+    C2("layer.newcalendar", "📅 Calendar", "", addCentre, { enabled: () => !!S.w });
+    // 2.847.0: 📅 at the foot of the tool column - any view, dragged onto the page (a click = the middle of the page)
+    const tools = doc.getElementById("kxTools");
+    if (tools && !doc.getElementById("pcCalTool")) {
+      const b = doc.createElement("button"); b.className = "ghost ietool"; b.id = "pcCalTool"; b.textContent = "📅";
+      b.title = "📅 Calendar - drag it onto the page (a click puts it in the middle). In 🌐 Web View a website's booking calendar, else a printed month; double-click it for its settings";
+      b.onclick = () => addCentre(); dragSource(b);
+      const sw = tools.querySelector(".kxsw"); tools.insertBefore(b, sw || null);
+    }
     const nl = E.ui.MENUS.find(([n]) => n === "Layer"); if (nl) { const New = nl[1].find((x) => x && typeof x === "object" && x.label === "New"); if (New) New.items.push("layer.newcalendar"); }
     C2("layer.calsettings", "📅 Calendar Settings…", "", () => settings(), { enabled: () => isCal(E.layer()) });
     const cs = E.ui.CMD.get("layer.calsettings"); Object.defineProperty(cs, "hidden", { get: () => !isCal(E.layer()), configurable: true });

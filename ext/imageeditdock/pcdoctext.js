@@ -60,7 +60,8 @@
   const TAGS = new Set(["P", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "PRE", "UL", "OL", "LI", "BR", "HR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE", "DEL",
     "SUB", "SUP", "SPAN", "A", "CODE", "MARK", "TABLE", "THEAD", "TBODY", "TR", "TD", "TH", "COLGROUP", "COL"]);   // 2.812.0: + colgroup / col (column widths)
   const STYLE_KEYS = ["font-family", "font-size", "font-weight", "font-style", "text-decoration", "text-decoration-line", "color", "background-color",
-    "text-align", "line-height", "margin-top", "margin-bottom", "margin-left", "text-indent", "list-style-type", "vertical-align", "width", "border", "border-style", "border-width", "border-color", "padding", "table-layout"];
+    "text-align", "line-height", "margin-top", "margin-bottom", "margin-left", "text-indent", "list-style-type", "vertical-align", "width", "border", "border-style", "border-width", "border-color", "padding", "table-layout",
+    "height", "margin-right", "border-collapse"];   // 2.847.0: a row's height, a centred / right table (margin-left / -right auto), the table's own borders (pcdoctable.js)
   const DATA_STYLES = new Set(["title", "subtitle"]);
   const SIZE_WORDS = { "xx-small": 7, "x-small": 7.5, small: 10, medium: 12, large: 13.5, "x-large": 18, "xx-large": 24, "xxx-large": 36 };
   /** a CSS font-size -> pt (null = not one we know) */
@@ -89,7 +90,7 @@
         if (!TAGS.has(tag)) { copy(n, dst); continue; }
         const e = d.createElement(tag.toLowerCase());
         const st = [];
-        if (n.style) for (const k of STYLE_KEYS) { const v = n.style.getPropertyValue(k); if (v && safeCss(v)) st.push(k + ":" + v); }
+        if (n.style) for (const k of STYLE_KEYS) { if (k === "height" && tag !== "TR") continue; const v = n.style.getPropertyValue(k); if (v && safeCss(v)) st.push(k + ":" + v); }   // a height: only a table row's (a figure's place has its own, capped, below)
         if (n.tagName.toUpperCase() === "FONT") {
           const c = n.getAttribute("color"), f = n.getAttribute("face"); if (c && safeCss(c)) st.push("color:" + c); if (f && safeCss(f)) st.push("font-family:" + f);
         }
@@ -111,6 +112,7 @@
         if (tag === "SUP" && /^[\w-]{1,24}$/.test(ga("data-fn") || "")) e.setAttribute("data-fn", ga("data-fn"));
         if (tag === "SPAN" && /^[\w-]{1,24}$/.test(ga("data-cid") || "")) { e.setAttribute("data-cid", ga("data-cid")); if (ga("data-done") === "1") e.setAttribute("data-done", "1"); }
         if (tag === "SPAN" && ga("data-field") && /^[^<>"]{1,60}$/.test(ga("data-field"))) e.setAttribute("data-field", ga("data-field"));
+        if (tag === "TABLE" && /^[\w#.,:"{} -]{1,400}$/.test(ga("data-ts") || "")) e.setAttribute("data-ts", ga("data-ts"));   // 2.847.0: the table's style (pcdoctable.js)
         if (tag === "TD" || tag === "TH") for (const a of ["colspan", "rowspan"]) { const v = +n.getAttribute(a); if (v > 1) e.setAttribute(a, String(Math.min(64, v | 0))); }
         dst.appendChild(e);
         if (tag !== "BR" && tag !== "HR" && tag !== "COL") copy(n, e);

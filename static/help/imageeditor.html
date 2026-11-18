@@ -2,6 +2,30 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="snap847">✅ 🧲 Snap buttons · ⟷ Page width without margins · ▦ Table selecting and styling · 📅 Calendars on any page, full booking features (2.847.0)</h3>
+<ul>
+  <li><b>🧲 Snap buttons</b> sit at the start of the top strip: 🧲 snapping on / off, ┼ guidelines, ◰ objects and ▤ WP frames and the page's margins. Turning on one kind turns snapping on too. While snapping is off, the kinds are dimmed. Moving, transforming (scaling and skewing with the handles) and drawing all snap; hold Ctrl to move freely. A dropped calendar snaps too. The same switches are in View ▸ Snap To.</li>
+  <li><b>⟷ Page Width</b> has a <b>▯</b> button next to it (also <b>▯ Margins</b> in the zoom tool's options and View ▸ Page Width Shows the Margins). On: the whole page fills the width. Off: only the space between the left and right margins fills it, so the text is as large as it can be. The margins come from Page Properties, otherwise from the page's WP frame.</li>
+  <li><b>▦ Tables</b> in a WP layer:
+    <ul>
+      <li>A <b>⊞</b> handle appears at the table's top-left corner when you point at the table or the caret is in it. Click it (or use Table ▸ ⊞ Select Table) to pick the whole table.</li>
+      <li>A picked table has a blue box: <b>Del</b> or Backspace deletes it (Ctrl+Z brings it back), <b>Esc</b> lets go, <b>🗑</b> deletes it, <b>🎨</b> styles it and the <b>◢</b> grip resizes it (the width and the rows' heights; with Shift, the width only).</li>
+      <li>Drag a <b>row's bottom edge</b> to change that row's height, and a <b>column's right edge</b> to change that column's width.</li>
+      <li><b>🎨 Table Style</b> sets the width (% of the frame), the alignment, the borders, the cell padding, the text size and colour, the background, banded rows and the header row's colours. The style is saved with the table.</li>
+    </ul></li>
+  <li><b>📅 Calendar on any page</b>: it is in the WP View's Insert tab, the Web View's ribbon, at the foot of the tool column and in Layer ▸ New. In the Web View it is a website booking calendar. Anywhere else it is a <b>printed month</b> with no database. Change it any time with <b>Mode</b> and <b>Month</b> in 📅 Calendar Settings ▸ General. On a website, a printed calendar is a picture.</li>
+  <li><b>📅 Services &amp; rules</b> (a new tab in Calendar Settings):
+    <ul>
+      <li><b>Services</b> with their minutes and price. Visitors pick a service first, and the booking takes that service's length.</li>
+      <li>A <b>buffer</b> of minutes around each booking, and the <b>most bookings a day</b>.</li>
+      <li><b>Approval</b>: bookings wait until you confirm them.</li>
+      <li>How many hours before the time a visitor can <b>cancel online</b>.</li>
+      <li><b>E-mails</b> to the visitor and to you, sent with the web host's PHP mail().</li>
+      <li><b>Closed days</b>.</li>
+    </ul></li>
+  <li>On the website, each booking gets a link to <b>see it</b>, <b>⤓ add it to a calendar</b> (an .ics file) and <b>cancel it</b>. Cancelling frees the time again. A database made by 2.846.0 is upgraded in place when you upload the calendar again, and its bookings are kept.</li>
+</ul>
+
 <h3 id="cal846">✅ ✒ Pen fix · 📄 Page Properties · 📅 Booking calendars for websites (2.846.0)</h3>
 <ul>
   <li><b>✒ Pen</b>: a path is only closed when you click within 5 px of its first point. Until then it is a line: it is not filled, so it no longer looks closed while you draw.</li>

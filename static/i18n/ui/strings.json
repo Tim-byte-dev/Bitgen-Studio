@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6414,
+ "count": 6470,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -59220,6 +59220,566 @@
    ],
    "where": [
     "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Page width shows the margins (on) - off: the area between the margins fills the width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Page Width Shows the Margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "▯ Margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Website booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "🌐 Website booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Printed calendar (a month)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "🖨 Printed calendar (a month)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Month",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Services",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Minutes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "None = every booking is one slot. With services a visitor picks one first; it takes its own minutes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Buffer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "min round each booking",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Most a day",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Bookings wait for my approval",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Cancel online up to",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "hours before",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Send e-mails",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "To me",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Closed days",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Why (for you)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Closed day",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "＋ Service",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "＋ Closed day",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Services & rules",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Each booking gets a link to see it, add it to a calendar (.ics) or cancel it. E-mails go out with the host's PHP mail() - the visitor's, and yours for each new or cancelled booking",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close single days: Services & rules ▸ Closed days",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "The month shown on the page - empty = this month",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "0 = no limit",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "you@your-site",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "bookings@your-site",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Calendar - drag it onto the page (a click puts it in the middle). In 🌐 Web View a website's booking calendar, else a printed month; double-click it for its settings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "📅 Calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Table Style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "▦ Table Style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Table Style…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "🎨 Table Style…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Select Table",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "⊞ Select Table",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Delete the table (Del)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Drag to resize the table (width and row heights)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "of the frame",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Cell padding",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "own colour",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "filled",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "own text colour",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Rows: drag a row's bottom edge. Columns: drag a column's right edge. The whole table: ⊞ picks it, ◢ resizes it (Shift = the width only), Del deletes it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "as is",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "WP Frames and Margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Snapping",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Snap to guidelines",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Snap to objects (their edges and centres)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Snap to WP frames and the page's margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Snap (Shift+Ctrl+;) - moving, transforming and drawing objects snap to what is on below",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Request this time",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
    ]
   }
  ]

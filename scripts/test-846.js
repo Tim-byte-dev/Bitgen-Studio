@@ -70,7 +70,7 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   const SCL = require(path.join(ROOT, "lib/siteCal.js")), ran = [];
   SCL.setDb({ createDb: async (s, n) => { ran.push(["create", s, n]); }, run: async (s, db, sql) => { ran.push(["run", s, db, sql]); return { results: sql.split(";").filter((x) => x.trim()).map((q) => ({ ok: true, sql: q })) }; } });
   const inst = await SCL.install(Object.assign({}, cal, { db: { scope: "project", name: "site_clinic" } }));
-  check("lib/siteCal.install: the database made, the tables + the calendar's row run in it", inst.ok && ran[0].join() === "create,project,site_clinic" && ran[1][2] === "site_clinic" && /CREATE TABLE IF NOT EXISTS bg_cal_bookings/.test(ran[1][3]) && /INSERT INTO bg_calendars/.test(ran[1][3]), inst);
+  check("lib/siteCal.install: the database made, the tables + the calendar's row run in it", inst.ok && ran[0].join() === "create,project,site_clinic" && (() => { const sch = ran.find((r) => r[0] === "run" && /CREATE TABLE IF NOT EXISTS bg_cal_bookings/.test(r[3] || "")); return !!sch && sch[2] === "site_clinic" && /INSERT INTO bg_calendars/.test(sch[3]); })(), inst);
   SCL.setDb({ createDb: async () => {}, run: async () => ({ results: [{ ok: false, sql: "CREATE TABLE x", error: "denied" }] }) });
   let err = ""; try { await SCL.install(cal); } catch (e) { err = e.message; }
   check("lib/siteCal.install: a statement the database refuses is said", /refused: denied/.test(err), err);

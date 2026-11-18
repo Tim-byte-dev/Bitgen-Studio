@@ -31,6 +31,11 @@
     const g = o.guides || [];
     if (on.guides) for (const q of g) (q.o === "v" ? xs : ys).push({ v: q.p, k: "guideline" });
     if (on.page) { for (const v of [0, o.w / 2, o.w]) xs.push({ v, k: v ? (v === o.w ? "page edge" : "page centre") : "page edge" }); for (const v of [0, o.h / 2, o.h]) ys.push({ v, k: v ? (v === o.h ? "page edge" : "page centre") : "page edge" }); pts.push({ x: o.w / 2, y: o.h / 2, k: "page centre" }); }
+    // 2.847.0: WP frames (their edges + middles) and the page's margins
+    if (on.frames) for (const b of o.frames || []) {
+      xs.push({ v: b.x, k: b.k || "WP frame" }, { v: b.x + b.w, k: b.k || "WP frame" }); ys.push({ v: b.y, k: b.k || "WP frame" }, { v: b.y + b.h, k: b.k || "WP frame" });
+      if (!b.k) { xs.push({ v: b.x + b.w / 2, k: "WP frame centre" }); ys.push({ v: b.y + b.h / 2, k: "WP frame centre" }); }
+    }
     if (on.objects) for (const b of o.boxes || []) {
       xs.push({ v: b.x, k: "edge" }, { v: b.x + b.w / 2, k: "centre" }, { v: b.x + b.w, k: "edge" });
       ys.push({ v: b.y, k: "edge" }, { v: b.y + b.h / 2, k: "centre" }, { v: b.y + b.h, k: "edge" });
@@ -74,7 +79,7 @@
     const sx = best(cx, xs), sy = best(cy, ys);
     return { dx: dx + (sx ? sx.d : 0), dy: dy + (sy ? sy.d : 0), hit: sx || sy ? { k: (sx || sy).t.k, x: sx ? sx.t.v : null, y: sy ? sy.t.v : null } : null };
   }
-  const SNAP_TOOLS = new Set(["move", "rect", "ellipse", "poly", "crop", "gradient", "pen", "curvpen", "addanchor", "convanchor", "type", "vtype", "typepath", "pathsel", "directsel", "shape", "customshape",
+  const SNAP_TOOLS = new Set(["move", "doctext", "rect", "ellipse", "poly", "crop", "gradient", "pen", "curvpen", "addanchor", "convanchor", "type", "vtype", "typepath", "pathsel", "directsel", "shape", "customshape",
     "bezier", "line2", "polyline", "curve3", "bspline", "cpen", "shapetool", "crect", "crect3", "cellipse", "cellipse3", "cpolygon", "cstar", "ccstar", "cspiral", "cgraph", "ccommon", "cdimpar", "cdimhv", "cdimchain", "cdimang", "ccallout", "cconnect"]);
 
   /* ================================ the editor ================================ */
@@ -84,7 +89,7 @@
     const $ = (id) => doc.getElementById(id);
     const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     // on at first: snapping to guidelines, their crossings and shapes' nodes (the rest under View ▸ Snap To)
-    const SN = Object.assign({ snap: true, grid: false, guides: true, objects: false, nodes: true, midpoints: false, intersections: true, page: false, dist: 8, gridPx: 0, show: true, lock: false, unit: "px", dpi: 96, color: "#00b7ff",
+    const SN = Object.assign({ snap: true, grid: false, guides: true, objects: false, frames: true, nodes: true, midpoints: false, intersections: true, page: false, dist: 8, gridPx: 0, show: true, lock: false, unit: "px", dpi: 96, color: "#00b7ff",
       gridMajor: 5, gridStyle: "lines", gridColor: "#2680eb", gridOpacity: 0.35 }, store.get("snap", {}));   // 2.445.0: + the grid's major lines, lines / dots, colour
     /** 2.445.0: the grid as static/gridspec.js's spec (the drawing and the settings tab both use it) */
     const gridSpec = () => ({ on: !!S.grid, spacing: SN.gridPx, major: SN.gridMajor, style: SN.gridStyle, color: SN.gridColor, opacity: SN.gridOpacity, guideColor: SN.color, snap: SN.dist });
@@ -102,14 +107,20 @@
 
     /* ---- what to snap to (the active layer left out while it is being moved) */
     function targets(skip) {
-      const on = SN.snap ? { guides: SN.guides && SN.show, objects: SN.objects, nodes: SN.nodes, midpoints: SN.midpoints, intersections: SN.intersections, page: SN.page } : {};
+      const on = SN.snap ? { guides: SN.guides && SN.show, objects: SN.objects, nodes: SN.nodes, midpoints: SN.midpoints, intersections: SN.intersections, page: SN.page, frames: SN.frames } : {};
+      const frames = [];
+      if (SN.snap && SN.frames) {
+        for (const L of S.layers) if (L !== skip && L.type === "doc" && L.doc && D.shown(S.layers, L)) frames.push({ x: L.doc.x, y: L.doc.y, w: L.doc.w, h: L.doc.h });
+        const pg = E.pages && E.pages.current ? E.pages.current() : null, m = pg && pg.margins;
+        if (m && (m.top || m.left || m.right || m.bottom) && root.PCPageProps) { const r = root.PCPageProps.marginRect(m, S.w, S.h, pg.dpi); frames.push(Object.assign(r, { k: "margin" })); }
+      }
       const boxes = [], paths = [];
       if (SN.snap && (SN.objects || SN.nodes || SN.midpoints)) for (const L of S.layers) {
         if (L === skip || !D.shown(S.layers, L) || L.type === "group" || L.type === "adjust" || L.type === "fill") continue;
         if (SN.objects && E.dockers) { const b = E.dockers.boxOf(L); if (b && b.w > 0 && !(L.type === "pixel" && b.w >= S.w - 1 && b.h >= S.h - 1)) boxes.push(b); }
         if ((SN.nodes || SN.midpoints) && L.shape && L.shape.kind === "path" && L.shape.path) paths.push(L.shape.path);
       }
-      return targetsOf({ on, guides: guides(), w: S.w, h: S.h, boxes, paths });
+      return targetsOf({ on, guides: guides(), w: S.w, h: S.h, boxes, paths, frames });
     }
     let last = null;                       // what the pointer last snapped to (drawn at the point)
     let moveStart = null;
@@ -131,6 +142,13 @@
       return [r.x, r.y];
     };
 
+    /** 2.847.0: a point snapped (the Move tool's handles - scale / skew while transforming); skip = the layer being changed */
+    E.snapPoint = function (p, skip) {
+      if (!SN.snap || !S.w) { last = null; return p; }
+      const r = snapPoint(p[0], p[1], targets(skip || null), tolDoc(), SN.grid ? gridStep(SN.gridPx, S.zoom) : 0);
+      last = r.hit ? Object.assign({}, r.hit, { px: r.x, py: r.y }) : null;
+      return [r.x, r.y];
+    };
     /* ---- the overlay: the guidelines + what was snapped to */
     E.overlayHooks.push((g, px) => {
       if (!S.w) return;
@@ -255,7 +273,7 @@
     const C = E.ui.addCmd, sep = E.ui.sep;
     const tog = (k, label) => () => { SN[k] = !SN[k]; keep(); E.drawOverlay(); say(`${label} ${SN[k] ? "on" : "off"}`); };
     C("snap.on", "Snap", "Shift+Ctrl+;", tog("snap", "snapping"), { checked: () => SN.snap });
-    for (const [k, n] of [["grid", "Grid"], ["guides", "Guidelines"], ["objects", "Objects"], ["nodes", "Nodes"], ["midpoints", "Midpoints"], ["intersections", "Intersections"], ["page", "Page"]]) C("snap." + k, n, "", tog(k, "snap to " + n.toLowerCase()), { checked: () => SN[k] });
+    for (const [k, n] of [["grid", "Grid"], ["guides", "Guidelines"], ["objects", "Objects"], ["frames", "WP Frames and Margins"], ["nodes", "Nodes"], ["midpoints", "Midpoints"], ["intersections", "Intersections"], ["page", "Page"]]) C("snap." + k, n, "", tog(k, "snap to " + n.toLowerCase()), { checked: () => SN[k] });
     C("guide.show", "Guidelines", "Ctrl+;", tog("show", "guidelines"), { checked: () => SN.show });
     C("guide.lock", "Lock Guidelines", "Alt+Ctrl+;", tog("lock", "guidelines locked"), { checked: () => SN.lock });
     C("guide.new", "New Guideline…", "", newGuideDialog, { enabled: () => !!S.w });
@@ -263,11 +281,28 @@
     C("guide.clear", "Clear Guidelines", "", () => { S.guides = []; E.drawOverlay(); say("guidelines cleared"); }, { enabled: () => guides().length > 0 });
     C("snap.settings", "Grid and Snapping…", "", settingsDialog);
     for (const u of Object.keys(UNITS)) C("ruler." + u, UNITS[u].n[0].toUpperCase() + UNITS[u].n.slice(1), "", () => { SN.unit = u; keep(); if (E.ui.rulers) E.ui.rulers(); }, { checked: () => SN.unit === u });
+    /* ---- 2.847.0 (Tim: "add snap toggle buttons, snap to guidelines, snap to objects, snap to wp frame when moving or
+       transforming or creating an object"): 🧲 Snap + its three kinds as toggle buttons on the top strip */
+    const SNAP_BTNS = [["snap", "🧲", "Snap (Shift+Ctrl+;) - moving, transforming and drawing objects snap to what is on below"], ["guides", "┼", "Snap to guidelines"],
+      ["objects", "◰", "Snap to objects (their edges and centres)"], ["frames", "▤", "Snap to WP frames and the page's margins"]];
+    const mrS = stage.closest && stage.closest(".kx") && stage.closest(".kx").querySelector(".pcmenu .mr");
+    if (mrS) {
+      const box = doc.createElement("span"); box.className = "pcsnapbtns"; box.id = "pcSnapBtns"; box.setAttribute("role", "group"); box.setAttribute("aria-label", "Snapping");
+      box.innerHTML = SNAP_BTNS.map(([k, ic, t]) => `<button type="button" class="ghost" data-snapk="${k}" title="${esc(t)}" aria-pressed="false">${ic}</button>`).join("");
+      mrS.insertBefore(box, mrS.firstChild);
+      const paintBtns = () => box.querySelectorAll("[data-snapk]").forEach((b) => { const on = !!SN[b.dataset.snapk], dim = b.dataset.snapk !== "snap" && !SN.snap; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); b.style.opacity = dim ? ".45" : ""; });
+      box.addEventListener("click", (e) => { const b = e.target.closest("[data-snapk]"); if (!b) return; const k = b.dataset.snapk; SN[k] = !SN[k]; if (k !== "snap" && SN[k]) SN.snap = true; keep(); paintBtns(); E.drawOverlay(); say(k === "snap" ? `🧲 snapping ${SN.snap ? "on" : "off"}` : `🧲 snap to ${{ guides: "guidelines", objects: "objects", frames: "WP frames and margins" }[k]} ${SN[k] ? "on" : "off"}`); });
+      const cssS = doc.createElement("style"); cssS.textContent = ".pcmenu .pcsnapbtns{display:inline-flex;gap:2px;margin-right:6px;padding-right:8px;border-right:1px solid var(--pc-line)}.pcmenu .mr .pcsnapbtns button{min-width:24px;padding:0 5px}";
+      doc.head.appendChild(cssS);
+      paintBtns();
+      const prevRun = E.ui.onRunDone; E.ui.onRunDone = function (id) { if (prevRun) prevRun.apply(this, arguments); if (/^snap\./.test(id)) paintBtns(); };
+      E.snapButtons = { paint: paintBtns, el: box };
+    }
     const V = E.ui.MENUS.find(([n]) => n === "View");
     if (V) {
       const items = V[1], at = items.indexOf("view.grid");
       items.splice(at + 1, 0, { label: "Ruler Units", items: Object.keys(UNITS).map((u) => "ruler." + u) }, "guide.show", "guide.lock", "guide.new", "guide.edit", "guide.clear", sep,
-        { label: "Snap To", items: ["snap.on", sep, "snap.grid", "snap.guides", "snap.objects", "snap.nodes", "snap.midpoints", "snap.intersections", "snap.page"] }, "snap.settings");
+        { label: "Snap To", items: ["snap.on", sep, "snap.grid", "snap.guides", "snap.objects", "snap.frames", "snap.nodes", "snap.midpoints", "snap.intersections", "snap.page"] }, "snap.settings");
     }
     // the grid drawn at the spacing set (pcui draws its own when none is set)
     if (SN.gridPx) S.gridFixed = SN.gridPx;

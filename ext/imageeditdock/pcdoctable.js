@@ -174,6 +174,38 @@
   }
 
   /* ================================ the page ================================ */
+  /* ---- 2.847.0 (Tim: "make the table selectable, deletable on del button resizabe and stylable. allow user to resize
+     individual rows and columns"): a table's STYLE - kept on it as data-ts, put on its cells as inline styles */
+  const TS_DEFAULT = { w: 100, align: "left", bw: 1, bc: "#888888", pad: 4, size: 0, color: "", bg: "", hbg: "#e8e8e8", hcolor: "", band: false, bandc: "#f3f6fa" };
+  const hex = (v, d) => (/^#[0-9a-f]{6}$/i.test(String(v || "")) ? String(v).toLowerCase() : d);
+  function cleanTs(o0) {
+    const o = o0 && typeof o0 === "object" ? o0 : {}, n = (v, lo, hi, d) => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, Math.round(x * 10) / 10)) : d; };
+    return { w: n(o.w, 10, 100, 100), align: ["left", "center", "right"].includes(o.align) ? o.align : "left", bw: n(o.bw, 0, 8, 1), bc: hex(o.bc, TS_DEFAULT.bc), pad: n(o.pad, 0, 30, 4),
+      size: n(o.size, 0, 72, 0), color: o.color ? hex(o.color, "") : "", bg: o.bg ? hex(o.bg, "") : "", hbg: o.hbg === undefined ? TS_DEFAULT.hbg : o.hbg ? hex(o.hbg, "") : "", hcolor: o.hcolor ? hex(o.hcolor, "") : "", band: !!o.band, bandc: hex(o.bandc, TS_DEFAULT.bandc) };
+  }
+  /** a table's style as it is (data-ts, else the default) */
+  function tsOf(t) { try { return cleanTs(JSON.parse(t.getAttribute("data-ts") || "{}")); } catch (e) { return cleanTs({}); } }
+  /** put style ts on table t: its width / alignment, every cell's border, padding, colours; the header row; banded rows */
+  function applyTableStyle(t, ts0) {
+    const ts = cleanTs(ts0);
+    t.style.width = ts.w + "%"; t.style.tableLayout = "fixed"; t.style.borderCollapse = "collapse";
+    t.style.marginLeft = ts.align === "left" ? "" : "auto"; t.style.marginRight = ts.align === "right" ? "" : ts.align === "center" ? "auto" : "";
+    if (ts.align === "right") t.style.marginLeft = "auto";
+    t.style.fontSize = ts.size ? ts.size + "pt" : "";
+    const body = [...t.querySelectorAll("tbody > tr")];
+    for (const c of t.querySelectorAll("td,th")) {
+      if (c.closest("table") !== t) continue;
+      c.style.border = ts.bw ? `${ts.bw}px solid ${ts.bc}` : "none"; c.style.padding = ts.pad + "px";
+      const head = c.tagName === "TH" || !!c.closest("thead"), bi = body.indexOf(c.parentElement);
+      c.style.backgroundColor = head ? ts.hbg : ts.band && bi >= 0 && bi % 2 === 1 ? ts.bandc : ts.bg;
+      c.style.color = head ? ts.hcolor || ts.color : ts.color;
+    }
+    t.setAttribute("data-ts", JSON.stringify(ts));
+    return ts;
+  }
+  /** a row's height (px), at least 8 */
+  function setRowHeight(tr, px) { tr.style.height = Math.max(8, Math.round(px)) + "px"; return tr; }
+
   function install(E) {
     const { S, doc, win } = E; if (!E.docText || !E.tools || !E.tools.doctext || !E.ui || !E.ui.addCmd) return;
     const X = E.docText, say = E.say || (() => {}), sep = E.ui.sep;
@@ -257,7 +289,7 @@
         op("colors", (c, t) => { for (const x of cells) x.style.backgroundColor = sh; for (const x of t.querySelectorAll("td,th")) if (x.style.border && x.style.border !== "none") x.style.borderColor = bc; if (t.style.border && t.style.border !== "none") t.style.borderColor = bc; });
       }, { okLabel: "Apply" });
     }, { enabled: inT });
-    const MENU = () => ["doc.table.insert", sep, "doc.table.rowAbove", "doc.table.rowBelow", "doc.table.colLeft", "doc.table.colRight", sep, "doc.table.delRow", "doc.table.delCol", "doc.table.delTable", sep,
+    const MENU = () => ["doc.table.insert", sep, "doc.table.rowAbove", "doc.table.rowBelow", "doc.table.colLeft", "doc.table.colRight", sep, "doc.table.delRow", "doc.table.delCol", "doc.table.delTable", sep, "doc.table.select", "doc.table.style", sep,
       "doc.table.merge", "doc.table.split", "doc.table.header", sep, { label: "Borders", items: ["doc.table.border.all", "doc.table.border.outside", "doc.table.border.none"] },
       { label: "Cell Alignment", items: ["doc.table.valign.top", "doc.table.valign.middle", "doc.table.valign.bottom"] }, "doc.table.colors"];
     E.docTable = { menu: MENU, insertTable, here, selCells };
@@ -305,9 +337,113 @@
       colDrag = { t: g.t, c: g.c, x: e.clientX, ws: colWidths(g.t), px: g.t.getBoundingClientRect().width };
     }, true);
     doc.addEventListener("pointerup", () => { if (colDrag) { colDrag = null; X.live(); } }, true);
+
+    /* ---- 2.847.0: ROW heights dragged (a row's bottom edge), the TABLE selected (⊞), deleted (Del), resized (◢), styled */
+    let rowDrag = null, tsel = null, tdrag = null;
+    const tablesIn = () => { const e = ed(); return e ? [...e.querySelectorAll("table")] : []; };
+    const kScale = (t) => { const r = t.getBoundingClientRect(); return r.height > 0 ? t.offsetHeight / r.height : 1; };
+    function rowEdgeAt(e) {
+      const e0 = ed(); if (!e0 || !e0.contains(e.target)) return null;
+      const t = e.target.closest && e.target.closest("table"); if (!t) return null;
+      for (const tr of t.querySelectorAll("tr")) { if (tr.closest("table") !== t) continue; const r = tr.getBoundingClientRect(); if (Math.abs(e.clientY - r.bottom) <= 3 && e.clientX >= r.left && e.clientX <= r.right) return { t, tr }; }
+      return null;
+    }
+    doc.addEventListener("pointermove", (e) => {
+      if (rowDrag) { setRowHeight(rowDrag.tr, (rowDrag.h0 + e.clientY - rowDrag.y0) * rowDrag.k); e.preventDefault(); return; }
+      if (tdrag) { gripMove(e); e.preventDefault(); return; }
+      const e0 = ed(); if (!e0) { if (ui && !tsel) ui.querySelector(".pcdt-h").style.display = "none"; return; }
+      if (!e0.contains(e.target) || colDrag) return;
+      if (!edgeAt(e) && rowEdgeAt(e)) e0.style.cursor = "row-resize";
+      const t = e.target.closest && e.target.closest("table"); if (t) showHandle(t);
+    }, true);
+    doc.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || (ui && ui.contains(e.target)) || edgeAt(e)) return;
+      const g = rowEdgeAt(e); if (!g) { if (tsel && !(ui && ui.contains(e.target))) deselect(); return; }
+      e.preventDefault(); e.stopPropagation();
+      rowDrag = { tr: g.tr, y0: e.clientY, h0: g.tr.getBoundingClientRect().height, k: kScale(g.t) };
+    }, true);
+    doc.addEventListener("pointerup", () => { if (rowDrag) { rowDrag = null; X.live(); paintSel(); } if (tdrag) { tdrag = null; X.live(); paintSel(); } }, true);
+    // the ⊞ handle (top-left of the table under the pointer / the caret), the selection box with its ◢ grip and 🎨
+    let ui = null;
+    function mkUi() {
+      if (ui) return ui;
+      ui = doc.createElement("div"); ui.id = "pcdtUi";
+      ui.innerHTML = `<button type="button" class="pcdt-h" title="Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)">⊞</button><div class="pcdt-box"><button type="button" class="pcdt-st" title="Table Style…">🎨</button><button type="button" class="pcdt-del" title="Delete the table (Del)">🗑</button><span class="pcdt-grip" title="Drag to resize the table (width and row heights)">◢</span></div>`;
+      const st = doc.createElement("style");
+      st.textContent = "#pcdtUi .pcdt-h{position:fixed;z-index:60;width:18px;height:18px;padding:0;font-size:12px;line-height:16px;border:1px solid #2680eb;background:#fff;color:#2680eb;border-radius:3px;cursor:pointer;display:none}"
+        + "#pcdtUi .pcdt-box{position:fixed;z-index:59;border:2px solid #2680eb;pointer-events:none;display:none}#pcdtUi .pcdt-box button{pointer-events:auto;position:absolute;top:-24px;height:20px;padding:0 5px;font-size:12px;border:1px solid #2680eb;background:#fff;border-radius:3px;cursor:pointer}"
+        + "#pcdtUi .pcdt-st{right:28px}#pcdtUi .pcdt-del{right:0}#pcdtUi .pcdt-grip{pointer-events:auto;position:absolute;right:-9px;bottom:-9px;width:16px;height:16px;line-height:14px;text-align:center;font-size:12px;color:#fff;background:#2680eb;border-radius:3px;cursor:nwse-resize}";
+      doc.head.appendChild(st); (E.kx || (E.stage && E.stage.closest && E.stage.closest(".kx")) || doc.body).appendChild(ui);   // in the editor: above its page, under its dialogs
+      const h = ui.querySelector(".pcdt-h");
+      h.onmousedown = (e) => e.preventDefault();
+      h.onclick = () => { if (ui._t) select(ui._t); };
+      ui.querySelector(".pcdt-st").onmousedown = (e) => e.preventDefault();
+      ui.querySelector(".pcdt-st").onclick = () => { if (tsel) styleDialog(tsel); };
+      ui.querySelector(".pcdt-del").onclick = () => delSel();
+      ui.querySelector(".pcdt-grip").addEventListener("pointerdown", (e) => {
+        if (!tsel) return; e.preventDefault(); e.stopPropagation();
+        const r = tsel.getBoundingClientRect(), e0 = ed();
+        tdrag = { t: tsel, x0: e.clientX, y0: e.clientY, w0: r.width, h0: r.height, cw: (e0 ? e0.getBoundingClientRect().width : r.width), rows: [...tsel.querySelectorAll("tr")].filter((tr) => tr.closest("table") === tsel).map((tr) => [tr, tr.getBoundingClientRect().height]), k: kScale(tsel) };
+      }, true);
+      return ui;
+    }
+    function gripMove(e) {
+      const d = tdrag, w = Math.max(40, d.w0 + e.clientX - d.x0), fy = Math.max(0.2, (d.h0 + e.clientY - d.y0) / d.h0);
+      const ts = tsOf(d.t); ts.w = Math.max(10, Math.min(100, Math.round(w / d.cw * 1000) / 10)); applyTableStyle(d.t, ts);
+      if (!e.shiftKey) for (const [tr, h] of d.rows) setRowHeight(tr, h * fy * d.k);
+      paintSel();
+    }
+    function showHandle(t) {
+      mkUi(); if (tsel) return;
+      const r = t.getBoundingClientRect(), h = ui.querySelector(".pcdt-h");
+      ui._t = t; h.style.display = "block"; h.style.left = Math.round(r.left - 20) + "px"; h.style.top = Math.round(r.top - 20) + "px";
+    }
+    function paintSel() {
+      if (!ui) return; const box = ui.querySelector(".pcdt-box");
+      if (!tsel || !tsel.isConnected) { box.style.display = "none"; return; }
+      const r = tsel.getBoundingClientRect(); Object.assign(box.style, { display: "block", left: r.left - 2 + "px", top: r.top - 2 + "px", width: r.width + 4 + "px", height: r.height + 4 + "px" });
+      ui.querySelector(".pcdt-h").style.display = "none";
+    }
+    function select(t) { mkUi(); tsel = t; try { doc.getSelection().removeAllRanges(); } catch (e) { /* fine */ } paintSel(); say("▦ table picked - Del deletes it, ◢ resizes it, 🎨 styles it, Esc lets go"); loop(); }
+    function deselect() { tsel = null; tdrag = null; paintSel(); }
+    function loop() { if (!tsel) return; paintSel(); win.requestAnimationFrame(loop); }
+    function delSel() {
+      const t = tsel; if (!t) return; deselect(); const nx = t.nextElementSibling, e0 = ed();
+      // deleted as an edit of the page (the browser's own undo while typing - Ctrl+Z brings it back)
+      let done = false;
+      try { if (e0) { e0.focus(); const r = doc.createRange(); r.setStartBefore(t); r.setEndAfter(t); const s = doc.getSelection(); s.removeAllRanges(); s.addRange(r); done = doc.execCommand("delete") && !t.isConnected; } } catch (e) { done = false; }
+      if (!done && t.isConnected) { t.remove(); if (nx) place(nx); }
+      X.live(); say("▦ table deleted (Ctrl+Z brings it back)");
+    }
+    win.addEventListener("keydown", (e) => {
+      if (!tsel) return;
+      if (!ed() || !tsel.isConnected) { deselect(); return; }
+      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopImmediatePropagation(); delSel(); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); deselect(); }
+      else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) deselect();
+    }, true);
+    // the table's style
+    function styleDialog(t0) {
+      const t = t0 || (here() && here().closest("table")); if (!t) return say("put the caret in a table (or pick it with ⊞) first");
+      const ts = tsOf(t), ck = (b) => (b ? " checked" : ""), col = (id, v, d) => `<input type="color" id="${id}" value="${v || d}">`;
+      E.ui.dialog("▦ Table Style", `<div class="rw"><span>Width</span><input type="number" id="tsW" value="${ts.w}" min="10" max="100" style="width:60px"> % of the frame<span>Align</span><select id="tsAl">${["left", "center", "right"].map((a) => `<option value="${a}"${ts.align === a ? " selected" : ""}>${a === "center" ? "Centre" : a[0].toUpperCase() + a.slice(1)}</option>`).join("")}</select></div>
+        <div class="rw"><span>Borders</span><input type="number" id="tsBw" value="${ts.bw}" min="0" max="8" step="0.5" style="width:56px"> px ${col("tsBc", ts.bc, "#888888")}<span>Cell padding</span><input type="number" id="tsPad" value="${ts.pad}" min="0" max="30" style="width:56px"> px</div>
+        <div class="rw"><span>Text</span><input type="number" id="tsSize" value="${ts.size || ""}" min="0" max="72" placeholder="as is" style="width:60px"> pt ${col("tsColor", ts.color, "#000000")}<label><input type="checkbox" id="tsColorOn"${ck(ts.color)}> own colour</label></div>
+        <div class="rw"><span>Background</span>${col("tsBg", ts.bg, "#ffffff")}<label><input type="checkbox" id="tsBgOn"${ck(ts.bg)}> filled</label><label><input type="checkbox" id="tsBand"${ck(ts.band)}> Banded rows</label>${col("tsBandc", ts.bandc, "#f3f6fa")}</div>
+        <div class="rw"><span>Header row</span>${col("tsHbg", ts.hbg, "#e8e8e8")}<label><input type="checkbox" id="tsHbgOn"${ck(ts.hbg)}> filled</label>${col("tsHcolor", ts.hcolor, "#000000")}<label><input type="checkbox" id="tsHcOn"${ck(ts.hcolor)}> own text colour</label></div>
+        <div style="color:var(--pc-dim);margin-top:6px">Rows: drag a row's bottom edge. Columns: drag a column's right edge. The whole table: ⊞ picks it, ◢ resizes it (Shift = the width only), Del deletes it.</div>`, (d) => {
+        const v = (id) => d.querySelector("#" + id), on = (id) => v(id).checked;
+        const nts = { w: +v("tsW").value, align: v("tsAl").value, bw: +v("tsBw").value, bc: v("tsBc").value, pad: +v("tsPad").value, size: +v("tsSize").value || 0, color: on("tsColorOn") ? v("tsColor").value : "", bg: on("tsBgOn") ? v("tsBg").value : "", band: on("tsBand"), bandc: v("tsBandc").value, hbg: on("tsHbgOn") ? v("tsHbg").value : "", hcolor: on("tsHcOn") ? v("tsHcolor").value : "" };
+        applyTableStyle(t, nts); X.live(); paintSel(); say("▦ table styled"); return true;
+      }, { okLabel: "Apply" });
+    }
+    doc.addEventListener("selectionchange", () => { const c = here(); if (c && !tsel) showHandle(c.closest("table")); });
+    add("doc.table.select", "⊞ Select Table", () => { const c = here(); if (c) select(c.closest("table")); }, { enabled: inT });
+    add("doc.table.style", "🎨 Table Style…", () => styleDialog(), { enabled: inT });
+    E.docTable = Object.assign(E.docTable || {}, { select, deselect, selected: () => tsel, styleDialog, delSel, showHandle });
   }
 
-  const PCDocTable = { tableHtml, grid, cellPos, insertRow, insertCol, deleteRow, deleteCol, mergeCells, splitCell, setHeader, colWidths, setColWidths, setBorders, install };
+  const PCDocTable = { TS_DEFAULT, cleanTs, tsOf, applyTableStyle, setRowHeight, tableHtml, grid, cellPos, insertRow, insertCol, deleteRow, deleteCol, mergeCells, splitCell, setHeader, colWidths, setColWidths, setBorders, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCDocTable;
   if (root && root.document) root.PCDocTable = PCDocTable;
 })(typeof window !== "undefined" ? window : globalThis);

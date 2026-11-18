@@ -14368,6 +14368,16 @@ node scripts/test-846-live.js > /tmp/t846l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui846-ui.js > /tmp/ui846.log 2>&1 \
   && ok "2.846.0 browser test: the pen closes within 5 px, 📄 Page Properties (template, all pages, guides, your template), 📅 dragged onto the canvas -> tables, settings + style + undo, the PHP build" \
   || { bad "2.846.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui846.log | head -12; }
+# ---- 2.847.0 (Tim: "the calender can be used in image, web, document (any), add the rest of the bookings features, add snap toggle buttons ... make the table selectable, deletable on del button resizabe and stylable ...")
+node scripts/test-847.js > /tmp/t847.log 2>&1 \
+  && ok "2.847.0 snap to WP frames / margins, page width without margins, table style / row heights, calendar modes + services / buffer / daily limit / approval / cancel / e-mails / .ics" \
+  || { bad "2.847.0 units"; grep -a "^FAIL" -A1 /tmp/t847.log | head -12; }
+node scripts/test-847-live.js > /tmp/t847l.log 2>&1 \
+  && ok "2.847.0 LIVE: a 2.846.0 database upgraded; services, buffer, daily limit, closed day, approval, manage / .ics / cancel, e-mails through the built PHP site" \
+  || { bad "2.847.0 live bookings"; grep -a "^FAIL" -A1 /tmp/t847l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui847-ui.js > /tmp/ui847.log 2>&1 \
+  && ok "2.847.0 browser test: 🧲 snap buttons + frames, ⟷ ▯ page width without margins, ▦ table pick / ◢ / row edge / style / Del + undo, 📅 printed in WP + booking in Web + the tool column" \
+  || { bad "2.847.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui847.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -21,7 +21,7 @@ check("widthView: a tiny view still gives a sane zoom (50 px room at least), def
 check("widthView: the zoom kept between 2 % and 3200 %", W(1032, 1, 1).zoom === 32 && W(100, 1e6, 1e6).zoom === 0.02);
 const IS = read("ext/imageeditdock/imageedit.js"), UI = read("ext/imageeditdock/pcui.js"), TL = read("ext/imageeditdock/pctools.js"), VW = read("ext/imageeditdock/pcviews.js");
 check("wiring: E.fitWidth; the ⟷ button beside ⤢ on the top strip; View ▸ Page Width (Shift+Ctrl+0) after Fit on Screen; ⟷ Page Width in the Zoom tool's settings; the WP View's Layout ribbon",
-  /applyView, fitView, fitWidth, zoomAt/.test(IS) && /id="kxFit"[^\n]*\n\s*<button class="ghost" id="kxPageW"/.test(IS) && /\$\("kxPageW"\)\.onclick = \(\) => fitWidth\(\)/.test(IS)
+  /applyView, fitView, fitWidth, (toggleWidthMargins, )?zoomAt/.test(IS) && /id="kxFit"[^\n]*\n\s*<button class="ghost" id="kxPageW"/.test(IS) && /\$\("kxPageW"\)\.onclick = \(\) => fitWidth\(\)/.test(IS)
   && /cmd\("view\.pagewidth", "Page Width", "Shift\+Ctrl\+0"/.test(UI) && /"view\.fit", "view\.pagewidth"/.test(UI)
   && /id="ptZPW"[^`]*⟷ Page Width/.test(TL) && /#ptZPW"\)\.onclick = \(\) => E\.fitWidth\(\)/.test(TL) && /\["cmd", "view\.pagewidth", "Page Width", "⟷"\]/.test(VW));
 const SC = JSON.parse(read("docs/shortcuts.json")), keys = SC.groups.flatMap((g) => g.rows.map((r) => r[0]));

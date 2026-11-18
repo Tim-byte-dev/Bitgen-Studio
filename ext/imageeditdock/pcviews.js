@@ -67,7 +67,7 @@
         { label: "Pages", show: 2, items: [["cmd", "page.add", "Add Page", "＋"], ["cmd", "flow.next", "Frame on the Next Page", "⤓"]] },
         { label: "Text", show: 3, items: [["cmd", "layer.newdocframe", "WP Layer", "📄"], ["tool", "type", "Text", "T"], ["cmd", "flow.here", "Add Frame Here", "⬚"]] },
         { label: "Tables", show: 1, items: [["cmd", "doc.table.insert", "Table", "▦"]] },
-        { label: "Illustrations", show: 2, items: [["cmd", "file.place", "Picture", "🖼"], ["tool", "shape", "Shape", "◼"]] },
+        { label: "Illustrations", show: 3, items: [["cmd", "file.place", "Picture", "🖼"], ["tool", "shape", "Shape", "◼"], ["act", "calendar", "Calendar", "📅"]] },
         { label: "Notes", show: 2, items: [["cmd", "doc.fn.new", "Footnote", "¹"], ["cmd", "doc.comment.new", "Comment", "💬"]] },
         { label: "Header & Footer", show: 2, items: [["cmd", "page.number", "Page Numbers", "#"], ["cmd", "page.master", "Master Page", "⌂"]] },
       ] },
@@ -248,8 +248,8 @@
         ribbon = root.CadBar.create(bar.parentNode, { tabs: [] }, { store, key: "ws.ribbon" });
         ribbon.el.classList.add("pcribbon"); ribbon.el.id = "pcViewRibbon";
         // the writing buttons keep the caret where it is in the WP layer (no focus taken)
-        // 2.846.0: 📅 Calendar is dragged onto the canvas (a click = the middle of the page)
-        const calDrag = () => { const b = ribbon.el.querySelector('.cbb[data-id="v_act_calendar"]'); if (b && E.calendar) E.calendar.dragSource(b, "appointments"); };
+        // 2.846.0: 📅 Calendar is dragged onto the canvas (a click = the middle of the page); 2.847.0 WP View ▸ Insert has it too (a printed month)
+        const calDrag = () => { if (E.calendar) ribbon.el.querySelectorAll('.cbb[data-id="v_act_calendar"]').forEach((b) => E.calendar.dragSource(b, "appointments")); };
         new win.MutationObserver(calDrag).observe(ribbon.el, { childList: true, subtree: true }); calDrag();
         ribbon.el.addEventListener("mousedown", (e) => { const b = e.target.closest && e.target.closest('.cbb[data-id^="v_fx_"]'); if (b) e.preventDefault(); });
         bar.parentNode.insertBefore(ribbon.el, bar);
