@@ -14378,6 +14378,16 @@ node scripts/test-847-live.js > /tmp/t847l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui847-ui.js > /tmp/ui847.log 2>&1 \
   && ok "2.847.0 browser test: 🧲 snap buttons + frames, ⟷ ▯ page width without margins, ▦ table pick / ◢ / row edge / style / Del + undo, 📅 printed in WP + booking in Web + the tool column" \
   || { bad "2.847.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui847.log | head -12; }
+# ---- 2.848.0 (Tim: "add the calendar admin automatically, if a db doesn't exist for admin create one called myadmin ... fully comprehensive db for e-commerce and simple appointment websites")
+node scripts/test-848.js > /tmp/t848.log 2>&1 \
+  && ok "2.848.0 myadmin schema (25 tables + 4 views), install made when missing, calendar keeps admin edits, the admin PHP's safety, the build's /admin/" \
+  || { bad "2.848.0 units"; grep -a "^FAIL" -A1 /tmp/t848.log | head -12; }
+node scripts/test-848-live.js > /tmp/t848l.log 2>&1 \
+  && ok "2.848.0 LIVE: /admin/ through PHP + MariaDB - owner setup key, login lock-out + history, approve / cancel / phone booking, closed days + hours kept, clients / pets / records / products, staff role" \
+  || { bad "2.848.0 live admin"; grep -a "^FAIL" -A1 /tmp/t848l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui848-ui.js > /tmp/ui848.log 2>&1 \
+  && ok "2.848.0 browser test: Build Website's 🔐 Admin area tick -> /admin/ in the .zip + the setup key; Calendar Settings' admin database" \
+  || { bad "2.848.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui848.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

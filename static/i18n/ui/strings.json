@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6470,
+ "count": 6478,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -59780,6 +59780,86 @@
    ],
    "where": [
     "image editor - 🧲 snap / ▦ tables / 📅 calendar (2.847.0)"
+   ]
+  },
+  {
+   "s": "Admin database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "🔐 Admin database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "Replace the hours + services edited on the website's admin",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "🔐 Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "The website's admin area (/admin/) keeps its logins, login history, clients, pets, records, staff and shop here - made when it is not there",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "Hours and services changed on the website's admin are kept when the calendar is uploaded again - tick to put these back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🔐 admin area (2.848.0)"
    ]
   }
  ]

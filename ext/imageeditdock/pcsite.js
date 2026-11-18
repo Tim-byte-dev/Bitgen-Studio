@@ -86,12 +86,13 @@
       const a = o || {};
       say("🌐 gathering the pages…");
       const c = await collect();
-      await api("/api/sites/save", { name: a.name, title: a.title, stack: a.stack, lang: a.lang, pages: c.pages, assets: c.assets });
+      await api("/api/sites/save", { name: a.name, title: a.title, stack: a.stack, lang: a.lang, admin: !!a.admin, pages: c.pages, assets: c.assets });
       say(`🌐 building ${c.pages.length} page(s)` + (a.ai !== false ? " - ✨ the LLM writes each one" : "") + "…");
       const r = await api("/api/sites/build", { name: a.name, ai: a.ai !== false });
-      store.set("site.last", JSON.stringify({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, ai: a.ai !== false }));
+      store.set("site.last", JSON.stringify({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, ai: a.ai !== false, admin: !!a.admin }));
       const by = r.pages.filter((p) => p.by === "ai").length;
       say(`🌐 "${a.name}" built - ${r.pages.length} page(s), ${by} by the AI${r.pages.length - by ? `, ${r.pages.length - by} laid out by bitGen` : ""} (${r.stack === "php" ? "PHP + MySQL" : "static"}) · 👁 the preview opened · ⤓ .zip from File ▸ 🌐 Build Website…`);
+      if (r.admin) say(`🔐 the admin area: /admin/ - its database "${r.admin.db}" (admin-schema.sql), the first owner login made with the setup key ${r.admin.key} (in README.txt and inc/config.php)`);
       if (a.open !== false && win.open) win.open(r.preview, "_blank");
       return r;
     }
@@ -103,10 +104,11 @@
         <div class="rw"><span>Site title</span><input id="siteTitle" value="${esc(last.title || last.name || "My website")}" style="flex:1"></div>
         <div class="rw"><span>Built with</span><select id="siteStack"><option value="static" ${last.stack !== "php" ? "selected" : ""}>Static HTML / CSS</option><option value="php" ${last.stack === "php" ? "selected" : ""}>PHP + MySQL</option></select><span>Language</span><input id="siteLang" value="${esc(last.lang || "en")}" style="width:60px"></div>
         <div class="rw"><label><input type="checkbox" id="siteAi" ${last.ai === false ? "" : "checked"}> ✨ The AI makes each page responsive (else bitGen lays it out)</label></div>
+        <div class="rw"><label title="A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar"><input type="checkbox" id="siteAdmin" ${last.admin ? "checked" : ""}> 🔐 Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar</label></div>
         <div style="color:var(--pc-dim);margin-top:6px">${n} page(s) → ${n} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture.</div>
         <div class="rw" style="margin-top:6px"><button class="ghost" id="siteZip" type="button">⤓ .zip of the last build</button><button class="ghost" id="sitePrev" type="button">👁 Preview the last build</button></div>`, (dlg) => {
         const v = (id) => dlg.querySelector("#" + id).value.trim();
-        build({ name: v("siteName"), title: v("siteTitle"), stack: v("siteStack"), lang: v("siteLang"), ai: dlg.querySelector("#siteAi").checked }).catch((e) => say("🌐 " + e.message));
+        build({ name: v("siteName"), title: v("siteTitle"), stack: v("siteStack"), lang: v("siteLang"), ai: dlg.querySelector("#siteAi").checked, admin: dlg.querySelector("#siteAdmin").checked }).catch((e) => say("🌐 " + e.message));
       }, { okLabel: "🌐 Build", init: (dlg) => {
         const nm = () => dlg.querySelector("#siteName").value.trim();
         dlg.querySelector("#siteZip").onclick = () => { win.location.href = "/api/sites/zip?name=" + encodeURIComponent(nm()); };

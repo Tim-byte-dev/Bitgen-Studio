@@ -12036,219 +12036,227 @@
   },
   {
    "s": "The calendar keeps its bookings in MySQL / MariaDB. bitGen runs its own MariaDB (GPL-2.0, from archive.mariadb.org) on this computer only - it is not installed yet",
-   "src": "ext/imageeditdock/pccalendar.js:81"
+   "src": "ext/imageeditdock/pccalendar.js:83"
   },
   {
    "s": "No background",
-   "src": "ext/imageeditdock/pccalendar.js:140"
+   "src": "ext/imageeditdock/pccalendar.js:142"
   },
   {
    "s": "Website booking calendar",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Printed calendar (a month)",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Month",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Each booking",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "People per time",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Book up to",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "days ahead",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Notice",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "hours",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Week starts",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Time zone",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Language",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Ask for a phone number",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Ask for notes",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Visitors see the free times of each day - opening hours in steps of one booking, from the notice on, up to the days ahead - and book one with their name and email. A time is never booked twice (or more than its people per time)",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Services",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Minutes",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "None = every booking is one slot. With services a visitor picks one first; it takes its own minutes",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Buffer",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "min round each booking",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Most a day",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Bookings wait for my approval",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Cancel online up to",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "hours before",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Send e-mails",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "To me",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Closed days",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Why (for you)",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Closed day",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Each booking gets a link to see it, add it to a calendar (.ics) or cancel it. E-mails go out with the host's PHP mail() - the visitor's, and yours for each new or cancelled booking",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close single days: Services & rules ▸ Closed days",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Bold",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Default style",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "The canvas shows each change; the website's CSS is made from the same style",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "This project's MariaDB",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Global MariaDB",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Your server (🗄 Database ▸ ⚙)",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Database",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
+  },
+  {
+   "s": "Admin database",
+   "src": "ext/imageeditdock/pccalendar.js:145"
+  },
+  {
+   "s": "Replace the hours + services edited on the website's admin",
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Make the tables now",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "in the database",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "The SQL",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "The website's schema.sql has the same tables - import it on your host. The bookings: the view bg_cal_upcoming",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "Load the bookings",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "The month shown on the page - empty = this month",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "0 = no limit",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "you@your-site",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "bookings@your-site",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "not in the database yet",
-   "src": "ext/imageeditdock/pccalendar.js:143"
+   "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
    "s": "not made - see the status line",
-   "src": "ext/imageeditdock/pccalendar.js:210"
+   "src": "ext/imageeditdock/pccalendar.js:214"
   },
   {
    "s": "Email",
-   "src": "ext/imageeditdock/pccalendar.js:214"
+   "src": "ext/imageeditdock/pccalendar.js:218"
   },
   {
    "s": "Phone",
-   "src": "ext/imageeditdock/pccalendar.js:214"
+   "src": "ext/imageeditdock/pccalendar.js:218"
   },
   {
    "s": "Calendar - drag it onto the page (a click puts it in the middle). In 🌐 Web View a website's booking calendar, else a printed month; double-click it for its settings",
-   "src": "ext/imageeditdock/pccalendar.js:247"
+   "src": "ext/imageeditdock/pccalendar.js:251"
   },
   {
    "s": "Drag: to another place in the column, or out of it (it floats again)",
@@ -16204,31 +16212,39 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
+  },
+  {
+   "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
+  },
+  {
+   "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "s": "Two points",
@@ -28326,7 +28342,7 @@
   },
   {
    "p": "{0}: booking opens on the PHP + MySQL website",
-   "src": "static/sitecal.js:309"
+   "src": "static/sitecal.js:323"
   },
   {
    "p": "Reinstall {0}",
@@ -28786,11 +28802,11 @@
   },
   {
    "p": "in \"{0}\" ({1} statements)",
-   "src": "ext/imageeditdock/pccalendar.js:210"
+   "src": "ext/imageeditdock/pccalendar.js:214"
   },
   {
    "p": "{0} booking(s) from today on",
-   "src": "ext/imageeditdock/pccalendar.js:213"
+   "src": "ext/imageeditdock/pccalendar.js:217"
   },
   {
    "p": "The picked dimension ({0} px) measures",
@@ -29130,7 +29146,7 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:102"
+   "src": "ext/imageeditdock/pcsite.js:103"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

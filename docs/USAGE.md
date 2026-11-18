@@ -9556,6 +9556,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **📅 Calendar** on any page: in the Web View it's a booking calendar, elsewhere a printed month (no database). Switch with Mode in its settings.
 - **📅 Services & rules**: services with their own length and price, a buffer around bookings, the most bookings a day, approval, how late visitors can cancel online, e-mails, and closed days. Each booking on the website gets a link to see it, add it to a calendar (.ics) or cancel it.
 
+## 🔐 Website admin area and the myadmin database (2.848.0)
+
+- A PHP + MySQL website with a 📅 booking calendar always gets **/admin/**. Any other PHP site gets it with the **🔐 Admin area** tick in 🌐 Build Website.
+- The calendar's upload also makes the admin database **myadmin** when it isn't there. The built site has **admin-schema.sql** for your host.
+- It holds logins with their login history and an audit log, the business's settings, clients, pets, records (consultations, treatments, vaccinations, follow-ups), staff, and a whole shop (products, categories, orders, payments, invoices, coupons, shipping, reviews, newsletter).
+- The first visit to /admin/ makes the owner login with the setup key from README.txt / inc/config.php. After that it's a login page. Five wrong passwords lock a login for 15 minutes.
+- In the admin you can: approve or cancel bookings (e-mailed), add phone bookings, close days, edit hours and services (kept when the studio uploads again), and look after clients, products, orders, logins and settings. Bookings and contact messages add clients by email.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

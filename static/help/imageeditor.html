@@ -2,6 +2,33 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="admin848">✅ 🔐 The website's admin area + the myadmin database (2.848.0)</h3>
+<ul>
+  <li><b>Added automatically:</b> a PHP + MySQL website with a 📅 booking calendar always gets an admin area at <b>/admin/</b>. Any other PHP website gets one when you tick <b>🔐 Admin area</b> in 🌐 Build Website.</li>
+  <li><b>The myadmin database:</b> when a calendar's tables are made, bitGen also makes the admin database <b>myadmin</b> if it isn't there yet. You can give it another name in 📅 Calendar Settings ▸ Database. The built site has it as <b>admin-schema.sql</b> to import on your host.</li>
+  <li><b>What it holds:</b>
+    <ul>
+      <li>Logins (owner, admin, staff) with their <b>login history</b> and an audit log of every change.</li>
+      <li>The business's settings.</li>
+      <li><b>Clients</b> (names, company, email, phones, address, date of birth, emergency contact, marketing consent, notes).</li>
+      <li><b>Pets</b> for a vet, and <b>records</b> (consultations, treatments, prescriptions, vaccinations, follow-ups) for a vet, dentist or clinic.</li>
+      <li>Staff.</li>
+      <li>A whole <b>shop</b>: categories, products with variants, pictures and stock, addresses, shipping, coupons, orders with their items and status history, payments, invoices, reviews and the newsletter.</li>
+    </ul></li>
+  <li><b>The first login:</b> your first visit to /admin/ makes the <b>owner</b> login with the setup key. The key is in the site's README.txt and inc/config.php, and the status line shows it after the build. After that, /admin/ is a login page.</li>
+  <li><b>Safety:</b> passwords are stored as hashes. Five wrong passwords lock a login for 15 minutes. Every try is kept in the login history. Every form is checked against forged posts.</li>
+  <li><b>The pages:</b>
+    <ul>
+      <li>Dashboard.</li>
+      <li><b>Bookings:</b> approve or cancel (the visitor is e-mailed), add a phone booking, add notes.</li>
+      <li><b>Closed days</b>, and <b>hours and services</b>. Changes made here are kept when bitGen Studio uploads the calendar again, unless you tick <b>Replace the hours + services edited on the website's admin</b>.</li>
+      <li>Clients, with their pets, records, bookings and orders.</li>
+      <li>Products, categories, coupons, shipping, orders, invoices, payments, reviews, newsletter and staff.</li>
+      <li>Logins, login history, audit log, settings and your own account.</li>
+    </ul></li>
+  <li><b>Clients made for you:</b> a booking or a contact message adds or finds the client by email.</li>
+</ul>
+
 <h3 id="snap847">✅ 🧲 Snap buttons · ⟷ Page width without margins · ▦ Table selecting and styling · 📅 Calendars on any page, full booking features (2.847.0)</h3>
 <ul>
   <li><b>🧲 Snap buttons</b> sit at the start of the top strip: 🧲 snapping on / off, ┼ guidelines, ◰ objects and ▤ WP frames and the page's margins. Turning on one kind turns snapping on too. While snapping is off, the kinds are dimmed. Moving, transforming (scaling and skewing with the handles) and drawing all snap; hold Ctrl to move freely. A dropped calendar snaps too. The same switches are in View ▸ Snap To.</li>

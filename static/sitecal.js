@@ -73,7 +73,8 @@
       buffer: num(o.buffer, 0, 240, 0), maxDay: num(o.maxDay, 0, 500, 0), approve: !!o.approve, cancelHours: num(o.cancelHours, 0, 720, 24),
       emails: !!o.emails, owner: /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(String(o.owner || "")) ? String(o.owner) : "", from: /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(String(o.from || "")) ? String(o.from) : "",
       closed: (Array.isArray(o.closed) ? o.closed : []).map((v) => ({ day: /^\d{4}-\d{2}-\d{2}$/.test(String(v && v.day)) ? v.day : "", reason: String((v && v.reason) || "").slice(0, 200) })).filter((v) => v.day).slice(0, 400),
-      db: { scope: ["project", "global", "external"].includes(db.scope) ? db.scope : "project", name: /^[\w$]{1,64}$/.test(String(db.name || "")) ? String(db.name) : "website" },
+      db: { scope: ["project", "global", "external"].includes(db.scope) ? db.scope : "project", name: /^[\w$]{1,64}$/.test(String(db.name || "")) ? String(db.name) : "website",
+        admin: /^[\w$]{1,64}$/.test(String(db.admin || "")) ? String(db.admin) : "myadmin" },   // 2.848.0: 🔐 the admin database
       style: cleanStyle(o.style), lang: /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(String(o.lang || "")) ? o.lang : "en",
     };
   }
@@ -197,7 +198,8 @@ CREATE TABLE IF NOT EXISTS bg_calendars (
   cancel_hours SMALLINT UNSIGNED NOT NULL DEFAULT 24,
   send_emails TINYINT(1) NOT NULL DEFAULT 0,
   notify_email VARCHAR(200) NOT NULL DEFAULT '',
-  from_email VARCHAR(200) NOT NULL DEFAULT ''
+  from_email VARCHAR(200) NOT NULL DEFAULT '',
+  admin_edited TINYINT(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE IF NOT EXISTS bg_cal_services (
   calendar_id INT UNSIGNED NOT NULL,
@@ -220,6 +222,7 @@ CREATE TABLE IF NOT EXISTS bg_cal_closed (
   calendar_id INT UNSIGNED NOT NULL,
   day DATE NOT NULL,
   reason VARCHAR(200) NOT NULL DEFAULT '',
+  source VARCHAR(10) NOT NULL DEFAULT 'studio',
   PRIMARY KEY (calendar_id, day),
   CONSTRAINT fk_bg_cal_closed FOREIGN KEY (calendar_id) REFERENCES bg_calendars(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -236,6 +239,9 @@ CREATE TABLE IF NOT EXISTS bg_cal_bookings (
   status VARCHAR(12) NOT NULL DEFAULT 'booked',
   token CHAR(32) NOT NULL DEFAULT '',
   cancelled_at DATETIME NULL,
+  client_id INT UNSIGNED NULL,
+  admin_note VARCHAR(500) NOT NULL DEFAULT '',
+  source VARCHAR(10) NOT NULL DEFAULT 'website',
   ip VARCHAR(45) NOT NULL DEFAULT '',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX bg_cal_when (calendar_id, starts_at),
@@ -254,18 +260,26 @@ CREATE OR REPLACE VIEW bg_cal_upcoming AS
     "ALTER TABLE bg_calendars ADD COLUMN approve TINYINT(1) NOT NULL DEFAULT 0", "ALTER TABLE bg_calendars ADD COLUMN cancel_hours SMALLINT UNSIGNED NOT NULL DEFAULT 24",
     "ALTER TABLE bg_calendars ADD COLUMN send_emails TINYINT(1) NOT NULL DEFAULT 0", "ALTER TABLE bg_calendars ADD COLUMN notify_email VARCHAR(200) NOT NULL DEFAULT ''",
     "ALTER TABLE bg_calendars ADD COLUMN from_email VARCHAR(200) NOT NULL DEFAULT ''", "ALTER TABLE bg_cal_bookings ADD COLUMN service VARCHAR(80) NOT NULL DEFAULT ''",
-    "ALTER TABLE bg_cal_bookings ADD COLUMN token CHAR(32) NOT NULL DEFAULT ''", "ALTER TABLE bg_cal_bookings ADD COLUMN cancelled_at DATETIME NULL", "ALTER TABLE bg_cal_bookings ADD INDEX bg_cal_token (token)"];
+    "ALTER TABLE bg_cal_bookings ADD COLUMN token CHAR(32) NOT NULL DEFAULT ''", "ALTER TABLE bg_cal_bookings ADD COLUMN cancelled_at DATETIME NULL", "ALTER TABLE bg_cal_bookings ADD INDEX bg_cal_token (token)",
+    // 2.848.0: the admin side - days closed on the website kept apart, hours / services edited there kept, bookings tied to clients
+    "ALTER TABLE bg_cal_closed ADD COLUMN source VARCHAR(10) NOT NULL DEFAULT 'studio'", "ALTER TABLE bg_calendars ADD COLUMN admin_edited TINYINT(1) NOT NULL DEFAULT 0",
+    "ALTER TABLE bg_cal_bookings ADD COLUMN client_id INT UNSIGNED NULL", "ALTER TABLE bg_cal_bookings ADD COLUMN admin_note VARCHAR(500) NOT NULL DEFAULT ''",
+    "ALTER TABLE bg_cal_bookings ADD COLUMN source VARCHAR(10) NOT NULL DEFAULT 'website'"];
   function upgradeSql() { return UPGRADE.slice(); }
-  /** this calendar's row + its opening hours (run again = updated, bookings kept) */
-  function seedSql(cal0) {
-    const c = clean(cal0), id = `(SELECT id FROM bg_calendars WHERE slug = ${sq(c.slug)})`, sel = `FROM bg_calendars WHERE slug = ${sq(c.slug)}`;
+  /** this calendar's row + its opening hours (run again = updated, bookings kept). 2.848.0: hours + services edited on the
+   *  website's admin (admin_edited = 1) are kept unless opt.force; days closed there (source 'admin') are always kept */
+  function seedSql(cal0, opt) {
+    const c = clean(cal0), o = opt || {}, mine = `slug = ${sq(c.slug)} AND admin_edited = 0`;
+    const id = `(SELECT id FROM bg_calendars WHERE ${mine})`, sel = `FROM bg_calendars WHERE ${mine}`, any = `FROM bg_calendars WHERE slug = ${sq(c.slug)}`;
     const cols = "slug, name, kind, slot_minutes, days_ahead, lead_hours, capacity, week_start, timezone, ask_phone, ask_notes, buffer_minutes, max_per_day, approve, cancel_hours, send_emails, notify_email, from_email";
     const vals = [sq(c.slug), sq(c.name), sq(c.kind), c.slot, c.days, c.lead, c.cap, c.weekStart, sq(c.tz), c.phone ? 1 : 0, c.notes ? 1 : 0, c.buffer, c.maxDay, c.approve ? 1 : 0, c.cancelHours, c.emails ? 1 : 0, sq(c.owner), sq(c.from)];
-    const out = [`INSERT INTO bg_calendars (${cols}) VALUES (${vals.join(", ")}) ON DUPLICATE KEY UPDATE ${cols.split(", ").slice(1).map((k) => `${k} = VALUES(${k})`).join(", ")};`,
-      `DELETE FROM bg_cal_hours WHERE calendar_id = ${id};`, `DELETE FROM bg_cal_services WHERE calendar_id = ${id};`, `DELETE FROM bg_cal_closed WHERE calendar_id = ${id};`];
+    const out = [`INSERT INTO bg_calendars (${cols}) VALUES (${vals.join(", ")}) ON DUPLICATE KEY UPDATE ${cols.split(", ").slice(1).map((k) => `${k} = VALUES(${k})`).join(", ")};`];
+    if (o.force) out.push(`UPDATE bg_calendars SET admin_edited = 0 WHERE slug = ${sq(c.slug)};`);
+    out.push(`DELETE FROM bg_cal_hours WHERE calendar_id = ${id};`, `DELETE FROM bg_cal_services WHERE calendar_id = ${id};`,
+      `DELETE FROM bg_cal_closed WHERE calendar_id = (SELECT id ${any}) AND source = 'studio';`);
     c.hours.forEach((day, wd) => day.forEach(([a, b]) => out.push(`INSERT INTO bg_cal_hours (calendar_id, weekday, opens, closes) SELECT id, ${wd}, '${a}:00', '${b === "24:00" ? "23:59:59" : b + ":00"}' ${sel};`)));
     c.services.forEach((v, i) => out.push(`INSERT INTO bg_cal_services (calendar_id, sort, name, minutes, price) SELECT id, ${i}, ${sq(v.name)}, ${v.mins}, ${sq(v.price)} ${sel};`));
-    for (const v of c.closed) out.push(`INSERT INTO bg_cal_closed (calendar_id, day, reason) SELECT id, '${v.day}', ${sq(v.reason)} ${sel};`);
+    for (const v of c.closed) out.push(`INSERT IGNORE INTO bg_cal_closed (calendar_id, day, reason, source) SELECT id, '${v.day}', ${sq(v.reason)}, 'studio' ${any};`);
     return out.join("\n") + "\n";
   }
   const fam = (f) => (f === "system-ui" ? "system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" : `'${f}',system-ui,sans-serif`);

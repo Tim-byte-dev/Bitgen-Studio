@@ -66,9 +66,11 @@
     async function upload(L, quiet) {
       if (!isCal(L) || L.cal.mode === "print") return null;   // 2.847.0: a printed calendar has no database
       try {
-        const r = await api("/api/sitecal/install", { cal: L.cal });
+        const r = await api("/api/sitecal/install", { cal: Object.assign({}, L.cal, L.cal.forceHours ? { forceHours: true } : {}) });
+        if (L.cal.forceHours) delete L.cal.forceHours;
         L.cal.dbOk = true;
-        if (!quiet) say(`📅 ${L.cal.name}: its tables are in the ${r.scope === "external" ? "your server's" : r.scope} database "${r.db}" (bg_calendars, bg_cal_hours, bg_cal_closed, bg_cal_bookings) - the website books into them`);
+        if (!quiet) say(`📅 ${L.cal.name}: its tables are in the ${r.scope === "external" ? "your server's" : r.scope} database "${r.db}" (bg_calendars, bg_cal_hours, bg_cal_closed, bg_cal_bookings) - the website books into them`
+          + (r.admin ? (r.admin.ok ? ` · 🔐 the admin database "${r.admin.db}" ${r.admin.created ? "made" : "ready"} (logins, login history, clients, pets, records, staff, the shop)` : ` · 🔐 the admin database "${r.admin.db}" was not made: ${r.admin.error}`) : ""));
         return r;
       } catch (e) {
         L.cal.dbOk = false;
@@ -167,6 +169,7 @@
           <div class="rw" style="margin-top:6px"><button type="button" class="ghost" id="pccStyleReset">↺ Default style</button><span style="color:var(--pc-dim)">The canvas shows each change; the website's CSS is made from the same style.</span></div></div>
         <div data-cpane="db" style="display:none">
           <div class="rw"><span>Where</span><select id="pccScope"><option value="project"${cur.db.scope === "project" ? " selected" : ""}>📁 This project's MariaDB</option><option value="global"${cur.db.scope === "global" ? " selected" : ""}>🌐 Global MariaDB</option><option value="external"${cur.db.scope === "external" ? " selected" : ""}>🖧 Your server (🗄 Database ▸ ⚙)</option></select><span>Database</span><input id="pccDb" value="${esc(cur.db.name)}" style="width:150px"></div>
+          <div class="rw"><span>🔐 Admin database</span><input id="pccAdminDb" value="${esc(cur.db.admin || "myadmin")}" style="width:150px" title="The website's admin area (/admin/) keeps its logins, login history, clients, pets, records, staff and shop here - made when it is not there"><label title="Hours and services changed on the website's admin are kept when the calendar is uploaded again - tick to put these back"><input type="checkbox" id="pccForce"> Replace the hours + services edited on the website's admin</label></div>
           <div class="rw"><button type="button" class="ghost" id="pccMake">⤒ Make the tables now</button><span id="pccDbNote" style="color:var(--pc-dim)">${cur.dbOk ? "✓ in the database" : "not in the database yet"}</span></div>
           <details><summary>The SQL</summary><textarea id="pccSql" readonly rows="10" style="width:100%;font:11px monospace"></textarea></details>
           <div style="color:var(--pc-dim);margin-top:6px">The website's schema.sql has the same tables - import it on your host. The bookings: the view bg_cal_upcoming.</div>
@@ -178,7 +181,7 @@
         n.weekStart = +v("pccWs").value; n.tz = v("pccTz").value.trim(); n.lang = v("pccLang").value.trim(); n.phone = v("pccPhone").checked; n.notes = v("pccNotes").checked;
         n.hours = [0, 1, 2, 3, 4, 5, 6].map((i) => (d.querySelector(`[data-hopen="${i}"]`).checked ? [0, 1].map((r) => [d.querySelector(`[data-h="${i}.${r}.0"]`).value, d.querySelector(`[data-h="${i}.${r}.1"]`).value]).filter(([a, b]) => a && b) : []));
         for (const [k] of H.STYLE_TYPES) { const q = (p) => d.querySelector(`[data-st="${k}.${p}"]`); n.style[k] = { font: q("font").value, size: +q("size").value, color: q("color").value, bg: q("nobg").checked ? "" : q("bg").value, bold: q("bold").checked, radius: +q("radius").value }; }
-        n.db = { scope: v("pccScope").value, name: v("pccDb").value.trim() };
+        n.db = { scope: v("pccScope").value, name: v("pccDb").value.trim(), admin: v("pccAdminDb").value.trim() };
         n.mode = v("pccMode").value; n.month = v("pccMonth").value;
         n.services = [...d.querySelectorAll("[data-svc]")].map((r) => ({ name: r.querySelector('[data-sv="name"]').value, mins: +r.querySelector('[data-sv="mins"]').value, price: r.querySelector('[data-sv="price"]').value }));
         n.closed = [...d.querySelectorAll("[data-closed]")].map((r) => ({ day: r.querySelector('[data-cd="day"]').value, reason: r.querySelector('[data-cd="reason"]').value }));
@@ -190,11 +193,12 @@
       const modeTabs = (d) => { const pr = d.querySelector("#pccMode").value === "print"; d.querySelectorAll("[data-bk]").forEach((b) => { b.style.display = pr ? "none" : ""; }); d.querySelectorAll("#pccSlot,#pccCap,#pccDays,#pccLead,#pccPhone,#pccNotes").forEach((x) => { const r = x.closest(".rw"); if (r) r.style.opacity = pr ? ".45" : ""; }); };
       const preview = (d) => { cur = read(d); L.cal = cur; render(L, false); refresh(); const t = d.querySelector("#pccSql"); if (t) t.value = H.schemaSql() + "\n" + H.seedSql(cur); };
       E.ui.dialog("📅 Calendar Settings - " + c0.name, html, (d) => {
-        const n = read(d); L.cal = c0; L.canvas = canvas0;
+        const n = read(d); L.cal = c0; L.canvas = canvas0; const force = d.querySelector("#pccForce").checked;
         const dbChanged = JSON.stringify(dbPart(n)) !== JSON.stringify(dbPart(c0));
         E.structOp("📅 calendar settings", () => { L.cal = n; L.name = "📅 " + n.name; render(L, false); });
         refresh();
-        if (n.mode === "print") say(`📅 ${n.name}: a printed month (${n.month || "this month"})`);
+        if (force && n.mode !== "print") { L.cal.forceHours = true; upload(L); }
+        else if (n.mode === "print") say(`📅 ${n.name}: a printed month (${n.month || "this month"})`);
         else if (dbChanged || !n.dbOk) upload(L); else say(`📅 ${n.name}: the style kept - 🌐 Build Website gives the site the same look`);
         return true;
       }, { okLabel: "OK", wide: true, cancel: () => { L.cal = c0; L.canvas = canvas0; refresh(); }, init: (d) => {
