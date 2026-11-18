@@ -12,6 +12,8 @@
  *   🗄 2.857.0   Tim: "have the crm create the sites database and then link to it so it will be live" - 🗄 Create the site's database…
  *                (this project's MariaDB, or your server = the live site's) makes the site's tables, brings the project's records in and
  *                links the CRM: Clients / Bookings / Orders / Messages are then read from + written to it (⟳ every 30 s while shown)
+ *   ⤴ 2.858.0    ⤴ Publish = the www folder to GitHub (the same rules as Build Website's publish: only changed files, never
+ *                inc/config.php); 🌐 Build Website ▸ ☑ Into this project's www folder puts a build here
  *   Files ▸      on the right, collapsible: the www tree (folders open / shut), ＋📄 ＋📁 ⤒ ✎ 🗑 ⟳ (delete = moved to web/trash)
  * One text buffer (St.text) for the open file - the WYSIWYG, the code and the preview all show it; 💾 Save writes it (a change on
  * disk since it was opened = refused, open it again). */
@@ -238,6 +240,28 @@
     if (d && !d.classList.contains("dockgone") && St.tab === "crm" && St.db && St.db.linked && ["clients", "bookings", "orders", "messages"].includes(St.kind) && !$("wbCrmForm").classList.contains("on") && !doc.hidden) loadKind(St.kind);
   }, 30000);
 
+  /* ---------------- ⤴ publish www (2.858.0, lib/sitePublish.js publishWww) */
+  async function pubOpen() {
+    const f = $("wbPubForm"); if (f.classList.contains("on")) { f.classList.remove("on"); return; }
+    let st; try { st = await api("/api/web/publish"); } catch (e) { return msg("✗ " + e.message, true); }
+    const p = st.publish; $("wbPubTok").value = ""; $("wbPubTok").placeholder = st.token ? "kept on this computer (encrypted) - type a new one to change it" : "a GitHub token with the repo scope";
+    $("wbPubForget").disabled = !st.token; $("wbPubOwner").value = p.owner || ""; $("wbPubRepo").value = p.repo; $("wbPubBranch").value = p.branch; $("wbPubPriv").checked = p.private !== false; $("wbPubFtp").checked = !!p.ftp; $("wbPubMsg").value = "";
+    $("wbPubOut").innerHTML = st.last ? `Last published ${esc(new Date(st.last.at).toLocaleString())}: <a href="${esc(st.last.url)}" target="_blank" rel="noopener">${esc(st.last.url)}</a>` : "";
+    f.classList.add("on");
+  }
+  async function pubGo() {
+    if (St.dirty && root.confirm(`${St.path} has changes that are not saved - save them first?`)) await save();
+    $("wbPubGo").disabled = true; $("wbPubOut").textContent = "⤴ publishing…";
+    try {
+      const r = await api("/api/web/publish", { token: $("wbPubTok").value.trim() || undefined, owner: $("wbPubOwner").value.trim(), repo: $("wbPubRepo").value.trim(), branch: $("wbPubBranch").value.trim(), private: $("wbPubPriv").checked, ftp: $("wbPubFtp").checked, message: $("wbPubMsg").value.trim() });
+      $("wbPubTok").value = ""; $("wbPubForget").disabled = false;
+      $("wbPubOut").innerHTML = (r.nothing ? "✓ nothing changed since the last publish - " : `✓ ${r.created ? "the repository made, " : ""}${r.sent} file(s) sent, ${r.kept} the same${r.removed ? `, ${r.removed} taken out` : ""} - `) + `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.owner + "/" + r.repo)}</a> (${esc(r.branch)})`;
+      msg("⤴ published to " + r.owner + "/" + r.repo);
+      if (root.H3TestEvent) { try { root.H3TestEvent("web_publish", r.repo); } catch (e) { /* the 🧪 list */ } }
+    } catch (e) { $("wbPubOut").textContent = "✗ " + e.message; }
+    $("wbPubGo").disabled = false;
+  }
+
   /* ---------------- wiring */
   function show() { const d = $("webdock"); if (d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("webdock", "tX_webdock"); }
   function wire() {
@@ -247,6 +271,9 @@
     on("wbCloseBtn", "click", (e) => { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("webdock", "tX_webdock"); });
     d.querySelectorAll(".wbtab").forEach((b) => b.addEventListener("click", () => tab(b.dataset.tab)));
     on("wbSave", "click", save);
+    on("wbPub", "click", pubOpen); on("wbPubGo", "click", pubGo); on("wbPubNo", "click", () => $("wbPubForm").classList.remove("on"));
+    on("wbPubForget", "click", async () => { try { await api("/api/sites/publish/token", { token: "" }); $("wbPubForget").disabled = true; $("wbPubOut").textContent = "the token is forgotten"; } catch (e) { $("wbPubOut").textContent = "✗ " + e.message; } });
+    ["wbPubTok", "wbPubOwner", "wbPubRepo", "wbPubBranch", "wbPubMsg"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));
     on("wbMake", "click", async () => { try { const r = await api("/api/web/create", {}); msg(`🌐 www made - ${r.made.length} file(s), ${r.folders.length} folders`); St.path = ""; await refresh(); } catch (e) { msg("✗ " + e.message, true); } });
     // files
     const fp = $("wbFiles"), paintShut = () => { fp.classList.toggle("shut", store.get("files", "1") !== "1"); $("wbFilesArrow").textContent = fp.classList.contains("shut") ? "◂" : "▸"; };

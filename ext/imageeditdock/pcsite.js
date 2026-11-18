@@ -98,11 +98,13 @@
       const c = await collect();
       await api("/api/sites/save", Object.assign({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, admin: !!a.admin, shop: !!a.shop, pages: c.pages, assets: c.assets.concat(Array.isArray(a.assets) ? a.assets : []) }, a.seed ? { seed: a.seed } : {}));   // 2.852.0: + the shop's first products and their pictures (🌐 Build Me a Website)
       say(`🌐 building ${c.pages.length} page(s)` + (a.ai !== false ? " - ✨ the LLM writes each one" : "") + "…");
-      const r = await api("/api/sites/build", { name: a.name, ai: a.ai !== false });
+      const toWww = a.toWww !== undefined ? !!a.toWww : store.get("site.toWww", "1") === "1";   // 2.858.0: ☑ into this project's www folder
+      const r = await api("/api/sites/build", { name: a.name, ai: a.ai !== false, toWww });
       store.set("site.last", JSON.stringify({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, ai: a.ai !== false, admin: !!a.admin, shop: !!a.shop }));
       const by = r.pages.filter((p) => p.by === "ai").length;
       say(`🌐 "${a.name}" built - ${r.pages.length} page(s), ${by} by the AI${r.pages.length - by ? `, ${r.pages.length - by} laid out by bitGen` : ""} (${r.stack === "php" ? "PHP + MySQL" : "static"}) · 👁 the preview opened · ⤓ .zip from File ▸ 🌐 Build Website…`);
       if (r.admin) say(`🔐 the admin area: /admin/ - its database "${r.admin.db}" (admin-schema.sql), the first owner login made with the setup key ${r.admin.key} (in README.txt and inc/config.php)`);
+      if (r.www) { say(`🌐 ${r.www.copied} file(s) put into this project's www folder - open them in the 🌐 Web editor${r.www.configMerged ? ` (inc/config.php kept, ${r.www.configMerged} setting(s) added)` : ""}`); if (root.H3Web && root.H3Web.refresh) { try { root.H3Web.refresh(); } catch (e) { /* the editor reads it when shown */ } } }
       if (r.shop) say("🛒 the shop: shop.php, product.php, cart.php, checkout.php, order.php - its products, coupons, shipping and orders in /admin/ (README.txt)");
       if (a.open !== false && win.open) win.open(r.preview, "_blank");
       return r;
@@ -117,9 +119,11 @@
         <div class="rw"><label><input type="checkbox" id="siteAi" ${last.ai === false ? "" : "checked"}> ✨ The AI makes each page responsive (else bitGen lays it out)</label></div>
         <div class="rw"><label title="A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar"><input type="checkbox" id="siteAdmin" ${last.admin ? "checked" : ""}> 🔐 Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar</label></div>
         <div class="rw"><label title="A catalogue (shop.php: categories, search), product pages, a cart (a code, shipping, the tax), checkout (bank transfer / pay on pick-up) and each order's own page - the products and orders in the admin area"><input type="checkbox" id="siteShop" ${last.shop ? "checked" : ""}> 🛒 Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)</label></div>
+        <div class="rw"><label title="The built site's files are also put into this project's www folder - edit them in the 🌐 Web editor and ⤴ publish them from there (your own files in www stay)"><input type="checkbox" id="siteWww"${store.get("site.toWww", "1") === "1" ? " checked" : ""}> 🌐 Into this project's www folder (the Web editor)</label></div>
         <div style="color:var(--pc-dim);margin-top:6px">${n} page(s) → ${n} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture.</div>
         <div class="rw" style="margin-top:6px"><button class="ghost" id="siteZip" type="button">⤓ .zip of the last build</button><button class="ghost" id="sitePrev" type="button">👁 Preview the last build</button><button class="ghost" id="sitePub" type="button">⤴ Publish to GitHub…</button></div>`, (dlg) => {
         const v = (id) => dlg.querySelector("#" + id).value.trim();
+        store.set("site.toWww", dlg.querySelector("#siteWww").checked ? "1" : "0");
         build({ name: v("siteName"), title: v("siteTitle"), stack: v("siteStack"), lang: v("siteLang"), ai: dlg.querySelector("#siteAi").checked, admin: dlg.querySelector("#siteAdmin").checked || dlg.querySelector("#siteShop").checked, shop: dlg.querySelector("#siteShop").checked }).catch((e) => say("🌐 " + e.message));
       }, { okLabel: "🌐 Build", init: (dlg) => {
         const nm = () => dlg.querySelector("#siteName").value.trim();

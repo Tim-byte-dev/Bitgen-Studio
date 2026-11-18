@@ -54,6 +54,11 @@
           #wbDbForm.on { display: flex; }
           #wbDbForm label { display: flex; gap: 6px; align-items: center; }
           #wbDbForm label > span { width: 110px; color: var(--dim); }
+          #wbPubForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; }
+          #wbPubForm.on { display: flex; }
+          #wbPubForm label { display: flex; gap: 6px; align-items: center; }
+          #wbPubForm label > span { width: 80px; color: var(--dim); }
+          #wbPubForm input:not([type=checkbox]) { flex: 1; min-width: 0; }
           #wbCrmForm { display: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px; gap: 4px; flex-direction: column; max-height: 55%; overflow: auto; }
           #wbCrmForm.on { display: flex; }
           #wbCrmForm label { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; }
@@ -74,8 +79,20 @@
             <span class="sep"></span>
             <span id="wbFileName" title="The open file">no file open</span>
             <button class="ghost" type="button" id="wbSave" title="Save the open file (Ctrl+S)">💾 Save</button>
+            <button class="ghost" type="button" id="wbPub" title="Send the www folder to a GitHub repository - your host deploys it (Plesk ▸ Git or FTP)">⤴ Publish</button>
           </span>
           <span id="wbMsg"></span>
+        </div>
+        <div id="wbPubForm">
+          <b>⤴ Publish www to GitHub</b>
+          <label><span>Token</span><input id="wbPubTok" type="password" autocomplete="off"><button class="ghost" type="button" id="wbPubForget" title="Forget the kept token">✕</button></label>
+          <label><span>Owner</span><input id="wbPubOwner" placeholder="you (the token's user) or an organisation"></label>
+          <label><span>Repository</span><input id="wbPubRepo"><span style="width:auto">Branch</span><input id="wbPubBranch" style="max-width:90px"></label>
+          <label><input type="checkbox" id="wbPubPriv"> 🔒 Private repository (when it is made)</label>
+          <label><input type="checkbox" id="wbPubFtp"> 📤 Send it to my host by FTP on every publish (GitHub Actions)</label>
+          <label><span>Message</span><input id="wbPubMsg" placeholder="what changed (optional)"></label>
+          <div style="font-size:11px;color:var(--dim)">Only the files that changed go up. inc/config.php (the database settings, the admin's setup key) stays on this computer - the repository gets inc/config.sample.php, .gitignore and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host).</div>
+          <div class="wbbar"><button class="go" type="button" id="wbPubGo">⤴ Publish</button><button class="ghost" type="button" id="wbPubNo">Close</button><span id="wbPubOut" style="font-size:11px"></span></div>
         </div>
         <div id="wbNoSite">
           <div>This project has no website yet.</div>

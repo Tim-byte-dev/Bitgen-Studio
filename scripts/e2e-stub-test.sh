@@ -14457,6 +14457,13 @@ node scripts/test-857-live.js > /tmp/t857l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui857-ui.js > /tmp/ui857.log 2>&1 \
   && ok "2.857.0 browser test: 🗄 Create and link, 🟢 Live, a site message shown, a CRM client in the database, Unlink" \
   || { bad "2.857.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui857.log | head -12; }
+# ---- 2.858.0 (🌐 build into www + ⤴ publish www)
+node scripts/test-858.js > /tmp/t858.log 2>&1 \
+  && ok "2.858.0 build into www (your files + inc/config.php kept) + ⤴ publish www (never inc/config.php)" \
+  || { bad "2.858.0 units"; grep -a "^FAIL" -A1 /tmp/t858.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui858-ui.js > /tmp/ui858.log 2>&1 \
+  && ok "2.858.0 browser test: the Web editor's ⤴ Publish panel, Build Website's ☑ into www" \
+  || { bad "2.858.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui858.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

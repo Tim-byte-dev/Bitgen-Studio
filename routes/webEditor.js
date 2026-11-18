@@ -32,6 +32,9 @@ function mount(app) {
   app.get("/api/web/records", wrap((req) => live(req.query.kind) ? DB().list(req.query.kind) : W().records(req.query.kind)));
   app.post("/api/web/records", J, wrap((req) => live(req.body.kind) ? DB().put(req.body.kind, req.body.record) : W().saveRecord(req.body.kind, req.body.record)));
   app.get("/api/web/db", wrap(() => DB().status()));
+  // 2.858.0: ⤴ publish www to GitHub (lib/sitePublish.js pushDir - the same rules as Build Website's publish)
+  app.get("/api/web/publish", wrap(() => require("../lib/sitePublish").wwwSettings()));
+  app.post("/api/web/publish", J, wrap((req) => require("../lib/sitePublish").publishWww(req.body || {})));
   app.post("/api/web/db/create", J, wrap((req) => DB().create(req.body || {})));
   app.post("/api/web/db/unlink", J, wrap(() => DB().unlink()));
   app.get(/^\/web-preview(\/.*)?$/, (req, res) => {

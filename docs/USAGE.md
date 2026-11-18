@@ -9621,6 +9621,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Linked = **🟢 Live**: Clients, Bookings, Orders and Messages are read from and written to the database - what the site's visitors book, order and send shows up (read again every 30 seconds). Posts and products stay in www/data/content.json. **Unlink** keeps the records in the project again; the database is left as it is.
 - www/inc/config.php gets the database's host, name and user, so the site's PHP uses the same database. bitGen never writes the password there - set DB_PASS on the server.
 
+## 🌐 Build into www and ⤴ publish www (2.858.0)
+
+- **🌐 Build Website ▸ ☑ Into this project's www folder (the Web editor)** (on by default) also puts the built site into the project's www folder - open and change it in the 🌐 Web editor. The build's files replace the ones of the same name; your own files in www stay. An inc/config.php already in www (the CRM's database link, a password typed on the server) is kept - only the build's settings it lacks (the admin's setup key) are added.
+- **🌐 Web editor ▸ ⤴ Publish** sends the www folder to a GitHub repository, the same way as Build Website's publish: made when missing (🔒 private), only the changed files, one commit with your message, the token kept encrypted; inc/config.php never goes - the repository gets inc/config.sample.php, .gitignore and DEPLOY.md. Plesk ▸ Git (or the 📤 FTP workflow) puts it on your host.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

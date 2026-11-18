@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6704,
+ "count": 6711,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62120,6 +62120,76 @@
    ],
    "where": [
     "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Into this project's www folder (the Web editor)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "The built site's files are also put into this project's www folder - edit them in the 🌐 Web editor and ⤴ publish them from there (your own files in www stay)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "Publish",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "Send the www folder to a GitHub repository - your host deploys it (Plesk ▸ Git or FTP)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "Publish www to GitHub",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "Token",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "Only the files that changed go up. inc/config.php (the database settings, the admin's setup key) stays on this computer - the repository gets inc/config.sample.php, .gitignore and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ⤴ / Build Website (2.858.0)"
    ]
   }
  ]

@@ -17,7 +17,7 @@ function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); } };
   app.get("/api/sites", wrap(() => ({ sites: S().list() })));
   app.post("/api/sites/save", express.json({ limit: "400mb" }), wrap((req) => ({ site: S().save(req.body) })));
-  app.post("/api/sites/build", express.json({ limit: "1mb" }), wrap((req) => S().build(req.body.name, { ai: req.body.ai !== false })));
+  app.post("/api/sites/build", express.json({ limit: "1mb" }), wrap((req) => S().build(req.body.name, { ai: req.body.ai !== false, toWww: !!req.body.toWww })));   // 2.858.0: + into www
   app.get("/api/sites/zip", async (req, res) => { try { const b = await S().zip(req.query.name); res.set("Content-Disposition", `attachment; filename="${String(req.query.name).replace(/[^\w .-]/g, "_")}.zip"`).type("application/zip").send(b); } catch (e) { res.status(e.status || 500).json({ error: e.message }); } });
   app.get("/api/sites/products", wrap((req) => ({ products: S().products(req.query.name) })));
   app.get("/api/sites/asset", (req, res) => { try { res.set("Cache-Control", "no-store").sendFile(S().assetFile(req.query.name, req.query.file)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); } });

@@ -16380,103 +16380,107 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
+  },
+  {
+   "s": "Into this project's www folder (the Web editor)",
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Publish to GitHub",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "s": "Owner",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "Repository",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "Branch",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "Private repository (when it is made)",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "Send it to my host by FTP on every publish (GitHub Actions)",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "The last build goes up - only the files that changed. inc/config.php (the database password, the admin's setup key) and README.txt stay on this computer: the repository gets inc/config.sample.php and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host)",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "kept on this computer (encrypted) - type a new one to change it",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "Forget the kept token",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "A new repository is made private - only you see it (a host pulls it with a deploy key)",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "what changed (optional)",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "s": "a GitHub token with the repo scope",
-   "src": "ext/imageeditdock/pcsite.js:151"
+   "src": "ext/imageeditdock/pcsite.js:155"
   },
   {
    "s": "the token is forgotten",
-   "src": "ext/imageeditdock/pcsite.js:151"
+   "src": "ext/imageeditdock/pcsite.js:155"
   },
   {
    "s": "publishing",
-   "src": "ext/imageeditdock/pcsite.js:154"
+   "src": "ext/imageeditdock/pcsite.js:158"
   },
   {
    "s": "nothing changed since the last publish -",
-   "src": "ext/imageeditdock/pcsite.js:158"
+   "src": "ext/imageeditdock/pcsite.js:162"
   },
   {
    "s": "Two points",
@@ -26180,123 +26184,123 @@
   },
   {
    "s": "Title (the browser tab + search results)",
-   "src": "ext/webdock/webdock.js:49"
+   "src": "ext/webdock/webdock.js:51"
   },
   {
    "s": "Description (search results)",
-   "src": "ext/webdock/webdock.js:49"
+   "src": "ext/webdock/webdock.js:51"
   },
   {
    "s": "Main heading",
-   "src": "ext/webdock/webdock.js:49"
+   "src": "ext/webdock/webdock.js:51"
   },
   {
    "s": "Address name",
-   "src": "ext/webdock/webdock.js:50"
+   "src": "ext/webdock/webdock.js:52"
   },
   {
    "s": "Picture (e.g. images/post.jpg)",
-   "src": "ext/webdock/webdock.js:50"
+   "src": "ext/webdock/webdock.js:52"
   },
   {
    "s": "Published",
-   "src": "ext/webdock/webdock.js:50"
+   "src": "ext/webdock/webdock.js:52"
   },
   {
    "s": "Sale price",
-   "src": "ext/webdock/webdock.js:51"
-  },
-  {
-   "s": "In stock",
-   "src": "ext/webdock/webdock.js:51"
-  },
-  {
-   "s": "In the shop",
-   "src": "ext/webdock/webdock.js:51"
-  },
-  {
-   "s": "Company",
-   "src": "ext/webdock/webdock.js:52"
-  },
-  {
-   "s": "Tags",
-   "src": "ext/webdock/webdock.js:52"
-  },
-  {
-   "s": "Client",
    "src": "ext/webdock/webdock.js:53"
   },
   {
-   "s": "Order number",
+   "s": "In stock",
+   "src": "ext/webdock/webdock.js:53"
+  },
+  {
+   "s": "In the shop",
+   "src": "ext/webdock/webdock.js:53"
+  },
+  {
+   "s": "Company",
    "src": "ext/webdock/webdock.js:54"
   },
   {
-   "s": "Items",
+   "s": "Tags",
    "src": "ext/webdock/webdock.js:54"
   },
   {
-   "s": "Received",
+   "s": "Client",
    "src": "ext/webdock/webdock.js:55"
   },
   {
+   "s": "Order number",
+   "src": "ext/webdock/webdock.js:56"
+  },
+  {
+   "s": "Items",
+   "src": "ext/webdock/webdock.js:56"
+  },
+  {
+   "s": "Received",
+   "src": "ext/webdock/webdock.js:57"
+  },
+  {
    "s": "no file open",
-   "src": "ext/webdock/webdock.js:95"
+   "src": "ext/webdock/webdock.js:97"
   },
   {
    "s": "showing your unsaved changes - 💾 Save to keep them",
-   "src": "ext/webdock/webdock.js:158"
+   "src": "ext/webdock/webdock.js:160"
   },
   {
    "s": "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page",
-   "src": "ext/webdock/webdock.js:168"
+   "src": "ext/webdock/webdock.js:170"
   },
   {
    "s": "Kept in www/data/content.json - the site reads it (public)",
-   "src": "ext/webdock/webdock.js:168"
+   "src": "ext/webdock/webdock.js:170"
   },
   {
    "s": "Kept in the project's web/crm.json - private, never put on the site",
-   "src": "ext/webdock/webdock.js:168"
+   "src": "ext/webdock/webdock.js:170"
   },
   {
    "s": "no pages",
-   "src": "ext/webdock/webdock.js:177"
+   "src": "ext/webdock/webdock.js:179"
   },
   {
    "s": "none yet - ＋ New",
-   "src": "ext/webdock/webdock.js:177"
+   "src": "ext/webdock/webdock.js:179"
   },
   {
    "s": "Open the page",
-   "src": "ext/webdock/webdock.js:182"
+   "src": "ext/webdock/webdock.js:184"
   },
   {
    "s": "your server",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "s": "Keep the records in the project again (the database stays as it is)",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "s": "this computer",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "s": "Kept in the project (not live)",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "s": "Create the site's database",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "s": "MariaDB is needed - the 🗄 Database docker asks to download it",
-   "src": "ext/webdock/webdock.js:223"
+   "src": "ext/webdock/webdock.js:225"
   },
   {
    "s": "making the database",
-   "src": "ext/webdock/webdock.js:225"
+   "src": "ext/webdock/webdock.js:227"
   }
  ],
  "patterns": [
@@ -29654,27 +29658,27 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:114"
+   "src": "ext/imageeditdock/pcsite.js:116"
   },
   {
    "p": "Last published {0}",
-   "src": "ext/imageeditdock/pcsite.js:141"
+   "src": "ext/imageeditdock/pcsite.js:145"
   },
   {
    "p": "the repository made, {0} file(s) sent, {1} the same, {2} taken out -",
-   "src": "ext/imageeditdock/pcsite.js:158"
+   "src": "ext/imageeditdock/pcsite.js:162"
   },
   {
    "p": "the repository made, {0} file(s) sent, {1} the same -",
-   "src": "ext/imageeditdock/pcsite.js:158"
+   "src": "ext/imageeditdock/pcsite.js:162"
   },
   {
    "p": "{0} file(s) sent, {1} the same, {2} taken out -",
-   "src": "ext/imageeditdock/pcsite.js:158"
+   "src": "ext/imageeditdock/pcsite.js:162"
   },
   {
    "p": "{0} file(s) sent, {1} the same -",
-   "src": "ext/imageeditdock/pcsite.js:158"
+   "src": "ext/imageeditdock/pcsite.js:162"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",
@@ -31498,31 +31502,31 @@
   },
   {
    "p": "{0} MB",
-   "src": "ext/webdock/webdock.js:81"
+   "src": "ext/webdock/webdock.js:83"
   },
   {
    "p": "{0} KB",
-   "src": "ext/webdock/webdock.js:81"
+   "src": "ext/webdock/webdock.js:83"
   },
   {
    "p": "Live from the database {0} (your server) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:168"
+   "src": "ext/webdock/webdock.js:170"
   },
   {
    "p": "Live from the database {0} (this computer) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:168"
+   "src": "ext/webdock/webdock.js:170"
   },
   {
    "p": "Live: {0}",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "p": "your server - ✗ {0}",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   },
   {
    "p": "this computer - ✗ {0}",
-   "src": "ext/webdock/webdock.js:211"
+   "src": "ext/webdock/webdock.js:213"
   }
  ]
 }
