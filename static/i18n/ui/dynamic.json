@@ -12131,6 +12131,30 @@
    "src": "ext/imageeditdock/pcdoc.js:42"
   },
   {
+   "s": "Write",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
+   "s": "words",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
+   "s": "Tables",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
+   "s": "Charts",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
+   "s": "Pictures (the prompt docker's image style)",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
+   "s": "e.g. a report on the sales figures in these documents",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
    "s": "Rotate",
    "src": "ext/imageeditdock/pcdockers.js:237"
   },
@@ -18584,11 +18608,11 @@
   },
   {
    "s": "no vision models - run misc\\get-qwen3vl.ps1",
-   "src": "ext/promptdock/promptdock.js:163"
+   "src": "ext/promptdock/promptdock.js:166"
   },
   {
    "s": "Vision model for 🖼 Describe image",
-   "src": "ext/promptdock/promptdock.js:171"
+   "src": "ext/promptdock/promptdock.js:174"
   },
   {
    "s": "Click to close",
@@ -28097,6 +28121,10 @@
    "src": "ext/imageeditdock/pcdims.js:126"
   },
   {
+   "p": "{0} from the prompt docker too",
+   "src": "ext/imageeditdock/pcdocai.js:168"
+  },
+  {
    "p": "Copies {0}",
    "src": "ext/imageeditdock/pcdockers.js:248"
   },
@@ -28894,7 +28922,7 @@
   },
   {
    "p": "{0} (no mmproj)",
-   "src": "ext/promptdock/promptdock.js:179"
+   "src": "ext/promptdock/promptdock.js:182"
   },
   {
    "p": "Quick prompts ({0})",

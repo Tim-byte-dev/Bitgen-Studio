@@ -156,10 +156,36 @@
       return true;
     }
     const selNow = () => selShape(hasSel() ? S.sel : null, S.w, S.h);
+    /** 2.837.0: a shape layer that can hold a picture - a closed shape, a pen / Bézier / line path (not a dimension, a connector, text) */
+    function isShape(L) {
+      if (!L || L.type !== "shape" || !L.shape) return false;
+      const sh = L.shape; if (sh.dim || (sh.line && (sh.line.labels || sh.line.connect))) return false;
+      return sh.kind !== "path" || !!(sh.path && (sh.path.subs || []).some((q) => q.pts && q.pts.length > 2));
+    }
+    /** the area a path shape encloses (open sub-paths closed by the fill, as in the Fill Path command) -> a canvas mask */
+    function shapeArea(L) {
+      const c = E.newCanvas(S.w, S.h), g = c.getContext("2d"), sh = L.shape;
+      g.fillStyle = "#000";
+      if (sh.kind === "path" && root.PCPath) { root.PCPath.traceAll(g, sh.path); g.fill("nonzero"); }
+      else if (E.D && E.D.shapePath) { g.beginPath(); E.D.shapePath(g, sh); g.fill(); }
+      else g.drawImage(L.canvas, 0, 0);
+      return c;
+    }
     root.H3ImageSize = () => {
       if (!editorOn() || !S.w || genMode() !== "image") return null;
       if (op() !== "generate" || (E.imgOp && E.imgOp.blender && E.imgOp.blender())) return null;
       const empty = layerEmpty(), L = E.layer();
+      // 2.837.0 (Tim: "if a shape is selected, shapes created with pen tool or line/bezier tools and generate is pressed in prompt
+      // then fill the shape with the generation, remove the generation outside the shape"): a shape layer picked, no selection =
+      // the shape's box; the picture goes INSIDE it (a closed shape = a frame holding it; an open line = cut to its area)
+      if (!hasSel() && isShape(L)) {
+        const bx = E.dockers && E.dockers.boxOf ? E.dockers.boxOf(L) : null;
+        if (bx && bx.w >= 4 && bx.h >= 4) {
+          const box = { x: Math.round(bx.x), y: Math.round(bx.y), w: Math.round(bx.w), h: Math.round(bx.h) }, wh = canvasSize(box.w, box.h, S.res || 1);
+          place = { key: sizeKey(wh.width, wh.height), t: Date.now(), layer: L.id, box, shape: true, closed: !!(E.frames && E.frames.isClosedShape(L)) };
+          return wh;
+        }
+      }
       if (hasSel() && !empty) return null;                      // a picture under the selection: the editor fills it (runAI)
       const sh = selNow(), box = hasSel() && sh.box ? sh.box : { x: 0, y: 0, w: S.w, h: S.h };
       const wh = canvasSize(box.w, box.h, S.res || 1), key = sizeKey(wh.width, wh.height);
@@ -170,8 +196,30 @@
     /** a generated picture made at the canvas's shape -> a new layer covering the canvas (true = taken) */
     function takeGenerated(img, label) {
       if (!S.w || !img) return false;
+      // 2.837.0: the picked shape filled - a closed shape becomes a frame holding the picture (it moves / scales with it),
+      // an open line: a layer above it cut to the area it encloses
+      if (place && place.shape && Date.now() - place.t < 6 * 3600 * 1000) {
+        const P0 = place, F = S.layers.find((x) => x.id === P0.layer);
+        const iw0 = img.naturalWidth || img.width, ih0 = img.naturalHeight || img.height;
+        if (F && (sizeKey(iw0, ih0) === P0.key || Math.abs(iw0 / ih0 - P0.box.w / P0.box.h) <= 0.02 * (P0.box.w / P0.box.h))) {
+          place = null;
+          const N = E.makeLayer(label || "✨ generated"), g = N.canvas.getContext("2d"); g.imageSmoothingQuality = "high";
+          g.drawImage(img, P0.box.x, P0.box.y, P0.box.w, P0.box.h);
+          if (P0.closed && E.frames && E.frames.placeResult) {
+            E.frames.placeResult(N, F);
+            say(`✨ the picture fills "${F.name}" - it is inside the shape now (a frame: move the shape and it goes along)`);
+          } else {
+            g.globalCompositeOperation = "destination-in"; g.drawImage(shapeArea(F), 0, 0); g.globalCompositeOperation = "source-over";
+            const i = S.layers.indexOf(F); if (i >= 0) S.active = i;
+            E.addLayer(N, "generated fill", false);
+            say(`✨ the picture fills "${F.name}" - cut to the area it encloses`);
+          }
+          E.refresh(); E.renderLayersPanel();
+          return true;
+        }
+      }
       // 2.836.0: into the empty layer it was made for, in the selection's box (cut to a shaped selection) - one undo step
-      if (place && Date.now() - place.t < 6 * 3600 * 1000) {
+      if (place && !place.shape && Date.now() - place.t < 6 * 3600 * 1000) {
         const P0 = place, L = S.layers.find((x) => x.id === P0.layer);
         const iw0 = img.naturalWidth || img.width, ih0 = img.naturalHeight || img.height;
         if (L && L.canvas && (sizeKey(iw0, ih0) === P0.key || Math.abs(iw0 / ih0 - P0.box.w / P0.box.h) <= 0.02 * (P0.box.w / P0.box.h))) {
@@ -202,7 +250,36 @@
       E.addLayer(L, "generated", false); E.refresh(); E.renderLayersPanel();
       return true;
     }
-    E.aiFill = { edit, takeGenerated, layerEmpty, selShape: selNow, placing: () => place, mode: () => edMode, setMode: (m) => { edMode = modeOf(m); store.set("imgop.edfill", edMode); paint(); }, geo, paint };
+    /* ---- 2.837.0 (Tim: "allow a shape that was drawn with the pen tool to be converted to a shape so it's border, fill etc can be
+       changed"): Layer ▸ ⬟ Convert to Shape - a vector line (the Pen / Bézier / line tools) becomes a shape with a fill and a
+       border (its open ends closed, the line's colour + width kept as the border); a path in the Paths panel = Shape Layer from Path */
+    const isLine = (L) => !!(L && L.type === "shape" && L.shape && L.shape.kind === "path" && L.shape.line && !L.shape.dim);
+    /** the Paths panel's "Shape Layer from Path" can run (a path picked there) */
+    const pathShapeOk = () => { const c = E.ui && E.ui.CMD && E.ui.CMD.get && E.ui.CMD.get("path.shape"); return !!(c && (!c.enabled || c.enabled())); };
+    function convertToShape() {
+      const L = E.layer();
+      if (!isLine(L)) {
+        if (pathShapeOk()) { E.ui.run("path.shape"); return true; }
+        say("pick a line drawn with the Pen / Bézier / line tools (or a path in the Paths panel) first"); return false;
+      }
+      E.structOp("convert to shape", () => {
+        const sh = L.shape, col = sh.stroke || S.fg || "#000000", w = Math.max(1, +sh.strokeW || 2);
+        delete sh.line;
+        for (const q of (sh.path && sh.path.subs) || []) q.closed = true;
+        sh.fill = sh.fillOn && sh.fill ? sh.fill : S.fg || "#3d7bd9"; sh.fillOn = true;
+        sh.stroke = col; sh.strokeW = w; sh.strokeOn = true;
+        if (root.PCPath && root.PCPath.syncShape) root.PCPath.syncShape(sh);
+        if (E.D && E.D.rasterize) E.D.rasterize(L);
+      });
+      E.refresh(); E.renderLayersPanel(); if (E.renderOptions) E.renderOptions();
+      say(`⬟ "${L.name}" is a shape now - change its fill and border on the property bar (or Object Properties)`);
+      return true;
+    }
+    if (E.ui && E.ui.addCmd) {
+      E.ui.addCmd("shape.convert", "⬟ Convert to Shape", "", convertToShape, { enabled: () => isLine(E.layer()) || pathShapeOk() }, ["Layer", "type.toshape"]);
+      E.ui.stageCtxItems = (E.ui.stageCtxItems || []).concat(["shape.convert"]);
+    }
+    E.aiFill = { edit, takeGenerated, convertToShape, isLine, isShape, layerEmpty, selShape: selNow, placing: () => place, mode: () => edMode, setMode: (m) => { edMode = modeOf(m); store.set("imgop.edfill", edMode); paint(); }, geo, paint };
   }
 
   const PCAiFill = Object.assign({ install }, pure);

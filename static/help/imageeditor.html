@@ -2,6 +2,13 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="shapegen837">✅ Generate into shapes, Convert to Shape, documents written by the AI (2.837.0)</h3>
+<ul>
+  <li>A <b>shape layer</b> picked (a rectangle, an ellipse, a polygon, or a path drawn with the Pen / Bézier / line tools) + <b>✨ Generate</b> in the prompt docker, no selection: the picture is made at the shape's box and fills the shape. A closed shape becomes a frame holding the picture (move or scale the shape and the picture goes with it); an open line gets a new layer above it with the picture cut to the area the line encloses.</li>
+  <li><b>Layer ▸ ⬟ Convert to Shape</b> (also on the canvas's right-click): a line drawn with the vector line tools becomes a closed shape with a fill and a border you can change in the Properties panel; a path in the Paths panel becomes a shape layer (Shape Layer from Path). One undo step.</li>
+  <li><b>✨ Write With the AI</b>: with a <b>WP layer</b> picked, ask the prompt docker to write something - "write a report from these documents", "write an article about …", "write a story about …". Documents put on the prompt docker's ＋ while the WP layer is picked (.txt, .md, .docx, .pdf) are what it is written from. The text, headings, lists and <b>tables</b> go into the WP layer (real WP tables you can edit); each <b>chart</b> (drawn by the spreadsheet's chart engine) and each <b>picture</b> (made with the prompt docker's image style, when you ask for pictures) is a layer of its own under the text, all in a "📄 title" group with the WP layer. The frame is made shorter to leave the figures room - the text goes on in the next frame or page as usual. Layer ▸ ✨ Write With the AI… (or the right-click) opens a box with the request, the kind, about how many words, tables / charts / pictures and the documents. Ctrl+Z takes it back.</li>
+</ul>
+
 <h3 id="emptygen836">✅ Generate on an empty layer, shaped selections, WP layers, handle pointers, Full Screen (2.836.0)</h3>
 <ul>
   <li>An <b>empty layer</b> picked + <b>✨ Generate</b>: with a selection the picture is made at the selection's shape with the prompt docker's image style (any image model; Basic Settings when Override style is ticked) and put into that layer in the selection; a selection that is not a rectangle keeps nothing outside its shape. With no selection it fills the whole canvas in that layer. One undo step.</li>

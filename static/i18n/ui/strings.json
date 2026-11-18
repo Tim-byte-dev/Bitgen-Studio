@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6163,
+ "count": 6167,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56794,6 +56794,42 @@
    ],
    "where": [
     "Image editor Full Screen (2.836.0)"
+   ]
+  },
+  {
+   "s": "⬟ Convert to Shape",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor shapes + Write With the AI (2.837.0)"
+   ]
+  },
+  {
+   "s": "✨ Write With the AI…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor shapes + Write With the AI (2.837.0)"
+   ]
+  },
+  {
+   "s": "✨ Write With the AI",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor shapes + Write With the AI (2.837.0)"
+   ]
+  },
+  {
+   "s": "✨ Write",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor shapes + Write With the AI (2.837.0)"
    ]
   }
  ]

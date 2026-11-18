@@ -9491,6 +9491,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The Move tool's handles show their own arrow under the pointer, drawn in the accent colour while dragged.
 - **Artist Mode is now 🎨 Full Screen** (same features, same keys).
 
+## 🖼 Image editor - Generate into shapes, Convert to Shape, documents written by the AI (2.837.0)
+
+- A **shape layer** picked (including Pen / Bézier / line-tool paths) + **✨ Generate**, no selection: the picture fills the shape. A closed shape becomes a frame holding it; an open line gets a layer above it cut to the area it encloses.
+- **Layer ▸ ⬟ Convert to Shape** (also on the right-click): a vector line becomes a closed shape with a fill and a border you can change; a Paths-panel path becomes a shape layer.
+- **✨ Write With the AI**: a **WP layer** picked + "write a report from these documents" / "write an article about …" / "write a story about …" in the prompt docker. Documents on its ＋ (.txt, .md, .docx, .pdf) are what it is written from. Text and **tables** go into the WP layer; **charts** and **pictures** (when asked for) are layers of their own, all in a "📄 title" group. Also Layer ▸ ✨ Write With the AI…. Ctrl+Z takes it back.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

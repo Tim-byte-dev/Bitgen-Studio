@@ -102,6 +102,9 @@
 
   function pdAdd(list) {
     for (const f of list || []) {
+      // 2.837.0: a document (.txt / .md / .docx / .pdf) while a WP layer is picked in the image editor = what the next "write a
+      // report / an article / a story …" is written from (ext/imageeditdock/pcdocai.js)
+      if (window.H3DocAi && window.H3DocAi.takeFile(f)) continue;
       // 2.828.0: a workbook (.xlsx / .csv …) opens in the ▦ spreadsheet - then say what to do with it
       if (window.H3SheetChat && window.H3SheetChat.isSheetFile(f)) { window.H3SheetChat.attach(f).catch((e) => typeof chatAdd === "function" && chatAdd("assistant", "⚠ " + (e.message || e))); continue; }
       if (PD_AUDIO_RE.test(f.name || "") || /^audio\//i.test(f.type || "")) {

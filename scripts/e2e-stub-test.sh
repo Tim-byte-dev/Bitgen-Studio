@@ -14295,6 +14295,13 @@ node scripts/test-836.js > /tmp/t836.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui836-ui.js > /tmp/ui836.log 2>&1 \
   && ok "2.836.0 browser test: an empty layer + an ellipse -> the picture only inside it (undo), the whole canvas, hard edge for shapes, WP layer clicks, handle pointers, Full Screen" \
   || { bad "2.836.0 image editor browser test"; grep -a "^FAIL" -A1 /tmp/ui836.log | head -12; }
+# ---- 2.837.0 (Tim: "if a shape is selected ... fill the shape with the generation ... converted to a shape ... the llm automatically generate the documet with charts and tables etc in the wp layer")
+node scripts/test-837.js > /tmp/t837.log 2>&1 \
+  && ok "2.837.0 docAi cleanDoc / planDoc / extract (docx), wants / toHtml / figureGrid, the shape fill + Convert to Shape + /api/docai wiring" \
+  || { bad "2.837.0 shapes + Write With the AI units"; grep -a "^FAIL" -A1 /tmp/t837.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui837-ui.js > /tmp/ui837.log 2>&1 \
+  && ok "2.837.0 browser test: Generate into a closed shape (a frame) and an open line (cut), Convert to Shape, a report written into a WP layer with a table, a chart and a picture in a WP group (undo)" \
+  || { bad "2.837.0 shapes + Write With the AI browser test"; grep -a "^FAIL" -A1 /tmp/ui837.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

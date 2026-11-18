@@ -3036,6 +3036,7 @@
     if (win.PCDocx && win.PCDocx.install) win.PCDocx.install(E);   // 2.814.0: document text saved as a Word file (.docx) and a .docx opened as document text
     if (win.PCDocNotes && win.PCDocNotes.install) win.PCDocNotes.install(E);   // 2.815.0: comments + footnotes in document text
     if (win.PCDocMerge && win.PCDocMerge.install) win.PCDocMerge.install(E);   // 2.816.0: mail merge in document text
+    if (win.PCDocAi && win.PCDocAi.install) win.PCDocAi.install(E);   // 2.837.0: ✨ the LLM writes a document into the WP layer (tables in the text, charts / pictures as layers in its group)
     if (win.PCShadowTool && win.PCShadowTool.install) win.PCShadowTool.install(E);
     if (win.PCTransp && win.PCTransp.install) win.PCTransp.install(E);   // 2.830.0: the transparency gradient + the fade sliders on the gradient lines   // 2.829.0: the interactive Drop Shadow tool (press in a layer, drag)
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
