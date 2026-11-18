@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "1dc429385d9e",
- "count": 10457,
+ "v": "f24e78b778c2",
+ "count": 10461,
  "patternCount": 1255,
  "strings": {
   "(Select all)": "(全選)",
@@ -2400,6 +2400,7 @@
   "Exclusion": "排除",
   "Existing chain styles": "現有鏈式風格",
   "Exit Artist Mode": "退出藝術家模式",
+  "Exit Full Screen": "退出全螢幕",
   "Expand": "擴展",
   "Expand by (px)": "擴展量 (px)",
   "Expense (paid)": "支出(付款)",
@@ -2872,6 +2873,9 @@
   "Full": "完整",
   "Full (20 steps)": "完整（20 步）",
   "Full HD 1920 × 1080": "全高畫質 1920 × 1080",
+  "Full Screen": "全螢幕",
+  "Full Screen (canvas only)": "全螢幕（僅畫布）",
+  "Full Screen - only the canvas, full screen, no frame (Ctrl+Shift+F). Alt+P colours · Ctrl+B brushes · Alt+G layers + pending · Ctrl+P the prompt docker · Shift+right-click (or Ctrl+Esc) back": "全螢幕——只顯示畫布，全螢幕，無邊框（Ctrl+Shift+F）。Alt+P 顏色 · Ctrl+B 畫筆 · Alt+G 圖層 + 待處理 · Ctrl+P 提示詞停靠欄 · Shift+右鍵（或 Ctrl+Esc）返回",
   "Full Screen Mode": "全螢幕模式",
   "Full fine-tune": "完整微調",
   "Full frame 36 x 24": "全片幅 36 x 24",

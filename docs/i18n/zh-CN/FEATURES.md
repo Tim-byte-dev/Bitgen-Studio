@@ -69,7 +69,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **素材面板** — 项目中的图像、视频和声音；把文件拖放到上面即可导入。 *Where:* Assets 面板
 - **素材分组** — （2.635.0：一个分组就是 Assets 文件夹中的一个文件夹）把文件归入分组；Send 把文件移入该文件夹，Add 则同时在那里创建链接。 *Where:* Assets 面板
 - **SolidCraft 全窗口** — SolidCraft 面板上的 ⛶ 会填满整个窗口（标题栏和状态栏保留）并关闭其他面板；🗗 / Esc 将布局恢复原样。 *Where:* 📐 SolidCraft 面板。 *Since:* 2.638.0
-- **Shift+右键点击退出 Artist 模式** — 在图像编辑器仅显示画布的 Artist 模式中，在任意位置 Shift+右键点击即可退出（不弹出右键菜单）；Ctrl+Esc / Ctrl+Shift+F 仍然有效。 *Where:* 图像编辑器 ▸ 🎨 Artist mode。 *Since:* 2.637.0
+- **Shift+右键点击退出 全屏模式** — 在图像编辑器仅显示画布的 全屏模式中，在任意位置 Shift+右键点击即可退出（不弹出右键菜单）；Ctrl+Esc / Ctrl+Shift+F 仍然有效。 *Where:* 图像编辑器 ▸ 🎨 Full Screen。 *Since:* 2.637.0
 - **bitGen Default 主题 + Ctrl+Alt+S** — Ctrl+Alt+S 可在任意位置打开 Settings；Ctrl+Alt+Shift+T、⟲ bitGen Default 或 ?theme=default 会恢复内置默认主题（Dark，无元素样式，界面大小 100 %），↶ The theme before 可撤销此操作；内置主题不能被覆盖或删除。 *Where:* 任意位置；Settings ▸ Themes。 *Since:* 2.636.0
 - **全局素材与项目素材** — Assets 面板中的 📁 Project | 🌐 Global | All；项目素材位于 projects/<name>/Assets，全局素材（所有项目可用）位于 projects/Assets；上传的文件进入 Assets；右键点击可选择 🌐 Move to Global / 📁 Move to Project。 *Where:* Assets 面板。 *Since:* 2.635.0
 - **选择并删除素材** — 勾选、Ctrl+点击或 Shift+点击图块；删除会把它们移入回收站，绝不会直接永久删除。 *Where:* Assets 面板
@@ -828,7 +828,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **⤒ 导入并检查 ComfyUI 工作流** — 任意保存版 / API 版工作流：统计其图片 / 视频 / 声音输入，将预览节点改为保存节点，报告缺失的节点和模型文件，连接 Prompt / Negative / Seed / Steps / CFG / 尺寸 / 时长控件，并绘制工作流图；▶ Test run 使用测试输入试运行——成功时保存到 comfy_workflows/ 并附带工作流图，失败时显示 ComfyUI 的错误。 *Where:* Settings ▸ ComfyUI ▸ Graphs。 *Since:* 2.587.0
 - **面板开关 + 布局** — 👁 关闭某个面板及其状态栏按钮；🗂 Layouts 可保存 / 应用 / 导出 / 导入整个面板布局及主题（layouts/<name>.json）；★ Save as the default = layouts/default.json + themes/default.json，用于全新安装。 *Where:* Settings ▸ Dockers。 *Since:* 2.587.0
 - **⚡ 实时生成（图像编辑器）** — Krita 的实时模式：每次更改后稍等片刻即重新渲染（以实时强度对整张图片执行 Refine，并使用独立的风格 / 步数 / 尺寸 / 🔒 种子），一次只渲染一张，以最新的更改为准，模型常驻加载，排在队列最前，从不出现在队列面板 / 图库中；▣ 以混合比例显示在画布上；✔ Apply as layer 作为图层应用。 *Where:* Image editor ▸ ⚡（菜单栏）/ View ▸ ⚡ Live Generation。 *Since:* 2.588.0
-- **🎨 艺术家模式（图像编辑器）** — 只显示画布，全屏且无边框；Alt+P 在指针处打开调色板（方形色域 + 色相条、色块、最近使用），Alt+G 打开 Layers 面板 + ⏳ Pending，Ctrl+P 打开提示词面板（从当前所在图层生成），Ctrl+B 打开画笔（预设、大小、不透明度、流量），Ctrl+Esc（或 Ctrl+Shift+F）返回。 *Where:* Image editor ▸ 🎨 Artist mode（紧接在菜单之后）/ View ▸ Artist Mode。 *Since:* 2.588.0 (2.590.0 起命名为 Artist mode)
+- **🎨 全屏模式（图像编辑器）** — 只显示画布，全屏且无边框；Alt+P 在指针处打开调色板（方形色域 + 色相条、色块、最近使用），Alt+G 打开 Layers 面板 + ⏳ Pending，Ctrl+P 打开提示词面板（从当前所在图层生成），Ctrl+B 打开画笔（预设、大小、不透明度、流量），Ctrl+Esc（或 Ctrl+Shift+F）返回。 *Where:* Image editor ▸ 🎨 Full Screen（紧接在菜单之后）/ View ▸ Full Screen。 *Since:* 2.588.0 (2.590.0 起命名为 Full Screen)
 - **🧬 RefMods 库** — 适用于所有项目的 MiniMax H3 参考 mod，存放在 refmod/<name>/ 中：7 种类型（角色、地点、载具、物体、道具、植物、动物），上传的媒体自动分类到 images / videos / audio，✨ 使用视觉模型自动生成描述，🧬 Extract（图片 + 视频帧）-> 生成的 .safetensors 保存在该文件夹中，在提示词中写 @name 即可使用。 *Where:* 🎓 LoRA & fine-tune trainer ▸ 🧬 RefMods。 *Since:* 2.588.0
 - **SolarRenderer** — 结构视频（+ 首帧、六段式提示词）-> 在 MiniMax H3 上以 4 步生成片段：节点包 + LoRA 作为附加组件提供，其工作流通过 ⤒ Import & check 导入。 *Where:* Settings ▸ Add-ons ▸ SolarRenderer；Settings ▸ ComfyUI ▸ Graphs ▸ ☀ SolarRenderer。 *Since:* 2.588.0
 - **带服务器组件的可选扩展** — 扩展（ext/<id>/）可自带服务器代码（ext.json 中的 "server"），在启动时挂载，且仅在其运行时显示；Settings ▸ Add-ons 可从扩展的 zip 安装（📦）和移除扩展。Team render farm 就是这样一个扩展——因可能触发杀毒软件而未包含在安装 zip 中。 *Where:* Settings ▸ Add-ons ▸ Team render farm。 *Since:* 2.589.0
@@ -1245,15 +1245,15 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **材质工具** — 每面墙的内侧和外侧、窗框和玻璃、地板、天花板、装饰线、屋顶、楼梯：可使用颜色、内置材质或图片（来自 Refs 面板、项目或文件）作为重复纹理（大小、旋转）；油漆桶为一面墙的一侧上色（Shift：该侧的所有墙）。 *Where:* Sketcher ▸ 部件的面板，Materials（paint）。 *Since:* 2.651.0
 - **背景图与 360° 天空** — 在模型后方放置一张参考图片（铺满视图），或将其作为全景天空包裹整个场景。 *Where:* Sketcher ▸ 🖼 Background。 *Since:* 2.651.0
 - **选取与悬停高亮** — 被选中的对象以主题强调色着色，指针下的对象显示为蓝色（已选中时除外）——在 3D 和平面图中均如此。 *Where:* Sketcher。 *Since:* 2.650.0
-- **Shift + 右键拖动缩放** — 向前（向上）放大，向后（向下）缩小，以按下的点为中心；单纯右键点击仍会打开菜单。 *Where:* Sketcher、时间线的画布、图像编辑器（🎨 Artist mode 中也可以）。 *Since:* 2.648.0
+- **Shift + 右键拖动缩放** — 向前（向上）放大，向后（向下）缩小，以按下的点为中心；单纯右键点击仍会打开菜单。 *Where:* Sketcher、时间线的画布、图像编辑器（🎨 Full Screen 中也可以）。 *Since:* 2.648.0
 - **缩放至所选** — ⊡ 让所选内容充满视图：Sketcher 中的面或建筑构件、时间线上选中的图层、图像编辑器的选区（或选中的图层）。 *Where:* Sketcher ⊡，时间线 ⊡，图像编辑器 ⊡ / View ▸ Zoom to Selection (Ctrl+Alt+0)。 *Since:* 2.648.0
 - **指针工具** — Sketcher 的 Select 以及时间线和图像编辑器的 Move 都以指针箭头显示。 *Since:* 2.648.0
 - **在 Sketcher 中多选** — 单击选取一个对象，Ctrl+点击添加更多（房间、墙、门、家具、灯光、摄像机、面）；拖动其中一个即可全部移动，Delete 全部删除。在 Orbit 中按 Esc = Select；Esc 永远不会让最大化的 Sketcher 停靠回去。 *Where:* Sketcher ▸ ➤ Select。 *Since:* 2.648.0
 - **平面图视图** — 以应用的主题颜色从正上方查看 Sketcher，一次显示一层：墙体以实心剖切显示，门带开启弧线，窗带玻璃和窗台，楼梯带踏步和 UP 标记，家具和灯光以平面符号显示，每个房间标有名称、宽 × 长和面积；所有工具都可在其上绘制，点击可选取符号；Orbit 会让它恢复平放。 *Where:* Sketcher ▸ 📐 Plan，View ▾ 📐 Floorplan。 *Since:* 2.647.0
 - **Esc = Orbit** — 按一次 Esc 即放下当前工具并取消选取，在所有 Sketcher 视图（3D、平面图、摄像机视图）中切换到 🔄 Orbit。 *Where:* Sketcher。 *Since:* 2.647.0
 - **房间宽度和长度** — 每个房间的面板都有 Width 和 Length（矩形保持其角点不动，其他形状则被拉伸）；Room 工具的 Width × Length 一次点击即可放置该尺寸的房间。 *Where:* Sketcher ▸ 房间，Room 工具。 *Since:* 2.647.0
-- **从 Artist mode 生成** — 在 🎨 Artist mode 中，Alt+G 在画布上方显示 Layers 面板和 ⏳ Pending，Ctrl+P 显示提示词面板：选取图层，▾ Edit 或 Generate，从 ⏳ Pending 中保留结果——全程不离开全屏画布；调色板为 Alt+P。 *Where:* 图像编辑器 ▸ 🎨 Artist mode。 *Since:* 2.646.0
-- **右键：Copy、Paste 和 Artist Mode** — 图像编辑器的画布菜单有 Copy 和 Paste（新图层）以及 🎨 Artist Mode；在 Artist Mode 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（打开 / 关闭场景工具）、✨ Prompt（把提示词停靠窗带到前面）和 Exit Artist Mode。*Where:* 图像编辑器 ▸ 右键点击画布。*Since:* 2.809.0
+- **从 Full Screen 生成** — 在 🎨 Full Screen 中，Alt+G 在画布上方显示 Layers 面板和 ⏳ Pending，Ctrl+P 显示提示词面板：选取图层，▾ Edit 或 Generate，从 ⏳ Pending 中保留结果——全程不离开全屏画布；调色板为 Alt+P。 *Where:* 图像编辑器 ▸ 🎨 Full Screen。 *Since:* 2.646.0
+- **右键：Copy、Paste 和 Full Screen** — 图像编辑器的画布菜单有 Copy 和 Paste（新图层）以及 🎨 Full Screen；在 Full Screen 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（打开 / 关闭场景工具）、✨ Prompt（把提示词停靠窗带到前面）和 Exit Full Screen。*Where:* 图像编辑器 ▸ 右键点击画布。*Since:* 2.809.0
 - **形状模式、修剪、镜像、偏移** — 形状工具的形状按钮选择模式：点击 = 新建，Shift+点击 = 选中的形状变成它（下一个形状替换它），Ctrl+点击 = 添加到它，Alt+点击 = 从它中减去，Ctrl+Alt+点击 = 相交；✂ 修剪剪掉轮廓上位于其他轮廓交点之间的一段（其余首尾相连）；⇋ 翻转 / 镜像复制；⧈ 偏移扩大或缩小轮廓（圆角）；拿着形状工具时也在右键菜单中。*Where:* 图像编辑器 ▸ 形状工具 (U)。*Since:* 2.810.0
 - **文字处理文本** — 像文字处理软件一样输入的文档框：段落样式（正文、标题、副标题、标题 1-3、引用、代码）、字体、字号、加粗 / 倾斜 / 下划线 / 删除线、下标 / 上标、颜色、突出显示、含两端对齐的对齐方式、行距、段前 / 段后间距、项目符号、编号、缩进；文章以整行在框之间流动；文件 ▸ 新建文本文档… 随文字增加自动添加页面。*Where:* 图像编辑器 ▸ 文档文字工具 (T) / 文件 ▸ 新建文本文档…。*Since:* 2.811.0
 - **文档文字中的表格** — 插入表格（行、列、标题行），Tab 在单元格间移动（在最后一格新增一行），插入 / 删除行和列，合并 / 拆分单元格，标题行在每页重复，边框（所有 / 外侧 / 无），单元格底纹，单元格对齐，拖动列宽；长表格以整行延续。*Where:* 图像编辑器 ▸ 文档文字工具 ▸ ▦ Table ▾ / 右键点击单元格。*Since:* 2.812.0
@@ -1280,9 +1280,10 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🎞 AI 制作幻灯片** — ✨ 根据主题或文字 / 大纲 / 文件制作幻灯片（提示词停靠栏的 LLM 规划，带演讲者备注），图片框用提示词停靠栏的图像风格生成图片，重写 / 缩短 / 修正幻灯片，根据幻灯片写演讲者备注；在提示词停靠栏中说“make slides about …”。*Where:* 🎞 幻灯片 ▸ ✨ AI ▾、提示词停靠栏。*Since:* 2.833.0
 - **🖼 生成到选区 / 整个画布；编辑：局部重绘 / 填充 / 扩图** — 打开图像编辑器时，✨ 生成会画进选区（没有选区则按画布形状铺满整个画布），作为新图层；✏ 编辑像 Krita AI 插件一样选择 自动 / 局部重绘 / 填充 / 扩图，使用提示词停靠栏的编辑模型。*Where:* 提示词停靠栏的 ▾ + 图像编辑器。*Since:* 2.834.0
 - **🎞 幻灯片：表格、图表、品牌主题** — ▦ 表格和 📊 图表（柱形、条形、折线、面积、饼图、圆环图），编辑器可粘贴电子表格单元格，与 PowerPoint 互通真正的表格 / 图表并绘入 PDF；🎨 用你的颜色和字体或标志生成品牌主题，为所有项目保存。*Where:* 🎞 幻灯片。*Since:* 2.835.0
+- **🖼 在空图层上生成、非矩形选区、WP 图层、控点指针** — 空图层 + ✨ 生成会用任何图像风格（勾选“覆盖风格”时使用基本设置）填满选区形状（或整个画布），非矩形选区外不留任何内容；非矩形选区的填充为硬边；点击 WP 图层 = 文字处理；每个控点显示自己的指针，拖动时为强调色。*Where:* 图像编辑器 + 提示词停靠栏。*Since:* 2.836.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
-- **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Artist mode 中也可以（2.646.0）。 *Since:* 2.645.0
+- **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0
 - **摄像机移动和旋转控件** — 选中的摄像机会高亮显示（无边框），并显示 X / Y / Z 移动箭头：拖动摄像机可在其当前高度上移动，拖动箭头可沿单轴移动（步长 1 cm）；双击可切换到旋转环，再双击切回；点击其他对象则选中该对象。 *Where:* Sketcher ▸ Select，摄像机。 *Since:* 2.641.0
 - **每个部件的专属属性** — 在视图或大纲中点击墙、地板、天花板、踢脚线、顶角线或地板楼板，会显示其专属面板：墙的长度、高度和内侧颜色，地板的标高，天花板的类型；Delete 关闭该部件。 *Where:* Sketcher ▸ Select，🗂 Outline。 *Since:* 2.640.0
 - **踢脚线、顶角线、框线和窗台的截面** — 图片下拉菜单中有 30 种内置截面；踢脚线沿墙扫掠，转角斜接（在门框处止住），顶角线位于天花板下方，门窗套线环绕门（两面）和窗，另有窗台；✎ Profiles… 可绘制自定义截面（1 mm 网格上的点，按宽 / 高缩放）并保存在项目中。 *Where:* Sketcher ▸ 踢脚线 / 顶角线 / 门 / 窗的面板。 *Since:* 2.640.0

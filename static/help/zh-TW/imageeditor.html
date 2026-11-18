@@ -1,7 +1,16 @@
-<!-- en: imageeditor 33a784a7e400 -->
+<!-- en: imageeditor a81df60b0128 -->
 <h1>影像編輯器</h1>
 
 <p>編輯器的佈局、工具和快捷鍵。</p>
+
+<h3 id="emptygen836">✅ 在空圖層上生成、非矩形選取範圍、WP 圖層、控點指標、全螢幕（2.836.0）</h3>
+<ul>
+  <li>選取<b>空圖層</b>並 <b>✨ 生成</b>：有選取範圍時，按選取範圍的形狀用提示詞停靠欄的影像風格生成（任何影像模型；勾選“覆蓋風格”時使用基本設定），並放進該圖層的選取範圍內；非矩形選取範圍不會在其形狀外留下任何內容。沒有選取範圍時填滿該圖層的整個畫布。可一步復原。</li>
+  <li>有圖片的圖層 + 非矩形選取範圍：填充保持硬邊——選取範圍外不會生成任何內容。</li>
+  <li>點選 <b>WP 圖層</b>（圖層中的行，或用移動工具點選其框）會回到文書處理——文件文字工具，直接輸入。拖曳仍然是移動。</li>
+  <li>使用移動工具時，指標在控點上會顯示該控點的箭頭（角 / 邊；旋轉模式下角是旋轉箭頭，邊是斜切箭頭）；拖曳時箭頭以強調色顯示。</li>
+  <li><b>Artist Mode</b> 現在叫 <b>🎨 全螢幕</b>——同樣只顯示畫布的模式，按鍵相同。</li>
+</ul>
 
 <h3 id="aifill834">✅ 生成到選取範圍或整個畫布；編輯：區域性重繪 / 填充 / 擴圖（2.834.0）</h3>
 <ul>
@@ -303,8 +312,8 @@
 <ul>
   <li><b>Export As</b>：新增 AVIF（由本機的 ffmpeg 生成）、GIF（256 色，可設一種透明色）、TIFF、BMP、TGA（支援透明）。</li>
   <li><b>File Info…</b>（Alt+Shift+Ctrl+I）：標題、作者、描述、關鍵詞、版權、URL——隨文件一起儲存，並寫入匯出的 PNG 和 JPEG 檔案。</li>
-  <li><b>Zoom</b>：<kbd>Shift</kbd> + 在畫布任意位置按住右鍵拖曳——向前（向上）放大，向後（向下）縮小，以按下的位置為中心（在 Artist mode 中也可用）。<b>⊡ Zoom to Selection</b>（位於工具列的 🔍 下方、View ▸ Zoom to Selection、<kbd>Ctrl+Alt+0</kbd>）：讓選取範圍充滿檢視——沒有選取範圍時：以所選圖層的像素為準。<b>Move</b> <kbd>V</kbd> 現在會顯示指標游標（2.648.0）。</li>
-  <li><b>🎨 Artist mode</b>（🎨 按鈕、View ▸ Artist Mode、Ctrl+Shift+F）：全螢幕只顯示畫布。<kbd>Alt+P</kbd> 調色盤，<kbd>Ctrl+B</kbd> 畫筆，<kbd>Alt+G</kbd> Layers 面板 + ⏳ Pending，<kbd>Ctrl+P</kbd> 提示詞面板——選擇一個圖層，▾ Edit 或 Generate，結果會在 ⏳ Pending 中等待處理。按 Ctrl+Esc 或 Shift+右鍵點選（不拖曳）返回；Shift+右鍵拖曳則進行縮放。</li>
+  <li><b>Zoom</b>：<kbd>Shift</kbd> + 在畫布任意位置按住右鍵拖曳——向前（向上）放大，向後（向下）縮小，以按下的位置為中心（在 Full Screen 中也可用）。<b>⊡ Zoom to Selection</b>（位於工具列的 🔍 下方、View ▸ Zoom to Selection、<kbd>Ctrl+Alt+0</kbd>）：讓選取範圍充滿檢視——沒有選取範圍時：以所選圖層的像素為準。<b>Move</b> <kbd>V</kbd> 現在會顯示指標游標（2.648.0）。</li>
+  <li><b>🎨 Full Screen</b>（🎨 按鈕、View ▸ Full Screen、Ctrl+Shift+F）：全螢幕只顯示畫布。<kbd>Alt+P</kbd> 調色盤，<kbd>Ctrl+B</kbd> 畫筆，<kbd>Alt+G</kbd> Layers 面板 + ⏳ Pending，<kbd>Ctrl+P</kbd> 提示詞面板——選擇一個圖層，▾ Edit 或 Generate，結果會在 ⏳ Pending 中等待處理。按 Ctrl+Esc 或 Shift+右鍵點選（不拖曳）返回；Shift+右鍵拖曳則進行縮放。</li>
   <li><b>Print…</b>（Ctrl+Shift+P——Ctrl+P 用於將提示詞面板置於最前）：適合頁面、指定尺寸或百分比、方向，然後開啟系統的列印對話方塊。</li>
   <li><b>Automate ▸ Contact Sheet…</b>（檔案或已開啟的文件，網格排列，帶說明文字）和 <b>Crop and Straighten Photos</b>（將掃描件中的每張照片分別作為獨立的文件）。</li>
 </ul>

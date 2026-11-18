@@ -50,7 +50,7 @@ const post = async (p, b) => (await fetch(URL_ + p, { method: "POST", headers: {
 
     /* ---------------- 🎨 Artist mode */
     const am = await ev(() => { const F = document.getElementById("kxFocus"), r = F.getBoundingClientRect(), M = document.getElementById("pcMenus"); return { after: M.nextElementSibling === F, label: F.textContent.trim(), w: r.width, vis: r.width > 0 && r.right <= document.getElementById("pcMenu").getBoundingClientRect().right }; });
-    check("🎨 Artist mode: a labelled button right after the menus, on screen even in a narrow editor (the menu bar wraps instead of cutting it off)", am.after && am.label === "🎨 Artist mode" && am.w > 60 && am.vis && await ev(() => { const m = document.getElementById("pcMenu").getBoundingClientRect(); return [...document.querySelectorAll("#pcMenu .mr > button")].every((x) => { const r = x.getBoundingClientRect(); return !x.offsetWidth || (r.right <= m.right + 1 && r.bottom <= m.bottom + 1); }); }), am);
+    check("🎨 Artist mode: a labelled button right after the menus, on screen even in a narrow editor (the menu bar wraps instead of cutting it off)", am.after && am.label === "🎨 Full Screen" && am.w > 60 && am.vis && await ev(() => { const m = document.getElementById("pcMenu").getBoundingClientRect(); return [...document.querySelectorAll("#pcMenu .mr > button")].every((x) => { const r = x.getBoundingClientRect(); return !x.offsetWidth || (r.right <= m.right + 1 && r.bottom <= m.bottom + 1); }); }), am);
     await p.click("#kxFocus"); await p.waitForTimeout(300);
     const on = await ev(() => document.body.classList.contains("ie-focus") && !document.getElementById("pcMenu").offsetWidth);
     await p.keyboard.press("Control+Escape"); await p.waitForTimeout(300);

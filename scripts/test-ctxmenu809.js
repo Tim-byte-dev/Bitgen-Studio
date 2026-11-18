@@ -18,6 +18,6 @@ check("pcfocus: the four artist-mode commands", ["focus.layers", "focus.blender"
 check("pcfocus: E.focusMenu gives the four in artist mode, view.focus otherwise",
   /E\.focusMenu = \(\) => \(on \? \["focus\.layers", "focus\.blender", "focus\.prompt", "focus\.exit"\] : \["view\.focus"\]\);/.test(FO));
 check("pcfocus: Show Layers ticks with the side panel; Blender opens / closes E.blendLayer; Prompt brings the prompt docker forward; Exit leaves",
-  /checked: \(\) => side/.test(FO) && /B\.isOpen\(\)\) B\.leave\(\); else B\.start\(\)/.test(FO) && /H3PromptFront\.front\(\)/.test(FO) && /"focus\.exit", "Exit Artist Mode", "", \(\) => setFocus\(false\)/.test(FO));
+  /checked: \(\) => side/.test(FO) && /B\.isOpen\(\)\) B\.leave\(\); else B\.start\(\)/.test(FO) && /H3PromptFront\.front\(\)/.test(FO) && /"focus\.exit", "Exit (Artist Mode|Full Screen)", "", \(\) => setFocus\(false\)/.test(FO));
 console.log("\nRESULT: " + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

@@ -61,7 +61,7 @@ fs.writeFileSync(TXT, "a red bike, front view");
     /* ---------------- ⚡ live */
     const bar = await ev(() => { const L = document.getElementById("kxLive"), F = document.getElementById("kxFocus"), full = document.getElementById("kxFull"), M = document.getElementById("pcMenus");
       const r = F && F.getBoundingClientRect();
-      return { live: !!L && L.parentNode === full.parentNode, focus: !!F && M.nextElementSibling === F && /Artist mode/.test(F.textContent) && r.width > 40, order: L ? [...full.parentNode.children].indexOf(L) < [...full.parentNode.children].indexOf(full) : false }; });
+      return { live: !!L && L.parentNode === full.parentNode, focus: !!F && M.nextElementSibling === F && /(Artist mode|Full Screen)/.test(F.textContent) && r.width > 40, order: L ? [...full.parentNode.children].indexOf(L) < [...full.parentNode.children].indexOf(full) : false }; });
     check("the menu bar: ⚡ (live) beside ⛶; 🎨 Artist mode (2.590.0) labelled, right after the menus", bar.live && bar.focus && bar.order, bar);
     const seen = [];
     await p.route("**/api/aiedit", async (r) => { const d = r.request().postData() || ""; seen.push({ live: /name="live"\r\n\r\n1/.test(d), steps: (/name="live_steps"\r\n\r\n(\d+)/.exec(d) || [])[1], id: (/name="live_id"\r\n\r\n([A-Za-z0-9]+)/.exec(d) || [])[1], mode: (/name="mode"\r\n\r\n(\w+)/.exec(d) || [])[1], whole: /name="whole"\r\n\r\n1/.test(d) }); r.continue(); });

@@ -11404,11 +11404,11 @@
   },
   {
    "s": "How Edit works on the selection",
-   "src": "ext/imageeditdock/pcaifill.js:98"
+   "src": "ext/imageeditdock/pcaifill.js:107"
   },
   {
    "s": "How ✏ Edit works with a selection (Krita AI's fill modes)",
-   "src": "ext/imageeditdock/pcaifill.js:99"
+   "src": "ext/imageeditdock/pcaifill.js:108"
   },
   {
    "s": "W x H (px)",
@@ -12572,27 +12572,27 @@
   },
   {
    "s": "Page",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "Portrait",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "Landscape",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "Margins (mm)",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "One frame inside the margins; pages are added as you type",
-   "src": "ext/imageeditdock/pcdoctext.js:591"
+   "src": "ext/imageeditdock/pcdoctext.js:605"
   },
   {
    "s": "docx",
@@ -13091,11 +13091,11 @@
    "src": "ext/imageeditdock/pcfocus.js:239"
   },
   {
-   "s": "Artist mode",
+   "s": "Full Screen",
    "src": "ext/imageeditdock/pcfocus.js:307"
   },
   {
-   "s": "Artist mode - only the canvas, full screen, no frame (Ctrl+Shift+F). Alt+P colours · Ctrl+B brushes · Alt+G layers + pending · Ctrl+P the prompt docker · Shift+right-click (or Ctrl+Esc) back",
+   "s": "Full Screen - only the canvas, full screen, no frame (Ctrl+Shift+F). Alt+P colours · Ctrl+B brushes · Alt+G layers + pending · Ctrl+P the prompt docker · Shift+right-click (or Ctrl+Esc) back",
    "src": "ext/imageeditdock/pcfocus.js:308"
   },
   {
@@ -13316,55 +13316,55 @@
   },
   {
    "s": "Rotate / skew",
-   "src": "ext/imageeditdock/pchandles.js:192"
+   "src": "ext/imageeditdock/pchandles.js:234"
   },
   {
    "s": "Angle (degrees, + = clockwise)",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Rotate by the angle",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Rotate 90° anticlockwise",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Rotate 90° clockwise",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Flip horizontal",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Flip vertical",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Scale width (%)",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Width and height together",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Scale height (%)",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Scale by W % x H %",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "The handles: scale (square) or rotate / skew (curved corners, sides skew) - a double-click on the canvas (on a text: on one of its handles) switches them too",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "On the canvas",
-   "src": "ext/imageeditdock/pchandles.js:223"
+   "src": "ext/imageeditdock/pchandles.js:265"
   },
   {
    "s": "Current Layer",
@@ -15148,31 +15148,31 @@
   },
   {
    "s": "Type the instruction in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "s": "and press its",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "s": "and press its button - the results come in below, ✔ keeps one as a layer",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "s": "Type in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "s": "it renders into the selection of the selected layer (else the whole picture) and ✔ Apply blends it into that layer",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "s": "generate",
-   "src": "ext/imageeditdock/pcpromptlink.js:198"
+   "src": "ext/imageeditdock/pcpromptlink.js:201"
   },
   {
    "s": "edit",
-   "src": "ext/imageeditdock/pcpromptlink.js:252"
+   "src": "ext/imageeditdock/pcpromptlink.js:255"
   },
   {
    "s": "nothing on this layer",
@@ -28342,7 +28342,7 @@
   },
   {
    "p": "{0}: type in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:131"
+   "src": "ext/imageeditdock/pcpromptlink.js:134"
   },
   {
    "p": "{0} corner radius",

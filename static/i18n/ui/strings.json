@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6161,
+ "count": 6163,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56776,6 +56776,24 @@
    ],
    "where": [
     "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "Full Screen (canvas only)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor Full Screen (2.836.0)"
+   ]
+  },
+  {
+   "s": "Exit Full Screen",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor Full Screen (2.836.0)"
    ]
   }
  ]

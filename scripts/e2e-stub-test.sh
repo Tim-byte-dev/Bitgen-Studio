@@ -14288,6 +14288,13 @@ node scripts/test-835.js > /tmp/t835.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui835-ui.js > /tmp/ui835.log 2>&1 \
   && ok "2.835.0 browser test: ▦ table into the content box + its editor, 📊 pie chart drawn in the theme's colours, undo, double-click, the PDF canvas, 🎨 brand from a logo, saved, used" \
   || { bad "2.835.0 slides tables / charts / brands browser test"; grep -a "^FAIL" -A1 /tmp/ui835.log | head -12; }
+# ---- 2.836.0 (Tim: "when image editor is open and a selection is made on an empty layer and generate is set ... change Artist Mode to Full Screen")
+node scripts/test-836.js > /tmp/t836.log 2>&1 \
+  && ok "2.836.0 selShape, actionFor on an empty layer, the handle pointers, hardEdge / placing / WP-click wiring, Full Screen everywhere" \
+  || { bad "2.836.0 image editor units"; grep -a "^FAIL" -A1 /tmp/t836.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui836-ui.js > /tmp/ui836.log 2>&1 \
+  && ok "2.836.0 browser test: an empty layer + an ellipse -> the picture only inside it (undo), the whole canvas, hard edge for shapes, WP layer clicks, handle pointers, Full Screen" \
+  || { bad "2.836.0 image editor browser test"; grep -a "^FAIL" -A1 /tmp/ui836.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

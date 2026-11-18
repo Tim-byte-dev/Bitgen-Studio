@@ -40,6 +40,28 @@
     for (const h of ["nw", "ne", "se", "sw", "n", "e", "s", "w"]) if (Math.hypot(P[h][0] - x, P[h][1] - y) <= r) return h;
     return null;
   }
+  /** 2.836.0 (Tim: "change the curser to match the handle the cursor is over but highlight the cursor when performing the
+   *  transform"): the pointer for a handle - scale: the corner / side's two-way arrow; rotate mode: a turning arrow on a
+   *  corner, a skew arrow on a side. hot = while it is dragged: the same shape filled in the accent colour, bigger. */
+  function cursorKind(mode, h) {
+    if (!h) return null;
+    if (mode === "rotate") return h.length === 2 ? "rot" : h === "n" || h === "s" ? "skewx" : "skewy";
+    return { nw: "nwse", se: "nwse", ne: "nesw", sw: "nesw", n: "ns", s: "ns", e: "ew", w: "ew" }[h];
+  }
+  const CSS_CUR = { nwse: "nwse-resize", nesw: "nesw-resize", ns: "ns-resize", ew: "ew-resize" };
+  const ARROW = "M3 16L9 10V13.5H23V10L29 16L23 22V18.5H9V22Z";                                   // a two-way arrow along x
+  const ROT = "M16 6A10 10 0 1 1 6.3 13.4L2.5 14.4L6.6 7.2L12.9 12.3L9.3 13.1A6.8 6.8 0 1 0 16 9.2Z";   // a turning arrow
+  function cursorCss(kind, hot, accent) {
+    if (!kind) return "";
+    if (!hot && CSS_CUR[kind]) return CSS_CUR[kind];
+    const fill = hot ? accent || "#ff8a1f" : "#111111", stroke = "#ffffff", size = hot ? 32 : 26;
+    const turn = { nwse: 45, nesw: -45, ns: 90, ew: 0, skewx: 0, skewy: 90, rot: 0 }[kind] || 0;
+    const shape = kind === "rot" ? ROT : ARROW;
+    const extra = kind === "skewx" || kind === "skewy" ? '<path d="M6 25H26" stroke="' + stroke + '" stroke-width="3"/><path d="M6 25H26" stroke="' + fill + '" stroke-width="1.5"/>' : "";
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 32 32"><g transform="rotate(${turn} 16 16)">${extra}<path d="${shape}" fill="${fill}" stroke="${stroke}" stroke-width="1.6" stroke-linejoin="round"/></g></svg>`;
+    const c = size / 2;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${c} ${c}, ${CSS_CUR[kind] || (kind === "rot" ? "grab" : "move")}`;
+  }
   /** the matrix a drag of handle h on box b from p0 to p gives. mode "scale" | "rotate"; o = {shift, alt} */
   function matrixFor(mode, h, b, p0, p, o) {
     const opt = o || {}, cx = b.x + b.w / 2, cy = b.y + b.h / 2, P = handlePoints(b);
@@ -143,6 +165,24 @@
 
     /* ---- the pointer: a handle grabbed before the Move tool sees it (capture) */
     const stage = E.stage;
+    // 2.836.0: the pointer over a handle shows that handle's arrow; while dragging it the arrow is filled in the accent
+    if (!doc.getElementById("pchCurCss")) { const st0 = doc.createElement("style"); st0.id = "pchCurCss"; st0.textContent = ".pchcur, .pchcur * { cursor: var(--pch-cur) !important; }"; doc.head.appendChild(st0); }
+    const accent = () => { try { return (getComputedStyle(stage).getPropertyValue("--pc-accent") || "").trim() || "#ff8a1f"; } catch (e) { return "#ff8a1f"; } };
+    function showCursor(kind, hot) {
+      const v = cursorCss(kind, hot, accent());
+      stage.classList.toggle("pchcur", !!v); stage.classList.toggle("pchhot", !!(v && hot));
+      if (v) stage.style.setProperty("--pch-cur", v); else stage.style.removeProperty("--pch-cur");
+      st.cursor = v ? kind + (hot ? "*" : "") : null;
+    }
+    (E.win || root).addEventListener("pointermove", (e) => {               // the window's capture: before the tools' own (they stop it)
+      if (st.drag) return;
+      if (!stage.contains(e.target)) { if (st.cursor) showCursor(null); return; }
+      if (S.tool !== "move" || !S.w || S.space || !shown()) { if (st.cursor) showCursor(null); return; }
+      const L = target(), b = boxNow(L); if (!b) { if (st.cursor) showCursor(null); return; }
+      const [fx, fy] = E.pos(e), k = cursorKind(st.mode, hitHandle(b, fx, fy, R()));
+      if ((k || null) !== (st.cursor || null)) showCursor(k, false);
+    }, true);
+    stage.addEventListener("pointerleave", () => { if (!st.drag && st.cursor) showCursor(null); });
     stage.addEventListener("pointerdown", (e) => {
       st.click = null;
       if (S.tool !== "move" || !S.w || e.button !== 0 || S.space || !shown()) return;
@@ -159,6 +199,7 @@
       st.drag = { L, b, h, p0: [fx, fy], m: [1, 0, 0, 1, 0, 0], leaves, kids, frame: isFr ? L : null, hide, was: hide.map((x) => x.visible) };
       for (const x of hide) x.visible = false;                         // shown on the overlay where it goes instead
       E.renderSoon();
+      showCursor(cursorKind(st.mode, h), true);                       // 2.836.0: the arrow filled in the accent while it drags
       try { stage.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
     }, true);
     stage.addEventListener("pointermove", (e) => {
@@ -178,6 +219,7 @@
       }
       if (e) e.stopImmediatePropagation();
       st.drag = null;
+      showCursor(cursorKind(st.mode, d.h), false);                    // 2.836.0: back to the plain arrow (still over the handle)
       d.hide.forEach((x, i) => { x.visible = d.was[i]; });
       if (isIdentity(d.m)) { E.renderSoon(); E.drawOverlay(); return; }
       apply(d.L, d.m, st.mode === "rotate" ? (d.h.length === 2 ? "rotate" : "skew") : "scale");
@@ -249,7 +291,7 @@
     E.handles = { state: () => ({ mode: st.mode, dragging: !!st.drag }), setMode: (m, quiet) => setMode(m, quiet !== false), apply, byOptions, box: () => { const L = target(); return L ? boxNow(L) : null; } };
   }
 
-  const PCHandles = { HANDLES, nextMode, mul, about, turnAbout, scaleAbout, handlePoints, hitHandle, matrixFor, isIdentity, install };
+  const PCHandles = { HANDLES, cursorKind, cursorCss, nextMode, mul, about, turnAbout, scaleAbout, handlePoints, hitHandle, matrixFor, isIdentity, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCHandles;
   if (root && root.document) root.PCHandles = PCHandles;
 })(typeof window !== "undefined" ? window : globalThis);

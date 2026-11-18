@@ -6823,7 +6823,7 @@ orange line shows where it will go - and let go.
 - 2.648.0: **Zoom with Shift + right-drag, ⊡ Zoom to selection and the pointer** - in the Sketcher, the timeline's canvas
   and the image editor. **The Sketcher's Esc and Ctrl+click.**
   - **Shift + right-drag**: forward (up) zooms in, back (down) zooms out, round the point you pressed. The plain right
-    drag still pans in the Sketcher; a right-click with no drag still opens the menus. In 🎨 Artist mode the drag zooms
+    drag still pans in the Sketcher; a right-click with no drag still opens the menus. In 🎨 Full Screen the drag zooms
     and a Shift+right-**click** (no drag) still takes you out.
   - **⊡ Zoom to selection**: the Sketcher (beside ⤢ - what is picked: faces, a room, a wall, a door, a piece, a camera …,
     or several), the timeline (beside ⤢ - the picked layer) and the image editor (under 🔍 on the tool column, View ▸
@@ -6847,18 +6847,18 @@ orange line shows where it will go - and let go.
   - **Width and Length** for every room: its panel has them (along its first wall and across it); a rectangle keeps its
     corner, any other shape is stretched (its doors and windows stay in place along the walls). The Room tool has a
     Width and a Length too: set both and one click puts a room that size; 0 = draw it with two corners as before.
-- 2.646.0: **🎨 Artist mode: Alt+P colours, Ctrl+P the prompt docker, Alt+G layers + pending** - generate from the
-  layer you are painting on without leaving Artist mode.
+- 2.646.0: **🎨 Full Screen: Alt+P colours, Ctrl+P the prompt docker, Alt+G layers + pending** - generate from the
+  layer you are painting on without leaving Full Screen.
   - **Alt+P** - the colour palette at the pointer (it was Ctrl+P). Alt+P again closes it.
   - **Ctrl+P** - the prompt docker over the full-screen canvas, its prompt box ready to type in (the same key as
     everywhere else in the app).
   - **Alt+G** - the Layers panel on the right and ⏳ Pending beside it, over the canvas (the canvas keeps its size, the
     other panels stay hidden). Pick the layer, Ctrl+P, write the prompt, ▾ Edit (or Generate): the picture comes back
     to ⏳ Pending - keep it as a layer from there. Alt+G again hides them.
-  - Leaving Artist mode puts the editor's panels column back as it was (a narrow editor used to lose it).
+  - Leaving Full Screen puts the editor's panels column back as it was (a narrow editor used to lose it).
 - 2.645.0: **Ctrl+P brings the prompt docker to the front** - anywhere (typing in a box too): it opens, unfolds, comes
   out of a closed ▣ docker and over a floating window or a maximized docker (the Sketcher, the timeline …), with the
-  prompt box ready to type in. (2.646.0: in 🎨 Artist mode too - its colour palette moved to Alt+P.) The image
+  prompt box ready to type in. (2.646.0: in 🎨 Full Screen too - its colour palette moved to Alt+P.) The image
   editor's **File ▸ Print** moved to **Ctrl+Shift+P**.
 - 2.644.0: **The guides say Sketcher** - the README, this guide, the Feature Reference, the beta page, the help and the
   shortcut list no longer describe the House builder (the Sketcher replaced it in 2.630.0); the Sketcher section starts
@@ -6884,7 +6884,7 @@ orange line shows where it will go - and let go.
 - 2.638.0: **📐 SolidCraft maximized = the whole window** - ⛶ fills bitGen's window between the title bar and the
   status bar and closes every other docker; 🗗 (or Esc) puts the layout back exactly as it was (which dockers were
   open, which were folded, their sizes).
-- 2.637.0: **Shift+right-click leaves 🎨 Artist mode** - anywhere on screen, no context menu (Ctrl+Esc opens the
+- 2.637.0: **Shift+right-click leaves 🎨 Full Screen** - anywhere on screen, no context menu (Ctrl+Esc opens the
   Start menu on Windows; Ctrl+Esc and Ctrl+Shift+F still work).
 - 2.636.0: **Ctrl+Alt+S opens Settings; the bitGen Default theme** - Ctrl+Alt+Shift+T (or ⟲ bitGen Default in
   Settings ▸ Themes, or `?theme=default` in the address) puts bitGen's own look back - Dark, its accent, no element
@@ -7203,8 +7203,8 @@ orange line shows where it will go - and let go.
   - push-to-github.bat: (2.591.2: back in the app folder, beside start.bat, and never in the repo.)
   - The folders and files bitGen makes while it runs (projects, styles, models, custom.settings, the layout files …)
     stay where they were.
-- 2.590.0: **🎨 Artist mode** is the new name of the full-screen canvas (2.588.0's ⬚ focus mode): a labelled
-  **🎨 Artist mode** button right after the image editor's menus (File … Help), View ▸ Artist Mode, Ctrl+Shift+F. Only
+- 2.590.0: **🎨 Full Screen** is the new name of the full-screen canvas (2.588.0's ⬚ focus mode): a labelled
+  **🎨 Full Screen** button right after the image editor's menus (File … Help), View ▸ Full Screen, Ctrl+Shift+F. Only
   the canvas shows; Ctrl+P colours (2.646.0: Alt+P), Ctrl+B brushes, Ctrl+Esc back. The editor's menu bar now wraps onto a second line
   when the editor is narrow, so no button is cut off any more.
 - 2.590.0: **Every tab of the image editor is a docker.** Drag a tab (Layers, Color, ✨ AI, 🎮 Unreal, 🖌 Brush …) by its
@@ -7255,7 +7255,7 @@ orange line shows where it will go - and let go.
     paint; 🎲 a new one), **▣ on canvas** (the result over the picture with a mix), ⏸ pause, ↻ render now,
     **✔ Apply as layer** (one undo step), ✕ live off.
   - The prompt is the ✨ AI panel's box, or the main prompt box when that is empty.
-- 2.588.0: **⬚ Focus mode in the image editor** (2.590.0: called 🎨 Artist mode) - ⬚ in the menu bar (or View ▸ Focus Mode, Ctrl+Shift+F): only the canvas,
+- 2.588.0: **⬚ Focus mode in the image editor** (2.590.0: called 🎨 Full Screen) - ⬚ in the menu bar (or View ▸ Focus Mode, Ctrl+Shift+F): only the canvas,
   full screen and frameless - bitGen's bars and the editor's menus, tools, panels, rulers and dockers are hidden.
   Painting, [ ], zoom, Space-pan and undo work as always.
   - **Alt+P** (Ctrl+P until 2.646.0) - the colour palette at the pointer: a saturation / brightness square and a hue strip (drag), the
@@ -9264,10 +9264,10 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - A docker you made (▣ New docker…, Ctrl+Alt+D) keeps the dockers you put in it - Basic Settings, LLM tokens, the prompt docker … - after a restart, and when a docker layout (⊞) or a workspace is applied. Only you take one out: drag its small title bar out, or ⇲.
 - Docked (beside a docker or as a column of its own) it sits with the other docked dockers - just above the System docker - so floating dockers (🧩 Model manager, 🖥 GPU, PODS …) are always in front of it. Floating, it is a floating docker like the others.
 
-## The image editor's right-click menu: Copy, Paste and Artist Mode (2.809.0)
+## The image editor's right-click menu: Copy, Paste and Full Screen (2.809.0)
 
-- Right-click the canvas: after what the thing you clicked offers come **Copy** and **Paste** (the Edit menu's - Paste makes a new layer), then Duplicate / Delete layer, and last **🎨 Artist Mode**.
-- In Artist Mode the right-click menu has **Show Layers + ⏳ Pending** (the side panel, ticked while it shows), **🟧 Blender Scene** (opens the Blender scene tools over the canvas, or closes them), **✨ Prompt** (brings the prompt docker in front) and **Exit Artist Mode**.
+- Right-click the canvas: after what the thing you clicked offers come **Copy** and **Paste** (the Edit menu's - Paste makes a new layer), then Duplicate / Delete layer, and last **🎨 Full Screen**.
+- In Full Screen the right-click menu has **Show Layers + ⏳ Pending** (the side panel, ticked while it shows), **🟧 Blender Scene** (opens the Blender scene tools over the canvas, or closes them), **✨ Prompt** (brings the prompt docker in front) and **Exit Full Screen**.
 
 ## The Shape tool's modes, Trim, Mirror and Offset (2.810.0)
 
@@ -9482,6 +9482,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **▦ Table** and **📊 Chart ▾** (Column, Bar, Line, Area, Pie, Doughnut) go into the slide's empty content box; their editor (also on a double-click) takes the cells / the categories, series and numbers - type them or 📋 paste from a spreadsheet. Header and banded rows, the header colour; charts in the theme's two accents. Real tables and charts in ⤓ PowerPoint (and read back by ⤒ Open PowerPoint), drawn in ⤓ PDF.
 - **🎨 Theme ▾ ▸ 🎨 Brand theme…**: background, title, text and two accent colours + fonts, a live preview; 🖼 From a logo… takes the colours out of a picture; ✔ Use in this presentation, 💾 Save brand (listed in Theme ▾ for every project - <app>/brands/).
 - **misc\reset-layout.bat** now clears the desktop app's whole cache folder (%APPDATA%\bitgen-studio-shell), copying its look settings to the backup first - the fix that brought a black window back.
+
+## 🖼 Image editor - Generate on an empty layer, shaped selections, WP layers, handle pointers, Full Screen (2.836.0)
+
+- An **empty layer** + **✨ Generate**: with a selection the picture is made at the selection's shape (the prompt docker's image style - any model - and Basic Settings when Override style is ticked) and put into the layer in the selection; a selection that is not a rectangle keeps nothing outside it. No selection = the whole canvas in that layer.
+- A picture layer + a shaped selection: the fill has a hard edge - nothing generated outside the selection.
+- A click on a **WP layer** (its row, or its frame with the Move tool) = word processing again.
+- The Move tool's handles show their own arrow under the pointer, drawn in the accent colour while dragged.
+- **Artist Mode is now 🎨 Full Screen** (same features, same keys).
 
 ## Tips
 

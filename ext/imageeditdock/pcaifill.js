@@ -80,7 +80,16 @@
     return { width: r16(Math.sqrt(area * a)), height: r16(Math.sqrt(area / a)) };
   }
   const sizeKey = (w, h) => `${Math.round(w)}x${Math.round(h)}`;
-  const pure = { EDIT_MODES, modeOf, geometry, editPlan, holeMask, canvasSize, sizeKey };
+  /** 2.836.0: a selection's box and whether it is a plain rectangle (every pixel of its box selected, nothing soft) */
+  function selShape(sel, w, h) {
+    if (!sel) return { box: null, rect: true };
+    let x0 = w, y0 = h, x1 = -1, y1 = -1, n = 0, soft = 0;
+    for (let y = 0, i = 0; y < h; y++) for (let x = 0; x < w; x++, i++) { const v = sel[i]; if (!v) continue; n++; if (v < 250) soft++; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return { box: null, rect: true };
+    const box = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 }, area = box.w * box.h;
+    return { box, rect: n >= area * 0.995 && soft <= area * 0.005 };
+  }
+  const pure = { EDIT_MODES, modeOf, geometry, editPlan, holeMask, canvasSize, sizeKey, selShape };
 
   /* ================================ the page ================================ */
   function install(E) {
@@ -135,18 +144,55 @@
       return true;
     }
 
-    /* ---- ✨ Generate with no selection: the canvas's shape, the picture over the whole canvas */
+    /* ---- ✨ Generate with no selection: the canvas's shape, the picture over the whole canvas;
+       2.836.0: an EMPTY layer + a selection: the selection's shape, the picture put into that layer in the selection (a shaped
+       selection keeps nothing outside it) */
     const want = new Map();                                      // "WxH" -> when it was asked for
+    let place = null;                                            // {key, t, layer, box, mask, rect} - the next picture goes there
+    function layerEmpty(L0) {
+      const L = L0 || E.layer(); if (!L || !L.canvas || (L.type && L.type !== "pixel") || L.control || L.frame) return false;   // a plain picture layer only
+      let d; try { d = L.canvas.getContext("2d").getImageData(0, 0, L.canvas.width, L.canvas.height).data; } catch (e) { return false; }
+      for (let i = 3; i < d.length; i += 4) if (d[i]) return false;
+      return true;
+    }
+    const selNow = () => selShape(hasSel() ? S.sel : null, S.w, S.h);
     root.H3ImageSize = () => {
-      if (!editorOn() || !S.w || genMode() !== "image" || hasSel()) return null;
+      if (!editorOn() || !S.w || genMode() !== "image") return null;
       if (op() !== "generate" || (E.imgOp && E.imgOp.blender && E.imgOp.blender())) return null;
-      const wh = canvasSize(S.w, S.h, S.res || 1);
-      want.set(sizeKey(wh.width, wh.height), Date.now());
+      const empty = layerEmpty(), L = E.layer();
+      if (hasSel() && !empty) return null;                      // a picture under the selection: the editor fills it (runAI)
+      const sh = selNow(), box = hasSel() && sh.box ? sh.box : { x: 0, y: 0, w: S.w, h: S.h };
+      const wh = canvasSize(box.w, box.h, S.res || 1), key = sizeKey(wh.width, wh.height);
+      if (!hasSel()) want.set(key, Date.now());                 // a canvas-shaped picture: over the whole canvas when not placed
+      place = empty && L ? { key, t: Date.now(), layer: L.id, box, mask: hasSel() && !sh.rect ? Uint8Array.from(S.sel) : null } : null;
       return wh;
     };
     /** a generated picture made at the canvas's shape -> a new layer covering the canvas (true = taken) */
     function takeGenerated(img, label) {
       if (!S.w || !img) return false;
+      // 2.836.0: into the empty layer it was made for, in the selection's box (cut to a shaped selection) - one undo step
+      if (place && Date.now() - place.t < 6 * 3600 * 1000) {
+        const P0 = place, L = S.layers.find((x) => x.id === P0.layer);
+        const iw0 = img.naturalWidth || img.width, ih0 = img.naturalHeight || img.height;
+        if (L && L.canvas && (sizeKey(iw0, ih0) === P0.key || Math.abs(iw0 / ih0 - P0.box.w / P0.box.h) <= 0.02 * (P0.box.w / P0.box.h))) {
+          place = null;
+          const copy = E.beginPx(L), g = L.canvas.getContext("2d");
+          g.save(); g.imageSmoothingQuality = "high";
+          if (P0.mask) {                                         // only inside the selection's shape
+            const m = E.newCanvas(S.w, S.h), mg = m.getContext("2d"), id = mg.createImageData(S.w, S.h);
+            for (let i = 0; i < P0.mask.length; i++) id.data[i * 4 + 3] = P0.mask[i];
+            mg.putImageData(id, 0, 0);
+            const t = E.newCanvas(S.w, S.h), tg = t.getContext("2d"); tg.imageSmoothingQuality = "high";
+            tg.drawImage(img, P0.box.x, P0.box.y, P0.box.w, P0.box.h); tg.globalCompositeOperation = "destination-in"; tg.drawImage(m, 0, 0);
+            g.drawImage(t, 0, 0);
+          } else g.drawImage(img, P0.box.x, P0.box.y, P0.box.w, P0.box.h);
+          g.restore();
+          const px = E.endPx(L, copy, null, "✨ generated"); if (px) E.push(px);
+          E.refresh(); E.renderLayersPanel();
+          say(`✨ the picture is in "${L.name}"` + (P0.mask ? " - cut to the selection's shape" : P0.box.w === S.w && P0.box.h === S.h ? " - the whole canvas" : " - in the selection"));
+          return true;
+        }
+      }
       const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height, now = Date.now();
       // the size asked for, or (a style that rounds sizes its own way) the canvas's shape within 2 % after such an ask
       const exact = want.get(sizeKey(iw, ih)), recent = [...want.values()].some((t) => now - t < 2 * 3600 * 1000);
@@ -156,7 +202,7 @@
       E.addLayer(L, "generated", false); E.refresh(); E.renderLayersPanel();
       return true;
     }
-    E.aiFill = { edit, takeGenerated, mode: () => edMode, setMode: (m) => { edMode = modeOf(m); store.set("imgop.edfill", edMode); paint(); }, geo, paint };
+    E.aiFill = { edit, takeGenerated, layerEmpty, selShape: selNow, placing: () => place, mode: () => edMode, setMode: (m) => { edMode = modeOf(m); store.set("imgop.edfill", edMode); paint(); }, geo, paint };
   }
 
   const PCAiFill = Object.assign({ install }, pure);

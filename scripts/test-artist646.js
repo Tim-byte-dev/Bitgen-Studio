@@ -31,11 +31,11 @@ check("the hints say it: the artist-mode message, the 🎨 button's title, the p
 const SC = JSON.parse(read("docs/shortcuts.json"));
 const rows = SC.groups.flatMap((g) => g.rows);
 check("the shortcut list: Alt+P, Alt+G and Ctrl+B for artist mode; Ctrl+P works in artist mode too",
-  rows.some(([k, v]) => k === "Alt+P" && /Artist mode/.test(v) && /colour palette/.test(v)) && rows.some(([k, v]) => k === "Alt+G" && /Layers panel/.test(v) && /Pending/.test(v))
-  && rows.some(([k, v]) => k === "Ctrl+P" && /Artist mode too/.test(v)));
+  rows.some(([k, v]) => k === "Alt+P" && /(Artist mode|Full Screen)/.test(v) && /colour palette/.test(v)) && rows.some(([k, v]) => k === "Alt+G" && /Layers panel/.test(v) && /Pending/.test(v))
+  && rows.some(([k, v]) => k === "Ctrl+P" && /(Artist mode|Full Screen) too/.test(v)));
 const U = read("docs/USAGE.md"), F = read("docs/FEATURES.md"), H = read("static/help/imageeditor.html");
-check("the guide, the feature reference and the help say it", /2\.646\.0: \*\*🎨 Artist mode: Alt\+P colours, Ctrl\+P the prompt docker, Alt\+G layers \+ pending\*\*/.test(U)
-  && /\*\*Generate from Artist mode\*\*[^\n]*\*Since:\* 2\.646\.0/.test(F) && /<kbd>Alt\+G<\/kbd> the Layers panel \+ ⏳ Pending/.test(H));
+check("the guide, the feature reference and the help say it", /2\.646\.0: \*\*🎨 (Artist mode|Full Screen): Alt\+P colours, Ctrl\+P the prompt docker, Alt\+G layers \+ pending\*\*/.test(U)
+  && /\*\*Generate from (Artist mode|Full Screen)\*\*[^\n]*\*Since:\* 2\.646\.0/.test(F) && /<kbd>Alt\+G<\/kbd> the Layers panel \+ ⏳ Pending/.test(H));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log("RESULT: " + fail + " failed");

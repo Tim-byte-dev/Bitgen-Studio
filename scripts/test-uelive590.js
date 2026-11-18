@@ -103,7 +103,7 @@ const PU = require("../ext/imageeditdock/pcunreal.js");
     check("wiring: pcuelive.js + pctabdock.js load before the editor; the Unreal View installs before the tab docker, the tab docker LAST (every tab exists), the 📺 tab floated once; tluelive.js after tlunreal.js; uelive.js after unreal.js",
       EXT.indexOf("pcuelive.js") < EXT.indexOf("pctabdock.js") && EXT.indexOf("pctabdock.js") < EXT.indexOf("imageedit.js") && IE.indexOf("PCUELive.install(E)") < IE.indexOf("PCTabDock.install(E)") && IE.indexOf("PCSubject.install(E)") < IE.indexOf("PCTabDock.install(E)")
       && IE.indexOf("PCTabDock.install(E)") < IE.indexOf("PCUELive.placeFirst(E)") && TEXT.indexOf("tluelive.js") === TEXT.indexOf("tlunreal.js") + 1 && H.indexOf('src="/static/uelive.js"') > H.indexOf('src="/static/unreal.js"') && /id: "u_live", label: "📺 Unreal View"/.test(rd("ext", "timelinedock", "tlunreal.js")));
-    check("🎨 Artist mode: a labelled button right after the menus (File … Help) + View ▸ Artist Mode, Ctrl+Shift+F", /b\.innerHTML = "🎨 <span>Artist mode<\/span>"/.test(PF) && /menus\.after\(b\)/.test(PF) && /"view\.focus", "🎨 Artist Mode \(canvas only\)", "Shift\+Ctrl\+F"/.test(PF));
+    check("🎨 Artist mode: a labelled button right after the menus (File … Help) + View ▸ Artist Mode, Ctrl+Shift+F", /b\.innerHTML = "🎨 <span>(Artist mode|Full Screen)<\/span>"/.test(PF) && /menus\.after\(b\)/.test(PF) && /"view\.focus", "🎨 (Artist Mode|Full Screen) \(canvas only\)", "Shift\+Ctrl\+F"/.test(PF));
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }
   finally { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* fine */ } }
   console.log(`\n${pass} passed, ${fail} failed`);

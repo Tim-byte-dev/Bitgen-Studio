@@ -562,6 +562,20 @@
     function frameAt(x, y) { for (let i = S.layers.length - 1; i >= 0; i--) { const L = S.layers[i]; if (isDoc(L) && L.visible !== false) { const d = L.doc; if (x >= d.x && y >= d.y && x <= d.x + d.w && y <= d.y + d.h) return L; } } return null; }
     // the Move tool: a double-click on a document frame types in it
     E.stage.addEventListener("dblclick", (e) => { if (S.tool !== "move") return; const [x, y] = E.pos(e), L = frameAt(x, y); if (L) { e.preventDefault(); e.stopPropagation(); E.setActive(S.layers.indexOf(L)); begin(L); } }, true);
+    // 2.836.0 (Tim: "if user clicks a wp layer the go back to word processing mode"): a click (no drag) on a WP frame with the
+    // Move tool / no tool, or a click on a WP layer's row in Layers = the Document Text tool + typing in it (a drag still moves it)
+    const wpMode = (L) => { if (!isDoc(L) || editing === L) return; if (S.tool !== "doctext" && E.setTool) E.setTool("doctext"); E.setActive(S.layers.indexOf(L)); begin(L); say("📄 word processing - typing in " + (L.name || "the WP layer")); };
+    let wpDown = null;
+    win.addEventListener("pointerdown", (e) => { wpDown = E.stage.contains(e.target) && e.button === 0 && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && ["move", "none", "", null, undefined].includes(S.tool) ? { x: e.clientX, y: e.clientY } : null; }, true);
+    win.addEventListener("pointerup", (e) => {                              // the window's capture: the tools stop the stage's
+      const d = wpDown; wpDown = null; if (!d || editing || !E.stage.contains(e.target) || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4) return;
+      const [x, y] = E.pos(e), L = frameAt(x, y); if (L) setTimeout(() => wpMode(L), 0);
+    }, true);
+    doc.addEventListener("click", (e) => {
+      const row = e.target && e.target.closest ? e.target.closest(".kxlayer[data-i]") : null;
+      if (!row || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || e.target.closest("button, input, .eye, .lk, [data-eye], [data-lock]")) return;
+      const L = S.layers[+row.dataset.i]; if (isDoc(L)) setTimeout(() => wpMode(L), 0);
+    });
     // a press outside the live page ends it
     E.stage.addEventListener("pointerdown", (e) => { if (editing && overlay && !overlay.contains(e.target) && S.tool !== "doctext") end(); }, true);
     function resize(L, w, h) {
@@ -607,7 +621,7 @@
     { const lm = (E.ui.MENUS || []).find(([n]) => n === "Layer"), nw = lm && lm[1].find((x) => x && x.label === "New"); if (nw && !nw.items.includes("layer.newdocframe")) nw.items.splice(nw.items.indexOf("layer.newgroup") + 1, 0, "layer.newdocframe"); }
     E.ui.addCmd("layer.docedit", "✎ Type in This WP Layer", "", () => { const L = E.layer(); if (isDoc(L)) begin(L); }, { enabled: () => isDoc(E.layer()) });
     E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["layer.docedit"]);
-    E.docText = { ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
+    E.docText = { wpMode, ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
   const PCDocText = { STYLES, CSS, sanitize, bands, windows, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true, viewOf: null };

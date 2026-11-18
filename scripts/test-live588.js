@@ -85,7 +85,7 @@ try {
   const EXT = JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts, IE = rd("ext", "imageeditdock", "imageedit.js"), PF = rd("ext", "imageeditdock", "pcfocus.js"), PL = rd("ext", "imageeditdock", "pclive.js");
   check("wiring: pclive.js + pcfocus.js loaded before the editor and installed; ⚡ and ⬚ in the menu bar beside ⛶; View ▸ ⚡ Live Generation / 🎨 Artist Mode (Shift+Ctrl+F, 2.590.0: a labelled button right after the menus)",
     EXT.indexOf("pclive.js") > 0 && EXT.indexOf("pcfocus.js") > 0 && EXT.indexOf("pcfocus.js") < EXT.indexOf("imageedit.js") && /win\.PCLive\.install\(E\)/.test(IE) && /win\.PCFocus\.install\(E\)/.test(IE)
-    && /b\.id = "kxLive"/.test(PL) && /b\.id = "kxFocus"/.test(PF) && /insertBefore\(b, full\)/.test(PL) && /"view\.live", "⚡ Live Generation"/.test(PL) && /"view\.focus", "🎨 Artist Mode \(canvas only\)", "Shift\+Ctrl\+F"/.test(PF) && /menus\.after\(b\)/.test(PF));
+    && /b\.id = "kxLive"/.test(PL) && /b\.id = "kxFocus"/.test(PF) && /insertBefore\(b, full\)/.test(PL) && /"view\.live", "⚡ Live Generation"/.test(PL) && /"view\.focus", "🎨 (Artist Mode|Full Screen) \(canvas only\)", "Shift\+Ctrl\+F"/.test(PF) && /menus\.after\(b\)/.test(PF));
   check("focus: the keys are caught first (capture) so Ctrl+B never reaches the browser's bookmarks (Alt+P / Alt+G too); the chain to the canvas is kept, every sibling hidden",
     /doc\.addEventListener\("keydown", \(e\) => \{\s*const a = keyAction/.test(PF) && /\}, true\);\s*\n\s*\/\/ 2\.590\.0 \(Tim: "i can't find the full screen canvas button/.test(PF) && /pcfocus-hide/.test(PF) && /pcfocus-chain/.test(PF) && /requestFullscreen/.test(PF));
 } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }

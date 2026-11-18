@@ -3877,7 +3877,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
 ◻ **New**（每个形状单独一个图层）、⊕ **Add**、⊖ **Subtract**、⊗ **Intersect**、⊘ **Exclude**。在 New 以外的模式下，选中某个矢量形状时绘制的形状会成为该形状的一部分——添加到其中、从中挖去……——而原有形状保持原样（两部分仍可作为节点编辑；撤销即可再次去掉新增的部分）。
 
 ## 浮动面板、命名面板、居中对话框（2.438.0）
-<!-- en: floating-dockers-named-dockers-dialogs-in-the-middle-2-438-0 47a7d07f1182 -->
+<!-- en: floating-dockers-named-dockers-dialogs-in-the-middle-2-438-0 bb48836182b3 -->
 
 **图像编辑器的面板组可以浮动**：点击 Layers 组标签页（Layers / Paths / Channels / History / Actions / Comps）或 Colour 组标签页（Color / Swatches / Character / Paragraph）末尾的 ⇱，也可以使用 Window ▸ Float Layers Panels / Float Colour Panels。该组会在编辑器内变成一个独立窗口：按住标题拖动即可移动，拖动任意边或角即可调整大小；⇲ 或 ✕ 将其放回右侧栏（Window ▸ Panels Back in the Column 会把两组都放回）。
 
@@ -4120,7 +4120,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
 - 2.650.0：**Sketcher 会高亮显示选中的对象和指针下的对象**——选中的对象（墙、房间、门、家具……，或用 Ctrl+click 选中的多个对象）以主题的强调色着色，指针下的对象以蓝色着色——已被选中的除外。📐 floorplan 上也一样：选中的符号以强调色填充，悬停的符号为蓝色。
 - 2.649.0：**Sketcher 的 📐 floorplan 沿用应用的主题颜色**——背景使用主题的背景色（不再是白纸），墙、门、楼梯和标签以主题的文字颜色绘制，地板使用其面板颜色（并带一点各房间地板颜色的色调），玻璃和灯具使用强调色，网格使用其线条颜色。更换主题会重新绘制平面图。
 - 2.648.0：**用 Shift + 右键拖动缩放、⊡ Zoom to selection 以及指针**——适用于 Sketcher、时间线画布和图像编辑器。**Sketcher 的 Esc 和 Ctrl+click。**
-  - **Shift + 右键拖动**：向前（向上）放大，向后（向下）缩小，以按下的位置为中心。在 Sketcher 中，普通的右键拖动仍为平移；不拖动的右键点击仍会打开菜单。在 🎨 Artist mode 中，该拖动用于缩放，而 Shift+右键**点击**（不拖动）仍会退出该模式。
+  - **Shift + 右键拖动**：向前（向上）放大，向后（向下）缩小，以按下的位置为中心。在 Sketcher 中，普通的右键拖动仍为平移；不拖动的右键点击仍会打开菜单。在 🎨 Full Screen 中，该拖动用于缩放，而 Shift+右键**点击**（不拖动）仍会退出该模式。
   - **⊡ Zoom to selection**（缩放到所选内容）：Sketcher（在 ⤢ 旁边——缩放到选中的内容：面、房间、墙、门、构件、摄像机……或多个对象）、时间线（在 ⤢ 旁边——选中的图层）和图像编辑器（工具栏中 🔍 下方、View ▸ Zoom to Selection、Ctrl+Alt+0——缩放到选区，若无选区则缩放到选中图层的像素）。
   - **指针**：Sketcher 的 Select 工具以及时间线和图像编辑器的 Move 工具都显示为指针箭头。
   - **Sketcher 中的 Esc**：在 🔄 Orbit 中，Esc 切换到 ➤ Select；其他情况下，它会放下当前工具并取消选择，然后切换到 Orbit。它不再将最大化的 Sketcher 停靠回去（请使用 ⇲ Dock / ⛶）。
@@ -4129,12 +4129,12 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
   - **📐 Plan**（工具栏，或 View ▾ 📐 Floorplan）：视图垂直向下俯视，如同图纸，每次显示一个楼层（楼层多于一层时可在列表中选择）。墙体被剖切并以实心绘制；门显示门扇和开启方式（单开、双开、推拉；洞口为虚线），窗显示玻璃和窗台，楼梯显示每一级踏步以及行走线和 UP，家具显示轮廓和名称，灯具显示为圆圈加十字，每个房间显示名称、Width × Length 和面积。建筑工具的用法与 3D 中相同——在平面图上绘制的房间、墙、门……都以这些符号表示——点击可选中门、灯具、构件、楼梯、墙或房间。Orbit 可旋转平面图（保持平面）。再次点击 📐、切换到其他视图或摄像机视图：3D 视图恢复原样。
   - **Esc**：按一次即放下当前工具和选中的内容，并切换到 **🔄 Orbit**——在 3D 视图、平面图和摄像机视图中均如此（正在绘制的墙会保留）。当没有可放下的内容时，它会将最大化的面板恢复原位。
   - 每个房间的 **Width 和 Length**：房间面板中有这两项（沿第一面墙的方向及与其垂直的方向）；矩形房间保持其角点不动，其他形状则被拉伸（门窗沿墙保持原位）。Room 工具也有 Width 和 Length：两者都设置后，点击一次即可放置该尺寸的房间；0 = 像以前一样通过两个角点绘制。
-- 2.646.0：**🎨 Artist mode：Alt+P 调色板、Ctrl+P 提示词面板、Alt+G 图层 + Pending**——无需离开 Artist mode 即可基于正在绘制的图层进行生成。
+- 2.646.0：**🎨 Full Screen：Alt+P 调色板、Ctrl+P 提示词面板、Alt+G 图层 + Pending**——无需离开 Full Screen 即可基于正在绘制的图层进行生成。
   - **Alt+P**——在指针处打开调色板（以前是 Ctrl+P）。再按 Alt+P 关闭。
   - **Ctrl+P**——在全屏画布上方打开提示词面板，其提示词框可直接输入（与应用中其他地方的按键相同）。
   - **Alt+G**——在画布上方，右侧显示 Layers 面板，旁边显示 ⏳ Pending（画布保持原尺寸，其他面板仍然隐藏）。选中图层，按 Ctrl+P，写下提示词，点击 ▾ Edit（或 Generate）：图片会返回到 ⏳ Pending——可从那里将其保留为图层。再按 Alt+G 隐藏它们。
-  - 离开 Artist mode 时，编辑器的面板栏会恢复原样（以前较窄的编辑器会丢失面板栏）。
-- 2.645.0：**Ctrl+P 将提示词面板调到最前**——在任何地方（包括正在输入框中输入时）：它会打开、展开，从关闭的 ▣ 面板中出来，并显示在浮动窗口或最大化的面板（Sketcher、时间线……）之上，提示词框可直接输入。（2.646.0：在 🎨 Artist mode 中也适用——其调色板改为 Alt+P。）图像编辑器的 **File ▸ Print** 改为 **Ctrl+Shift+P**。
+  - 离开 Full Screen 时，编辑器的面板栏会恢复原样（以前较窄的编辑器会丢失面板栏）。
+- 2.645.0：**Ctrl+P 将提示词面板调到最前**——在任何地方（包括正在输入框中输入时）：它会打开、展开，从关闭的 ▣ 面板中出来，并显示在浮动窗口或最大化的面板（Sketcher、时间线……）之上，提示词框可直接输入。（2.646.0：在 🎨 Full Screen 中也适用——其调色板改为 Alt+P。）图像编辑器的 **File ▸ Print** 改为 **Ctrl+Shift+P**。
 
 
 - 2.644.0：**各指南改称 Sketcher**——README、本指南、Feature Reference、测试版页面、帮助和快捷键列表不再介绍 House builder（Sketcher 已在 2.630.0 中取代它）；Sketcher 一节从它现在的功能讲起；新增一张 Sketcher 截图。
@@ -4146,7 +4146,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
 - 2.639.1：**Sketcher 修复**——停靠在较窄的列中时，新的大纲会占用 3D 视图的宽度（导致视图显示为黑色）；现在在这种情况下大纲默认关闭，🗂 使其浮动在视图上方，并且视图宽度不会小于 160 px。
 - 2.639.0：**Sketcher：🗂 Outline 面板**（大纲；房间 ▸ 墙、地板、天花板、踢脚线、顶角线、门、窗；👁 隐藏 / 显示；房间组）、踢脚线 + 顶角线、Alt+drag 自由拖动墙、Shift+click = 整个房间。
 - 2.638.0：**📐 SolidCraft 最大化 = 整个窗口**——⛶ 填满 bitGen 窗口中标题栏和状态栏之间的区域，并关闭所有其他面板；🗗（或 Esc）将布局完全恢复原样（哪些面板是打开的、哪些是折叠的，以及它们的尺寸）。
-- 2.637.0：**Shift+right-click 退出 🎨 Artist mode**——在屏幕任意位置均可，且不弹出右键菜单（在 Windows 上 Ctrl+Esc 会打开开始菜单；Ctrl+Esc 和 Ctrl+Shift+F 仍然有效）。
+- 2.637.0：**Shift+right-click 退出 🎨 Full Screen**——在屏幕任意位置均可，且不弹出右键菜单（在 Windows 上 Ctrl+Esc 会打开开始菜单；Ctrl+Esc 和 Ctrl+Shift+F 仍然有效）。
 - 2.636.0：**Ctrl+Alt+S 打开设置；bitGen Default 主题**——Ctrl+Alt+Shift+T（或 Settings ▸ Themes 中的 ⟲ bitGen Default，或在地址中加上 `?theme=default`）恢复 bitGen 自己的外观——Dark、其强调色、无元素样式、UI 尺寸 100 %；↶ The theme before 可撤销此操作。内置的 bitGen Default 不能被覆盖或删除。
 - 2.635.0：**Assets：Project | Global | All**——项目素材位于 `projects/<name>/Assets`，全局素材位于 `projects/Assets`，一个文件夹 = 一个分组；上传的文件进入 Assets；右键点击可选择 🌐 Move to Global / 📁 Move to Project。
 - 2.634.0：**彩色的安装过程**——完成为绿色，正在安装为浅绿色，警告为橙色，错误为红色；长时间无输出的步骤会提示仍在运行（以及为何耗时较长），因此安装过程不会看起来像卡住了——适用于安装窗口和安装脚本。
@@ -4314,7 +4314,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
   - 用 zip 覆盖旧文件夹进行更新时：文件夹中残留的旧副本会在 bitGen 第一次启动时自动清理（你自己的快速提示词会保留——它们会移入 misc\）。
   - push-to-github.bat：（2.591.2：回到应用文件夹中，位于 start.bat 旁边，且永远不进入仓库。）
   - bitGen 运行时创建的文件夹和文件（projects、styles、models、custom.settings、布局文件……）保持在原来的位置。
-- 2.590.0：**🎨 Artist mode**（艺术家模式）是全屏画布（2.588.0 的 ⬚ 专注模式）的新名称：在图像编辑器菜单（File … Help）之后有一个带文字的 **🎨 Artist mode** 按钮，也可使用 View ▸ Artist Mode 或 Ctrl+Shift+F。此时只显示画布；Ctrl+P 打开颜色（2.646.0：Alt+P），Ctrl+B 打开画笔，Ctrl+Esc 返回。编辑器较窄时，其菜单栏现在会换到第二行，因此不会再有按钮被截断。
+- 2.590.0：**🎨 Full Screen**（全屏模式）是全屏画布（2.588.0 的 ⬚ 专注模式）的新名称：在图像编辑器菜单（File … Help）之后有一个带文字的 **🎨 Full Screen** 按钮，也可使用 View ▸ Full Screen 或 Ctrl+Shift+F。此时只显示画布；Ctrl+P 打开颜色（2.646.0：Alt+P），Ctrl+B 打开画笔，Ctrl+Esc 返回。编辑器较窄时，其菜单栏现在会换到第二行，因此不会再有按钮被截断。
 - 2.590.0：**图像编辑器的每个标签页都是一个面板。** 按住名称拖动一个标签页（Layers、Color、✨ AI、🎮 Unreal、🖌 Brush……）：
   - **拖到另一个面板上**（拖到其标签栏或内容区，无论它在面板列中还是浮动）——它会成为该面板的一个**标签页**（该面板会以橙色高亮）；
   - **拖到面板列中某个面板的上边缘或下边缘**（或最后一个面板的下方）——它会在该处成为一个独立的面板（一条橙色线标示位置）；
@@ -4346,7 +4346,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
     🎲 换一个新种子）、**▣ on canvas**（把结果按混合比例叠加在图片上）、⏸ 暂停、↻ 立即渲染、
     **✔ Apply as layer**（作为图层应用，一个撤销步骤）、✕ 关闭实时模式。
   - 提示词取自 ✨ AI 面板的输入框；该框为空时取自主提示词框。
-- 2.588.0：**图像编辑器中的 ⬚ 专注模式**（2.590.0：改名为 🎨 Artist mode）——菜单栏中的 ⬚（或 View ▸ Focus Mode、Ctrl+Shift+F）：只显示画布，全屏且无边框——bitGen 的各种栏以及编辑器的菜单、工具、面板、标尺和停靠面板全部隐藏。绘画、[ ]、缩放、按住 Space 平移和撤销都照常可用。
+- 2.588.0：**图像编辑器中的 ⬚ 专注模式**（2.590.0：改名为 🎨 Full Screen）——菜单栏中的 ⬚（或 View ▸ Focus Mode、Ctrl+Shift+F）：只显示画布，全屏且无边框——bitGen 的各种栏以及编辑器的菜单、工具、面板、标尺和停靠面板全部隐藏。绘画、[ ]、缩放、按住 Space 平移和撤销都照常可用。
   - **Alt+P**（2.646.0 之前为 Ctrl+P）——在指针处打开调色板：饱和度 / 亮度方块和色相条（拖动调整）、前景色 / 背景色（⇄ 交换）、十六进制值、调色板的色块以及你最近用过的颜色——左键点击 =
     前景色，右键点击 = 背景色。再按一次 Alt+P、按 Esc 或在外部点击即可关闭。
   - **Alt+G**（2.646.0）——在画布上方显示 Layers 面板 + ⏳ Pending；**Ctrl+P**（2.646.0）——提示词面板。
@@ -5830,11 +5830,11 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - 你自己创建的面板（▣ New docker…、Ctrl+Alt+D）在重启后、以及应用面板布局（⊞）或工作区时，都会保留放进去的面板（Basic Settings、LLM tokens、提示词面板等）。只有你自己能把它们取出 - 拖动它的小标题栏移出，或使用 ⇲。
 - 停靠时（在某个面板旁边，或作为单独的一列），它和其他停靠的面板处在同一层 - 紧挨在 System 面板之上 - 因此浮动面板（🧩 Model manager、🖥 GPU、PODS 等）始终显示在它前面。浮动时，它和其他浮动面板一样。
 
-## The image editor's right-click menu: Copy, Paste and Artist Mode (2.809.0)
-<!-- en: the-image-editor-s-right-click-menu-copy-paste-and-artist-mode-2-809-0 69920ad031ca -->
+## The image editor's right-click menu: Copy, Paste and Full Screen (2.809.0)
+<!-- en: the-image-editor-s-right-click-menu-copy-paste-and-full-screen-2-809-0 ef426a6028e3 -->
 
-- 右键点击画布：所点对象自己的项目之后是 **Copy** 和 **Paste**（与 Edit 菜单相同 - Paste 会新建一个图层），然后是复制 / 删除图层，最后是 **🎨 Artist Mode**。
-- 在 Artist Mode 中，右键菜单有 **Show Layers + ⏳ Pending**（侧面板，显示时打勾）、**🟧 Blender Scene**（在画布上打开或关闭 Blender 场景工具）、**✨ Prompt**（把提示词停靠窗带到前面）和 **Exit Artist Mode**。
+- 右键点击画布：所点对象自己的项目之后是 **Copy** 和 **Paste**（与 Edit 菜单相同 - Paste 会新建一个图层），然后是复制 / 删除图层，最后是 **🎨 Full Screen**。
+- 在 Full Screen 中，右键菜单有 **Show Layers + ⏳ Pending**（侧面板，显示时打勾）、**🟧 Blender Scene**（在画布上打开或关闭 Blender 场景工具）、**✨ Prompt**（把提示词停靠窗带到前面）和 **Exit Full Screen**。
 
 ## The Shape tool's modes, Trim, Mirror and Offset (2.810.0)
 <!-- en: the-shape-tool-s-modes-trim-mirror-and-offset-2-810-0 e4d654571789 -->
@@ -6075,6 +6075,15 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **▦ 表格** 和 **📊 图表 ▾**（柱形、条形、折线、面积、饼图、圆环图）放进幻灯片的空内容框；在编辑器（双击也可）中填写单元格 / 类别、系列和数字——输入或 📋 从电子表格粘贴。标题行和镶边行、标题颜色；图表使用主题的两种强调色。⤓ PowerPoint 中是真正的表格和图表（⤒ 打开 PowerPoint 可读回），⤓ PDF 中会绘制。
 - **🎨 主题 ▾ ▸ 🎨 品牌主题…**：背景、标题、正文和两种强调色 + 字体，实时预览；🖼 从标志… 从图片中取出颜色；✔ 用于此演示文稿，💾 保存品牌（在每个项目的 主题 ▾ 中列出——<app>/brands/）。
 - **misc\reset-layout.bat** 现在会清除桌面应用的整个缓存文件夹（%APPDATA%\bitgen-studio-shell），先把外观设置复制到备份——这正是让黑窗口恢复的办法。
+
+## 🖼 图像编辑器——在空图层上生成、非矩形选区、WP 图层、控点指针、全屏（2.836.0）
+<!-- en: image-editor-generate-on-an-empty-layer-shaped-selections-wp-layers-handle-point ae1bb16fb043 -->
+
+- **空图层** + **✨ 生成**：有选区时按选区形状生成（提示词停靠栏的图像风格——任何模型——以及勾选“覆盖风格”时的基本设置），放进该图层的选区内；非矩形选区外不留任何内容。没有选区 = 该图层的整个画布。
+- 有图片的图层 + 非矩形选区：填充为硬边——选区外不生成任何内容。
+- 点击 **WP 图层**（其行，或用移动工具点击其框）= 再次进入文字处理。
+- 移动工具的控点在指针下显示各自的箭头，拖动时以强调色显示。
+- **Artist Mode 现在叫 🎨 全屏**（功能和按键不变）。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

@@ -2589,7 +2589,7 @@
       if (mode === "edit" && activeControls().length) say("control layers guide Generate / Refine / Remove - an Edit model takes the picture itself, so they are left out");
       if (!pend) { S.busy = true; $("kxRun").disabled = true; discardResults(true); }
       // 2.437.0: ✨ Generate Fill in Shape / in Mask (pcgenfill.js) - the result goes onto that layer (clipped / masked)
-      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto || clip ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
+      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto || clip || opt.hardEdge ? 0 : S.feather,   // 2.836.0: opt.hardEdge - nothing outside a shaped selection mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
         orig: origData, mp, soft: false,                                                          // 2.552.0
         blendInto: !S.genInto && opt.into && mode === "generate" && layer() ? layer().id : null };   // 2.444.0: ✔ Apply = into that layer
       S.genInto = null;
@@ -2601,7 +2601,7 @@
         try {
           const r = await api.aiedit(req, say);
           if (!r || !r.jobs) return;
-          ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;
+          ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip && !opt.hardEdge;
           let applied = false;                                   // 2.569.0: opt.autoApply - the first result goes in by itself
           const its = r.jobs.map((j, i) => E.pending.add({ job: j.id, seed: j.seed, mode, prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "",
                                                             info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
@@ -2619,7 +2619,7 @@
       try {
         const r = await api.aiedit(req, say);
         if (!r || !r.jobs) return;
-        ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;      // 2.552.0: the graph kept what is around - blend past the edge
+        ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip && !opt.hardEdge;      // 2.552.0: the graph kept what is around - blend past the edge
         if (r.edit_fill) say(`${mode}: ${r.style_name || "the edit model"} fills the selection - it sees the picture around it…`);
         else if (r.helpers && r.helpers.length) say(`${mode} (${kind}): ${r.style_name || "the style"} with the Krita AI way - ${r.helpers.join(" + ")}…`);   // 2.555.0
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));

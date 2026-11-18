@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "85400607b47d",
- "count": 10457,
+ "v": "d5132323b947",
+ "count": 10461,
  "patternCount": 1255,
  "strings": {
   "(Select all)": "(すべて選択)",
@@ -2400,6 +2400,7 @@
   "Exclusion": "除外",
   "Existing chain styles": "既存のチェーンスタイル",
   "Exit Artist Mode": "アーティストモードを終了",
+  "Exit Full Screen": "フルスクリーンを終了",
   "Expand": "拡張",
   "Expand by (px)": "拡張量（px）",
   "Expense (paid)": "支出(支払い)",
@@ -2872,6 +2873,9 @@
   "Full": "フル",
   "Full (20 steps)": "フル（20 ステップ）",
   "Full HD 1920 × 1080": "フル HD 1920 × 1080",
+  "Full Screen": "フルスクリーン",
+  "Full Screen (canvas only)": "フルスクリーン（キャンバスのみ）",
+  "Full Screen - only the canvas, full screen, no frame (Ctrl+Shift+F). Alt+P colours · Ctrl+B brushes · Alt+G layers + pending · Ctrl+P the prompt docker · Shift+right-click (or Ctrl+Esc) back": "フルスクリーン - キャンバスだけを全画面で、枠なしで表示（Ctrl+Shift+F）。Alt+P 色 · Ctrl+B ブラシ · Alt+G レイヤー + 保留中 · Ctrl+P プロンプトドッカー · Shift+右クリック（または Ctrl+Esc）で戻る",
   "Full Screen Mode": "フルスクリーンモード",
   "Full fine-tune": "フルファインチューン",
   "Full frame 36 x 24": "フルサイズ 36 x 24",

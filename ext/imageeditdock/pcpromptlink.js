@@ -51,7 +51,10 @@
     if (op === "generate" && s.onScreen && s.open && s.blender && !s.hasSel) return { kind: "blender", op, mode: "generate" };
     // 2.834.0 (Tim: "when in image-edit mode and a selection has been made and prompt docker is in generate mode then generate
     // the image inside of the selection"): a selection in the editor on screen = into it, the ✨ AI panel showing or not
-    if (op === "generate" && s.onScreen && s.open && s.hasSel) return { kind: "run", op, mode: "generate", whole: false, into: false };
+    // 2.836.0 (Tim: "a selection is made on an empty layer and generate is set ... generate an image in the selection"): an EMPTY
+    // layer = the prompt docker's own Generate (any image style, Basic Settings when Override is ticked) at the selection's
+    // shape, put into the layer in the selection (pcaifill.js H3ImageSize + takeGenerated)
+    if (op === "generate" && s.onScreen && s.open && s.hasSel && !s.empty) return { kind: "run", op, mode: "generate", whole: false, into: false };
     if (op === "generate") return linkedNow(s) && s.mode === "generate" ? { kind: "run", op, mode: "generate", whole: true, into: true } : null;
     if (!["edit", "refine", "fill", "background", "remove", "compose"].includes(op)) return null;
     // 2.543.0: the editor minimized / closed -> the References docker's pictures (Fill / Remove need the editor)
@@ -103,7 +106,7 @@
     const onScreen = () => (typeof root.ieOnScreen === "function" ? root.ieOnScreen() : true);
     const state = () => ({ onScreen: onScreen(), open: !!S.w, aiShown: !!($("kxAi") && $("kxAi").classList.contains("on")), mode: S.aiMode, genMode: genMode(),
                            op: E.imgOp ? E.imgOp.get() : null, blender: !!(E.imgOp && E.imgOp.blender()), hasSel: !!(E.hasSel && E.hasSel()),   // 2.541.0
-                           picks: picksNow().length, refs: refsNow().length });                                                                       // 2.543.0
+                           picks: picksNow().length, refs: refsNow().length, empty: !!(E.aiFill && E.aiFill.layerEmpty()) });   // 2.836.0: + empty                                                                       // 2.543.0
     const picksNow = () => (E.picked ? E.picked().filter((L) => L && !L.control) : []);
     const refsNow = () => { try { return root.H3Refs ? root.H3Refs.images() : []; } catch (e) { return []; } };
     // 2.541.0: linked = the panel's own ✨ button / prompt box give way to the prompt docker's (any op but a plain Generate)
@@ -253,7 +256,10 @@
       if (E.flattenCache) E.flattenCache();
       if (act.op === "generate") {                                      // 2.549.0: a new layer; 2.834.0: with the prompt docker's style
         const fs = sel && S.engines && (S.engines.inpaint || []).some((x) => x.id === sel.value) ? sel.value : "";
-        E.runAI({ prompt, editStyle, style: fs, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate" }); return true;
+        // 2.836.0 (Tim: "if selection is not a square or rectangle remove anything generated outside the selection"): a shaped
+        // selection = a hard edge (no soft blend past it)
+        const hard = !act.whole && E.aiFill ? !E.aiFill.selShape().rect : false;
+        E.runAI({ prompt, editStyle, style: fs, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate", hardEdge: hard }); return true;
       }
       E.runAI({ prompt, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
       return true;

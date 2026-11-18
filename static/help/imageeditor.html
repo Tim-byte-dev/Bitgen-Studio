@@ -2,6 +2,15 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="emptygen836">✅ Generate on an empty layer, shaped selections, WP layers, handle pointers, Full Screen (2.836.0)</h3>
+<ul>
+  <li>An <b>empty layer</b> picked + <b>✨ Generate</b>: with a selection the picture is made at the selection's shape with the prompt docker's image style (any image model; Basic Settings when Override style is ticked) and put into that layer in the selection; a selection that is not a rectangle keeps nothing outside its shape. With no selection it fills the whole canvas in that layer. One undo step.</li>
+  <li>A picture layer + a selection that is not a rectangle: the fill keeps a hard edge - nothing generated outside the selection.</li>
+  <li>A click on a <b>WP layer</b> (its row in Layers, or its frame with the Move tool) goes back to word processing - the Document Text tool, typing in it. A drag still moves it.</li>
+  <li>With the Move tool the pointer over a handle shows that handle's arrow (corners / sides; in rotate mode a turning arrow on the corners, a skew arrow on the sides); while you drag it the arrow is drawn in the accent colour.</li>
+  <li><b>Artist Mode</b> is now called <b>🎨 Full Screen</b> - the same canvas-only mode with the same keys.</li>
+</ul>
+
 <h3 id="aifill834">✅ Generate into the selection or the whole canvas; Edit: Inpaint / Fill / Outpaint (2.834.0)</h3>
 <ul>
   <li>The prompt docker on <b>✨ Generate</b> with a picture open: a <b>selection</b> = the picture is rendered into the selection with the prompt docker's style (it fits the scene round it) and comes in as a new layer. <b>No selection</b> = it is made at the canvas's shape and comes in as a new layer covering the <b>whole canvas</b>.</li>
@@ -304,8 +313,8 @@
 <ul>
   <li><b>Export As</b>: + AVIF (made by ffmpeg on this computer), GIF (256 colours, a clear colour), TIFF, BMP, TGA (with transparency).</li>
   <li><b>File Info…</b> (Alt+Shift+Ctrl+I): title, author, description, keywords, copyright, URL - kept with the document and written into exported PNG and JPEG files.</li>
-  <li><b>Zoom</b>: <kbd>Shift</kbd> + right-drag anywhere on the canvas - forward (up) zooms in, back (down) zooms out, round the point pressed (Artist mode too). <b>⊡ Zoom to Selection</b> (under 🔍 on the tool column, View ▸ Zoom to Selection, <kbd>Ctrl+Alt+0</kbd>): the selection fills the view - no selection: the picked layer's pixels. <b>Move</b> <kbd>V</kbd> wears a pointer (2.648.0).</li>
-  <li><b>🎨 Artist mode</b> (the 🎨 button, View ▸ Artist Mode, Ctrl+Shift+F): only the canvas, full screen. <kbd>Alt+P</kbd> the colour palette, <kbd>Ctrl+B</kbd> the brushes, <kbd>Alt+G</kbd> the Layers panel + ⏳ Pending, <kbd>Ctrl+P</kbd> the prompt docker - pick a layer, ▾ Edit or Generate, the result waits in ⏳ Pending. Ctrl+Esc or a Shift+right-click (no drag) goes back; a Shift+right-drag zooms.</li>
+  <li><b>Zoom</b>: <kbd>Shift</kbd> + right-drag anywhere on the canvas - forward (up) zooms in, back (down) zooms out, round the point pressed (Full Screen too). <b>⊡ Zoom to Selection</b> (under 🔍 on the tool column, View ▸ Zoom to Selection, <kbd>Ctrl+Alt+0</kbd>): the selection fills the view - no selection: the picked layer's pixels. <b>Move</b> <kbd>V</kbd> wears a pointer (2.648.0).</li>
+  <li><b>🎨 Full Screen</b> (the 🎨 button, View ▸ Full Screen, Ctrl+Shift+F): only the canvas, full screen. <kbd>Alt+P</kbd> the colour palette, <kbd>Ctrl+B</kbd> the brushes, <kbd>Alt+G</kbd> the Layers panel + ⏳ Pending, <kbd>Ctrl+P</kbd> the prompt docker - pick a layer, ▾ Edit or Generate, the result waits in ⏳ Pending. Ctrl+Esc or a Shift+right-click (no drag) goes back; a Shift+right-drag zooms.</li>
   <li><b>Print…</b> (Ctrl+Shift+P - Ctrl+P brings the prompt docker to the front): fit, a size or a percentage, the orientation, then the system's print dialog.</li>
   <li><b>Automate ▸ Contact Sheet…</b> (files or the open documents, a grid, captions) and <b>Crop and Straighten Photos</b> (each photo of a scan as its own document).</li>
 </ul>
