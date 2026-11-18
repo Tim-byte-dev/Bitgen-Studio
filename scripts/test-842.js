@@ -33,7 +33,8 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
     && /<td title="&lt;b&gt;">&lt;b&gt;<\/td>/.test(K.gridHtml(["a", "b"], [{ a: "<b>", b: null }])) && /NULL/.test(K.gridHtml(["a", "b"], [{ a: 1, b: null }])));
   // a real MariaDB, when this computer has one
   const f = D.find();
-  if (!f) console.log("SKIP: no MariaDB on this computer - the live part");
+  // (a MariaDB with its install script; a MySQL from the OS - GitHub's runner - may be fenced in by AppArmor to /var/lib/mysql)
+  if (!f || !f.installDb || !/mariadbd/.test(f.bin)) console.log("SKIP: no MariaDB (with mariadb-install-db) on this computer - the live part");
   else {
     try {
       const s1 = await D.start("global"), dbs0 = await D.databases("global");
