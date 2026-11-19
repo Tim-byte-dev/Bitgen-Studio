@@ -156,3 +156,6 @@ mail/
 # 2.842.0: bitGen's own MariaDB (lib/dbServer.js - <app>/mariadb/<version>/ downloaded, <app>/db/ the global database's data)
 /mariadb/
 /db/
+
+# 2.886.0: bitGen's own SearXNG (lib/searxngLocal.js)
+/searxng/

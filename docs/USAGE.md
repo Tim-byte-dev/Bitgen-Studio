@@ -9958,6 +9958,18 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   and words that try to steer it ("ignore previous instructions", a download piped into a shell …) are flagged. While web pages
   are in a turn no other kind of tool can act.
 
+## 🔎 SearXNG and ⬇ downloads for the LLM (2.886.0)
+
+- **Settings ▸ General ▸ 🌐 ⬇ Install SearXNG here (free, no key)** puts SearXNG on this computer (Windows too, through the
+  SimpleXNG package, about 100 MB, its own Python environment). It asks many search engines at once, so the chat's searches cover
+  the whole web instead of only Wikipedia. It listens on 127.0.0.1 only, starts by itself when the chat searches and stops with
+  bitGen. Brave (when ticked with a key) still comes first; a SearXNG address you type comes before bitGen's own.
+- **Downloads:** ask the chat (with 🌐 on) to **download / dl / save** pictures, videos or sounds - it reads the page, picks the
+  media and saves them in **<project>/web/downloads/**; they show in the **Gallery** (Images / Videos / Audio tabs) and the reply
+  lists them. Only when your own words ask for it, only pictures, videos and sounds (checked by their type and first bytes - a
+  program, script or archive is never saved), 40 MB a picture, 150 MB a sound, 500 MB a video, 20 a turn; the same address
+  filters as reading (never this computer or your network). Nothing downloaded is ever run.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

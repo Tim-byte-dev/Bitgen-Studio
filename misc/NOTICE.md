@@ -239,3 +239,11 @@ just before it runs) follows the idea Wan2GP / mmgp made popular; no Wan2GP
 code is used. The weights (MiniMaxAI/MiniMax-H3, Viggle/Viggle-Animate, or
 the user's own ComfyUI files) are NOT shipped: they carry the MiniMax H3
 Community License and are fetched by the user.
+
+## 🔎 Web search: SearXNG (2.886.0)
+
+- **[SearXNG](https://github.com/searxng/searxng)** (AGPL-3.0) through **[SimpleXNG](https://pypi.org/project/simplexng/)** (AGPL-3.0)
+  - not bundled. Settings ▸ General ▸ 🌐 ⬇ Install SearXNG here installs the `simplexng` package from PyPI into its own Python
+  environment (`<app>/searxng/`) and runs it unchanged on 127.0.0.1:8888 for bitGen's own LLM; its source is at the links above.
+- **Brave Search API** and **Wikipedia's API** are services the user chooses; bitGen sends them only the search words.
+

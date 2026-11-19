@@ -854,8 +854,8 @@ function mount(app) {
   // "project" is the project ROOT, where a timeline compile writes
   // <project>.mp4. It is listed FIRST so that the compiled movie wins a name
   // lookup over a same-named render in output/ or final/.
-  const OUT_DIRS = ["project", "output", "final"];
-  const outDir = (which) => (which === "final"
+  const OUT_DIRS = ["project", "output", "final", "web"];   // 2.886.0: + web = <project>/web/downloads (the LLM's ⬇ downloads)
+  const outDir = (which) => (which === "web" ? path.join(core.projDir(core.getProject()), "web", "downloads") : which === "final"
     ? path.join(core.projDir(core.getProject()), "final")
     : which === "project"
       ? core.projDir(core.getProject())
@@ -872,7 +872,7 @@ function mount(app) {
   // lyrics picker — keeps the exact response it has always had.
   // ?kind=audio lists generated SONGS (the gallery's Audio tab, 2.90.0).
   const OUT_RX = { video: /\.(webm|avi|webp|mp4|mkv|mov)$/i,
-                   images: /\.(png|jpe?g|bmp)$/i,
+                   images: /\.(png|jpe?g|bmp|gif|avif)$/i,
                    audio: /\.(mp3|wav|flac|ogg|opus|m4a)$/i };
   app.get("/api/outputs", (req, res) => {
     // Never 500 here: the gallery and the timeline both read this endpoint,
@@ -3472,7 +3472,7 @@ const trap = require("../lib/trap");
       return res.json({ session, reply: out.text, context: prior.length, song, arena: cand ? { n: cand.n, llm: cand.llm, secs: cand.secs } : null });
     }
     chatStore.append(dir, session, "assistant", out.text);
-    const web = webOn ? { steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [] } : undefined;
+    const web = webOn ? { files: out.files || [], steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [] } : undefined;
     res.json(song ? { session, reply: out.text, context: prior.length, song, web }
                   : { session, reply: out.text, context: prior.length, web });
   });

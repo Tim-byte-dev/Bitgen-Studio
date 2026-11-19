@@ -14586,6 +14586,13 @@ node scripts/test-885.js > /tmp/t885.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui885-ui.js > /tmp/ui885.log 2>&1 \
   && ok "2.885.0 browser test: Settings ▸ General 🌐 (Brave off by default, the key saved + never shown, ticked = Brave), the prompt docker's 🌐 toggle sends context.web, activity route, a bad SearXNG address refused" \
   || { bad "2.885.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui885.log | head -12; }
+# ---- 2.886.0 (🔎 bitGen's own SearXNG - lib/searxngLocal.js; ⬇ web_download into <project>/web/downloads, the Gallery lists it)
+node scripts/test-886.js > /tmp/t886.log 2>&1 \
+  && ok "2.886.0 units: SearXNG settings.yml (json, 127.0.0.1), simplexng + sniffio, the engine order incl. bitGen's own, hints; mediaOf / MEDIA_TYPES, download refusals, page media lists, web_download only when asked, the Gallery's web folder" \
+  || { bad "2.886.0 units"; grep -a "^FAIL" -A1 /tmp/t886.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui886-ui.js > /tmp/ui886.log 2>&1 \
+  && ok "2.886.0 browser test: ⬇ Install SearXNG here shown + 'Wikipedia only', a file in <project>/web/downloads listed by the Gallery (where web) and served" \
+  || { bad "2.886.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui886.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

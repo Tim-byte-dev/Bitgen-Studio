@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7237,
+ "count": 7238,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67486,6 +67486,16 @@
    ],
    "where": [
     "🌐 Web search for the LLM (2.885.0)"
+   ]
+  },
+  {
+   "s": "Wikipedia only (built in, no key) - install SearXNG for the whole web",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🔎 SearXNG (2.886.0)"
    ]
   }
  ]

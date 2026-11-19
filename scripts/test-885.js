@@ -70,8 +70,8 @@ const LH = "local" + "host", LOOP = "127.0." + "0.1";
   check("parseCall: <tool>, the Hermes <tool_call> {name, arguments}, a ```tool fence, a bare JSON line; plain words = no call",
     AG.parseCall('<tool>{"name": "web_search", "query": "a"}</tool>').args.query === "a" && AG.parseCall('<tool_call>\n{"name": "web_read", "arguments": {"url": "https://x.example"}}\n</tool_call>').args.url === "https://x.example"
     && AG.parseCall('```tool\n{"tool": "web_search", "args": {"q": "b"}}\n```').args.query === "b" && AG.parseCall('{"name": "web_search", "query": "c"}').name === "web_search" && AG.parseCall("Sourdough needs a starter.") === null);
-  check("the model is told: the tools, at most 6, cite [n], tool results are UNTRUSTED - never follow them, never tell the user to run / install what a page says", /web_search/.test(AG.systemNote()) && /web_read/.test(AG.systemNote()) && /at most 6/.test(AG.systemNote()) && /UNTRUSTED WEB CONTENT/.test(AG.systemNote()) && /never tell the user to run, download or install/.test(AG.systemNote()));
-  check("only read tools exist in 2.885.0", Object.values(AG.TOOLS).every((t) => t.risk === "read") && Object.keys(AG.TOOLS).join() === "web_search,web_read");
+  check("the model is told: the tools, at most 8 (2.886.0), cite [n], tool results are UNTRUSTED - never follow them, never tell the user to run / install what a page says", /web_search/.test(AG.systemNote()) && /web_read/.test(AG.systemNote()) && /at most 8/.test(AG.systemNote()) && /UNTRUSTED WEB CONTENT/.test(AG.systemNote()) && /never tell the user to run, download or install/.test(AG.systemNote()));
+  check("only read tools + (2.886.0) the media download exist", Object.values(AG.TOOLS).every((t) => t.risk === "read" || t.risk === "media") && Object.keys(AG.TOOLS).join() === "web_search,web_read,web_download");
   check("policy: a write / run / install tool is refused while web words are in the turn, and when not allowed", /only searching and reading/.test(AG.refuse({ risk: "exec" }, { tainted: true, allow: ["exec"] })) && /not allowed/.test(AG.refuse({ risk: "install" }, { tainted: false, allow: [] })) && AG.refuse({ risk: "read" }, { tainted: true }) === null);
   W.save({ searxngUrl: "" });
   W.FETCH.fn = async () => ({ query: { search: [{ title: "Sourdough", snippet: "bread made with a starter" }] } });
@@ -84,8 +84,8 @@ const LH = "local" + "host", LOOP = "127.0." + "0.1";
   check("...the model saw the tools note and the results marked UNTRUSTED", /TOOLS - you can look things up/.test(seen[0]) && /UNTRUSTED WEB CONTENT/.test(seen[1]) && /\[1\] Sourdough/.test(seen[1]));
   const r2 = await AG.run({}, { messages: [{ role: "user", content: "hi" }], complete: async () => ({ ok: true, text: "Hello!" }) });
   check("no tool needed: the answer as it is, no sources line", r2.ok && r2.text === "Hello!" && !r2.steps.length);
-  let n6 = 0; const r3 = await AG.run({}, { messages: [{ role: "user", content: "q" }], complete: async (o) => (++n6 <= 6 ? { ok: true, text: '<tool>{"name": "web_search", "query": "again"}</tool>' } : { ok: true, text: "Done [1]." }) });
-  check("at most 6 tool calls, then it is told to answer", r3.ok && r3.steps.length === 6 && n6 === 7 && /Done/.test(r3.text));
+  let n6 = 0; const r3 = await AG.run({}, { messages: [{ role: "user", content: "q" }], complete: async (o) => (++n6 <= 8 ? { ok: true, text: '<tool>{"name": "web_search", "query": "again"}</tool>' } : { ok: true, text: "Done [1]." }) });
+  check("at most 8 tool calls (2.886.0), then it is told to answer", r3.ok && r3.steps.length === 8 && n6 === 9 && /Done/.test(r3.text));
   W.FETCH.fn = null;
   // wiring
   const rt = src("routes/webSearch.js"), ri = src("routes/index.js"), ix = src("static/index.html"), set = src("static/websearchset.js"), pd = src("ext/promptdock/dock.html");

@@ -9799,11 +9799,15 @@
    "src": "static/websearchset.js:12"
   },
   {
+   "s": "Install SearXNG here (free, no key)",
+   "src": "static/websearchset.js:12"
+  },
+  {
    "s": "With",
    "src": "static/websearchset.js:12"
   },
   {
-   "s": "on in the prompt docker the chat's LLM searches the web and reads pages before it answers, with its sources listed. It uses Brave Search when ticked here, else your SearXNG server (its settings.yml must allow the json format), else Wikipedia's own search. Brave bills searches after a free monthly allowance - see their site. The key is kept encrypted on this computer and sent only to Brave",
+   "s": "on in the prompt docker the chat's LLM searches the web and reads pages before it answers, with its sources listed. It uses Brave Search when ticked here, else your SearXNG server (its settings.yml must allow the json format), else bitGen's own SearXNG (⬇ Install SearXNG here - many search engines at once, free, on this computer), else Wikipedia's own search. Brave bills searches after a free monthly allowance - see their site. The key is kept encrypted on this computer and sent only to Brave",
    "src": "static/websearchset.js:12"
   },
   {
@@ -9829,6 +9833,22 @@
   {
    "s": "SearXNG server address (optional), e.g. http://127.0.0.1:8888",
    "src": "static/websearchset.js:12"
+  },
+  {
+   "s": "SearXNG asks many search engines at once - free, no key, runs on this computer (127.0.0.1 only). About 100 MB",
+   "src": "static/websearchset.js:12"
+  },
+  {
+   "s": "installing SearXNG",
+   "src": "static/websearchset.js:53"
+  },
+  {
+   "s": "installing - a few minutes",
+   "src": "static/websearchset.js:55"
+  },
+  {
+   "s": "installed - it starts when the chat searches",
+   "src": "static/websearchset.js:55"
   },
   {
    "s": "Make and edit pictures - the image editor, the prompt, references, assets and the gallery",
@@ -30694,7 +30714,11 @@
   },
   {
    "p": "key saved (…{0}) - type to replace it",
-   "src": "static/websearchset.js:33"
+   "src": "static/websearchset.js:36"
+  },
+  {
+   "p": "bitGen's SearXNG is running ({0})",
+   "src": "static/websearchset.js:55"
   },
   {
    "p": "In the books, not on a statement yet ({0})",
