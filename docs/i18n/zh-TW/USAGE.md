@@ -6405,6 +6405,18 @@ BAS 數字是工作表：請通過 ATO 或你的稅務代理申報。PAYG 預扣
 - 抬頭來自業務資訊（✨ Create ▸ 💳——現在有 **ABN** 欄，儲存時校驗）。對於 My business 的帳簿，在 **Accounts** 中選擇用哪份業務資訊作為發票抬頭，也在那裡設定付款方式（銀行、BSB、帳號）、付款天數和報價單有效期。
 - $1,000 或以上的稅務發票必須顯示買方名稱或 ABN——兩者都沒有時對話方塊會提示；稅務發票還缺少的內容（你的 ABN、企業名稱）只在螢幕上顯示在列印頁面上方，不會印在紙上。
 
+## 🧾 用影像編輯器製作自己的發票和報價單版式 (2.879.0)
+<!-- en: your-own-invoice-and-quote-layouts-from-the-image-editor-2-879-0 f302b8c34cb5 -->
+
+📒 **Accounts** 停靠窗預設**關閉**：在 **Settings ▸ Dockers** 中用 👁 開啟之前，它和 📒 按鈕都是隱藏的。
+
+在影像編輯器中設計發票和報價單的樣子，Accounts 會把內容填進去：
+
+- **File ▸ 🧾 Insert Field…** 列出所有欄位——**你的企業**（名稱、地址、電話、郵箱、網站、ABN）、**客戶**（名稱、地址、郵箱、ABN）、**單據**（標題——Tax Invoice / Invoice / Quote——編號、日期、到期日或有效期、來源報價單、專案、付款方式、備註）和**合計**（不含 GST 小計、GST、合計、已付金額、應付餘額、“Total price includes GST”）。點選後欄位會作為 `{{balance_due}}` 這樣的文字圖層放到頁面上，並切換到移動工具：把它拖到該放的位置——比如你為應付總額畫的方框裡——並像普通文字一樣設定樣式。**▦ Line items table** 新增一個表格，每條發票明細一行（描述、數量、單價、GST、金額）。
+- 畫好其餘部分——標誌、方框、線條、顏色——然後用 **File ▸ 💾 Save as Template…** 儲存，型別選 **invoice** 或 **quote**。
+- 在 Accounts ▸ Accounts 的 **Invoice layout ▾** 或 **Quote layout ▾** 中選擇它（帳頁樣式是內建的那個）。**🎨 Design a layout in the image editor…** 開啟一個帶欄位列表的新 A4 頁面。
+- 之後發票或報價單上的 **🖨** 會在影像編輯器中開啟你的版式，並用該單據的數字填好——每個欄位都在你放的位置。列印（File ▸ 🔍 Print Preview / 🖨 Print）或用 File ▸ Export ▸ Document 匯出 PDF。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

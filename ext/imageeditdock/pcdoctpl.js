@@ -12,6 +12,8 @@
  *               the box; Fill puts it all in - one undo. Or say it in the prompt docker: "make an invoice for Acme for 3 hours
  *               of design at $90" - the template opens (the one in front, else your newest of that kind, else the built-in one)
  *               and fills. The sums are worked out here, never by the LLM. Export with File ▸ Export (PDF / Word) as usual.
+ * 2.879.0 🧾 Insert Field… (File menu): FIELD_GROUPS as text layers to drag into place, ▦ a line items table; fillValues() takes
+ *   📒 Accounts' worked-out figures (the Accounts docker's Layout ▾ = one of these templates).
  * Pure (Node + jsdom: scripts/test-841.js): fieldsOf, hasItems, money, totals, fillText, fillHtml, labelOf, addDays, builtin.
  */
 (function (root) {
@@ -52,7 +54,8 @@
     for (const tr of [...box.querySelectorAll("tr")]) {
       if (!/\{\{\s*item\./.test(tr.innerHTML)) continue;
       (items || []).forEach((it, i) => {
-        const c = tr.cloneNode(true), iv = { "item.description": it.description || "", "item.qty": qtyS(it.qty), "item.price": money(it.price, cur), "item.amount": money(t.amounts[i], cur), "item.n": String(i + 1) };
+        const c = tr.cloneNode(true), iv = { "item.description": it.description || "", "item.qty": qtyS(it.qty), "item.price": money(it.price, cur), "item.amount": money(t.amounts[i], cur), "item.n": String(i + 1),
+          "item.gst": it.gst != null ? String(it.gst) : "", "item.tax": it.tax != null ? String(it.tax) : "" };   // 2.879.0: + a line's GST and tax code (📒 Accounts)
         c.innerHTML = c.innerHTML.replace(RE, (a, k) => (iv[k] != null ? escH(iv[k]).replace(/\n/g, "<br>") : ""));
         tr.parentNode.insertBefore(c, tr);
       });
@@ -82,7 +85,25 @@
       + (k === "invoice" ? el("p", "", el("b", "", "Payment") + br + "{{payment_details}}") : "") + el("p", "", "{{notes}}");
     return { name: "_builtin-" + k, kind: k, title: T[0].charAt(0) + T[0].slice(1).toLowerCase(), html };
   }
-  const pure = { RE, HAS, COMPUTED, fieldsOf, hasItems, hasFields, money, totals, fillText, fillHtml, labelOf, addDays, builtin };
+  /* 2.879.0 (Tim: "allow user to use an invoice template created by image-editor - let user place fields where they should be,
+   * like total due is in a box on the invoice somewhere ... the same with quotes"): the fields 🧾 Insert Field… places, as
+   * [group, [[key, label, sample]]] - 📒 Accounts fills every one of them (lib/accountingPrint.js fieldsFor). */
+  const FIELD_GROUPS = [
+    ["Your business", [["from_name", "Business name", "Rosie's Bakery"], ["from_address", "Address", "12 Main St"], ["from_phone", "Phone", "0412 345 678"], ["from_email", "Email", "hello@rosies.example"],
+      ["from_website", "Website", "rosies.example"], ["from_abn", "ABN", "ABN 51 824 753 556"]]],
+    ["Customer", [["client_name", "Customer's name", "Acme Pty Ltd"], ["client_address", "Customer's address", "9 Rd, Cairns"], ["client_email", "Customer's email", "acme@example.com"], ["client_abn", "Customer's ABN", "ABN 12 345 678 901"]]],
+    ["Document", [["title", "Title (Tax Invoice / Invoice / Quote)", "Tax Invoice"], ["number", "Number", "INV-0001"], ["date", "Date", "19/11/2026"], ["due_date", "Due date / valid until", "03/12/2026"],
+      ["reference", "Reference (the quote)", "Q-0001"], ["job", "Job", "JOB-001"], ["payment_details", "How to pay", "BSB 062-000 Acc 1234 5678"], ["notes", "Notes", "Thank you"]]],
+    ["Totals", [["subtotal", "Subtotal excl. GST", "$3,000.00"], ["tax", "GST", "$300.00"], ["total", "Total incl. GST", "$3,300.00"], ["amount_paid", "Amount paid", "$0.00"],
+      ["balance_due", "Balance due (total due)", "$3,300.00"], ["gst_note", "'Total price includes GST'", "Total price includes GST"]]]];
+  /** the line items table a template repeats once per line (a WP layer's html) */
+  function itemsTableHtml() {
+    const el = (t, a, inner) => "<" + t + (a ? " " + a : "") + ">" + (inner == null ? "" : inner) + "</" + t + ">", R = 'style="text-align:right"';
+    const col = (w) => "<" + 'col style="width:' + w + '%">', H = ["Description", "Qty", "Unit price", "GST", "Amount"];
+    return el("table", 'style="width:100%;table-layout:fixed"', el("colgroup", "", col(44) + col(10) + col(16) + col(14) + col(16))
+      + el("thead", "", el("tr", "", H.map((h, i) => el("th", i ? R : "", h)).join(""))) + el("tbody", "", el("tr", "", el("td", "", "{{item.description}}") + ["qty", "price", "gst", "amount"].map((k) => el("td", R, "{{item." + k + "}}")).join(""))));
+  }
+  const pure = { RE, HAS, COMPUTED, FIELD_GROUPS, itemsTableHtml, fieldsOf, hasItems, hasFields, money, totals, fillText, fillHtml, labelOf, addDays, builtin };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   /* ================================ the page ================================ */
@@ -232,7 +253,37 @@
       return `🧾 ${tpl.kind.charAt(0).toUpperCase() + tpl.kind.slice(1)} ${res.number} is in the image editor - ${res.items} item(s), total ${res.total}. File ▸ 🧾 Fill This Template… on a fresh copy to change it, File ▸ Export for PDF / Word.`;
     }
     root.H3ChatRoutes = [maybe].concat(root.H3ChatRoutes || []);
-    E.docTpl = { fill, fillDialog, newDialog, saveDialog, fromTemplate, askAi, tplNow, isTemplateDoc, textsNow, aiMake };
+    /* ---- 2.879.0: 🧾 Insert Field… - a field as a text layer you drag into place (or the line items as a table) */
+    function addField(key, label) {
+      if (!S.w) { E.pages.newDocument({ preset: "A4", wmm: 210, hmm: 297, orient: "portrait", dpi: 150 }, 1, "Invoice layout"); }
+      if (key === "_items") {
+        const m = Math.round(S.w * 0.08), L = E.docText.addFrame(m, Math.round(S.h * 0.42), S.w - 2 * m, Math.round(S.h * 0.25), { k: 150 / 96, html: E.docText.sanitize(itemsTableHtml()) }, false);
+        L.name = "🧾 Line items"; E.docText.end && E.docText.end(); E.docText.reflow(L.doc.flow.id); E.setActive(S.layers.indexOf(L)); E.refresh(); E.renderLayersPanel();
+        say("🧾 the line items table - one row per invoice line; move / size it like any WP layer"); return L;
+      }
+      const size = Math.round(S.w * 0.022), str = "{{" + key + "}}", w = Math.round(S.w * 0.32), h = Math.round(size * 1.6);
+      const n = S.layers.filter((x) => x.fieldKey).length, x = Math.round((S.w - w) / 2), y = Math.round(S.h * 0.3 + (n % 12) * size * 1.9);
+      const L = E.makeLayer("🧾 " + label, S.w, S.h, "text");
+      L.text = Object.assign({}, E.D.TEXT_DEFAULT, { str, font: "Arial", size, weight: /total|balance/.test(key) ? 700 : 400, color: "#1f2933", align: /total|tax|amount|balance/.test(key) ? "right" : "left", leading: 1.25, x, y, box: { w, h } });
+      L.fieldKey = key; E.D.rasterize(L); E.addLayer(L, "🧾 field", false);
+      E.setActive(S.layers.indexOf(L)); if (E.setTool) { try { E.setTool("move"); } catch (e) { /* fine */ } }
+      E.refresh(); E.renderLayersPanel();
+      say(`🧾 ${str} placed - drag it where it goes (into its box), size and style it like any text; File ▸ 💾 Save as Template… keeps the layout`);
+      return L;
+    }
+    function fieldDialog() {
+      const groups = FIELD_GROUPS.map(([g, list]) => `<div class="pctf-g"><b>${escH(g)}</b><div>${list.map(([k, l]) => `<button type="button" class="ghost" data-fk="${k}" data-fl="${escH(l)}" title="{{${k}}} - e.g. ${escH(FIELD_GROUPS.flatMap((x) => x[1]).find((x) => x[0] === k)[2])}">${escH(l)}</button>`).join("")}</div></div>`).join("")
+        + `<div class="pctf-g"><b>${escH("Line items")}</b><div><button type="button" class="ghost" data-fk="_items" data-fl="Line items">▦ ${escH("Line items table")}</button></div></div>`;
+      E.ui.dialog("🧾 Insert Field", `<div class="pctf">${groups}<div style="color:var(--pc-dim);margin-top:6px">${escH("Click a field: it lands on the page as {{field}} - drag it into its place. 📒 Accounts fills them from an invoice or quote; save the layout with File ▸ 💾 Save as Template… (kind invoice or quote).")}</div></div>`, () => true,
+        { okLabel: "Done", init: (dd) => { dd.addEventListener("click", (e) => { const b = e.target.closest("[data-fk]"); if (b) addField(b.dataset.fk, b.dataset.fl); }); } });
+    }
+    E.ui.addCmd("file.tplfield", "🧾 Insert Field…", "", () => fieldDialog(), {}, ["File", "file.tplsave"]);
+    const css2 = doc.createElement("style");
+    css2.textContent = ".pctf{display:flex;flex-direction:column;gap:6px;min-width:min(560px,86vw)}.pctf-g>div{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}.pctf-g b{font-size:11px;color:var(--pc-dim)}";
+    doc.head.appendChild(css2);
+    /** 2.879.0: 📒 Accounts' figures straight in (already worked out - no numbering, no sums here) */
+    function fillValues(values, items) { apply(values || {}, items || [], "$"); return true; }
+    E.docTpl = { fill, fillDialog, newDialog, saveDialog, fromTemplate, askAi, tplNow, isTemplateDoc, textsNow, aiMake, fieldDialog, addField, fillValues, FIELD_GROUPS };
   }
   const PCDocTpl = Object.assign({ install }, pure);
   root.PCDocTpl = PCDocTpl;

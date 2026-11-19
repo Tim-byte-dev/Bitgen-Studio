@@ -9846,6 +9846,27 @@ Quotes and invoices are numbered by themselves (Q-0001, INV-0001; the starts are
 - A tax invoice of $1,000 or more must show the buyer's name or ABN - the dialog says so when both are missing; anything a
   tax invoice still lacks (your ABN, your business name) shows above the printed page on screen, never on paper.
 
+## 🧾 Your own invoice and quote layouts from the image editor (2.879.0)
+
+The 📒 **Accounts** docker starts **off**: it and its 📒 button are hidden until you turn it on with 👁 in **Settings ▸
+Dockers**.
+
+Design how your invoices and quotes look in the image editor and Accounts fills them in:
+
+- **File ▸ 🧾 Insert Field…** lists the fields - **Your business** (name, address, phone, email, website, ABN),
+  **Customer** (name, address, email, ABN), **Document** (the title - Tax Invoice / Invoice / Quote - number, date, due
+  date or valid until, the quote it came from, job, how to pay, notes) and **Totals** (subtotal excl. GST, GST, total,
+  amount paid, balance due, "Total price includes GST"). A click puts the field on the page as a text layer such as
+  `{{balance_due}}` with the Move tool in hand: drag it into its place - into the box you drew for the total due - and
+  style it like any text. **▦ Line items table** adds a table that becomes one row per invoice line (description, quantity,
+  unit price, GST, amount).
+- Draw the rest - your logo, boxes, lines, colours - then **File ▸ 💾 Save as Template…** with the kind **invoice** or
+  **quote**.
+- In Accounts ▸ Accounts pick it under **Invoice layout ▾** or **Quote layout ▾** (the ledger page is the built-in one).
+  **🎨 Design a layout in the image editor…** opens a new A4 page with the field list ready.
+- **🖨** on an invoice or quote then opens your layout in the image editor, filled with that document's figures - each
+  field where you put it. Print it (File ▸ 🔍 Print Preview / 🖨 Print) or File ▸ Export ▸ Document for a PDF.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

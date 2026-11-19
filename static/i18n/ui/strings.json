@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7159,
+ "count": 7169,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66706,6 +66706,106 @@
    ],
    "where": [
     "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "🎨 Design a layout in the image editor…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "The ledger page (built in)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "Insert Field",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "🧾 Insert Field…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "Your business",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "Line items",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "Line items table",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "Click a field: it lands on the page as {{field}} - drag it into its place. 📒 Accounts fills them from an invoice or quote; save the layout with File ▸ 💾 Save as Template… (kind invoice or quote).",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "ABN",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "'Total price includes GST'",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
    ]
   }
  ]

@@ -52,6 +52,13 @@ function mount(app) {
       res.type("html").send(html);
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
+  // 2.879.0: an invoice / quote as the image editor template's fields (📒 Layout ▾ = a template -> 🖨 fills it in the editor)
+  app.get("/api/accounts/fields/:id", wrap((req) => {
+    const B = A().load(biz(req)), d = A().view(B).docs.find((x) => x.id === req.params.id);
+    if (!d || (d.kind !== "invoice" && d.kind !== "quote")) throw Object.assign(new Error("no such invoice or quote"), { status: 404 });
+    const business = printBusiness(biz(req), B);
+    return Object.assign(require("../lib/accountingPrint").fieldsFor(d, B, business), { kind: d.kind, number: d.number, layout: d.kind === "quote" ? B.settings.quoteLayout || "" : B.settings.invoiceLayout || "", issues: A().invoiceIssues(B, d, business) });
+  }));
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));
   app.post("/api/accounts/journal", small, wrap((req) => A().saveJournal(biz(req), (req.body || {}).entry)));

@@ -14534,6 +14534,13 @@ node scripts/test-878.js > /tmp/t878.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui878-ui.js > /tmp/ui878.log 2>&1 \
   && ok "2.878.0 browser test: business details with an ABN, ＋ 📝 Quote (customer, qty x unit, GST as typed), a wrong ABN refused, the \$1,000 warning, accepted -> ➜📤 INV-0001, 🖨 the tax invoice page + an A4 PDF" \
   || { bad "2.878.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui878.log | head -12; }
+# ---- 2.879.0 (📒 Accounts off by default; 🧾 Insert Field + invoice / quote layouts from the image editor)
+node scripts/test-879.js > /tmp/t879.log 2>&1 \
+  && ok "2.879.0 units: Accounts seeded off (h3.dockoff), FIELD_GROUPS + the line items table (item.gst), fieldsFor fills every field, the layouts in the books, GET /api/accounts/fields, 🖨 via the template" \
+  || { bad "2.879.0 units"; grep -a "^FAIL" -A1 /tmp/t879.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui879-ui.js > /tmp/ui879.log 2>&1 \
+  && ok "2.879.0 browser test: Accounts off + listed in Settings ▸ Dockers + 👁 on, 🧾 Insert Field (text layers + table), saved as an invoice template, Invoice layout ▾, 🖨 fills it in the image editor - the balance due where it was put, a row per line" \
+  || { bad "2.879.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui879.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

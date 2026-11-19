@@ -63,7 +63,35 @@
   const acc = (code) => (S.books.accounts.find((a) => a.code === code) || { name: "?" });
   const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part", draft: "due", sent: "part", accepted: "ok", declined: "overdue", invoiced: "paid", expired: "overdue" };
   const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤", quote: "📝" };
-  const printDoc = (id, auto) => root.open("/api/accounts/print/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz, auto: auto ? 1 : "" }), "_blank");
+  /* 2.879.0: 🖨 - the ledger page, or (Layout ▾ = an image editor template) that template opened in the image editor, filled */
+  const ledgerPage = (id, auto) => root.open("/api/accounts/print/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz, auto: auto ? 1 : "" }), "_blank");
+  async function editor() {
+    const d = $("imageeditdock");
+    if (d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("imageeditdock", "tIE");
+    for (let i = 0; i < 100; i++) { const E = root.imageEditorInstance && root.imageEditorInstance.E; if (E && E.docTpl && E.docTpl.fillValues) return E; await new Promise((r) => setTimeout(r, 150)); }
+    throw new Error("the image editor did not open");
+  }
+  async function printDoc(id, auto) {
+    const f = await api("/api/accounts/fields/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz }));
+    if (!f.layout) return ledgerPage(id, auto);
+    const E = await editor();
+    const tpls = (await (await root.fetch("/api/doctemplates")).json()).templates || [], t = tpls.find((x) => x.name === f.layout);
+    if (!t) { msg(`✗ the layout "${f.layout}" is not among the image editor's templates any more - the ledger page instead`, true); return ledgerPage(id, auto); }
+    await E.docTpl.fromTemplate(t);
+    E.docTpl.fillValues(f.values, f.items);
+    msg(`🖨 ${f.number} filled into your "${t.name}" layout in the image editor - File ▸ 🔍 Print Preview / 🖨 Print, or File ▸ Export ▸ Document for a PDF${f.issues.length ? " · ⚠ " + f.issues.join("; ") : ""}`, !!f.issues.length);
+    return true;
+  }
+  /** 🎨 a new A4 page in the image editor with the 🧾 Insert Field list open */
+  async function designLayout() {
+    const E = await editor();
+    E.pages.newDocument({ preset: "A4", wmm: 210, hmm: 297, orient: "portrait", dpi: 150 }, 1, "My invoice layout");
+    E.docTpl.fieldDialog();
+    msg("🎨 draw your invoice in the image editor - 🧾 Insert Field puts each field on the page; then File ▸ 💾 Save as Template… (kind invoice or quote) and pick it under Layout ▾");
+  }
+  /** Layout ▾: the ledger page + the image editor templates of that kind (then the others) */
+  const layoutOpts = (kind, sel) => `<option value="">📒 ${esc("The ledger page (built in)")}</option>` + (S.tpls || []).filter((t) => !/^_builtin-/.test(t.name)).sort((a, b) => (a.kind === kind ? 0 : 1) - (b.kind === kind ? 0 : 1))
+    .map((t) => `<option value="${esc(t.name)}"${t.name === sel ? " selected" : ""}>🧾 ${esc(t.name)} (${esc(t.kind)})</option>`).join("");
   const yes = (t, title) => (typeof root.appConfirm === "function" ? root.appConfirm(t, title) : Promise.resolve(root.confirm(t)));
 
   async function loadBooks() { S.books = await api("/api/accounts?" + qs({ biz: S.biz })); paintBiz(); return S.books; }
@@ -176,6 +204,7 @@
         + `<tr class="tot gtot"><td colspan="4">Totals</td>${["income", "costs", "profit", "owed", "toPay"].map((k) => `<td class="n">${N(r.jobs.reduce((s, j) => s + j[k], 0))}</td>`).join("")}<td></td></tr></table>`;
     },
     async accounts() {
+      try { S.tpls = (await (await root.fetch("/api/doctemplates")).json()).templates || []; } catch (e) { S.tpls = []; }
       const B = S.books, T = { asset: "Asset", liability: "Liability", equity: "Equity", income: "Income", cos: "Cost of sales", expense: "Expense" };
       return head("Chart of Accounts", "Click an account for its ledger")
         + `<div class="acrow"><input id="acAccCode" placeholder="6270" style="width:60px"><input id="acAccName" placeholder="Account name"><select id="acAccType">${Object.entries(T).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select>`
@@ -183,6 +212,8 @@
         + `<div class="acrow"><span>GST registered</span><input type="checkbox" id="acGstReg"${B.settings.gstRegistered ? " checked" : ""}><span>Invoice numbers start</span><input id="acInvPre" value="${esc(B.settings.invoicePrefix)}" style="width:60px">`
         + `<span>Quote numbers start</span><input id="acQPre" value="${esc(B.settings.quotePrefix || "Q-")}" style="width:50px"><span>Invoices due after</span><input id="acTerms" type="number" min="0" max="365" value="${B.settings.terms != null ? B.settings.terms : 14}" style="width:56px"><span>days · quotes valid for</span><input id="acQDays" type="number" min="1" max="365" value="${B.settings.quoteDays || 30}" style="width:56px"><span>days</span></div>`
         + `<div class="acrow" style="align-items:flex-start"><span>How to pay (on invoices)</span><textarea id="acPayTo" rows="2" style="width:320px" placeholder="Bank: Commonwealth Bank&#10;BSB 062-000  Account 1234 5678">${esc(B.settings.payTo || "")}</textarea>`
+        + `<div class="acrow"><span>Invoice layout</span><select id="acInvLay">${layoutOpts("invoice", B.settings.invoiceLayout)}</select><span>Quote layout</span><select id="acQLay">${layoutOpts("quote", B.settings.quoteLayout)}</select>`
+        + `<button type="button" class="ghost" id="acDesign" title="A new A4 page in the image editor with the fields to place">🎨 Design a layout in the image editor…</button></div>`
         + (S.biz === "main" ? `<span>Invoices headed with</span><select id="acProfile"><option value="">— the business details used last —</option>${(B.businesses || []).map((b) => `<option value="${esc(b.id)}"${b.id === B.settings.profile ? " selected" : ""}>${esc(b.name)}</option>`).join("")}</select>` : `<span class="acnote">Invoices are headed with this business's details (name, logo, address, ABN).</span>`) + `</div>`
         + `<table class="actab"><tr><th>Code</th><th>Account</th><th>Type</th><th>Tax code</th><th></th></tr>`
         + B.accounts.map((a) => `<tr class="click" data-ledger="${a.code}"><td>${a.code}</td><td>${esc(a.name)}${a.bank ? " 🏦" : ""}</td><td>${T[a.type]}</td><td>${esc(a.tax)}</td><td class="act">${a.system ? "<i style='color:#6b7c62'>system</i>" : `<button type="button" data-delacc="${a.code}" title="Delete (only without entries)">🗑</button>`}</td></tr>`).join("") + `</table>`;
@@ -287,6 +318,18 @@
   function wire() {
     const d = $("acctdock"); if (!d) return;
     try { if (root.localStorage.getItem("h3.g.acctdock") == null) { root.localStorage.setItem("h3.g.acctdock", "1"); d.classList.add("dockgone"); } } catch (e) { /* fine */ }
+    // 2.879.0 (Tim: "hide the accounting docker and button. let user enable it in settings-dockers"): OFF the first time - the
+    // docker and its 📒 button are gone until 👁 in Settings ▸ Dockers turns it on (static/layouts.js h3.dockoff); once only
+    try {
+      if (root.localStorage.getItem("h3.acct.offSeed") == null) {
+        root.localStorage.setItem("h3.acct.offSeed", "1");
+        let l = []; try { l = JSON.parse(root.localStorage.getItem("h3.dockoff") || "[]"); } catch (e) { l = []; }
+        if (!Array.isArray(l)) l = [];
+        if (!l.includes("acctdock")) { l.push("acctdock"); root.localStorage.setItem("h3.dockoff", JSON.stringify(l)); }
+        const off = () => { if (root.H3Layouts && root.H3Layouts.isOff({ kind: "dock", id: "acctdock" })) root.H3Layouts.set({ kind: "dock", id: "acctdock" }, true); };
+        setTimeout(off, 1600); setTimeout(off, 4000);
+      }
+    } catch (e) { /* fine */ }
     const on = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
     $("acPer").value = S.per;
     const custom = () => { const c = S.per === "custom"; $("acFrom").style.display = $("acTo").style.display = c ? "" : "none"; };
@@ -314,7 +357,7 @@
       if (t.id === "acBasisKeep" && t.checked) api("/api/accounts/settings", { settings: { basis: $("acBasis").value } }).then(() => { S.basis = ""; msg("✔ the books' GST basis: " + $("acBasis").value); return refresh(); });
       if (t.id === "acGstReg") api("/api/accounts/settings", { settings: { gstRegistered: t.checked } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
       if (t.id === "acInvPre") api("/api/accounts/settings", { settings: { invoicePrefix: t.value } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
-      const SET = { acQPre: "quotePrefix", acTerms: "terms", acQDays: "quoteDays", acPayTo: "payTo", acProfile: "profile" };
+      const SET = { acInvLay: "invoiceLayout", acQLay: "quoteLayout", acQPre: "quotePrefix", acTerms: "terms", acQDays: "quoteDays", acPayTo: "payTo", acProfile: "profile" };
       if (SET[t.id]) api("/api/accounts/settings", { settings: { [SET[t.id]]: t.value } }).then(() => { msg("✔ kept"); return loadBooks(); }).catch((er) => msg("✗ " + er.message, true));
     });
     on("acPaper", "click", async (e) => {
@@ -324,6 +367,7 @@
         if ((x = one("[data-filter]"))) { S.filter = x.dataset.filter; return show(); }
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
         if ((x = one("[data-print]"))) { e.stopPropagation(); return printDoc(x.dataset.print, false); }
+        if (t.id === "acDesign") return designLayout();
         if ((x = one("[data-q2i]"))) { e.stopPropagation(); const q = B.docs.find((y) => y.id === x.dataset.q2i); if (await yes(`Make quote ${q.number} (${q.party}, $${dollars(q.total)}) an invoice dated today?`, "Make invoice")) { const inv = await api("/api/accounts/quote/" + q.id + "/invoice", { date: todayStr() }); await refresh(); msg(`✔ quote ${q.number} is invoice ${inv.number} - 🖨 to print it`); } return; }
         if ((x = one("[data-pay]"))) { e.stopPropagation(); return payForm(B.docs.find((d) => d.id === x.dataset.pay)); }
         if ((x = one("[data-del]"))) { e.stopPropagation(); const d = B.docs.find((y) => y.id === x.dataset.del); if (await yes(`Delete ${d.number || "the document"} ${d.party} ($${dollars(d.total)}) and its payments?`, "Delete")) { await api("/api/accounts/doc/" + d.id + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
@@ -343,5 +387,5 @@
     setTimeout(look, 500);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, state: () => S }, pure);
+  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, state: () => S }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

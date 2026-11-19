@@ -33,7 +33,9 @@ const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX
     const strip = await ev(() => { const b = document.getElementById("tX_acctdock"); return { btn: !!b, inStrip: !!(b && b.closest("#appGrp1")), icon: b && b.textContent }; });
     check("📒 Accounts on the top bar's app strip (icon only)", strip.btn && strip.inStrip && strip.icon === "📒", strip);
     await ev(() => { document.querySelectorAll(".h3fp.dfm-float, #promptdock").forEach((d) => { d.style.display = "none"; }); });
-    await p.click("#tX_acctdock"); await p.waitForTimeout(500);
+    // 2.879.0: Accounts starts OFF (Settings ▸ Dockers 👁) - turned on here
+    await p.waitForTimeout(3400); await ev(() => { if (H3Layouts.isOff({ kind: "dock", id: "acctdock" })) H3Layouts.set({ kind: "dock", id: "acctdock" }, false); }); await p.waitForTimeout(300);
+    await ev(() => { const d = document.getElementById("acctdock"); if (d.classList.contains("dockgone")) document.getElementById("tX_acctdock").click(); }); await p.waitForTimeout(500);
     await ev((biz) => { const d = document.getElementById("acctdock"); d.style.cssText += ";position:fixed;left:10px;top:40px;width:1700px;height:1000px;z-index:9999"; H3Accounts.state().biz = biz; H3Accounts.state().per = "all"; document.getElementById("acPer").value = "all"; return H3Accounts.refresh(); }, BIZ);
     await p.waitForTimeout(600);
     const look = await ev(() => { const P = document.getElementById("acPaper"), cs = getComputedStyle(P); return { bg: cs.backgroundColor, img: cs.backgroundImage.includes("repeating-linear-gradient"), tabs: [...document.querySelectorAll("#acTabs button")].map((b) => b.textContent) }; });

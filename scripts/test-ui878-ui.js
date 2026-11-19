@@ -31,7 +31,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3Accounts && document.getElementById("acctdock"), null, { timeout: 60000 });
     await p.waitForTimeout(1200);
     await ev(() => { document.querySelectorAll(".h3fp.dfm-float, #promptdock").forEach((d) => { d.style.display = "none"; }); });
-    await p.click("#tX_acctdock"); await p.waitForTimeout(400);
+    // 2.879.0: Accounts starts OFF (Settings ▸ Dockers 👁) - turned on here
+    await p.waitForTimeout(3400); await ev(() => { if (H3Layouts.isOff({ kind: "dock", id: "acctdock" })) H3Layouts.set({ kind: "dock", id: "acctdock" }, false); }); await p.waitForTimeout(300);
+    await ev(() => { const d = document.getElementById("acctdock"); if (d.classList.contains("dockgone")) document.getElementById("tX_acctdock").click(); }); await p.waitForTimeout(400);
     await ev((id) => { const d = document.getElementById("acctdock"); d.style.cssText += ";position:fixed;left:10px;top:40px;width:1700px;height:1000px;z-index:9999"; const S = H3Accounts.state(); S.biz = id; S.per = "all"; document.getElementById("acPer").value = "all"; return H3Accounts.refresh(); }, profId);
     await p.waitForTimeout(400);
     const biz = await ev(() => document.getElementById("acBiz").selectedOptions[0].textContent);
