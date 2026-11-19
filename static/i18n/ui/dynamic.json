@@ -26251,6 +26251,110 @@
    "src": "ext/webdock/wbcode.js:170"
   },
   {
+   "s": "Book a table",
+   "src": "ext/webdock/wbwys.js:55"
+  },
+  {
+   "s": "Your name",
+   "src": "ext/webdock/wbwys.js:55"
+  },
+  {
+   "s": "How many people",
+   "src": "ext/webdock/wbwys.js:55"
+  },
+  {
+   "s": "Anything we should know",
+   "src": "ext/webdock/wbwys.js:55"
+  },
+  {
+   "s": "Send the booking request",
+   "src": "ext/webdock/wbwys.js:55"
+  },
+  {
+   "s": "A big, clear headline",
+   "src": "ext/webdock/wbwys.js:69"
+  },
+  {
+   "s": "One line that says what you do",
+   "src": "ext/webdock/wbwys.js:69"
+  },
+  {
+   "s": "Get in touch",
+   "src": "ext/webdock/wbwys.js:69"
+  },
+  {
+   "s": "My site",
+   "src": "ext/webdock/wbwys.js:72"
+  },
+  {
+   "s": "Shop",
+   "src": "ext/webdock/wbwys.js:72"
+  },
+  {
+   "s": "News",
+   "src": "ext/webdock/wbwys.js:72"
+  },
+  {
+   "s": "Contact",
+   "src": "ext/webdock/wbwys.js:72"
+  },
+  {
+   "s": "Menu",
+   "src": "ext/webdock/wbwys.js:72"
+  },
+  {
+   "s": "Gallery",
+   "src": "ext/webdock/wbwys.js:82"
+  },
+  {
+   "s": "Calendar - visitors book a free time",
+   "src": "ext/webdock/wbwys.js:83"
+  },
+  {
+   "s": "Booking sheet - a request form that lands in ✉ Messages",
+   "src": "ext/webdock/wbwys.js:84"
+  },
+  {
+   "s": "Product pictures - the shop's products as pictures",
+   "src": "ext/webdock/wbwys.js:85"
+  },
+  {
+   "s": "Category - one category of the shop",
+   "src": "ext/webdock/wbwys.js:86"
+  },
+  {
+   "s": "Hero banner",
+   "src": "ext/webdock/wbwys.js:87"
+  },
+  {
+   "s": "Header with the menu (at the top)",
+   "src": "ext/webdock/wbwys.js:88"
+  },
+  {
+   "s": "Footer (at the end)",
+   "src": "ext/webdock/wbwys.js:89"
+  },
+  {
+   "s": "No categories yet - give products a category in 🗂 CRM ▸ 🛍 Products",
+   "src": "ext/webdock/wbwys.js:128"
+  },
+  {
+   "s": "Make the open page fit phones and tablets (the viewport + a phone / tablet style - pressed again it is written anew)",
+   "src": "ext/webdock/wbwys.js:177"
+  },
+  {
+   "s": "Phone + tablet",
+   "src": "ext/webdock/wbwys.js:177"
+  },
+  {
+   "s": "Fold the top bar to a thin strip until the pointer is on it",
+   "src": "ext/webdock/wbwys.js:179"
+  },
+  {
+   "s": "Auto-hide",
+   "src": "ext/webdock/wbwys.js:179"
+  },
+  {
    "s": "Title (the browser tab + search results)",
    "src": "ext/webdock/webdock.js:59"
   },

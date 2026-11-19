@@ -31,6 +31,17 @@
           #wbAskRow { display: none; gap: 3px; }
           #wbAskRow.on { display: flex; }
           #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          /* 2.866.0 the WYSIWYG's ◧ block toolbar, the widths, ⇡ auto-hide (wbwys.js) */
+          #wbWysRow { flex: 1; display: flex; gap: 4px; min-height: 0; justify-content: flex-start; }
+          #wbWysRow > iframe { flex: 1; min-width: 0; transition: width .2s; }
+          #wbBlocks { display: flex; flex-direction: column; gap: 3px; width: 34px; flex: none; }
+          #wbBlocks button { font-size: 16px; padding: 4px 0; min-width: 0; }
+          #wbBlkFly { position: absolute; z-index: 50; display: flex; flex-direction: column; gap: 2px; padding: 4px; background: var(--panel, #222); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.35); min-width: 170px; }
+          #wbBlkFly button { text-align: left; }
+          #webdock { position: relative; }
+          #wbAutoHideL { font-size: 11px; display: flex; align-items: center; gap: 3px; color: var(--dim); white-space: nowrap; }
+          #webdock #wbTopBar { transition: max-height .18s, opacity .18s; max-height: 200px; }
+          #webdock.wbautohide #wbTopBar:not(:hover):not(:focus-within) { max-height: 7px; overflow: hidden; opacity: .35; padding-top: 0; padding-bottom: 0; }
           /* 2.865.0 ✨ the AI prompt docker (wbai.js) at the foot of the Web editor */
           #wbAi { border-top: 1px solid var(--line); padding-top: 4px; display: flex; flex-direction: column; gap: 3px; flex: none; }
           #wbAi.shut { display: none; }

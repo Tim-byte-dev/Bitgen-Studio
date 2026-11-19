@@ -20,7 +20,10 @@
     var url = f.getAttribute("action") || "contact.php";
     f.addEventListener("submit", function (e) {
       e.preventDefault();
-      var b = f.querySelector('[type="submit"]'), data = {}; [].forEach.call(f.elements, function (x) { if (x.name) data[x.name] = x.value; });
+      var b = f.querySelector('[type="submit"]'), data = {}, more = []; [].forEach.call(f.elements, function (x) { if (x.name) data[x.name] = x.value; });
+      // 2.866.0 a booking sheet (or any form) with fields of its own: they go into the message as "Label: value" lines
+      Object.keys(data).forEach(function (k) { if (["name", "email", "subject", "message", "website"].indexOf(k) < 0) { var l = f.querySelector('[name="' + k + '"]'), lab = l && l.closest("label"); if (data[k]) more.push((lab ? lab.firstChild.textContent.trim() : k) + ": " + data[k]); delete data[k]; } });
+      if (more.length) data.message = more.join("\n") + (data.message ? "\n\n" + data.message : "");
       if (b) b.disabled = true; msg.className = "bg-contact-msg"; msg.textContent = "Sending…";
       fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
         .then(function (r) { return r.json().catch(function () { return { ok: false, message: "The message could not be sent." }; }); })

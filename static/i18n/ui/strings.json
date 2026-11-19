@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6840,
+ "count": 6865,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -63446,6 +63446,256 @@
    ],
    "where": [
     "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Book a table",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "How many people",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Anything we should know",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Send the booking request",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "A big, clear headline",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "One line that says what you do",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Get in touch",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "My site",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "News",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Contact",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Calendar - visitors book a free time",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Booking sheet - a request form that lands in ✉ Messages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Product pictures - the shop's products as pictures",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Category - one category of the shop",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Hero banner",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Header with the menu (at the top)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Footer (at the end)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "No categories yet - give products a category in 🗂 CRM ▸ 🛍 Products",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Make the open page fit phones and tablets (the viewport + a phone / tablet style - pressed again it is written anew)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Phone + tablet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Fold the top bar to a thin strip until the pointer is on it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Auto-hide",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "open a page first - the blocks go into the open page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "open a page first - 📱 makes the open page fit phones and tablets",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "the page already has the phone + tablet layout",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
    ]
   }
  ]

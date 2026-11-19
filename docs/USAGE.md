@@ -9669,6 +9669,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🎙** speaks instead of typing: press it, say what you want, press ⏹ - this computer's speech to text writes it into the box (asked to be downloaded the first time).
 - The change comes in as **one** change: "+3 −1 line(s)", the page marked changed; **↶ Undo** puts it back. Nothing is saved until 💾 Save. ⌚ lists your last asks to use again.
 
+## ◧ WYSIWYG blocks, 📱 phone + tablet layout, ⇡ auto-hide (2.866.0)
+
+- The **✎ WYSIWYG** tab has an icon toolbar on the left: **🖼 Gallery** ▸ picture / video / audio / 3D, **📅 Calendar** (visitors book a free time), **📋 Booking sheet** (a request form - day, time, how many people - that lands in ✉ Messages), **🛍 Product pictures**, **🗂 Category** ▸ your shop's categories, **🦸 Hero banner**, **⎺ Header** (always at the top) and **⎽ Footer** (always at the end). Each goes in at the cursor, copies its files into www and adds its style sheet and script once. Blocks the site fills itself show as dashed boxes with their name while you edit.
+- **📱 Phone + tablet** on the top bar makes the open page fit small screens: the viewport line and a phone / tablet style (two columns on tablets, one on phones, pictures and tables fit, fixed widths and positions let go). Pressed again it is written anew. **🖥 ▭ 📱** on the WYSIWYG bar show the page at those widths.
+- **⇡ Auto-hide** on the top bar folds it to a thin strip until the pointer is on it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

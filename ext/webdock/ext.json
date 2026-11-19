@@ -6,6 +6,7 @@
   "scripts": [
     "webdock.js",
     "wbcode.js",
-    "wbai.js"
+    "wbai.js",
+    "wbwys.js"
   ]
 }

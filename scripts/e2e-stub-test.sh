@@ -14525,6 +14525,13 @@ node scripts/test-865.js > /tmp/t865.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui865-ui.js > /tmp/ui865.log 2>&1 \
   && ok "2.865.0 browser test: ✨ panel, Enter changes the page (one change, ↶ Undo), a selection only, 🎙 fake mic -> /api/voice/hear -> typed" \
   || { bad "2.865.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui865.log | head -12; }
+# ---- 2.866.0 (◧ WYSIWYG blocks, 📱 phone + tablet, ⇡ auto-hide)
+node scripts/test-866.js > /tmp/t866.log 2>&1 \
+  && ok "2.866.0 units: the blocks on real skills, responsive() once, place top / end, data-category + pictures, the booking sheet's fields" \
+  || { bad "2.866.0 units"; grep -a "^FAIL" -A1 /tmp/t866.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui866-ui.js > /tmp/ui866.log 2>&1 \
+  && ok "2.866.0 browser test: ◧ icons, header top / footer end, gallery ▸ at the cursor, category ▸ from the CRM, dashed boxes, 📱, widths, ⇡" \
+  || { bad "2.866.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui866.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -1,5 +1,6 @@
 /* bitGen web skill: 🛍 shop - the products of data/content.json (the Web editor's 🛍 Products):
    [data-bg-catalog]  the catalogue: category chips + search, product cards (→ product.html?p=<slug>), ＋ Add
+                      data-category="Bread" = that category; data-view="pictures" = the products' pictures only (2.866.0)
    [data-bg-product]  one product (product.html?p=<slug>): picture, price, stock, quantity, Add to cart
    [data-bg-cart]     the cart (quantities, remove, the total)      [data-bg-cart-count]  how many in the cart
    form[data-bg-checkout]  the order -> checkout.php (the server prices it again from content.json and saves it in the site's database);
@@ -26,7 +27,12 @@
   function catalogue(box) {
     products().then(function (list) {
       var cats = []; list.forEach(function (p) { if (p.category && cats.indexOf(p.category) < 0) cats.push(p.category); }); cats.sort(function (a, b) { return a.localeCompare(b); });
-      var want = new URLSearchParams(location.search).get("c") || "";
+      var want = new URLSearchParams(location.search).get("c") || box.getAttribute("data-category") || "";   // 2.866.0 data-category = one category
+      if (box.getAttribute("data-view") === "pictures") {   // 2.866.0 🛍 product pictures: the pictures + names only, each to its page
+        var only = list.filter(function (p) { return p.image && (!want || p.category === want); });
+        box.innerHTML = '<div class="bg-pics">' + only.map(function (p) { return '<a class="bg-pic" href="product.html?p=' + encodeURIComponent(p.slug) + '"><img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy"><span>' + esc(p.name) + "</span></a>"; }).join("") + "</div>" || "";
+        return;
+      }
       box.innerHTML = '<div class="bg-shop-tools"><input class="bg-input" type="search" placeholder="Search" aria-label="Search"></div>' + (cats.length ? '<div class="bg-chips"><button type="button" data-c="" class="on">All</button>' + cats.map(function (c) { return '<button type="button" data-c="' + esc(c) + '">' + esc(c) + "</button>"; }).join("") + "</div>" : "") + '<div class="bg-products"></div>';
       var grid = box.querySelector(".bg-products"), q = box.querySelector("input"), cat = want;
       function paint() { var w = q.value.trim().toLowerCase(), shown = list.filter(function (p) { return (!cat || p.category === cat) && (!w || (p.name + " " + p.description + " " + p.category).toLowerCase().indexOf(w) >= 0); }); grid.innerHTML = shown.map(card).join("") || '<p class="bg-dim">No products found.</p>'; box.querySelectorAll(".bg-chips button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-c") === cat); }); }
