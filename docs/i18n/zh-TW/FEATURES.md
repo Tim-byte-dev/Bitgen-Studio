@@ -1313,6 +1313,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **📤 把網站傳送到你的主機** — 通過 FTP / FTPS 把 www 資料夾直接傳送到 cPanel（GoDaddy 等）或 Plesk：✓ 測試、只發送改動的檔案、刪除的檔案會被移除、inc/config.php 只在主機上沒有時傳送（± 資料庫密碼，只寫入主機）、密碼加密儲存；cPanel 上網站的資料庫以 localhost 連線
 - **📅 📰 📍 更多網頁技能** — 基於 CRM 預約日曆的預約元件（空閒時間在伺服器上再次檢查，進入 📅 預約）、來自 CRM 📰 文章的部落格 / 新聞頁、帶 OpenStreetMap 地圖的聯絡方式和進入 ✉ 留言的聯絡表單
 - **🌏 網頁技能卡片也用你的語言** — 🧩 技能 卡片的名稱、說明、分組和提示跟隨語言下拉選單（日本語 / 简体中文 / 繁體中文）
+- **💳 商店結帳可刷卡支付** — Stripe Checkout：買家在 Stripe 自己的頁面上付款，只有當 Stripe 就該訂單和金額確認已付款時（返回時和經簽名的 Webhook），訂單才標為已付款，CRM 中記一筆付款；金鑰在應用中加密儲存，只寫入主機的 inc/config.php
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

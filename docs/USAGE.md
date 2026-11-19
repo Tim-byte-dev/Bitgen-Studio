@@ -9651,6 +9651,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 
 - The 🌐 Web editor's 🧩 Skills cards - each skill's name, what it does, its group and the "needs PHP" note - follow the language dropdown (日本語, 简体中文, 繁體中文) like the rest of the app. The theme and layout skills are now in the group **Design**.
 
+## 💳 Card payments on the shop's checkout (2.863.0)
+
+- The 🧾 **Cart and checkout** skill takes cards through **Stripe Checkout**: the buyer is sent to Stripe's own payment page (the card is never typed on your site) and comes back to paid.php. The order is marked paid in 🗂 CRM ▸ 🧾 Orders only when Stripe says it is paid for **that** order, the same amount and currency - on the way back, and by Stripe's signed webhook (stripe-webhook.php) even if the buyer closes the page. Each payment is also kept as a payments row; doing it twice changes nothing. The buyer is emailed when the payment is through.
+- **🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments**: the Stripe **secret key** (sk_test_… to try, sk_live_… for real - Stripe ▸ Developers ▸ API keys), the **webhook signing secret** (whsec_…) and the **currency** (aud, nzd, usd …). They are kept encrypted on this computer; tick **with the card payment keys** and 📤 Send to host puts them into the host's inc/config.php only - never into the project.
+- In Stripe ▸ Developers ▸ Webhooks add the endpoint https://your-site/stripe-webhook.php with the event checkout.session.completed. Try it with the test keys and Stripe's test card 4242 4242 4242 4242 first. Without the keys checkout works as before (bank transfer / pay on pick-up).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

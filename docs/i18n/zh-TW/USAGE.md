@@ -6269,6 +6269,13 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 
 - 🌐 網頁編輯器 🧩 技能 的卡片（每個技能的名稱、說明、分組和“需要 PHP”的提示）像應用的其他部分一樣跟隨語言下拉選單（日本語、简体中文、繁體中文）。主題和佈局技能現在在 **設計** 分組中。
 
+## 💳 商店結帳可刷卡支付（2.863.0）
+<!-- en: card-payments-on-the-shop-s-checkout-2-863-0 fdb1944e444b -->
+
+- 🧾 **購物車和結帳** 技能通過 **Stripe Checkout** 收卡：買家被送到 Stripe 自己的付款頁面（卡號絕不在你的網站上輸入），然後回到 paid.php。只有當 Stripe 就 **該** 訂單以相同金額和貨幣確認已付款時，訂單才會在 🗂 CRM ▸ 🧾 訂單 中標為已付款——返回時，以及即使買家關閉頁面也會由 Stripe 的簽名 Webhook（stripe-webhook.php）完成。每筆付款也記為一行 payments；重複處理不會改變任何東西。付款完成後會給買家發郵件。
+- **🌐 網頁編輯器 ▸ 📤 主機 ▸ 💳 刷卡支付**：Stripe 的 **金鑰**（sk_test_… 用於試用，sk_live_… 用於正式——Stripe ▸ 開發者 ▸ API 金鑰）、**Webhook 簽名金鑰**（whsec_…）和 **貨幣**（aud、nzd、usd …）。它們加密儲存在這臺電腦上；勾選 **附帶刷卡支付金鑰** 後 📤 傳送到主機 只把它們寫入主機的 inc/config.php——絕不寫入專案。
+- 在 Stripe ▸ 開發者 ▸ Webhook 中新增端點 https://your-site/stripe-webhook.php，事件為 checkout.session.completed。先用測試金鑰和 Stripe 的測試卡 4242 4242 4242 4242 試一下。沒有金鑰時結帳照舊（銀行轉帳 / 取貨時付款）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

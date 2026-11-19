@@ -2,7 +2,8 @@
    [data-bg-catalog]  the catalogue: category chips + search, product cards (→ product.html?p=<slug>), ＋ Add
    [data-bg-product]  one product (product.html?p=<slug>): picture, price, stock, quantity, Add to cart
    [data-bg-cart]     the cart (quantities, remove, the total)      [data-bg-cart-count]  how many in the cart
-   form[data-bg-checkout]  the order -> checkout.php (the server prices it again from content.json and saves it in the site's database)
+   form[data-bg-checkout]  the order -> checkout.php (the server prices it again from content.json and saves it in the site's database);
+                           with card payments on (inc/bg-pay.php) it answers pay_url and the buyer goes to Stripe's page
    The cart lives in this browser (localStorage "bg-cart"). Currency: <body data-bg-currency="$">. */
 (function () {
   var DATA = "data/content.json", KEY = "bg-cart";
@@ -61,7 +62,9 @@
       out.className = "bg-note"; out.textContent = "Placing the order…";
       fetch(f.getAttribute("action") || "checkout.php", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ items: c, customer: data }) })
         .then(function (r) { if (r.status === 404) throw new Error("Orders need the site's PHP (checkout.php) on a host with PHP and the database."); return r.json(); })
-        .then(function (j) { if (!j.ok) throw new Error(j.message || "The order was not taken."); setCart([]); f.innerHTML = '<div class="bg-note"><b>Thank you!</b> Your order number is ' + esc(j.number) + ". " + esc(j.message || "") + "</div>"; })
+        .then(function (j) { if (!j.ok) throw new Error(j.message || "The order was not taken."); setCart([]);
+          if (j.pay_url && /^https:\/\//.test(j.pay_url)) { f.innerHTML = '<div class="bg-note">Order ' + esc(j.number) + " - " + esc(j.message || "taking you to the card payment…") + "</div>"; location.href = j.pay_url; return; }   // 💳 Stripe's page
+          f.innerHTML = '<div class="bg-note"><b>Thank you!</b> Your order number is ' + esc(j.number) + ". " + esc(j.message || "") + "</div>"; })
         .catch(function (er) { out.className = "bg-note err"; out.textContent = er.message; if (btn) btn.disabled = false; });
     });
   }

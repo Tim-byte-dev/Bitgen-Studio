@@ -15,6 +15,8 @@
  *   📤 2.860.0    📤 Host = the www folder straight onto the host by FTP / FTPS (lib/hostFtp.js; cPanel / Plesk) - ✓ Test, only the changed
  *                files, inc/config.php only when the host has none (± the database password), a bar while it sends; the DB form's 🌐
  *                server gets "the site reaches it as" (localhost on cPanel) + the cPanel steps
+ *   💳 2.863.0    📤 Host ▸ 💳 Card payments: the Stripe keys kept encrypted here, ☐ put into the host's inc/config.php (the cart-checkout
+ *                skill's inc/bg-pay.php, paid.php, stripe-webhook.php take it from there)
  *   ⤴ 2.858.0    ⤴ Publish = the www folder to GitHub (the same rules as Build Website's publish: only changed files, never
  *                inc/config.php); 🌐 Build Website ▸ ☑ Into this project's www folder puts a build here
  *   🧩 2.859.0   Tim: "add skills/scripts for galleries - picture,video-audio-3d models, layout, css, ajax, login, categories, product
@@ -331,6 +333,10 @@
     const live = St.db && St.db.linked && St.db.scope === "external"; $("wbHoWithPass").disabled = !live; $("wbHoWithPass").checked = false;
     $("wbHoWithPass").parentNode.title = live ? "" : "the CRM is not linked to your server's database (🗂 CRM ▸ 🗄)";
     $("wbHoBar").style.display = "none";
+    const pay = st.pay || {}; $("wbPaySk").value = ""; $("wbPayWh").value = ""; $("wbPayCur").value = pay.currency || "aud";
+    $("wbPaySk").placeholder = pay.hasSecret ? `kept (${pay.mode} key, encrypted) - type a new one to change it` : "sk_test_… to try, sk_live_… for real (Stripe ▸ Developers ▸ API keys)";
+    $("wbPayWh").placeholder = pay.hasWebhook ? "kept (encrypted) - type a new one to change it" : "whsec_… (Stripe ▸ Developers ▸ Webhooks ▸ your endpoint)";
+    $("wbPayForget").disabled = !pay.hasSecret; $("wbHoWithPay").checked = false;
     $("wbHoOut").textContent = st.last ? `Last sent ${new Date(st.last.at).toLocaleString()} to ${st.last.host}/${st.last.dir}: ${st.last.sent} file(s)` : "";
     f.classList.add("on");
   }
@@ -348,7 +354,8 @@
     $("wbHoGo").disabled = true; $("wbHoOut").textContent = "📤 logging in…"; const bar = $("wbHoBar"); bar.style.display = ""; bar.removeAttribute("value");
     try {
       await api("/api/web/host", hoForm()); $("wbHoPass").value = "";
-      await api("/api/web/host/send", { full: $("wbHoFull").checked, config: $("wbHoCfg").value, withPassword: $("wbHoWithPass").checked });
+      if ($("wbPaySk").value || $("wbPayWh").value || $("wbPayCur").value) { await api("/api/web/host/pay", { secret: $("wbPaySk").value.trim() || undefined, webhook: $("wbPayWh").value.trim() || undefined, currency: $("wbPayCur").value.trim() || undefined }); $("wbPaySk").value = ""; $("wbPayWh").value = ""; $("wbPayForget").disabled = false; }
+      await api("/api/web/host/send", { full: $("wbHoFull").checked, config: $("wbHoCfg").value, withPassword: $("wbHoWithPass").checked, withPay: $("wbHoWithPay").checked });
       let p; do {
         await new Promise((r) => setTimeout(r, 400)); p = await api("/api/web/host/progress");
         if (p.total) { bar.max = p.total; bar.value = p.done; } if (p.file) $("wbHoOut").textContent = `📤 ${p.done} / ${p.total} - ${p.file}`;
@@ -376,7 +383,8 @@
     on("wbSkList", "click", (e) => { const b = e.target.closest("[data-skadd]"); if (b) skAdd(b.dataset.skadd); });
     on("wbHost", "click", hoOpen); on("wbHoTest", "click", hoTest); on("wbHoGo", "click", hoGo); on("wbHoNo", "click", () => $("wbHostForm").classList.remove("on"));
     on("wbHoForget", "click", async () => { try { await api("/api/web/host", Object.assign(hoForm(), { password: undefined, forget: true })); $("wbHoForget").disabled = true; $("wbHoOut").textContent = "the password is forgotten"; } catch (e) { $("wbHoOut").textContent = "✗ " + e.message; } });
-    ["wbHoServer", "wbHoPort", "wbHoUser", "wbHoPass", "wbHoDir", "wbDbSite"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));
+    on("wbPayForget", "click", async () => { if (!root.confirm("Forget the kept card payment keys for this site?")) return; try { await api("/api/web/host/pay", { forget: true }); $("wbPayForget").disabled = true; $("wbHoOut").textContent = "the card payment keys are forgotten"; } catch (e) { $("wbHoOut").textContent = "✗ " + e.message; } });
+    ["wbHoServer", "wbHoPort", "wbHoUser", "wbHoPass", "wbHoDir", "wbDbSite", "wbPaySk", "wbPayWh", "wbPayCur"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));
     doc.querySelectorAll('input[name="wbDbScope"]').forEach((r) => r.addEventListener("change", () => { $("wbDbExt").style.display = r.value === "external" && r.checked ? "flex" : (doc.querySelector('input[name="wbDbScope"]:checked').value === "external" ? "flex" : "none"); }));
     on("wbPub", "click", pubOpen); on("wbPubGo", "click", pubGo); on("wbPubNo", "click", () => $("wbPubForm").classList.remove("on"));
     on("wbPubForget", "click", async () => { try { await api("/api/sites/publish/token", { token: "" }); $("wbPubForget").disabled = true; $("wbPubOut").textContent = "the token is forgotten"; } catch (e) { $("wbPubOut").textContent = "✗ " + e.message; } });

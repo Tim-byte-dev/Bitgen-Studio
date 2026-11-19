@@ -56,7 +56,8 @@ try {
   check("…ui.json: every English string and pattern the app has, each \"\" (to fill in)", Object.keys(mui.strings).length === E.strings.length && Object.keys(mui.patterns).length === E.patterns.length && Object.values(mui.strings).every((v) => v === ""), [Object.keys(mui.strings).length, E.strings.length]);
   const musage = unpack(master).find((e) => e.name === "USAGE.md").data.toString();
   check("…USAGE.md: the English guide with a <!-- en: id hash --> line in every section", (musage.match(/<!-- en: /g) || []).length === I.rawSections(rd("docs/USAGE.md")).length, (musage.match(/<!-- en: /g) || []).length);
-  check("…compressed (deflate - the text packs about 4x smaller)", master.length < 700000 && U.entries(master).some((e) => e.method === 8), master.length);
+  { const es = U.entries(master), raw = es.reduce((a, e) => a + e.usize, 0);   // 2.863.0: a ratio, not a fixed size - the guide keeps growing
+    check("…compressed (deflate - the text packs about 3x smaller)", master.length * 2 < raw && es.some((e) => e.method === 8), [master.length, raw]); }
   let err = ""; try { LP.check(master); } catch (e) { err = e.message; }
   check("…installing it as it is says to put the language's code in pack.json", /put your language's code/.test(err), err);
 

@@ -125,6 +125,11 @@
           <label><span>inc/config.php</span><select id="wbHoCfg"><option value="missing">only when the host has none</option><option value="always">send it again</option><option value="never">never</option></select></label>
           <label><input type="checkbox" id="wbHoWithPass"> with the database password (the CRM's 🌐 server's - put in on the host only, never in the project)</label>
           <label><input type="checkbox" id="wbHoFull"> Send every file again (not only the changed ones)</label>
+          <b style="margin-top:4px">💳 Card payments (Stripe) - the shop's checkout</b>
+          <label><span>Secret key</span><input id="wbPaySk" type="password" autocomplete="off" placeholder="sk_test_… to try, sk_live_… for real (Stripe ▸ Developers ▸ API keys)"><button class="ghost" type="button" id="wbPayForget" title="Forget the kept card payment keys">✕</button></label>
+          <label><span>Webhook</span><input id="wbPayWh" type="password" autocomplete="off" placeholder="whsec_… (Stripe ▸ Developers ▸ Webhooks ▸ your endpoint)"><span style="width:auto">Currency</span><input id="wbPayCur" style="max-width:60px" placeholder="aud"></label>
+          <label><input type="checkbox" id="wbHoWithPay"> with the card payment keys (into inc/config.php on the host only)</label>
+          <div style="font-size:11px;color:var(--dim)">In Stripe ▸ Developers ▸ Webhooks add the endpoint https://your-site/stripe-webhook.php with the event checkout.session.completed. Try it with the test keys and Stripe's test card 4242 4242 4242 4242 first. The card is typed on Stripe's own page - never on your site.</div>
           <div style="font-size:11px;color:var(--dim)">The password is kept encrypted on this computer. Files bitGen sent before and you deleted here are taken off the host - nothing else there is touched.</div>
           <div class="wbbar"><button class="ghost" type="button" id="wbHoTest">✓ Test</button><button class="go" type="button" id="wbHoGo">📤 Send to host</button><button class="ghost" type="button" id="wbHoNo">Close</button></div>
           <progress id="wbHoBar" max="1" value="0" style="width:100%;display:none"></progress>

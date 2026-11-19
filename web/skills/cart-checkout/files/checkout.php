@@ -1,8 +1,9 @@
 <?php
 // bitGen web skill: 🧾 checkout - js/bg-shop.js posts {items [{slug, qty}], customer {...}}. The prices come from data/content.json
 // HERE (never from the browser); the order goes into the site's database (the Web editor's 🗂 CRM ▸ 🗄 tables: clients, orders,
-// order_items) and shows in the CRM's 🧾 Orders. Answers JSON {ok, number, message}.
+// order_items) and shows in the CRM's 🧾 Orders. Answers JSON {ok, number, message} (+ pay_url: 💳 Stripe's card page when inc/bg-pay.php is set up).
 require_once __DIR__ . '/inc/bg-db.php';
+require_once __DIR__ . '/inc/bg-pay.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') bg_json(['ok' => false, 'message' => 'POST only'], 405);
 $in = json_decode(file_get_contents('php://input'), true);
 if (!is_array($in) || empty($in['items']) || !is_array($in['items'])) bg_json(['ok' => false, 'message' => 'The cart is empty.'], 400);
@@ -38,6 +39,8 @@ try {
   $db->prepare("INSERT INTO orders (number, client_id, status, payment_status, subtotal, total, email, ship_name, ship_line1, ship_city, ship_state, ship_postcode, ship_country, notes, ip) VALUES (?, ?, 'pending', 'unpaid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
      ->execute([$number, $cid, $total, $total, $email, $name, $s('address', 120), $s('city', 80), $s('state', 80), $s('postcode', 20), $s('country', 80), $s('notes', 5000), mb_substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45)]);
   $oid = (int)$db->lastInsertId();
+  $token = bin2hex(random_bytes(16));
+  $db->prepare('UPDATE orders SET currency = ?, view_token = ?, payment_method = ? WHERE id = ?')->execute([strtoupper(bg_pay_currency()), $token, bg_pay_on() ? 'card' : '', $oid]);
   $ins = $db->prepare('INSERT INTO order_items (order_id, sku, name, qty, unit_price, total) VALUES (?, ?, ?, ?, ?, ?)');
   foreach ($lines as $l) $ins->execute([$oid, $l['sku'], $l['name'], $l['qty'], $l['unit'], $l['total']]);
   $db->commit();
@@ -45,6 +48,11 @@ try {
   if (isset($db) && $db->inTransaction()) $db->rollBack();
   error_log('checkout: ' . $e->getMessage());
   bg_json(['ok' => false, 'message' => 'The order could not be saved - please try again or contact us.'], 500);
+}
+if (bg_pay_on()) {   // 💳 the buyer goes to Stripe's page; paid.php / the webhook mark the order paid
+  [$url, $why] = bg_pay_session($number, $email, $lines, $token);
+  if ($url) bg_json(['ok' => true, 'number' => $number, 'total' => $total, 'pay_url' => $url, 'message' => 'Taking you to the card payment…']);
+  bg_json(['ok' => true, 'number' => $number, 'total' => $total, 'message' => 'We have your order, but the card payment page could not open - we will contact you about payment.']);
 }
 @mail($email, 'Your order ' . $number, "Thank you for your order $number.\nTotal: " . number_format($total, 2) . "\nWe will be in touch about payment and delivery.", 'Content-Type: text/plain; charset=utf-8');
 bg_json(['ok' => true, 'number' => $number, 'total' => $total, 'message' => 'We have emailed you the details.']);

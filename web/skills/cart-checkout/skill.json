@@ -2,7 +2,7 @@
   "name": "Cart and checkout",
   "icon": "🧾",
   "group": "Shop",
-  "description": "cart.html (quantities, remove, the total), checkout.html (name, email, address) and checkout.php - the order priced again on the server and saved in the site's database, shown in the CRM's 🧾 Orders. Needs PHP + the CRM's 🗄 database.",
+  "description": "cart.html (quantities, remove, the total), checkout.html (name, email, address) and checkout.php - the order priced again on the server and saved in the site's database, shown in the CRM's 🧾 Orders. 💳 Card payments with Stripe when its keys are on the host. Needs PHP + the CRM's 🗄 database.",
   "head": [
     "css/bg-shop.css"
   ],
@@ -16,6 +16,9 @@
     "checkout.php",
     "css/bg-shop.css",
     "inc/bg-db.php",
-    "js/bg-shop.js"
+    "js/bg-shop.js",
+    "inc/bg-pay.php",
+    "paid.php",
+    "stripe-webhook.php"
   ]
 }

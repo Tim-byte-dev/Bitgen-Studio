@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6780,
+ "count": 6792,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62846,6 +62846,126 @@
    ],
    "where": [
     "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "cart.html (quantities, remove, the total), checkout.html (name, email, address) and checkout.php - the order priced again on the server and saved in the site's database, shown in the CRM's 🧾 Orders. 💳 Card payments with Stripe when its keys are on the host. Needs PHP + the CRM's 🗄 database.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "Card payments (Stripe) - the shop's checkout",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "Secret key",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "Forget the kept card payment keys",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "Webhook",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "with the card payment keys (into inc/config.php on the host only)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "In Stripe ▸ Developers ▸ Webhooks add the endpoint https://your-site/stripe-webhook.php with the event checkout.session.completed. Try it with the test keys and Stripe's test card 4242 4242 4242 4242 first. The card is typed on Stripe's own page - never on your site.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "sk_test_… to try, sk_live_… for real (Stripe ▸ Developers ▸ API keys)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "kept (encrypted) - type a new one to change it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "whsec_… (Stripe ▸ Developers ▸ Webhooks ▸ your endpoint)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "the card payment keys are forgotten",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "Forget the kept card payment keys for this site?",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
    ]
   }
  ]

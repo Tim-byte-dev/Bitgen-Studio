@@ -14501,6 +14501,16 @@ node scripts/test-862.js > /tmp/t862.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui862-ui.js > /tmp/ui862.log 2>&1 \
   && ok "2.862.0 browser test: the 🧩 cards in 日本語 (names, descriptions, groups, the PHP note) and back to English" \
   || { bad "2.862.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui862.log | head -12; }
+# ---- 2.863.0 (💳 card payments on the shop's checkout - Stripe Checkout)
+node scripts/test-863.js > /tmp/t863.log 2>&1 \
+  && ok "2.863.0 💳 units: bg-pay.php rules (that order, amount, once, signature), pay_url, bg-shop.js the same x3 + going to Stripe, keys encrypted + host-only config" \
+  || { bad "2.863.0 units"; grep -a "^FAIL" -A1 /tmp/t863.log | head -12; }
+node scripts/test-863-live.js > /tmp/t863l.log 2>&1 \
+  && ok "2.863.0 LIVE (PHP + MariaDB + a stand-in Stripe): checkout -> session in cents, paid.php marks paid once, the signed webhook, bad / old signature, wrong amount, another order's session" \
+  || { bad "2.863.0 live"; grep -a "^FAIL" -A1 /tmp/t863l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui863-ui.js > /tmp/ui863.log 2>&1 \
+  && ok "2.863.0 browser test: 💳 keys typed (pk_ refused), kept encrypted, sent into the host's inc/config.php only" \
+  || { bad "2.863.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui863.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
