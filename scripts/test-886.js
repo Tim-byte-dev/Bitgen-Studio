@@ -23,6 +23,7 @@ const B = (a) => Buffer.from(a);
   check("2.886.1 Windows: no uvloop (it has no Windows build - simplexng still requires it): simplexng --no-deps, its dependencies minus uvloop (pins, else the newest wheels), a uvloop stand-in keeping asyncio's own loop",
     SX.noUvloop({}) === (process.platform === "win32") && SX.noUvloop({ noUvloop: true }) && /def install\(\):\n    pass/.test(SX.UVLOOP_SHIM) && /asyncio\.new_event_loop\(\)/.test(SX.UVLOOP_SHIM)
     && /"--no-deps", "simplexng"/.test(src("lib/searxngLocal.js")) && /q\.name\.lower\(\) == 'uvloop'/.test(src("lib/searxngLocal.js")) && /newest versions with ready-made wheels/.test(src("lib/searxngLocal.js")));
+  check("2.886.2 Windows: a pwd stand-in too (searx/valkeydb.py imports it), written at install AND before every start", /def getpwuid/.test(SX.PWD_SHIM) && /getpass\.getuser\(\)/.test(SX.PWD_SHIM) && /\["pwd\.py", PWD_SHIM\]/.test(src("lib/searxngLocal.js")) && /if \(noUvloop\(o\)\) \{ try \{ await ensureShims/.test(src("lib/searxngLocal.js")));
   check("not installed: search order stays Wikipedia, and its results carry the hint to install SearXNG", W.view().engine === "wikipedia" && W.view().searxng.local === false);
   W.FETCH.fn = async () => ({ query: { search: [{ title: "A", snippet: "b" }] } });
   check("...the hint", /Install SearXNG/.test((await W.search("x")).hint));
