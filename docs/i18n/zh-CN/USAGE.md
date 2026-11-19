@@ -6305,15 +6305,15 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - RGB MoCap 没有命令行——捕捉在它自己的窗口里完成，所以 bitGen 负责准备视频并把结果带回来。别处得到的 FBX / BVH 也可以放进 mocap 文件夹。
 
 ## 用 H3 Character Sheet Designer 制作角色设定表（2.870.0）
-<!-- en: character-sheets-with-the-h3-character-sheet-designer a3781c67e16c -->
+<!-- en: character-sheets-with-the-h3-character-sheet-designer aca26525e0cc -->
 
 角色创建器的 **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）用 **H3 Character Sheet Designer**（ukr8b3g-cmyk 的 ComfyUI 节点包，MIT）从一张图片制作角色的参考设定表，由 **MiniMax H3 Image** 绘制。它取代了旧的设定表选项（Kind、Look、Pose sheet、Render style）和 pose_sheets 文件夹。
 
 1. 安装一次：**设置 ▸ 附加组件 ▸ H3 Character Sheet Designer** 会把节点包放进 ComfyUI 的 custom_nodes，并下载 MiniMax H3 Image 的 Transformer 和 VAE（如果视频还没带来 MiniMax H3 文本编码器，也会一并下载）。需要 **ComfyUI 0.45** 或更新版本；装好后重启一次 ComfyUI。还没安装？面板里的 **⬇ Install…**（或 ▶ Generate sheet）会弹出下载 / 取消框。
-2. **📂 Load picture** 载入图片，把框拖到一个主体上（或 **▣ Whole picture**），和以前一样。还没有图片？在它下面描述角色，选一个**图像风格**（提示词面板的列表），然后按 **✨ Generate**（或 Enter）——图片会在那里打开，可以直接拖框，也会加入角色的 🎨 Create images。勾选 Basic Settings ▸ **Override style** 时，用这个风格自己的 Basic Settings 渲染（如果是提示词面板当前的风格，就用屏幕上的设置，否则用它上次的设置）；不勾选时用风格自身的设置——行下面会说明用的是哪种。 也可以从 **🧍 Mannequin…** 开始：**Male**（8 头身，178 cm）或 **Female**（7.5 头身，165 cm）会把 bitGen Studio 自己的 3D 人体模型（解剖学比例、表面光滑、自然的 A 字姿势）作为图片载入，▶ Generate sheet 会直接为它生成设定表。**Dress it** 是可选的，默认关闭（穿衣可能带来瑕疵，衣服也可能不合身）：勾选后，风格列表只显示编辑风格，✨ Generate 会把你描述的衣服穿到人体模型上，并保持它的姿势和体型。它的各个视图（正面、侧面、背面、头部）在 static/mannequins/ 中。
+2. **📂 Load picture** 载入图片，把框拖到一个主体上（或 **▣ Whole picture**），和以前一样。还没有图片？在它下面描述角色，选一个**图像风格**（提示词面板的列表），然后按 **✨ Generate**（或 Enter）——图片会在那里打开，可以直接拖框，也会加入角色的 🎨 Create images。勾选 Basic Settings ▸ **Override style** 时，用这个风格自己的 Basic Settings 渲染（如果是提示词面板当前的风格，就用屏幕上的设置，否则用它上次的设置）；不勾选时用风格自身的设置——行下面会说明用的是哪种。 也可以从 **🧍 Mannequin…** 开始：**Male**（8 头身，178 cm）或 **Female**（7.5 头身，165 cm）会把 bitGen Studio 自己的 3D 人体模型（解剖学比例、表面光滑、自然的 A 字姿势）作为图片载入，▶ Generate sheet 会直接为它生成设定表。**Dress it** 是可选的，默认关闭（穿衣可能带来瑕疵，衣服也可能不合身）：勾选后，风格列表只显示编辑风格，✨ Generate 会把你描述的衣服穿到人体模型上，并保持它的姿势和体型。它的各个视图（正面、侧面、背面、头部）在 static/mannequins/ 中。 **＋ Add your own mannequin…** 会把你自己的人体模型图片加入你的库（所有项目都能用）；它会列在 **Your mannequins** 下，用同样的方式载入（🗑 删除）。
 3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13——或在 13 个视图（6 个头部、3 个全身、服装正面 / 背面、手、脚）中自己勾选。
 4. **Clothing**（与图片一致、裤子、裙子或长袍，动物或吉祥物用 **No clothing · natural body surface**——服装视图会被去掉）、**Hands**（赤手、手套）、**Feet**（穿鞋、不穿鞋）、**Style**（与图片一致、动漫、照片、绘画风格、3D 渲染）和 **Size**（Standard、High detail、最高 8 或 16 MP，或精确尺寸）。
-5. **Layout guide** 会把设计器的布局图一起送去安排视图（关闭时用文字安排）；大设定表在解码时卡住时，**Tiled decode** 会有帮助。
+5. **Layout guide** 会把设计器的布局图一起送去安排视图（关闭时用文字安排）；大设定表在解码时卡住时，**Tiled decode** 会有帮助。 **Template**：**＋ Upload a character sheet…** 会把你自己完成的设定表加入你的库，新的设定表会按它的形状遵循它的布局——面板、视图、姿势、构图和标签。其中画的人物和衣服只是占位：角色来自你的图片。它会取代布局参考（该勾选被锁定为开启），并显示在面板中。请勾选它所显示的视图。**None** 回到设计器自己的布局；🗑 删除它。
 6. **Part pictures**：最多再加三张图片，每张注明用途——脸部、头部和头发、服装（正面 / 背面）、手、鞋，或同一角色的更多图片。**✏ Part notes** 为某个部位加上文字（例如左眼上方的一道疤）；**✏ View instructions** 编辑某个视图自己的指令（**↺ Default** 恢复原样）。
 7. ComfyUI 运行时，**Layout** 会画出设定表的各个分格，并显示像素和百万像素尺寸。
 8. **▶ Generate sheet**——每按一次就是一次使用新种子的生成；**🧵 Stitch**、**↻ Regenerate** 和 **✔ Keep** 和以前一样。你的选择会被记住（部位图片不会）。

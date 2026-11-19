@@ -14496,6 +14496,16 @@ node scripts/test-873.js > /tmp/t873.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui873-ui.js > /tmp/ui873.log 2>&1 \
   && ok "2.873.0 browser test: 🧍 Mannequin… Male / Female into the sheet's canvas, Dress it off by default, ticked = edit styles + the mannequin sent, asked for one without it" \
   || { bad "2.873.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui873.log | head -12; }
+# ---- 2.874.0 (your own mannequins + character sheet templates - lib/sheetLibrary.js, routes/sheetLibrary.js, the template graph)
+node scripts/test-874.js > /tmp/t874.log 2>&1 \
+  && ok "2.874.0 units: the library (PNG / JPEG / WebP sizes, add / list / remove, refusals), templateSize, the graph with a template (layout slot, shape, String Concatenate or not), routes, the page" \
+  || { bad "2.874.0 units"; grep -a "^FAIL" -A1 /tmp/t874.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-874-live.js > /tmp/t874l.log 2>&1 \
+  && ok "2.874.0 live (a stand-in ComfyUI): templates + mannequins added / served / refused / deleted, your mannequin into Images, a sheet job following a template (with and without String Concatenate), a gone template = 400" \
+  || { bad "2.874.0 live"; grep -a "^FAIL" -A1 /tmp/t874l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui874-ui.js > /tmp/ui874.log 2>&1 \
+  && ok "2.874.0 browser test: ＋ Upload a character sheet (picked, drawn as the layout, Layout guide locked), ＋ Add your own mannequin (Your mannequins, opened), ▶ Generate sheet sends the template, kept over a reload, deleted = gone" \
+  || { bad "2.874.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui874.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -37,7 +37,7 @@ const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX
     await ev(() => { localStorage.removeItem("h3sheet.v1"); document.getElementById("chNewPic").click(); });
     await p.waitForFunction(() => document.getElementById("h3sMannequin"), null, { timeout: 15000 });
     const v0 = await ev(() => ({ opts: [...document.getElementById("h3sMannequin").options].map((o) => o.value), dress: document.getElementById("h3sDress").checked }));
-    check("🧍 Mannequin… with Male / Female; Dress it off by default", v0.opts.join() === ",male,female" && v0.dress === false, v0);
+    check("🧍 Mannequin… with Male / Female (+ 2.874.0 ＋ Add your own); Dress it off by default", v0.opts.join() === ",male,female,__add" && v0.dress === false, v0);
     // Dress it ticked with no mannequin yet -> asked for one
     await ev(() => document.getElementById("h3sDress").click());
     await p.waitForFunction(() => document.getElementById("h3sPicStyle").options.length > 0 && document.getElementById("h3sPicPrompt").placeholder.includes("clothes"), null, { timeout: 15000 });

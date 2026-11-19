@@ -26004,187 +26004,227 @@
   },
   {
    "s": "Character sheet",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Clothing",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Hands",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Feet",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Layout guide",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Tiled decode (less VRAM)",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Part pictures",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Part notes",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "View instructions",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Default",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Which views the sheet has",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "The views on the sheet",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Clothing shape",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Rendering style",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Sheet size",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Bigger sheets take more VRAM and time",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Sheet width in pixels",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Sheet height in pixels",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
+  },
+  {
+   "s": "A character sheet whose layout this sheet follows",
+   "src": "ext/videodock/h3sheet.js:95"
+  },
+  {
+   "s": "Upload a finished character sheet and the new sheet follows its layout - its panels, views, poses and framing. Its people and clothes are only placeholders: the character comes from your picture",
+   "src": "ext/videodock/h3sheet.js:95"
+  },
+  {
+   "s": "Delete this template from your library",
+   "src": "ext/videodock/h3sheet.js:95"
+  },
+  {
+   "s": "Delete the template",
+   "src": "ext/videodock/h3sheet.js:95"
+  },
+  {
+   "s": "Choose a character sheet to use as a template",
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Decodes the sheet in tiles - try it when a big sheet stops at the decode",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Choose a part picture",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "Which part the note is for",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "e.g. a scar over the left eye",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "The note for this part",
-   "src": "ext/videodock/h3sheet.js:92"
+   "src": "ext/videodock/h3sheet.js:95"
   },
   {
    "s": "My own views",
-   "src": "ext/videodock/h3sheet.js:154"
+   "src": "ext/videodock/h3sheet.js:167"
   },
   {
    "s": "Exact size",
-   "src": "ext/videodock/h3sheet.js:159"
+   "src": "ext/videodock/h3sheet.js:172"
   },
   {
    "s": "Head",
-   "src": "ext/videodock/h3sheet.js:168"
+   "src": "ext/videodock/h3sheet.js:181"
   },
   {
    "s": "Full body",
-   "src": "ext/videodock/h3sheet.js:168"
+   "src": "ext/videodock/h3sheet.js:181"
   },
   {
    "s": "Hands and feet",
-   "src": "ext/videodock/h3sheet.js:168"
+   "src": "ext/videodock/h3sheet.js:181"
   },
   {
    "s": "No clothing leaves the clothing views out",
-   "src": "ext/videodock/h3sheet.js:178"
+   "src": "ext/videodock/h3sheet.js:191"
   },
   {
    "s": "Add a part picture",
-   "src": "ext/videodock/h3sheet.js:197"
+   "src": "ext/videodock/h3sheet.js:210"
   },
   {
    "s": "Take this part picture off",
-   "src": "ext/videodock/h3sheet.js:207"
+   "src": "ext/videodock/h3sheet.js:220"
   },
   {
    "s": "the designer's own instruction for this view",
-   "src": "ext/videodock/h3sheet.js:215"
+   "src": "ext/videodock/h3sheet.js:228"
   },
   {
    "s": "The designer's node pack and MiniMax H3 Image - Settings ▸ Add-ons ▸ H3 Character Sheet Designer",
-   "src": "ext/videodock/h3sheet.js:285"
+   "src": "ext/videodock/h3sheet.js:299"
   },
   {
    "s": "Male (8 heads)",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Female (7.5 heads)",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Dress it",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Start from a 3D mannequin",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
+  },
+  {
+   "s": "Delete this mannequin from your library",
+   "src": "ext/videodock/h3sheet.js:399"
+  },
+  {
+   "s": "Delete the mannequin",
+   "src": "ext/videodock/h3sheet.js:399"
+  },
+  {
+   "s": "Choose a picture of your own mannequin",
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Optional: put clothes on the mannequin with an edit style before the sheet. Off by default - dressing can bring artefacts and clothes that do not fit",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Describe the character to generate",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Image style for the character picture",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "The image style that makes the picture",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Make the character picture with this style - it opens here, ready for the sheet",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Generate the character picture",
-   "src": "ext/videodock/h3sheet.js:382"
+   "src": "ext/videodock/h3sheet.js:399"
   },
   {
    "s": "Describe the clothes to put on the mannequin",
-   "src": "ext/videodock/h3sheet.js:410"
+   "src": "ext/videodock/h3sheet.js:436"
   },
   {
    "s": "no edit styles",
-   "src": "ext/videodock/h3sheet.js:412"
+   "src": "ext/videodock/h3sheet.js:438"
   },
   {
    "s": "no image styles",
-   "src": "ext/videodock/h3sheet.js:412"
+   "src": "ext/videodock/h3sheet.js:438"
+  },
+  {
+   "s": "Your template is the layout guide",
+   "src": "ext/videodock/h3sheet.js:512"
+  },
+  {
+   "s": "The designer's layout picture rides along and places the views; off = its words place them",
+   "src": "ext/videodock/h3sheet.js:512"
   },
   {
    "s": "Fix the karaoke lyrics - the words the overlays show (then the scenes' overlays are remade)",
@@ -31958,35 +31998,35 @@
   },
   {
    "p": "{0} - click to change",
-   "src": "ext/videodock/h3sheet.js:197"
+   "src": "ext/videodock/h3sheet.js:210"
   },
   {
    "p": "Part picture {0}",
-   "src": "ext/videodock/h3sheet.js:198"
+   "src": "ext/videodock/h3sheet.js:211"
   },
   {
    "p": "What part picture {0} is for",
-   "src": "ext/videodock/h3sheet.js:203"
+   "src": "ext/videodock/h3sheet.js:216"
   },
   {
    "p": "Remove part picture {0}",
-   "src": "ext/videodock/h3sheet.js:207"
-  },
-  {
-   "p": "Part notes ({0})",
    "src": "ext/videodock/h3sheet.js:220"
   },
   {
+   "p": "Part notes ({0})",
+   "src": "ext/videodock/h3sheet.js:233"
+  },
+  {
    "p": "View instructions ({0} edited)",
-   "src": "ext/videodock/h3sheet.js:221"
+   "src": "ext/videodock/h3sheet.js:234"
   },
   {
    "p": "{0} × {1} px · {2} MP · {3} · big - needs a lot of VRAM",
-   "src": "ext/videodock/h3sheet.js:249"
+   "src": "ext/videodock/h3sheet.js:263"
   },
   {
    "p": "{0} × {1} px · {2} MP · {3}",
-   "src": "ext/videodock/h3sheet.js:249"
+   "src": "ext/videodock/h3sheet.js:263"
   },
   {
    "p": "renders at {0}x{1} -> upscaled to {2}x{3}",

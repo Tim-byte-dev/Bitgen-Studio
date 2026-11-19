@@ -9693,6 +9693,8 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
    makes its sheet as it is. **Dress it** is optional and off by default (dressing can bring artefacts and clothes that
    do not fit): ticked, the style list holds the edit styles and ✨ Generate puts the clothes you describe on the
    mannequin, keeping its pose and body. Its views (front, side, back, the head) are in static/mannequins/.
+   **＋ Add your own mannequin…** puts a picture of your own mannequin in your library (kept for every project); it is
+   listed under **Your mannequins** and loads the same way (🗑 deletes it).
 3. **Views**: Standard · 5 views, Basic · 4, Turnaround · 3, Head · 6, Clothing · 2, Single view, All · 13 - or tick
    your own of the 13 (six head views, three full-body views, clothing front / back, hands, feet).
 4. **Clothing** (as in the picture, pants, skirt or robe, or **No clothing · natural body surface** for an animal or a
@@ -9701,6 +9703,10 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
    exact size).
 5. **Layout guide** sends the designer's layout picture along to place the views (off = its words place them);
    **Tiled decode** helps when a big sheet stops at the decode.
+   **Template**: **＋ Upload a character sheet…** adds a finished sheet of your own to your library, and the new sheet
+   follows its layout - its panels, views, poses, framing and labels - in its shape. The people and clothes drawn in it
+   are only placeholders: the character comes from your picture. It takes the layout guide's place (the tick is locked
+   on), and the panel shows it. Tick the views it shows. **None** goes back to the designer's own layout; 🗑 deletes it.
 6. **Part pictures**: up to three more pictures, each with what it is for - face, head and hair, clothing (front /
    back), hands, footwear or more of the same character. **✏ Part notes** add words for one part (a scar over the left
    eye); **✏ View instructions** edit one view's own instruction (**↺ Default** puts it back).

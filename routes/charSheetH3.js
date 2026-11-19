@@ -70,6 +70,15 @@ function mount(app) {
   app.post("/api/charsheet/h3/mannequin", J, wrap(async (req) => {
     const sex = String((req.body || {}).sex || "");
     const M = require("../static/mannequin3d.js");
+    // 2.874.0: one of YOUR mannequins ("own:<id>" - lib/sheetLibrary.js)
+    if (sex.startsWith("own:")) {
+      const LIB = require("../lib/sheetLibrary"), it = LIB.item("mannequins", sex.slice(4));
+      if (!it) throw err(404, "that mannequin is not in your library any more");
+      const dir0 = core.pDir("images"); fs.mkdirSync(dir0, { recursive: true });
+      const nm = "mannequin-own-" + it.id + path.extname(it.file);
+      fs.copyFileSync(LIB.file("mannequins", it.id), path.join(dir0, nm));
+      return { name: nm, url: "/passets/images/" + encodeURIComponent(nm), label: it.name, own: true, w: it.w, h: it.h };
+    }
     if (!M.SEXES.includes(sex)) throw err(400, "pick the male or the female mannequin");
     const src = path.join(core.BASE, "static", "mannequins", sex + "_front.png");
     if (!fs.existsSync(src)) throw err(500, "the mannequin picture is missing - run node scripts/make_mannequins.js");
@@ -129,7 +138,15 @@ function mount(app) {
     if (rd.styles.length && !rd.styles.includes(style)) throw err(409, `this version of the designer has no "${style}" style - update it (Settings ▸ Add-ons ▸ H3 Character Sheet Designer ⟳ Reinstall)`, { needs: "h3sheet" });
     const rolled = require("../lib/imageSeed").forRequest(b.seed === undefined || b.seed === "" ? null : Number(b.seed));
     const dir = core.pDir("images");
+    // 2.874.0: a character sheet TEMPLATE from your library - its layout is followed (lib/charSheetH3.js graph)
+    let template = null;
+    if (b.template) {
+      const LIB = require("../lib/sheetLibrary"), it = LIB.item("templates", String(b.template));
+      if (!it) throw err(400, "that sheet template is not in your library any more - pick another or upload it again");
+      template = { path: LIB.file("templates", it.id), w: it.w, h: it.h, name: it.name };
+    }
     const built = S().graph({ state: st, layout: truthy(b.layout), style, seed: rolled.seed, names: rd.names, tiled: truthy(b.tiled),
+      template, concat: !!(info && info.StringConcatenate),
       character: path.join(dir, input), refs: refs.map((n) => (n ? path.join(dir, n) : null)), prefix: "charsheet" });
     const summary = S().summary(st);
     const used = refs.filter(Boolean).length;
@@ -138,9 +155,9 @@ function mount(app) {
       graph_name: "Character sheet: " + input,
       graph_file: "(H3 Character Sheet Designer " + S().PACK.version + " + MiniMax H3 Image)",
       graph_uploads: built.uploads,
-      graph_applied: [summary + (truthy(b.layout) ? " · layout guide" : "") + (style !== "none" ? " · style " + style : "")
+      graph_warnings: template && !(info && info.StringConcatenate) ? ["this ComfyUI has no String Concatenate node - the template rides as the layout guide without its extra words (update ComfyUI)"] : [],
+      graph_applied: [summary + (template ? " · template " + template.name : truthy(b.layout) ? " · layout guide" : "") + (style !== "none" ? " · style " + style : "")
         + (used ? ` · ${used} part picture${used > 1 ? "s" : ""}` : "") + " · seed " + rolled.seed],
-      graph_warnings: [],
       seed: rolled.seed, seed_random: rolled.random, prompt: "",
     });
     job.chunk = { i: 0, n: 1 };

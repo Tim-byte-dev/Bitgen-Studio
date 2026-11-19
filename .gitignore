@@ -129,6 +129,8 @@ fonts/
 textfx/user/
 # 2.680.0: the prompt docker's ⇄ (the current / previous settings of each model type) - user state
 model_settings.tmp
+# 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
+/charsheet_library/
 community.json
 # 2.748.0: the user's API keys, encrypted (settings/keys.json) + the key that opens them (settings/keys.master) - never in
 # the repo, so an update never touches them

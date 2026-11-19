@@ -1323,6 +1323,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✨ 在設定表標籤裡生成角色圖片** — 描述角色、選一個影像風格並點 ✨ Generate：圖片會在設定表的畫布中開啟，可直接拖框並生成設定表；勾選 Override style 時用這個風格自己的 Basic Settings 渲染。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet，在 📂 Load picture 下面。*Since:* 2.871.0
 - **🎞 H3 Long Video（40 秒及更長）** — 一個提示詞產生一段長的 MiniMax H3 影片：第一段是場景 + 風格，之後每段一個鏡頭，每個鏡頭從上一個鏡頭的最後一格開始，因此面孔和畫面流程保持一致；Characters: 段落保持每張面孔；可選 2K 處理。 *Where:* H3 Long Video (40 s) 影片風格、StoryBoard 的 ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
 - **🧍 用於角色設定表的 3D 人體模型** — bitGen Studio 自己的解剖學比例人體模型（男性 8 頭身 / 178 cm，女性 7.5 頭身 / 165 cm，自然的 A 字姿勢）作為設定表的起始圖片載入；Dress it（選用，預設關閉）用編輯風格穿上你描述的衣服。 *Where:* Character creator ▸ 🪪 Character sheet ▸ 🧍 Mannequin…。 *Since:* 2.873.0
+- **🪪 你自己的人體模型和設定表範本** — 加入你自己的人體模型圖片（🧍 Mannequin… ▸ Your mannequins），並上傳一張完成的角色設定表作為 Template：新的設定表遵循它的佈局——面板、檢視、姿勢、構圖——而角色來自你的圖片；所有專案都能用。 *Where:* Character creator ▸ 🪪 Character sheet。 *Since:* 2.874.0
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

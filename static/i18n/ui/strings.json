@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7045,
+ "count": 7062,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -65497,6 +65497,176 @@
    ],
    "where": [
     "Settings ▸ ComfyUI ▸ Video accelerators (2.872.0)"
+   ]
+  },
+  {
+   "s": "A character sheet whose layout this sheet follows",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Upload a finished character sheet and the new sheet follows its layout - its panels, views, poses and framing. Its people and clothes are only placeholders: the character comes from your picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Delete this template from your library",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Delete the template",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Choose a character sheet to use as a template",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Delete this mannequin from your library",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Delete the mannequin",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Choose a picture of your own mannequin",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Your template is the layout guide",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "The designer's layout picture rides along and places the views; off = its words place them",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "None - the designer's own layout",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "＋ Upload a character sheet…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "Your mannequins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "＋ Add your own mannequin…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "🧍 Mannequin…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "🧍 Male (8 heads)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "🧍 Female (7.5 heads)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
    ]
   }
  ]
