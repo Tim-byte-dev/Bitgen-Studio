@@ -26183,6 +26183,46 @@
    "src": "ext/videodock/storyboard.js:92"
   },
   {
+   "s": "open a file first",
+   "src": "ext/webdock/wbai.js:25"
+  },
+  {
+   "s": "earlier",
+   "src": "ext/webdock/wbai.js:49"
+  },
+  {
+   "s": "Edit with the AI",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Change it",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Ask again",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Fold the ✨ panel",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Say what to change - e.g. make the hero blue with a bigger heading, add a price list under the gallery… (Enter = go, Shift+Enter = a new line)",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Speak instead of typing - press, say it, press again",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "The LLM changes the open file (or the selected part) - one change, ↶ Undo",
+   "src": "ext/webdock/wbai.js:81"
+  },
+  {
+   "s": "Edit with the AI - type or speak what to change",
+   "src": "ext/webdock/wbai.js:87"
+  },
+  {
    "s": "a closing tag with no opening one",
    "src": "ext/webdock/wbcode.js:94"
   },
@@ -31579,6 +31619,14 @@
   {
    "p": "step {0} of {1}",
    "src": "ext/videodock/storyboard.js:168"
+  },
+  {
+   "p": "the selected part of {0} ({1} characters)",
+   "src": "ext/webdock/wbai.js:25"
+  },
+  {
+   "p": "the whole of {0}",
+   "src": "ext/webdock/wbai.js:25"
   },
   {
    "p": "{0} not closed / stray",

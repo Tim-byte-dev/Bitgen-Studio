@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6819,
+ "count": 6840,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -63236,6 +63236,216 @@
    ],
    "where": [
     "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "open a file first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "earlier",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Edit with the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Change it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Ask again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Fold the ✨ panel",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Say what to change - e.g. make the hero blue with a bigger heading, add a price list under the gallery… (Enter = go, Shift+Enter = a new line)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Speak instead of typing - press, say it, press again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "The LLM changes the open file (or the selected part) - one change, ↶ Undo",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Edit with the AI - type or speak what to change",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "Put the file back as it was before the AI's change",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "open a page (or a .css / .js file) first - ✨ changes the open file",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "put back as it was",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "nothing heard",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "listening - press ⏹ when you have said it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "writing down what you said",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "heard - ✨ Change it, or say more",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "nothing heard - try again closer to the microphone",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "this window cannot use the microphone - type instead",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "the speech part of the app is not loaded",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
+   ]
+  },
+  {
+   "s": "to type what you say into the ✨ AI box",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ ✨ AI (2.865.0)"
    ]
   }
  ]

@@ -16,6 +16,7 @@
 //   POST /api/web/host {host, port, user, dir, secure, anyName, password?, forget?} · POST /api/web/host/test · POST /api/web/host/send
 //   {full?, keepGone?, config missing|always|never, withPassword?} -> started · GET /api/web/host/progress {running, total, done, file, result|error}
 //   2.863.0 💳 POST /api/web/host/pay {secret?, webhook?, currency?, forget?} -> {hasSecret, hasWebhook, mode, currency}; send {withPay}
+//   2.865.0 ✨ POST /api/web/ai/edit {path, text, ask, a?, b?} -> {text, part, a, b, added, removed} (lib/webAi.js - nothing saved)
 //   GET  /web-preview/<path>           the site as files (the Preview + WYSIWYG tabs; no PHP is run)
 "use strict";
 const express = require("express");
@@ -50,6 +51,7 @@ function mount(app) {
   app.post("/api/web/host", J, wrap((req) => HF().save(req.body || {})));
   app.post("/api/web/host/test", J, wrap((req) => HF().test(req.body || {})));
   app.post("/api/web/host/send", J, wrap((req) => HF().start(req.body || {})));
+  app.post("/api/web/ai/edit", J, wrap((req) => require("../lib/webAi").edit(req.body || {})));   // 2.865.0 ✨ the AI prompt docker
   app.get("/api/web/host/progress", wrap(() => HF().progress()));
   app.post("/api/web/host/pay", J, wrap((req) => HF().savePay(req.body || {})));   // 2.863.0 💳 the Stripe keys, kept encrypted here
   app.post("/api/web/db/create", J, wrap((req) => DB().create(req.body || {})));

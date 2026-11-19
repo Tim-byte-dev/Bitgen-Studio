@@ -31,6 +31,14 @@
           #wbAskRow { display: none; gap: 3px; }
           #wbAskRow.on { display: flex; }
           #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          /* 2.865.0 ✨ the AI prompt docker (wbai.js) at the foot of the Web editor */
+          #wbAi { border-top: 1px solid var(--line); padding-top: 4px; display: flex; flex-direction: column; gap: 3px; flex: none; }
+          #wbAi.shut { display: none; }
+          #wbAi textarea { flex: 1; min-width: 0; resize: vertical; font: inherit; min-height: 40px; }
+          #wbAi .wbAiBtns { display: flex; flex-direction: column; gap: 3px; }
+          #wbAiMic.on { background: #c0392b; color: #fff; }
+          #wbAiOut { font-size: 11px; } #wbAiOut.err { color: #e53935; } #wbAiOut.ok { color: #2e9d57; }
+          #wbAiBtn.on { color: var(--tiger); }
           /* 2.864.0 the code editor (wbcode.js): line numbers + colours under the textarea, the quick-tag toolbar on the left */
           #wbCodeEd { flex: 1; display: flex; gap: 4px; min-height: 120px; }
           #wbCodeTools { display: flex; flex-direction: column; gap: 2px; width: 34px; overflow-y: auto; flex: none; }

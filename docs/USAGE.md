@@ -9663,6 +9663,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - A tag **not closed** is marked red (orange for those HTML lets stay open - <p>, <li>, <td> …), and so is a closing tag with no opening one. The line under the editor lists them with their line numbers - a click puts the cursor on the tag.
 - The **◧ toolbar** on the left: quick tags (¶ paragraph, H1-H3, div, section, link, picture, bold, italic, span, lists, line break, button, form, input, table, script, style sheet) wrap the selection; quick comments (<!-- --> or /* */, //, ✎ TODO) and **⌗** (Ctrl+/) comments or uncomments the selected lines. Ctrl+Z undoes them.
 
+## ✨ Edit the website with the AI - typed or spoken (2.865.0)
+
+- **🌐 Web editor ▸ ✨ AI** opens a prompt panel at the foot of the editor. Say what to change - "make the hero blue with a bigger heading", "add a price list under the gallery" - and press Enter (Shift+Enter for a new line) or **✨ Change it**. The prompt docker's LLM changes the open page (or .css / .js file); with a part selected in </> Code only that part is sent and changed.
+- **🎙** speaks instead of typing: press it, say what you want, press ⏹ - this computer's speech to text writes it into the box (asked to be downloaded the first time).
+- The change comes in as **one** change: "+3 −1 line(s)", the page marked changed; **↶ Undo** puts it back. Nothing is saved until 💾 Save. ⌚ lists your last asks to use again.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -448,5 +448,8 @@
     new root.MutationObserver(go).observe(d, { attributes: true, attributeFilter: ["class"] });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, dbStatus, state: () => St }, pure);
+  /** 2.865.0: the open file's text replaced (the ✨ AI docker) - marked changed, the tab drawn again; WYSIWYG edits taken in first */
+  function setText(t) { syncWys(); St.text = String(t); changed(); paintTab(); }
+  function currentText() { syncWys(); if (St.tab === "code") St.text = $("wbCode").value; return St.text; }
+  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, dbStatus, setText, currentText, state: () => St }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

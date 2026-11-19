@@ -14518,6 +14518,13 @@ node scripts/test-864.js > /tmp/t864.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui864-ui.js > /tmp/ui864.log 2>&1 \
   && ok "2.864.0 browser test: line numbers, colours lined up, <section> not closed marked + listed + jumped to, B wraps, Ctrl+/ + Ctrl+Z" \
   || { bad "2.864.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui864.log | head -12; }
+# ---- 2.865.0 (✨ the web builder's AI prompt docker - typed or spoken)
+node scripts/test-865.js > /tmp/t865.log 2>&1 \
+  && ok "2.865.0 webAi units: whole file / the selected part, the code block picked, no code / half a page / too long refused, +n −m" \
+  || { bad "2.865.0 units"; grep -a "^FAIL" -A1 /tmp/t865.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui865-ui.js > /tmp/ui865.log 2>&1 \
+  && ok "2.865.0 browser test: ✨ panel, Enter changes the page (one change, ↶ Undo), a selection only, 🎙 fake mic -> /api/voice/hear -> typed" \
+  || { bad "2.865.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui865.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
