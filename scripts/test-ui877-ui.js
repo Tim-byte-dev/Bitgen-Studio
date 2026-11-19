@@ -40,7 +40,7 @@ const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX
     await p.waitForTimeout(600);
     const look = await ev(() => { const P = document.getElementById("acPaper"), cs = getComputedStyle(P); return { bg: cs.backgroundColor, img: cs.backgroundImage.includes("repeating-linear-gradient"), tabs: [...document.querySelectorAll("#acTabs button")].map((b) => b.textContent) }; });
     check("the old ledger look: a pale green columnar pad with ruled lines; index-card tabs Summary … Accounts",
-      look.img && /rgb\(238, 244, 228\)/.test(look.bg) && look.tabs.join("|") === "Summary|Documents|Journals|Ledger|Trial Balance|Profit & Loss|Balance Sheet|BAS|Jobs|Accounts", look);
+      look.img && /rgb\(238, 244, 228\)/.test(look.bg) && look.tabs.join("|") === "Summary|Documents|Journals|Ledger|Trial Balance|Profit & Loss|Balance Sheet|BAS|🏦 Bank|Jobs|Accounts", look);
     // a job first
     await ev(() => H3Accounts.show("jobs")); await p.waitForSelector("#acJobCode");
     await p.fill("#acJobCode", "smith-01"); await p.fill("#acJobName", "Smith kitchen"); await p.fill("#acJobClient", "J Smith"); await p.click("#acJobAdd");

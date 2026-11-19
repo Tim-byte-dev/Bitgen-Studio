@@ -1332,6 +1332,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **✨ AI 读取收据、CSV、打印 BAS** — 📒 Accounts 中的 ＋ ✨ Read a receipt…（照片、扫描件或 PDF）：你的视觉模型读取供应商、ABN、日期、明细、合计和 GST，bitGen 核对（日期、合计、GST 约 1/11、ABN、科目），填好对话框供你核对并保存；每个列表和报表的 ⤓ CSV；BAS 工作表 🖨 打印 / PDF。 *Where:* 📒 Accounts。 *Since:* 2.880.0
 - **✉ 邮寄发票和 ⤺ 贷项通知单** — 发票 / 报价单 / 贷项通知单的 ⤓ PDF 文件（bitGen 生成），✉ 在 ✉ Mail 中打开附有 PDF、客户邮箱、主题和正文的邮件，发送后标记 ✉✓；⤺ 为发票开具贷项通知单（GST 登记时为 Adjustment Note），应用到发票或单独退款，账簿和 BAS 中作为减少调整。 *Where:* 📒 Accounts ▸ Documents。 *Since:* 2.881.0
 - **🏦 银行对账单与对账** — 导入网上银行的对账单（澳大利亚银行的 CSV、OFX / QFX、QIF，或粘贴），与账簿匹配（自动匹配唯一的相同金额，建议未结发票 / 账单和以前用过的账户），✚ 从一行创建付款、支出、销售或转账，⚖ 用期末余额检查并 ✔ 对账。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.882.0
+- **🧾 税务设置与 👷 工资发放** — 组织形式、BAS 频率、GST、PAYG 预扣（工资账户、12 % 养老金）和 PAYG 分期预缴（T7 金额或 T2 比率）；工资发放生成日记账（税前、预扣税、实发、养老金）；BAS 显示 W1 / W2 / 4、T1 / T11 / T7 / 5A 和 8A / 8B / 9。不保存税号。 *Where:* 📒 Accounts ▸ 🧾 Taxes / ＋ 👷 Pay run。 *Since:* 2.883.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

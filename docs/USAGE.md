@@ -9913,6 +9913,20 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   the books' balance, less money in the books not on the statement yet, plus lines not in the books, against the statement.
   When it agrees to the cent, **✔ Reconcile** marks the lines to that date reconciled (**↶ Undo last** frees them).
 
+## 🧾 Taxes and 👷 pay runs in Accounts (2.883.0)
+
+- **📒 Accounts ▸ 🧾 Taxes…** keeps your business's tax settings: its structure (sole trader, partnership, company, trust),
+  how often you lodge the BAS, GST (registered; cash or accrual), **PAYG withholding** (registered, the wages account, the
+  super guarantee rate - 12 % from 1 July 2025, change it if it changes) and **PAYG instalments**: none, the amount the ATO
+  worked out (T7, a quarter) or its rate (T2) on your instalment income (T1 = income without GST).
+- **＋ 👷 Pay run** pays one person: the name, pay date, the gross, the tax withheld (from the ATO's tax tables or calculator -
+  bitGen does not work it out) and super (worked out at the rate, change it when some of the pay is not ordinary pay). It
+  shows the net pay and makes the General Journal entry: Dr Wages, Cr the bank (net), Cr PAYG Withholding Payable, Dr
+  Superannuation, Cr Superannuation Payable. No tax file number is asked or kept.
+- The **BAS** tab (and its 🖨 worksheet and ⤓ CSV) then shows **W1** (gross wages), **W2** (tax withheld) and **4**; **T1 / T2 /
+  T11** or **T7** and **5A**; and the summary **8A** (1A + 4 + 5A), **8B** (1B) and **9** - payable or refundable. Check it
+  with your tax agent before you lodge.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

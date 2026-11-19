@@ -246,9 +246,13 @@
         + `<label><input type="checkbox" id="acBasisKeep"> keep as these books' basis</label></div>`
         + `<div class="acbas"><h4>GST amounts you owe the ATO from sales</h4>${box("G1", "Total sales (including any GST)", b.G1)}${box("G2", "Export sales", b.G2)}${box("G3", "Other GST-free sales", b.G3)}${box("1A", "GST on sales", b["1A"])}`
         + `<h4>GST amounts the ATO owes you from purchases</h4>${box("G10", "Capital purchases (including any GST)", b.G10)}${box("G11", "Non-capital purchases (including any GST)", b.G11)}${box("1B", "GST on purchases", b["1B"])}`
-        + `<h4>Summary</h4><div class="box"><span class="lbl" style="font-weight:700">1A − 1B: ${esc(b.verdict)}</span><span class="fig">$${Math.abs(b.net).toLocaleString("en-AU")}</span></div></div>`
+        + (b.payg && b.payg.paygShown   // 2.883.0: PAYG withheld (W1, W2 -> 4), the instalment (T1 × T2 = T11, or T7 -> 5A), 8A / 8B / 9
+          ? `<h4>PAYG tax withheld</h4>${box("W1", "Total salary, wages and other payments", b.payg.W1)}${box("W2", "Amounts withheld from them", b.payg.W2)}${box("4", "PAYG tax withheld", b.payg["4"])}`
+            + `<h4>PAYG income tax instalment</h4>${b.payg.instalments === "rate" ? box("T1", "PAYG instalment income", b.payg.T1) + `<div class="box"><span class="cd">T2</span><span class="lbl">${esc("Instalment rate")}</span><span class="fig">${b.payg.T2} %</span></div>` + box("T11", "T1 × T2", b.payg.T11) : b.payg.instalments === "amount" ? box("T7", "Instalment amount (from the ATO)", b.payg.T7) : ""}${box("5A", "PAYG income tax instalment", b.payg["5A"])}`
+            + `<h4>Summary</h4>${box("8A", "Owed to the ATO (1A + 4 + 5A)", b.payg["8A"])}${box("8B", "Owed by the ATO (1B)", b.payg["8B"])}<div class="box"><span class="cd">9</span><span class="lbl" style="font-weight:700">${esc(b.payg.verdictAll)}</span><span class="fig">$${Math.abs(b.payg["9"]).toLocaleString("en-AU")}</span></div></div>`
+          : `<h4>Summary</h4><div class="box"><span class="lbl" style="font-weight:700">1A − 1B: ${esc(b.verdict)}</span><span class="fig">$${Math.abs(b.net).toLocaleString("en-AU")}</span></div></div>`)
         + (b.adjustments["1A"] || b.adjustments["1B"] ? `<div class="acnote">Includes GST adjustments from the General Journal: 1A $${dollars(b.adjustments["1A"])}, 1B $${dollars(b.adjustments["1B"])}.</div>` : "")
-        + `<div class="acnote">Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. PAYG withholding (W1, W2) and instalments come with the taxes settings later.</div>`;
+        + `<div class="acnote">Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. ${b.payg && b.payg.paygShown ? "PAYG figures from your pay runs (👷) and the tax settings." : "PAYG withholding (W1, W2) and instalments (T1, T7): set them in 🧾 Taxes."}</div>`;
     },
     async jobs() {
       const r = await report("jobs");
@@ -411,6 +415,9 @@
       try { await loadBooks(); await readReceipt(await fileAsDataUrl(f), f.name); } catch (e) { msg("✗ " + e.message, true); }
     });
     on("acNewJournal", "click", () => loadBooks().then(journalForm));
+    // 2.883.0: 🧾 the tax settings + 👷 a pay run (accttax.js)
+    on("acTaxes", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.open(ctx())).catch((er) => msg("✗ " + er.message, true)));
+    on("acPayRun", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.payRun(ctx())).catch((er) => msg("✗ " + er.message, true)));
     on("acTabs", "click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
     on("acDlgCancel", "click", () => $("acDlg").close());
     on("acDlgOk", "click", async () => {

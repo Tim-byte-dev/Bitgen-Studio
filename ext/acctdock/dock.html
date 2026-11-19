@@ -54,7 +54,7 @@
           .bank-tab tr.bank-ignored td { color: #8a927f; text-decoration: line-through; }
           .bank-tab tr.bank-ignored td.bank-act { text-decoration: none; }
           .bank-what { font-style: italic; color: #4c5d43; }
-          .bank-h4 { font: 700 13px Georgia, serif; font-variant: small-caps; color: #2f4a26; margin: 12px 0 2px; }
+          .bank-h4, .tx-h { font: 700 13px Georgia, serif; font-variant: small-caps; color: #2f4a26; margin: 12px 0 2px; }
           .bank-rec { max-width: 520px; }
           .bank-pre { font: 11px monospace; background: #f8fbf3; border: 1px solid #b9d3a9; padding: 4px; max-height: 120px; overflow: auto; white-space: pre; }
           .acfilters { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -103,6 +103,8 @@
           <input type="file" id="acReadFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none">
           <button class="ghost" id="acNewQuote" type="button" title="A quote - written like an invoice, nothing is entered in the books until it is made an invoice">＋ 📝 Quote</button>
           <button class="ghost" id="acNewJournal" type="button" title="A general journal entry (debits = credits)">＋ ✎ Journal entry</button>
+          <button class="ghost" id="acPayRun" type="button" title="Pay someone: the gross, the tax withheld, super - the journal entry is made for you (W1 / W2 on the BAS)">＋ 👷 Pay run</button>
+          <button class="ghost" id="acTaxes" type="button" title="Your business's tax settings: structure, GST, PAYG withholding, PAYG instalments, super">🧾 Taxes…</button>
           <span id="acMsg"></span>
         </div>
         <div id="acTabs"></div>

@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "acctdock.js",
-    "acctbank.js"
+    "acctbank.js",
+    "accttax.js"
   ]
 }

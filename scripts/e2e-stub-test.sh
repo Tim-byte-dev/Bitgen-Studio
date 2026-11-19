@@ -14565,6 +14565,13 @@ node scripts/test-882.js > /tmp/t882.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui882-ui.js > /tmp/ui882.log 2>&1 \
   && ok "2.882.0 browser test: 🏦 Bank - a CSV through the file box (1 matched by itself), ✚ the open invoice paid, ✚ Make… a GST-free bank fee, the next one 'as before', ⚖ out by $0.10, ✔ reconciled" \
   || { bad "2.882.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui882.log | head -12; }
+# ---- 2.883.0 (📒 Accounts: 🧾 Taxes settings, 👷 pay runs, PAYG W1 / W2 / T1 / T7 / 5A / 8A / 8B / 9 on the BAS)
+node scripts/test-883.js > /tmp/t883.log 2>&1 \
+  && ok "2.883.0 units: lib/accountingTax.js (settings + refusals, T7 dollars -> cents kept, a pay run's journal incl. 12 % super, W1 / W2 / 4, T1 x T2 = T11 / T7 per quarter -> 5A, 8A / 8B / 9), the CSV + the worksheet, routes, the docker" \
+  || { bad "2.883.0 units"; grep -a "^FAIL" -A1 /tmp/t883.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui883-ui.js > /tmp/ui883.log 2>&1 \
+  && ok "2.883.0 browser test: 🧾 Taxes (company, withholding, rate 4.5 %, accrual), ＋ 👷 Pay run (super 12 %, the net shown), the BAS tab W1 / W2 / 4, T1 / T2 / T11 / 5A, 8A / 8B / 9" \
+  || { bad "2.883.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui883.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

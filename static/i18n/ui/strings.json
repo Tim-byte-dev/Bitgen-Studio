@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7200,
+ "count": 7222,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67116,6 +67116,226 @@
    ],
    "where": [
     "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "＋ 👷 Pay run",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "🧾 Taxes…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "🧾 Taxes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "👷 Pay run",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Pay someone: the gross, the tax withheld, super - the journal entry is made for you (W1 / W2 on the BAS)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Your business's tax settings: structure, GST, PAYG withholding, PAYG instalments, super",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Sole trader",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Partnership",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Trust",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Quarterly",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Monthly",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Annually",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "No PAYG instalments",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "The amount the ATO worked out (T7)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Instalment income × the ATO's rate (T1 × T2)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Total salary, wages and other payments",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Amounts withheld from them",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "PAYG instalment income",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Instalment rate",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Instalment amount (from the ATO)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Owed to the ATO (1A + 4 + 5A)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Owed by the ATO (1B)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
    ]
   }
  ]

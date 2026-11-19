@@ -110,7 +110,7 @@ const docs = [{ kind: "invoice", balance: 5, status: "overdue" }, { kind: "invoi
 check("docker filters: due to be paid to us / by us, overdue, paid to us / by us, by kind", D.filterDocs(docs, "owedToUs").length === 1 && D.filterDocs(docs, "owedByUs").length === 1 && D.filterDocs(docs, "overdue").length === 1
   && D.filterDocs(docs, "paidToUs").length === 1 && D.filterDocs(docs, "paidByUs").length === 1 && D.filterDocs(docs, "receipt").length === 1 && D.filterDocs(docs, "all").length === 4);
 check("docker: the tabs Summary … Accounts (2.882.0 + 🏦 Bank); on the app strip; its own extension", D.TABS.map((t) => t[1]).join("|") === "Summary|Documents|Journals|Ledger|Trial Balance|Profit & Loss|Balance Sheet|BAS|🏦 Bank|Jobs|Accounts"
-  && /\["tX_acctdock", "📒", "Accounts"\]/.test(src("static/appstrip.js")) && JSON.parse(src("ext/acctdock/ext.json")).scripts.join() === "acctdock.js,acctbank.js");
+  && /\["tX_acctdock", "📒", "Accounts"\]/.test(src("static/appstrip.js")) && JSON.parse(src("ext/acctdock/ext.json")).scripts.join() === "acctdock.js,acctbank.js,accttax.js");
 const H = src("ext/acctdock/dock.html");
 check("the old accounting look: a green columnar pad (ruled lines, red margin), index-card tabs, typewriter figures, double-ruled totals, rubber stamps",
   /repeating-linear-gradient/.test(H) && /#acPaper::before/.test(H) && /border-bottom: 3px double/.test(H) && /Courier/.test(H) && /\.acstamp/.test(H) && /font-variant: small-caps/.test(H));

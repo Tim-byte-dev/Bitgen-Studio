@@ -11,6 +11,7 @@
 //   POST   /api/accounts/job        {biz, job};       DELETE /api/accounts/job/:code
 //   POST   /api/accounts/account    {biz, account};   DELETE /api/accounts/account/:code
 //   POST   /api/accounts/settings   {biz, settings}   cash / accrual, GST registered, invoice / quote prefix, terms, how to pay, profile
+//   2.883.0  🧾 GET / POST /api/accounts/tax {tax} · POST /api/accounts/payrun {pay}
 //   2.882.0  🏦 Bank (lib/bankRec.js + lib/bankStatement.js): GET /api/accounts/bank?biz=&account= · POST /api/accounts/bank/import
 //            {account, name, text, dayFirst, map} · POST /api/accounts/bank/line/:id/match {key} | /unmatch | /ignore {on} | /create {how}
 //            DELETE /api/accounts/bank/line/:id · GET /api/accounts/bank/check?account=&date=&balance= · POST /api/accounts/bank/reconcile
@@ -95,6 +96,11 @@ function mount(app) {
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
   app.post("/api/accounts/doc/:id/sent", small, wrap((req) => A().markSent(biz(req), req.params.id, (req.body || {}).date)));
+  // 2.883.0: 🧾 the business's tax settings (PAYG withholding / instalments, super rate) and 👷 pay runs (lib/accountingTax.js)
+  const TX = () => require("../lib/accountingTax");
+  app.get("/api/accounts/tax", wrap((req) => ({ tax: TX().settings(A().load(biz(req))), structures: TX().STRUCT, cycles: TX().CYCLE, instalments: TX().INSTAL })));
+  app.post("/api/accounts/tax", small, wrap((req) => TX().saveTax(biz(req), (req.body || {}).tax)));
+  app.post("/api/accounts/payrun", small, wrap((req) => TX().payRun(biz(req), (req.body || {}).pay)));
   // 2.882.0: 🏦 bank statements matched against the books, reconciled
   const R = () => require("../lib/bankRec");
   app.get("/api/accounts/bank", wrap((req) => R().viewOf(biz(req), req.query.account)));

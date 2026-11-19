@@ -10331,236 +10331,332 @@
    "src": "ext/acctdock/acctdock.js:248"
   },
   {
-   "s": "Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. PAYG withholding (W1, W2) and instalments come with the taxes settings later",
+   "s": "PAYG tax withheld",
+   "src": "ext/acctdock/acctdock.js:250"
+  },
+  {
+   "s": "PAYG income tax instalment",
    "src": "ext/acctdock/acctdock.js:251"
   },
   {
+   "s": "Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. PAYG figures from your pay runs (👷) and the tax settings",
+   "src": "ext/acctdock/acctdock.js:255"
+  },
+  {
+   "s": "Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. PAYG withholding (W1, W2) and instalments (T1, T7): set them in 🧾 Taxes",
+   "src": "ext/acctdock/acctdock.js:255"
+  },
+  {
    "s": "Add job",
-   "src": "ext/acctdock/acctdock.js:256"
+   "src": "ext/acctdock/acctdock.js:260"
   },
   {
    "s": "JOB-001",
-   "src": "ext/acctdock/acctdock.js:256"
+   "src": "ext/acctdock/acctdock.js:260"
   },
   {
    "s": "What the job is",
-   "src": "ext/acctdock/acctdock.js:256"
+   "src": "ext/acctdock/acctdock.js:260"
   },
   {
    "s": "Client",
-   "src": "ext/acctdock/acctdock.js:256"
+   "src": "ext/acctdock/acctdock.js:260"
   },
   {
    "s": "Profit",
-   "src": "ext/acctdock/acctdock.js:257"
+   "src": "ext/acctdock/acctdock.js:261"
   },
   {
    "s": "Owed to us",
-   "src": "ext/acctdock/acctdock.js:257"
+   "src": "ext/acctdock/acctdock.js:261"
   },
   {
    "s": "We owe",
-   "src": "ext/acctdock/acctdock.js:257"
+   "src": "ext/acctdock/acctdock.js:261"
   },
   {
    "s": "Close the job",
-   "src": "ext/acctdock/acctdock.js:259"
+   "src": "ext/acctdock/acctdock.js:263"
   },
   {
    "s": "Delete (only without entries)",
-   "src": "ext/acctdock/acctdock.js:259"
+   "src": "ext/acctdock/acctdock.js:263"
   },
   {
    "s": "Account name",
-   "src": "ext/acctdock/acctdock.js:266"
-  },
-  {
-   "s": "bank / cash / card",
-   "src": "ext/acctdock/acctdock.js:267"
-  },
-  {
-   "s": "Add / change",
-   "src": "ext/acctdock/acctdock.js:267"
-  },
-  {
-   "s": "GST registered",
-   "src": "ext/acctdock/acctdock.js:268"
-  },
-  {
-   "s": "Invoice numbers start",
-   "src": "ext/acctdock/acctdock.js:268"
-  },
-  {
-   "s": "Quote numbers start",
-   "src": "ext/acctdock/acctdock.js:269"
-  },
-  {
-   "s": "Invoices due after",
-   "src": "ext/acctdock/acctdock.js:269"
-  },
-  {
-   "s": "days · quotes valid for",
-   "src": "ext/acctdock/acctdock.js:269"
-  },
-  {
-   "s": "days",
-   "src": "ext/acctdock/acctdock.js:269"
-  },
-  {
-   "s": "How to pay (on invoices)",
    "src": "ext/acctdock/acctdock.js:270"
   },
   {
-   "s": "Invoice layout",
+   "s": "bank / cash / card",
    "src": "ext/acctdock/acctdock.js:271"
   },
   {
-   "s": "Quote layout",
+   "s": "Add / change",
    "src": "ext/acctdock/acctdock.js:271"
   },
   {
-   "s": "Design a layout in the image editor",
+   "s": "GST registered",
    "src": "ext/acctdock/acctdock.js:272"
   },
   {
-   "s": "A new A4 page in the image editor with the fields to place",
+   "s": "Invoice numbers start",
    "src": "ext/acctdock/acctdock.js:272"
   },
   {
-   "s": "Invoices headed with",
+   "s": "Quote numbers start",
    "src": "ext/acctdock/acctdock.js:273"
   },
   {
-   "s": "the business details used last —",
+   "s": "Invoices due after",
    "src": "ext/acctdock/acctdock.js:273"
   },
   {
-   "s": "Invoices are headed with this business's details (name, logo, address, ABN)",
+   "s": "days · quotes valid for",
    "src": "ext/acctdock/acctdock.js:273"
   },
   {
-   "s": "Tax code",
+   "s": "days",
+   "src": "ext/acctdock/acctdock.js:273"
+  },
+  {
+   "s": "How to pay (on invoices)",
    "src": "ext/acctdock/acctdock.js:274"
   },
   {
-   "s": "system",
+   "s": "Invoice layout",
    "src": "ext/acctdock/acctdock.js:275"
   },
   {
+   "s": "Quote layout",
+   "src": "ext/acctdock/acctdock.js:275"
+  },
+  {
+   "s": "Design a layout in the image editor",
+   "src": "ext/acctdock/acctdock.js:276"
+  },
+  {
+   "s": "A new A4 page in the image editor with the fields to place",
+   "src": "ext/acctdock/acctdock.js:276"
+  },
+  {
+   "s": "Invoices headed with",
+   "src": "ext/acctdock/acctdock.js:277"
+  },
+  {
+   "s": "the business details used last —",
+   "src": "ext/acctdock/acctdock.js:277"
+  },
+  {
+   "s": "Invoices are headed with this business's details (name, logo, address, ABN)",
+   "src": "ext/acctdock/acctdock.js:277"
+  },
+  {
+   "s": "Tax code",
+   "src": "ext/acctdock/acctdock.js:278"
+  },
+  {
+   "s": "system",
+   "src": "ext/acctdock/acctdock.js:279"
+  },
+  {
    "s": "no job —",
-   "src": "ext/acctdock/acctdock.js:289"
+   "src": "ext/acctdock/acctdock.js:293"
   },
   {
    "s": "What it was",
-   "src": "ext/acctdock/acctdock.js:298"
+   "src": "ext/acctdock/acctdock.js:302"
   },
   {
    "s": "Remove the line",
-   "src": "ext/acctdock/acctdock.js:301"
+   "src": "ext/acctdock/acctdock.js:305"
   },
   {
    "s": "Invoice no. (blank = next)",
-   "src": "ext/acctdock/acctdock.js:303"
+   "src": "ext/acctdock/acctdock.js:307"
   },
   {
    "s": "Quote no. (blank = next)",
-   "src": "ext/acctdock/acctdock.js:303"
+   "src": "ext/acctdock/acctdock.js:307"
   },
   {
    "s": "Credit note no. (blank = next)",
-   "src": "ext/acctdock/acctdock.js:303"
+   "src": "ext/acctdock/acctdock.js:307"
   },
   {
    "s": "Their invoice / receipt no",
-   "src": "ext/acctdock/acctdock.js:303"
+   "src": "ext/acctdock/acctdock.js:307"
   },
   {
    "s": "Paid from",
-   "src": "ext/acctdock/acctdock.js:305"
+   "src": "ext/acctdock/acctdock.js:309"
   },
   {
    "s": "Valid until",
-   "src": "ext/acctdock/acctdock.js:305"
+   "src": "ext/acctdock/acctdock.js:309"
   },
   {
    "s": "Blank = 14 days after the date",
-   "src": "ext/acctdock/acctdock.js:305"
+   "src": "ext/acctdock/acctdock.js:309"
   },
   {
    "s": "Customer's address",
-   "src": "ext/acctdock/acctdock.js:308"
+   "src": "ext/acctdock/acctdock.js:312"
   },
   {
    "s": "Customer's email",
-   "src": "ext/acctdock/acctdock.js:308"
+   "src": "ext/acctdock/acctdock.js:312"
   },
   {
    "s": "Customer's ABN",
-   "src": "ext/acctdock/acctdock.js:309"
+   "src": "ext/acctdock/acctdock.js:313"
   },
   {
    "s": "for $1,000 or more",
-   "src": "ext/acctdock/acctdock.js:309"
+   "src": "ext/acctdock/acctdock.js:313"
   },
   {
    "s": "Description",
-   "src": "ext/acctdock/acctdock.js:310"
+   "src": "ext/acctdock/acctdock.js:314"
   },
   {
    "s": "Qty",
-   "src": "ext/acctdock/acctdock.js:310"
+   "src": "ext/acctdock/acctdock.js:314"
   },
   {
    "s": "Unit price incl. GST",
-   "src": "ext/acctdock/acctdock.js:310"
+   "src": "ext/acctdock/acctdock.js:314"
   },
   {
    "s": "Amount incl. GST",
-   "src": "ext/acctdock/acctdock.js:310"
+   "src": "ext/acctdock/acctdock.js:314"
   },
   {
    "s": "Line",
-   "src": "ext/acctdock/acctdock.js:311"
+   "src": "ext/acctdock/acctdock.js:315"
   },
   {
    "s": "Attach a copy (picture or PDF)",
-   "src": "ext/acctdock/acctdock.js:313"
+   "src": "ext/acctdock/acctdock.js:317"
   },
   {
    "s": "Attach the bill (picture or PDF)",
-   "src": "ext/acctdock/acctdock.js:313"
+   "src": "ext/acctdock/acctdock.js:317"
   },
   {
    "s": "Attach the receipt (picture or PDF)",
-   "src": "ext/acctdock/acctdock.js:313"
+   "src": "ext/acctdock/acctdock.js:317"
   },
   {
    "s": "Read it",
-   "src": "ext/acctdock/acctdock.js:315"
+   "src": "ext/acctdock/acctdock.js:319"
   },
   {
    "s": "The vision model reads the attached receipt / bill and fills this in",
-   "src": "ext/acctdock/acctdock.js:315"
+   "src": "ext/acctdock/acctdock.js:319"
   },
   {
    "s": "A tax invoice of $1,000 or more must show the buyer's name or ABN",
-   "src": "ext/acctdock/acctdock.js:340"
+   "src": "ext/acctdock/acctdock.js:344"
   },
   {
    "s": "the file is over 25 MB",
-   "src": "ext/acctdock/acctdock.js:348"
+   "src": "ext/acctdock/acctdock.js:352"
   },
   {
    "s": "Into",
-   "src": "ext/acctdock/acctdock.js:358"
+   "src": "ext/acctdock/acctdock.js:362"
   },
   {
    "s": "Being (what it is for)",
-   "src": "ext/acctdock/acctdock.js:366"
+   "src": "ext/acctdock/acctdock.js:370"
   },
   {
    "s": "Note",
-   "src": "ext/acctdock/acctdock.js:367"
+   "src": "ext/acctdock/acctdock.js:371"
+  },
+  {
+   "s": "Your business",
+   "src": "ext/acctdock/accttax.js:15"
+  },
+  {
+   "s": "BAS lodged",
+   "src": "ext/acctdock/accttax.js:16"
+  },
+  {
+   "s": "registered for GST",
+   "src": "ext/acctdock/accttax.js:17"
+  },
+  {
+   "s": "Accounting",
+   "src": "ext/acctdock/accttax.js:18"
+  },
+  {
+   "s": "PAYG withholding (W1, W2)",
+   "src": "ext/acctdock/accttax.js:19"
+  },
+  {
+   "s": "registered - I pay wages and withhold tax",
+   "src": "ext/acctdock/accttax.js:19"
+  },
+  {
+   "s": "Wages account",
+   "src": "ext/acctdock/accttax.js:20"
+  },
+  {
+   "s": "Super guarantee",
+   "src": "ext/acctdock/accttax.js:20"
+  },
+  {
+   "s": "of ordinary pay",
+   "src": "ext/acctdock/accttax.js:20"
+  },
+  {
+   "s": "PAYG income tax instalments (T1, T2, T7)",
+   "src": "ext/acctdock/accttax.js:21"
+  },
+  {
+   "s": "Instalment amount a quarter (T7) $",
+   "src": "ext/acctdock/accttax.js:22"
+  },
+  {
+   "s": "Instalment rate (T2)",
+   "src": "ext/acctdock/accttax.js:23"
+  },
+  {
+   "s": "of the instalment income (T1 = income without GST)",
+   "src": "ext/acctdock/accttax.js:23"
+  },
+  {
+   "s": "The amounts and rates come from the ATO (your activity statement or your tax agent). The BAS tab then shows W1 / W2, T1 / T7, 5A and the total (8A, 8B, 9). A worksheet - check it with your tax agent",
+   "src": "ext/acctdock/accttax.js:24"
+  },
+  {
+   "s": "Pay date",
+   "src": "ext/acctdock/accttax.js:40"
+  },
+  {
+   "s": "week ending 16/11/2026",
+   "src": "ext/acctdock/accttax.js:40"
+  },
+  {
+   "s": "Gross pay $",
+   "src": "ext/acctdock/accttax.js:41"
+  },
+  {
+   "s": "Tax withheld $",
+   "src": "ext/acctdock/accttax.js:41"
+  },
+  {
+   "s": "Super $",
+   "src": "ext/acctdock/accttax.js:42"
+  },
+  {
+   "s": "PAYG withholding is not ticked in 🧾 Taxes - the BAS still shows W1 / W2 once a pay run is entered",
+   "src": "ext/acctdock/accttax.js:45"
+  },
+  {
+   "s": "The tax withheld comes from the ATO's tax tables (or its calculator) - bitGen does not work it out. No tax file number is needed here",
+   "src": "ext/acctdock/accttax.js:46"
   },
   {
    "s": "not running",
@@ -30558,31 +30654,35 @@
   },
   {
    "p": "Includes GST adjustments from the General Journal: 1A ${0}, 1B ${1}",
-   "src": "ext/acctdock/acctdock.js:250"
+   "src": "ext/acctdock/acctdock.js:254"
   },
   {
    "p": "Blank = {0} days after the date",
-   "src": "ext/acctdock/acctdock.js:305"
+   "src": "ext/acctdock/acctdock.js:309"
   },
   {
    "p": "kept: {0}",
-   "src": "ext/acctdock/acctdock.js:313"
+   "src": "ext/acctdock/acctdock.js:317"
   },
   {
    "p": "Total ${0} · GST ${1} · without GST ${2}",
-   "src": "ext/acctdock/acctdock.js:338"
+   "src": "ext/acctdock/acctdock.js:342"
   },
   {
    "p": "{0} {1} {2} - total ${3}, still owing",
-   "src": "ext/acctdock/acctdock.js:356"
+   "src": "ext/acctdock/acctdock.js:360"
   },
   {
    "p": "Dr ${0} · Cr ${1} ✓ balances",
-   "src": "ext/acctdock/acctdock.js:374"
+   "src": "ext/acctdock/acctdock.js:378"
   },
   {
    "p": "Dr ${0} · Cr ${1} - must balance",
-   "src": "ext/acctdock/acctdock.js:374"
+   "src": "ext/acctdock/acctdock.js:378"
+  },
+  {
+   "p": "Net pay ${0} from the bank · ${1} to the ATO (PAYG withheld) · ${2} super to the fund",
+   "src": "ext/acctdock/accttax.js:58"
   },
   {
    "p": "ComfyUI is not reachable at {0}. Start it in Settings → ComfyUI (or press ↻ once it is up)",
