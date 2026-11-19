@@ -6428,6 +6428,14 @@ BAS 数字是工作表：请通过 ATO 或你的税务代理申报。PAYG 预扣
 - Documents、Journals、Ledger、Trial Balance、Profit & Loss、Balance Sheet、BAS 和 Jobs 顶部的 **⤓ CSV** 将该列表保存为 .csv 文件，可用任何电子表格（包括 ▦ Spreadsheet 停靠窗）打开或交给会计师。
 - BAS 标签页上的 **🖨 Print**：把 GST 工作表做成页面——你的企业和 ABN、期间和基础、G1、G2、G3、G10、G11、1A、1B 以及应缴或应退金额——打印或另存为 PDF，留作记录或交给税务代理。
 
+## ✉ 在 Accounts 中邮寄发票和 ⤺ 贷项通知单 (2.881.0)
+<!-- en: email-invoices-and-credit-notes-in-accounts-2-881-0 177b0b86b24f -->
+
+- 发票、报价单或贷项通知单上的 **⤓** 提供其 **PDF 文件**（由 bitGen 生成——你的业务信息、标志和 ABN、明细、GST 和合计、付款方式，付清后盖 PAID 章）。
+- **✉** 打开 **✉ Mail** 的撰写窗口，附上 PDF，填好客户邮箱、主题（“Tax Invoice INV-0001 from …”）和正文（金额或应付余额、到期日、付款方式）——可随意修改，然后 ➤ Send。发送后单据显示 **✉✓**（草稿报价单变为 sent）。✉ Mail 需要先添加你的邮箱（✉ Mail 中的 ⚙ Accounts）。
+- 发票上的 **⤺** 为其开具**贷项通知单**——已登记 GST 时为 **Adjustment Note**（ATO 的名称），编号 CN-0001，带有发票的明细，改为要退回的内容。它会应用到该发票（应付余额减少，绝不超过尚欠金额）。没有发票的贷项通知单是客户持有的贷项——用 💵 退款。
+- 在账簿中，贷项通知单冲回销售（借记收入和 GST Collected，贷记 Accounts Receivable）。在 BAS 中它是减少调整：权责发生制计入其所在期间；收付实现制通过发票的付款计入（或在单独的贷项退款时计入）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7174,
+ "count": 7178,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66856,6 +66856,46 @@
    ],
    "where": [
     "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
+   ]
+  },
+  {
+   "s": "New credit note",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - credit notes, PDF, email (2.881.0)"
+   ]
+  },
+  {
+   "s": "Change credit note",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - credit notes, PDF, email (2.881.0)"
+   ]
+  },
+  {
+   "s": "For invoice",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - credit notes, PDF, email (2.881.0)"
+   ]
+  },
+  {
+   "s": "A credit on its own - 💵 refund it later",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - credit notes, PDF, email (2.881.0)"
    ]
   }
  ]

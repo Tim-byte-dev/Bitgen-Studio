@@ -44,6 +44,9 @@
     const o = opts || {}, dlg = $("mlCompose"); if (!dlg) return;
     const v = V();
     S.kind = o.kind || "new"; S.acc = o.acc || (accounts()[0] || {}).id; S.folder = o.folder || null; S.body = o.body || null; S.atts = []; S.undo = null; S.dirty = false;
+    // 2.881.0: 📒 Accounts ✉ - the invoice's PDF comes attached ({name, type, size, data base64}), told when it is sent
+    S.atts = (Array.isArray(o.attachments) ? o.attachments : []).map((a) => ({ name: a.name, type: a.type || "application/octet-stream", size: a.size || 0, data: a.data }));
+    S.onSent = typeof o.onSent === "function" ? o.onSent : null;
     const from = $("mlCFrom");
     from.innerHTML = accounts().map((a) => `<option value="${v.esc(a.id)}">${v.esc(a.name === a.email ? a.email : a.name + " <" + a.email + ">")}</option>`).join("");
     from.value = S.acc || "";
@@ -129,6 +132,7 @@
       S.dirty = false; close();
       M().msg(`➤ sent to ${(r.accepted || []).length} ${(r.accepted || []).length === 1 ? "address" : "addresses"}` + (r.sent && r.sent.ok === false ? ` - not copied to Sent (${r.sent.why})` : "") + (r.rejected && r.rejected.length ? ` - refused: ${r.rejected.join(", ")}` : ""), !!(r.rejected && r.rejected.length));
       if (S.body && S.kind !== "forward") { const m = M().S.msgs.find((x) => x.uid === S.body.uid); if (m) { m.answered = true; M().paintList(); } }
+      if (S.onSent) { try { S.onSent(r); } catch (e) { /* the caller's */ } S.onSent = null; }
     });
   }
   function draft() {

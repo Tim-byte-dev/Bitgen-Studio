@@ -46,7 +46,7 @@ function mount(app) {
   app.get("/api/accounts/print/:id", (req, res) => {
     try {
       const B = A().load(biz(req)), V = A().view(B), d = V.docs.find((x) => x.id === req.params.id);
-      if (!d || (d.kind !== "invoice" && d.kind !== "quote")) return res.status(404).json({ error: "no such invoice or quote" });
+      if (!d || !["invoice", "quote", "credit"].includes(d.kind)) return res.status(404).json({ error: "no such invoice, quote or credit note" });
       const business = printBusiness(biz(req), B);
       const html = require("../lib/accountingPrint").printHtml(d, B, business, { auto: req.query.auto === "1", issues: A().invoiceIssues(B, d, business) });
       res.type("html").send(html);
@@ -55,7 +55,7 @@ function mount(app) {
   // 2.879.0: an invoice / quote as the image editor template's fields (📒 Layout ▾ = a template -> 🖨 fills it in the editor)
   app.get("/api/accounts/fields/:id", wrap((req) => {
     const B = A().load(biz(req)), d = A().view(B).docs.find((x) => x.id === req.params.id);
-    if (!d || (d.kind !== "invoice" && d.kind !== "quote")) throw Object.assign(new Error("no such invoice or quote"), { status: 404 });
+    if (!d || !["invoice", "quote", "credit"].includes(d.kind)) throw Object.assign(new Error("no such invoice, quote or credit note"), { status: 404 });
     const business = printBusiness(biz(req), B);
     return Object.assign(require("../lib/accountingPrint").fieldsFor(d, B, business), { kind: d.kind, number: d.number, layout: d.kind === "quote" ? B.settings.quoteLayout || "" : B.settings.invoiceLayout || "", issues: A().invoiceIssues(B, d, business) });
   }));
@@ -76,6 +76,21 @@ function mount(app) {
     try { const B = A().load(biz(req)); res.type("html").send(require("../lib/accountingCsv").basHtml(A().report(B, Object.assign({}, req.query, { kind: "bas" })), B, printBusiness(biz(req), B))); }
     catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
+  // 2.881.0: ⤓ the document as a real PDF (lib/invoicePdf.js) - inline, or ?b64=1 {name, data} for ✉ emailing it
+  app.get("/api/accounts/pdf/:id", async (req, res) => {
+    try {
+      const B = A().load(biz(req)), d = A().view(B).docs.find((x) => x.id === req.params.id);
+      if (!d || !["invoice", "quote", "credit"].includes(d.kind)) return res.status(404).json({ error: "no such invoice, quote or credit note" });
+      const business = printBusiness(biz(req), B);
+      let logo = null;
+      try { const lp = business && business.id ? require("../lib/businessProfiles").logoPath(business.id) : ""; if (lp && /\.(png|jpe?g)$/i.test(lp)) logo = { bytes: require("fs").readFileSync(lp), type: /png$/i.test(lp) ? "png" : "jpg" }; } catch (e) { /* no logo */ }
+      const bytes = Buffer.from(await require("../lib/invoicePdf").pdf(d, B, business, { logo }));
+      const name = `${require("../lib/accountingPrint").titleOf(d, B)} ${d.number || ""}${d.party ? " - " + d.party : ""}`.replace(/[\\/:*?"<>|]+/g, "-").trim() + ".pdf";
+      if (req.query.b64 === "1") return res.json({ name, type: "application/pdf", size: bytes.length, data: bytes.toString("base64") });
+      res.set("Content-Disposition", `inline; filename="${name.replace(/[^\x20-\x7e]/g, "_")}"`).type("application/pdf").send(bytes);
+    } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
+  app.post("/api/accounts/doc/:id/sent", small, wrap((req) => A().markSent(biz(req), req.params.id, (req.body || {}).date)));
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));
   app.post("/api/accounts/journal", small, wrap((req) => A().saveJournal(biz(req), (req.body || {}).entry)));

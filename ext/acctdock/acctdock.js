@@ -14,6 +14,8 @@
  *   Trial Balance · Profit & Loss · Balance Sheet · BAS (the worksheet: G1 G3 G10 G11 1A 1B, cash / accrual) · Jobs · Accounts
  * 2.878.0 ✍ write invoices + quotes: ＋ 📝 Quote, the customer (address, email, ABN), lines as quantity x unit price, 🖨 the page
  *   to print / Save as PDF (lib/accountingPrint.js - a tax invoice the ATO's way), ➜📤 a quote made an invoice, invoice settings.
+ * 2.881.0 ✉ email an invoice / quote / credit note with its PDF (lib/invoicePdf.js) through ✉ Mail's composer; ⤓ the PDF; ⤺ a credit
+ *   note (an adjustment note) for an invoice or on its own (💵 refund it).
  * 2.880.0 ✨ Read a receipt… (bar) / ✨ Read it (the dialog): the vision LLM reads the picture (a PDF's first page drawn first,
  *   pdf.js) -> lib/receiptRead.js checks it -> the dialog filled to check + Save; ⤓ CSV on every list / report; 🖨 the BAS worksheet.
  * Pure (Node: scripts/test-877.js): dollars, filterDocs, FILTERS, TABS.
@@ -28,13 +30,13 @@
     const a = Math.abs(n), s = String(Math.floor(a / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + String(a % 100).padStart(2, "0");
     return n < 0 ? "(" + s + ")" : s;
   }
-  const FILTERS = [["all", "All"], ["receipt", "Receipts"], ["bill", "Bills to pay"], ["invoice", "Invoices we sent"], ["quote", "Quotes"], ["owedToUs", "Due to be paid to us"],
+  const FILTERS = [["all", "All"], ["receipt", "Receipts"], ["bill", "Bills to pay"], ["invoice", "Invoices we sent"], ["quote", "Quotes"], ["credit", "Credit notes"], ["owedToUs", "Due to be paid to us"],
     ["owedByUs", "Due to be paid by us"], ["overdue", "Overdue"], ["paidToUs", "Paid to us"], ["paidByUs", "Paid by us"]];
   /** the documents a filter shows */
   function filterDocs(docs, f) {
     return (docs || []).filter((d) => {
       switch (f) {
-        case "receipt": case "bill": case "invoice": case "quote": return d.kind === f;
+        case "receipt": case "bill": case "invoice": case "quote": case "credit": return d.kind === f;
         case "owedToUs": return d.kind === "invoice" && d.balance > 0;
         case "owedByUs": return d.kind === "bill" && d.balance > 0;
         case "overdue": return d.status === "overdue";
@@ -62,8 +64,8 @@
   const report = (kind, extra) => api("/api/accounts/report?" + qs(Object.assign({ biz: S.biz, kind }, perQ(), extra || {})));
   const N = (c, dash) => `<span class="${Number(c) < 0 ? "neg" : ""}">${dollars(c, dash)}</span>`;
   const acc = (code) => (S.books.accounts.find((a) => a.code === code) || { name: "?" });
-  const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part", draft: "due", sent: "part", accepted: "ok", declined: "overdue", invoiced: "paid", expired: "overdue" };
-  const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤", quote: "📝" };
+  const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part", draft: "due", sent: "part", accepted: "ok", declined: "overdue", invoiced: "paid", expired: "overdue", applied: "paid", open: "due", refunded: "paid", credited: "paid" };
+  const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤", quote: "📝", credit: "⤺" };
   /* 2.879.0: 🖨 - the ledger page, or (Layout ▾ = an image editor template) that template opened in the image editor, filled */
   const ledgerPage = (id, auto) => root.open("/api/accounts/print/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz, auto: auto ? 1 : "" }), "_blank");
   async function editor() {
@@ -81,6 +83,29 @@
     await E.docTpl.fromTemplate(t);
     E.docTpl.fillValues(f.values, f.items);
     msg(`🖨 ${f.number} filled into your "${t.name}" layout in the image editor - File ▸ 🔍 Print Preview / 🖨 Print, or File ▸ Export ▸ Document for a PDF${f.issues.length ? " · ⚠ " + f.issues.join("; ") : ""}`, !!f.issues.length);
+    return true;
+  }
+  /** 2.881.0: ✉ email it - ✉ Mail's composer opens with the PDF attached, the customer's address, a subject and words; sent = marked */
+  async function emailDoc(id) {
+    const L = root.H3Layouts;
+    if (L && L.isOff({ kind: "dock", id: "maildock" })) return msg("✉ Mail is turned off - turn it on in Settings ▸ Dockers (👁) and add your mailbox", true);
+    const md = $("maildock");
+    if (md && md.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("maildock", "tX_maildock");
+    for (let i = 0; i < 60 && !(root.H3MailCompose && root.H3Mail && root.H3Mail.S); i++) await new Promise((r) => setTimeout(r, 150));
+    if (!root.H3MailCompose) return msg("✉ Mail is not here - turn it on in Settings ▸ Dockers", true);
+    if (!(root.H3Mail.S.accounts || []).length) { try { await root.H3Mail.loadAccounts(); } catch (e) { /* none */ } }
+    if (!(root.H3Mail.S.accounts || []).length) return msg("✉ add your mailbox in ✉ Mail first (⚙ Accounts) - then ✉ again", true);
+    const [f, pdf] = await Promise.all([api("/api/accounts/fields/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz })), api("/api/accounts/pdf/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz, b64: 1 }))]);
+    const v = f.values, k = f.kind, nm = String(v.client_name || "").trim().split(/\s+/).filter(Boolean);
+    // the greeting: "Ms K Brown" -> Ms Brown, "Jo Smith" -> Jo, a company (Pty Ltd …) or none -> there
+    const who = !nm.length || /\b(pty|ltd|limited|inc|llc|co|company|trust|group|services|council)\b/i.test(v.client_name) ? "there" : /^(mr|mrs|ms|miss|mx|dr|prof)\.?$/i.test(nm[0]) && nm.length > 1 ? nm[0] + " " + nm[nm.length - 1] : nm[0];
+    const text = `Hi ${who},\n\n` + (k === "quote" ? `Please find attached quote ${v.number} for ${v.total}, valid until ${v.due_date}.`
+      : k === "credit" ? `Please find attached ${v.title.toLowerCase()} ${v.number} for ${v.total}${v.reference ? `, crediting invoice ${v.reference}` : ""}.`
+      : `Please find attached ${v.title.toLowerCase()} ${v.number} for ${v.balance_due !== v.total ? v.balance_due + " (balance due)" : v.total}, due ${v.due_date}.` + (v.payment_details ? `\n\nHow to pay:\n${v.payment_details}\nPlease use ${v.number} as the reference.` : ""))
+      + `\n\nThank you,\n${v.from_name || ""}`;
+    root.H3MailCompose.open({ to: v.client_email || "", subject: `${v.title} ${v.number}${v.from_name ? " from " + v.from_name : ""}`, text, attachments: [pdf],
+      onSent: () => api("/api/accounts/doc/" + encodeURIComponent(id) + "/sent", { date: todayStr() }).then(refresh).then(() => msg(`✉ ${v.number} emailed to ${v.client_email || "the customer"}`)).catch(() => {}) });
+    msg(`✉ the email to ${v.client_email || "(type the address)"} is open in ✉ Mail with ${pdf.name} - check it and ➤ Send`);
     return true;
   }
   /** 🎨 a new A4 page in the image editor with the 🧾 Insert Field list open */
@@ -165,8 +190,9 @@
         + rows.map((d) => `<tr class="click" data-doc="${esc(d.id)}"><td>${esc(d.date)}</td><td>${esc(d.number)}</td><td title="${esc(B.kinds[d.kind])}">${KIND_ICON[d.kind]}</td><td>${esc(d.party)}</td><td>${esc(d.job)}</td>`
           + `<td>${d.kind === "receipt" ? "" : esc(d.due)}</td><td class="n">${N(d.total)}</td><td class="n">${N(d.gst, 1)}</td><td class="n">${N(d.paid, 1)}</td><td class="n">${N(d.balance, 1)}</td>`
           + `<td><span class="acstamp ${STAMP[d.status]}">${esc(d.status)}</span></td><td class="act">${d.file ? `<button type="button" data-file="${esc(d.file)}" title="Open the attached receipt / bill">📎</button>` : ""}`
-          + `${d.kind === "invoice" || d.kind === "quote" ? `<button type="button" data-print="${esc(d.id)}" title="Print it or save it as a PDF">🖨</button>` : ""}${d.kind === "quote" && d.status !== "invoiced" ? `<button type="button" data-q2i="${esc(d.id)}" title="Make this quote an invoice">➜📤</button>` : ""}`
-          + `${d.kind !== "receipt" && d.balance > 0 ? `<button type="button" data-pay="${esc(d.id)}" title="${d.kind === "invoice" ? "Money received" : "Pay it"}">💵</button>` : ""}<button type="button" data-del="${esc(d.id)}" title="Delete">🗑</button></td></tr>`).join("")
+          + `${["invoice", "quote", "credit"].includes(d.kind) ? `<button type="button" data-print="${esc(d.id)}" title="Print it or save it as a PDF">🖨</button><button type="button" data-pdf="${esc(d.id)}" title="The PDF file">⤓</button><button type="button" data-email="${esc(d.id)}" title="${d.sent ? "Emailed " + esc(d.sent) + " - email it again" : "Email it with its PDF (✉ Mail)"}">✉${d.sent ? "✓" : ""}</button>` : ""}`
+          + `${d.kind === "invoice" ? `<button type="button" data-credit="${esc(d.id)}" title="A credit note for this invoice (an adjustment note)">⤺</button>` : ""}${d.kind === "quote" && d.status !== "invoiced" ? `<button type="button" data-q2i="${esc(d.id)}" title="Make this quote an invoice">➜📤</button>` : ""}`
+          + `${d.kind !== "receipt" && d.balance > 0 ? `<button type="button" data-pay="${esc(d.id)}" title="${d.kind === "invoice" ? "Money received" : d.kind === "credit" ? "Refund the credit" : "Pay it"}">💵</button>` : ""}<button type="button" data-del="${esc(d.id)}" title="Delete">🗑</button></td></tr>`).join("")
         + `<tr class="tot gtot"><td colspan="6">${rows.length} document(s)</td><td class="n">${N(sum("total"))}</td><td class="n">${N(sum("gst"))}</td><td class="n">${N(sum("paid"))}</td><td class="n">${N(sum("balance"))}</td><td colspan="2"></td></tr></table>`
         + (B.payments.length ? `<h3 style="margin-top:14px">Payments</h3><table class="actab"><tr><th>Date</th><th>For</th><th>Through</th><th>Ref</th><th class="n">Amount</th><th></th></tr>${B.payments.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((p) => { const d = B.docs.find((x) => x.id === p.doc) || {}; return `<tr><td>${esc(p.date)}</td><td>${KIND_ICON[d.kind] || ""} ${esc(d.number)} ${esc(d.party)}</td><td>${esc(acc(p.account).name)}</td><td>${esc(p.ref)}</td><td class="n">${N(p.amount)}</td><td class="act"><button type="button" data-delpay="${esc(p.id)}" title="Delete the payment">🗑</button></td></tr>`; }).join("")}</table>` : "");
     },
@@ -262,7 +288,7 @@
   const toDollars = (c) => (c == null || c === "" ? "" : (Number(c) / 100).toFixed(2));
   function docForm(kind0, d0, pre) {
     const P0 = pre || {};
-    const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind, sale = kind === "invoice" || kind === "quote";
+    const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind, sale = kind === "invoice" || kind === "quote" || kind === "credit";
     const lineFilter = sale ? (a) => a.type === "income" : (a) => ["expense", "cos", "asset"].includes(a.type) && !a.system && !a.bank;
     const defAcc = sale ? "4200" : "6900";
     // 2.878.0: an invoice / quote line = quantity x unit price (GST inclusive); the amount follows
@@ -271,9 +297,9 @@
       + `<td><input data-k="amount" class="n" value="${toDollars(l.amount)}" placeholder="0.00"${sale ? " readonly tabindex=\"-1\"" : ""}></td><td><select data-k="tax">${Object.entries(S.books.tax).filter(([k]) => !sale || k !== "CAP").map(([k, t]) => `<option value="${k}"${(l.tax || "") === k ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></td>`
       + `<td class="n" data-gst></td><td><button type="button" class="ghost" data-rmline title="Remove the line">✕</button></td></tr>`;
     const html = `<div><label class="f">${sale ? "Customer" : "Supplier"}<input id="acfParty" value="${esc(d.party || "")}" style="width:220px"></label>`
-      + `<label class="f">${kind === "invoice" ? "Invoice no. (blank = next)" : kind === "quote" ? "Quote no. (blank = next)" : "Their invoice / receipt no."}<input id="acfNo" value="${esc(d.number || "")}" style="width:120px"></label>`
+      + `<label class="f">${kind === "invoice" ? "Invoice no. (blank = next)" : kind === "quote" ? "Quote no. (blank = next)" : kind === "credit" ? "Credit note no. (blank = next)" : "Their invoice / receipt no."}<input id="acfNo" value="${esc(d.number || "")}" style="width:120px"></label>`
       + `<label class="f">Date<input type="date" id="acfDate" value="${esc(d.date || todayStr())}"></label>`
-      + (kind === "receipt" ? `<label class="f">Paid from<select id="acfFrom">${accOpts((a) => a.bank, d.paidFrom || "1100")}</select></label>` : `<label class="f">${kind === "quote" ? "Valid until" : "Due"}<input type="date" id="acfDue" value="${esc(d.due || "")}" title="Blank = ${kind === "quote" ? S.books.settings.quoteDays + " days" : (S.books.settings.terms != null ? S.books.settings.terms : 14) + " days"} after the date"></label>`)
+      + (kind === "credit" ? `<span class="acnote" style="align-self:center">${d.forInvoice ? esc("For invoice") + " " + esc(d.ref || "") : esc("A credit on its own - 💵 refund it later")}</span>` : kind === "receipt" ? `<label class="f">Paid from<select id="acfFrom">${accOpts((a) => a.bank, d.paidFrom || "1100")}</select></label>` : `<label class="f">${kind === "quote" ? "Valid until" : "Due"}<input type="date" id="acfDue" value="${esc(d.due || "")}" title="Blank = ${kind === "quote" ? S.books.settings.quoteDays + " days" : (S.books.settings.terms != null ? S.books.settings.terms : 14) + " days"} after the date"></label>`)
       + (kind === "quote" ? `<label class="f">Status<select id="acfQst">${["draft", "sent", "accepted", "declined"].map((x) => `<option${(d.qstatus || "draft") === x ? " selected" : ""}>${x}</option>`).join("")}</select></label>` : "")
       + `<label class="f">Job<select id="acfJob">${jobOpts(d.job)}</select></label></div>`
       + (sale ? `<div><label class="f">Customer's address<textarea id="acfAddr" rows="2" style="width:260px">${esc(d.partyAddress || "")}</textarea></label><label class="f">Customer's email<input id="acfEmail" value="${esc(d.partyEmail || "")}" style="width:200px"></label>`
@@ -286,13 +312,14 @@
       + (sale ? "" : `<button type="button" class="ghost" id="acfRead" title="The vision model reads the attached receipt / bill and fills this in"${P0.file ? "" : " disabled"}>✨ Read it</button>`) + `</div>`
       + (P0.checks && P0.checks.length ? `<div class="acnote" style="color:#8a5a00">${P0.checks.map(esc).join("<br>")}</div>` : "");
     let fileData = P0.file || "", fileName = P0.fileName || "";
-    const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent", quote: "quote" })[kind];
+    const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent", quote: "quote", credit: "credit note" })[kind];
     dialog(title, html, async () => {
       const lines = [...$("acfLines").querySelectorAll("tr")].slice(1).map((tr) => { const o = {}; tr.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.value; }); return o; }).filter((l) => l.amount !== "" || l.desc);
       const body = { doc: { id: d.id, kind, party: $("acfParty").value, number: $("acfNo").value, date: $("acfDate").value, due: $("acfDue") ? $("acfDue").value : "", paidFrom: $("acfFrom") ? $("acfFrom").value : "",
         job: $("acfJob").value, notes: $("acfNotes").value, lines }, file: fileData || undefined };
       if (sale) Object.assign(body.doc, { partyAddress: $("acfAddr").value, partyEmail: $("acfEmail").value, partyAbn: $("acfAbn").value });
       if (kind === "quote") body.doc.qstatus = $("acfQst").value;
+      if (kind === "credit" && d.forInvoice) Object.assign(body.doc, { forInvoice: d.forInvoice, ref: d.ref || "" });
       const saved = await api("/api/accounts/doc", body);
       msg(`✔ ${saved.number || saved.party || "document"} kept - $${dollars(saved.total)} (GST $${dollars(saved.gst)})${sale ? " - 🖨 on its row prints it" : ""}`);
     }, (b) => {
@@ -326,9 +353,9 @@
     const html = `<div>${KIND_ICON[d.kind]} ${esc(d.number)} ${esc(d.party)} - total $${dollars(d.total)}, still owing <b>$${dollars(d.balance)}</b></div><br>`
       + `<label class="f">Date<input type="date" id="acpDate" value="${todayStr() < d.date ? d.date : todayStr()}"></label><label class="f">Amount<input id="acpAmt" class="n" value="${toDollars(d.balance)}"></label>`
       + `<label class="f">${d.kind === "invoice" ? "Into" : "From"}<select id="acpAcc">${accOpts((a) => a.bank, "1100")}</select></label><label class="f">Reference<input id="acpRef" style="width:140px"></label>`;
-    dialog(d.kind === "invoice" ? "Money received" : "Pay the bill", html, async () => {
+    dialog(d.kind === "invoice" ? "Money received" : d.kind === "credit" ? "Refund the credit" : "Pay the bill", html, async () => {
       await api("/api/accounts/payment", { payment: { doc: d.id, date: $("acpDate").value, amount: $("acpAmt").value, account: $("acpAcc").value, ref: $("acpRef").value } });
-      msg(`✔ $${$("acpAmt").value} ${d.kind === "invoice" ? "received" : "paid"} - ${d.party}`);
+      msg(`✔ $${$("acpAmt").value} ${d.kind === "invoice" ? "received" : d.kind === "credit" ? "refunded" : "paid"} - ${d.party}`);
     });
   }
   function journalForm() {
@@ -406,6 +433,11 @@
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
         if ((x = one("[data-csv]"))) { e.stopPropagation(); return root.open("/api/accounts/csv?" + reportQ(x.dataset.csv), "_blank"); }
         if ((x = one("[data-basprint]"))) { e.stopPropagation(); return root.open("/api/accounts/bas-print?" + reportQ("bas"), "_blank"); }
+        if ((x = one("[data-pdf]"))) { e.stopPropagation(); return root.open("/api/accounts/pdf/" + encodeURIComponent(x.dataset.pdf) + "?" + qs({ biz: S.biz }), "_blank"); }
+        if ((x = one("[data-email]"))) { e.stopPropagation(); return emailDoc(x.dataset.email); }
+        if ((x = one("[data-credit]"))) { e.stopPropagation(); const inv = B.docs.find((y) => y.id === x.dataset.credit);
+          return docForm("credit", { kind: "credit", date: todayStr(), party: inv.party, partyAddress: inv.partyAddress, partyEmail: inv.partyEmail, partyAbn: inv.partyAbn, job: inv.job, forInvoice: inv.id, ref: inv.number,
+            lines: inv.lines.map((l) => Object.assign({}, l)) }, { checks: [`Credits ${inv.number} (still owing $${dollars(inv.balance)}) - change the lines to what is taken back`] }); }
         if ((x = one("[data-print]"))) { e.stopPropagation(); return printDoc(x.dataset.print, false); }
         if (t.id === "acDesign") return designLayout();
         if ((x = one("[data-q2i]"))) { e.stopPropagation(); const q = B.docs.find((y) => y.id === x.dataset.q2i); if (await yes(`Make quote ${q.number} (${q.party}, $${dollars(q.total)}) an invoice dated today?`, "Make invoice")) { const inv = await api("/api/accounts/quote/" + q.id + "/invoice", { date: todayStr() }); await refresh(); msg(`✔ quote ${q.number} is invoice ${inv.number} - 🖨 to print it`); } return; }
@@ -427,5 +459,5 @@
     setTimeout(look, 500);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, readReceipt, asPicture, state: () => S }, pure);
+  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, readReceipt, asPicture, emailDoc, state: () => S }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

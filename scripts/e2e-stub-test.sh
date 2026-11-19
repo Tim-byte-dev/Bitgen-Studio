@@ -14548,6 +14548,16 @@ node scripts/test-880.js > /tmp/t880.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui880-ui.js > /tmp/ui880.log 2>&1 \
   && ok "2.880.0 browser test: ＋ ✨ Read a receipt with a PDF (drawn to PNG), the bill dialog filled + saved with the PDF, ✨ Read it in the dialog, ⤓ CSV download, 🖨 the BAS worksheet page" \
   || { bad "2.880.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui880.log | head -12; }
+# ---- 2.881.0 (📒 Accounts: ⤓ a real PDF, ✉ email it through ✉ Mail, ⤺ credit notes / adjustment notes)
+node scripts/test-881.js > /tmp/t881.log 2>&1 \
+  && ok "2.881.0 units: credit notes (applied / on their own + refunds, never over the invoice, reversed postings, BAS accrual + cash through payments), Adjustment Note, lib/invoicePdf.js (pdf-lib, pages, safe text), markSent, the composer's attachments + onSent" \
+  || { bad "2.881.0 units"; grep -a "^FAIL" -A1 /tmp/t881.log | head -12; }
+node scripts/test-881-pdf.js > /tmp/t881p.log 2>&1 \
+  && ok "2.881.0 the invoice / credit note PDFs read back with pdftotext" \
+  || { bad "2.881.0 PDFs"; grep -a "^FAIL" -A1 /tmp/t881p.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui881-ui.js > /tmp/ui881.log 2>&1 \
+  && ok "2.881.0 browser test: ⤺ a credit note from the invoice row (CN-0001 applied, balance down), ⤓ the PDF, ✉ ✉ Mail's composer with the PDF + words, ➤ Send marks ✉✓" \
+  || { bad "2.881.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui881.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

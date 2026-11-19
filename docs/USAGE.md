@@ -9883,6 +9883,20 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
 - **🖨 Print** on the BAS tab: the GST worksheet as a page - your business and ABN, the period and basis, G1, G2, G3, G10,
   G11, 1A, 1B and what is payable or refunded - to print or save as PDF for your records and your tax agent.
 
+## ✉ Email invoices and ⤺ credit notes in Accounts (2.881.0)
+
+- **⤓** on an invoice, quote or credit note gives its **PDF file** (made by bitGen - your business details, logo and ABN, the
+  lines, GST and totals, how to pay, a PAID stamp when paid).
+- **✉** opens **✉ Mail**'s composer with the PDF attached, the customer's email address, a subject ("Tax Invoice INV-0001
+  from …") and the words (the amount or balance due, the due date, how to pay) - change anything, then ➤ Send. Once sent the
+  document shows **✉✓** (and a draft quote becomes sent). ✉ Mail needs your mailbox added first (⚙ Accounts in ✉ Mail).
+- **⤺** on an invoice writes a **credit note** for it - an **Adjustment Note** when you are GST registered (the ATO's name),
+  numbered CN-0001, with the invoice's lines to change to what is taken back. It is applied to that invoice (the balance
+  owing falls; never more than it still owes). A credit note with no invoice is a credit the customer has - 💵 refunds it.
+- In the books a credit note reverses the sale (Dr income + GST Collected, Cr Accounts Receivable). On the BAS it is a
+  decreasing adjustment: on an accrual basis in its own period; on a cash basis through the invoice's payments (or when a
+  credit on its own is refunded).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -1330,6 +1330,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✍ Accounts 中的發票和報價單** — 編寫報價單和發票（客戶、地址、郵箱、ABN；每行數量 × 單價），報價單狀態和有效期、轉為發票，🖨 列印或另存為 PDF 的符合 ATO 要求的稅務發票（你的 ABN、每行 GST、免 GST 的行、$1,000 或以上的買方），付款方式；業務資訊中的 ABN 校驗。 *Where:* 📒 Accounts ▸ ＋ 📝 Quote / ＋ 📤 Invoice we sent。 *Since:* 2.878.0
 - **🧾 用影像編輯器製作的發票和報價單版式** — 影像編輯器的 File ▸ 🧾 Insert Field… 把欄位（你的企業、客戶、單據、合計——包括應付總額——和明細表）作為文字圖層放到頁面上，拖到該放的位置；儲存為發票或報價單模板，在 Accounts 的 Invoice / Quote layout ▾ 中選擇，🖨 用該單據的數字填好它。📒 Accounts 預設關閉——在 Settings ▸ Dockers 中開啟。 *Where:* 影像編輯器 ▸ File ▸ 🧾 Insert Field…；📒 Accounts ▸ Accounts。 *Since:* 2.879.0
 - **✨ AI 讀取收據、CSV、列印 BAS** — 📒 Accounts 中的 ＋ ✨ Read a receipt…（照片、掃描件或 PDF）：你的視覺模型讀取供應商、ABN、日期、明細、合計和 GST，bitGen 核對（日期、合計、GST 約 1/11、ABN、科目），填好對話方塊供你核對並儲存；每個列表和報表的 ⤓ CSV；BAS 工作表 🖨 列印 / PDF。 *Where:* 📒 Accounts。 *Since:* 2.880.0
+- **✉ 郵寄發票和 ⤺ 貸項通知單** — 發票 / 報價單 / 貸項通知單的 ⤓ PDF 檔案（bitGen 生成），✉ 在 ✉ Mail 中開啟附有 PDF、客戶郵箱、主題和正文的郵件，傳送後標記 ✉✓；⤺ 為發票開具貸項通知單（GST 登記時為 Adjustment Note），應用到發票或單獨退款，帳簿和 BAS 中作為減少調整。 *Where:* 📒 Accounts ▸ Documents。 *Since:* 2.881.0
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0
