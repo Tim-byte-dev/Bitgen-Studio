@@ -14527,6 +14527,13 @@ node scripts/test-877.js > /tmp/t877.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui877-ui.js > /tmp/ui877.log 2>&1 \
   && ok "2.877.0 browser test: 📒 on the app strip, the green columnar pad, an invoice / bill / receipt (picture) typed with GST as you type, 💵 received, a journal entry (unbalanced refused), filters, summary, journals, ledger, TB + balance sheet in balance, BAS accrual + cash, jobs" \
   || { bad "2.877.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui877.log | head -12; }
+# ---- 2.878.0 (✍ Accounts: invoices + quotes, the printed tax invoice, the ABN)
+node scripts/test-878.js > /tmp/t878.log 2>&1 \
+  && ok "2.878.0 units: the ABN checked (ATO mod 89), quotes (Q-0001, nothing posted, states, expired, ➜ invoice once, linked), qty x unit price, invoice settings, invoiceIssues, the printed page (Tax Invoice, ABN, GST per line, GST-free, Total price includes GST, PAID, how to pay)" \
+  || { bad "2.878.0 units"; grep -a "^FAIL" -A1 /tmp/t878.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui878-ui.js > /tmp/ui878.log 2>&1 \
+  && ok "2.878.0 browser test: business details with an ABN, ＋ 📝 Quote (customer, qty x unit, GST as typed), a wrong ABN refused, the \$1,000 warning, accepted -> ➜📤 INV-0001, 🖨 the tax invoice page + an A4 PDF" \
+  || { bad "2.878.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui878.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

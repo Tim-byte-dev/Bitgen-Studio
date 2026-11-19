@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7152,
+ "count": 7159,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66629,6 +66629,83 @@
    ],
    "where": [
     "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "ABN (for tax invoices)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "＋ 📝 Quote",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "A quote - written like an invoice, nothing is entered in the books until it is made an invoice",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "New quote",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "Change quote",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "Make invoice",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
+   ]
+  },
+  {
+   "s": "Quotes open",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker - invoices + quotes (2.878.0)"
    ]
   }
  ]

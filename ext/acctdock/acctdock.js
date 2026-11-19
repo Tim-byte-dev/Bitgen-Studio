@@ -12,7 +12,9 @@
  *   Journals       Sales, Purchases, Cash Receipts, Cash Payments, General - the old journal layout (credits indented)
  *   Ledger         one account: Balance b/d, each posting with its running balance, Balance c/d
  *   Trial Balance · Profit & Loss · Balance Sheet · BAS (the worksheet: G1 G3 G10 G11 1A 1B, cash / accrual) · Jobs · Accounts
- * Write invoice / quote (2.878.0) and reading a receipt with the vision LLM (2.879.0) come next.
+ * 2.878.0 ✍ write invoices + quotes: ＋ 📝 Quote, the customer (address, email, ABN), lines as quantity x unit price, 🖨 the page
+ *   to print / Save as PDF (lib/accountingPrint.js - a tax invoice the ATO's way), ➜📤 a quote made an invoice, invoice settings.
+ * Reading a receipt with the vision LLM (2.879.0) comes next.
  * Pure (Node: scripts/test-877.js): dollars, filterDocs, FILTERS, TABS.
  */
 (function (root) {
@@ -25,18 +27,18 @@
     const a = Math.abs(n), s = String(Math.floor(a / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + String(a % 100).padStart(2, "0");
     return n < 0 ? "(" + s + ")" : s;
   }
-  const FILTERS = [["all", "All"], ["receipt", "Receipts"], ["bill", "Bills to pay"], ["invoice", "Invoices we sent"], ["owedToUs", "Due to be paid to us"],
+  const FILTERS = [["all", "All"], ["receipt", "Receipts"], ["bill", "Bills to pay"], ["invoice", "Invoices we sent"], ["quote", "Quotes"], ["owedToUs", "Due to be paid to us"],
     ["owedByUs", "Due to be paid by us"], ["overdue", "Overdue"], ["paidToUs", "Paid to us"], ["paidByUs", "Paid by us"]];
   /** the documents a filter shows */
   function filterDocs(docs, f) {
     return (docs || []).filter((d) => {
       switch (f) {
-        case "receipt": case "bill": case "invoice": return d.kind === f;
+        case "receipt": case "bill": case "invoice": case "quote": return d.kind === f;
         case "owedToUs": return d.kind === "invoice" && d.balance > 0;
         case "owedByUs": return d.kind === "bill" && d.balance > 0;
         case "overdue": return d.status === "overdue";
         case "paidToUs": return d.kind === "invoice" && d.balance <= 0;
-        case "paidByUs": return d.kind !== "invoice" && d.balance <= 0;
+        case "paidByUs": return (d.kind === "receipt" || d.kind === "bill") && d.balance <= 0;
         default: return true;
       }
     });
@@ -59,8 +61,9 @@
   const report = (kind, extra) => api("/api/accounts/report?" + qs(Object.assign({ biz: S.biz, kind }, perQ(), extra || {})));
   const N = (c, dash) => `<span class="${Number(c) < 0 ? "neg" : ""}">${dollars(c, dash)}</span>`;
   const acc = (code) => (S.books.accounts.find((a) => a.code === code) || { name: "?" });
-  const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part" };
-  const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤" };
+  const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part", draft: "due", sent: "part", accepted: "ok", declined: "overdue", invoiced: "paid", expired: "overdue" };
+  const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤", quote: "📝" };
+  const printDoc = (id, auto) => root.open("/api/accounts/print/" + encodeURIComponent(id) + "?" + qs({ biz: S.biz, auto: auto ? 1 : "" }), "_blank");
   const yes = (t, title) => (typeof root.appConfirm === "function" ? root.appConfirm(t, title) : Promise.resolve(root.confirm(t)));
 
   async function loadBooks() { S.books = await api("/api/accounts?" + qs({ biz: S.biz })); paintBiz(); return S.books; }
@@ -94,7 +97,8 @@
         + card("Owed to us", s.owedToUs, s.overdueToUs ? `$${dollars(s.overdueToUs)} overdue` : `${s.unpaidInvoices} invoice(s)`)
         + card("We owe", s.owedByUs, s.overdueByUs ? `$${dollars(s.overdueByUs)} overdue` : `${s.unpaidBills} bill(s)`)
         + `<div class="accard"><div class="k">GST this quarter (${esc(S.books.settings.basis)})</div><div class="v">$${Math.abs(bas.net).toLocaleString("en-AU")}</div><div class="s">${esc(bas.verdict)} · 1A $${bas["1A"]} − 1B $${bas["1B"]}</div></div>`
-        + card(`Profit ${s.fy.label} to date`, s.profit, `income $${dollars(s.income)} (no GST)`) + `</div>`
+        + card(`Profit ${s.fy.label} to date`, s.profit, `income $${dollars(s.income)} (no GST)`)
+        + (() => { const oq = S.books.docs.filter((d) => d.kind === "quote" && ["draft", "sent", "accepted"].includes(d.status)); return oq.length ? card("Quotes open", oq.reduce((t, d) => t + d.total, 0), `${oq.length} quote(s) - ${oq.filter((d) => d.status === "accepted").length} accepted`) : ""; })() + `</div>`
         + `<h3>Due to be paid to us</h3>${aged(ar.rows, "invoice")}<h3 style="margin-top:12px">Due to be paid by us</h3>${aged(ap.rows, "bill")}`
         + `<div class="acnote">Amounts in Australian dollars. GST at 10 %; the financial year runs 1 July - 30 June. Your own tax settings come in a later release.</div>`;
     },
@@ -106,6 +110,7 @@
         + rows.map((d) => `<tr class="click" data-doc="${esc(d.id)}"><td>${esc(d.date)}</td><td>${esc(d.number)}</td><td title="${esc(B.kinds[d.kind])}">${KIND_ICON[d.kind]}</td><td>${esc(d.party)}</td><td>${esc(d.job)}</td>`
           + `<td>${d.kind === "receipt" ? "" : esc(d.due)}</td><td class="n">${N(d.total)}</td><td class="n">${N(d.gst, 1)}</td><td class="n">${N(d.paid, 1)}</td><td class="n">${N(d.balance, 1)}</td>`
           + `<td><span class="acstamp ${STAMP[d.status]}">${esc(d.status)}</span></td><td class="act">${d.file ? `<button type="button" data-file="${esc(d.file)}" title="Open the attached receipt / bill">📎</button>` : ""}`
+          + `${d.kind === "invoice" || d.kind === "quote" ? `<button type="button" data-print="${esc(d.id)}" title="Print it or save it as a PDF">🖨</button>` : ""}${d.kind === "quote" && d.status !== "invoiced" ? `<button type="button" data-q2i="${esc(d.id)}" title="Make this quote an invoice">➜📤</button>` : ""}`
           + `${d.kind !== "receipt" && d.balance > 0 ? `<button type="button" data-pay="${esc(d.id)}" title="${d.kind === "invoice" ? "Money received" : "Pay it"}">💵</button>` : ""}<button type="button" data-del="${esc(d.id)}" title="Delete">🗑</button></td></tr>`).join("")
         + `<tr class="tot gtot"><td colspan="6">${rows.length} document(s)</td><td class="n">${N(sum("total"))}</td><td class="n">${N(sum("gst"))}</td><td class="n">${N(sum("paid"))}</td><td class="n">${N(sum("balance"))}</td><td colspan="2"></td></tr></table>`
         + (B.payments.length ? `<h3 style="margin-top:14px">Payments</h3><table class="actab"><tr><th>Date</th><th>For</th><th>Through</th><th>Ref</th><th class="n">Amount</th><th></th></tr>${B.payments.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((p) => { const d = B.docs.find((x) => x.id === p.doc) || {}; return `<tr><td>${esc(p.date)}</td><td>${KIND_ICON[d.kind] || ""} ${esc(d.number)} ${esc(d.party)}</td><td>${esc(acc(p.account).name)}</td><td>${esc(p.ref)}</td><td class="n">${N(p.amount)}</td><td class="act"><button type="button" data-delpay="${esc(p.id)}" title="Delete the payment">🗑</button></td></tr>`; }).join("")}</table>` : "");
@@ -175,7 +180,10 @@
       return head("Chart of Accounts", "Click an account for its ledger")
         + `<div class="acrow"><input id="acAccCode" placeholder="6270" style="width:60px"><input id="acAccName" placeholder="Account name"><select id="acAccType">${Object.entries(T).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select>`
         + `<select id="acAccTax">${Object.entries(B.tax).map(([k, t]) => `<option value="${k}">${esc(t)}</option>`).join("")}</select><label><input type="checkbox" id="acAccBank"> bank / cash / card</label><button type="button" class="ghost" id="acAccAdd">＋ Add / change</button></div>`
-        + `<div class="acrow"><span>GST registered</span><input type="checkbox" id="acGstReg"${B.settings.gstRegistered ? " checked" : ""}><span>Invoice numbers start</span><input id="acInvPre" value="${esc(B.settings.invoicePrefix)}" style="width:60px"></div>`
+        + `<div class="acrow"><span>GST registered</span><input type="checkbox" id="acGstReg"${B.settings.gstRegistered ? " checked" : ""}><span>Invoice numbers start</span><input id="acInvPre" value="${esc(B.settings.invoicePrefix)}" style="width:60px">`
+        + `<span>Quote numbers start</span><input id="acQPre" value="${esc(B.settings.quotePrefix || "Q-")}" style="width:50px"><span>Invoices due after</span><input id="acTerms" type="number" min="0" max="365" value="${B.settings.terms != null ? B.settings.terms : 14}" style="width:56px"><span>days · quotes valid for</span><input id="acQDays" type="number" min="1" max="365" value="${B.settings.quoteDays || 30}" style="width:56px"><span>days</span></div>`
+        + `<div class="acrow" style="align-items:flex-start"><span>How to pay (on invoices)</span><textarea id="acPayTo" rows="2" style="width:320px" placeholder="Bank: Commonwealth Bank&#10;BSB 062-000  Account 1234 5678">${esc(B.settings.payTo || "")}</textarea>`
+        + (S.biz === "main" ? `<span>Invoices headed with</span><select id="acProfile"><option value="">— the business details used last —</option>${(B.businesses || []).map((b) => `<option value="${esc(b.id)}"${b.id === B.settings.profile ? " selected" : ""}>${esc(b.name)}</option>`).join("")}</select>` : `<span class="acnote">Invoices are headed with this business's details (name, logo, address, ABN).</span>`) + `</div>`
         + `<table class="actab"><tr><th>Code</th><th>Account</th><th>Type</th><th>Tax code</th><th></th></tr>`
         + B.accounts.map((a) => `<tr class="click" data-ledger="${a.code}"><td>${a.code}</td><td>${esc(a.name)}${a.bank ? " 🏦" : ""}</td><td>${T[a.type]}</td><td>${esc(a.tax)}</td><td class="act">${a.system ? "<i style='color:#6b7c62'>system</i>" : `<button type="button" data-delacc="${a.code}" title="Delete (only without entries)">🗑</button>`}</td></tr>`).join("") + `</table>`;
     },
@@ -195,41 +203,52 @@
   const todayStr = () => new Date().toISOString().slice(0, 10);
   const toDollars = (c) => (c == null || c === "" ? "" : (Number(c) / 100).toFixed(2));
   function docForm(kind0, d0) {
-    const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind;
-    const lineFilter = kind === "invoice" ? (a) => a.type === "income" : (a) => ["expense", "cos", "asset"].includes(a.type) && !a.system && !a.bank;
-    const defAcc = kind === "invoice" ? "4200" : "6900";
-    const line = (l) => `<tr><td><input data-k="desc" value="${esc(l.desc || "")}" placeholder="What it was" style="width:240px"></td><td><select data-k="account">${accOpts(lineFilter, l.account || defAcc)}</select></td>`
-      + `<td><input data-k="amount" class="n" value="${toDollars(l.amount)}" placeholder="0.00"></td><td><select data-k="tax">${Object.entries(S.books.tax).filter(([k]) => kind !== "invoice" || k !== "CAP").map(([k, t]) => `<option value="${k}"${(l.tax || "") === k ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></td>`
+    const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind, sale = kind === "invoice" || kind === "quote";
+    const lineFilter = sale ? (a) => a.type === "income" : (a) => ["expense", "cos", "asset"].includes(a.type) && !a.system && !a.bank;
+    const defAcc = sale ? "4200" : "6900";
+    // 2.878.0: an invoice / quote line = quantity x unit price (GST inclusive); the amount follows
+    const line = (l) => `<tr><td><input data-k="desc" value="${esc(l.desc || "")}" placeholder="What it was" style="width:${sale ? 200 : 240}px"></td><td><select data-k="account">${accOpts(lineFilter, l.account || defAcc)}</select></td>`
+      + (sale ? `<td><input data-k="qty" class="n" style="width:60px" value="${l.qty != null ? l.qty : 1}"></td><td><input data-k="unit" class="n" value="${l.unit != null ? toDollars(l.unit) : toDollars(l.amount)}" placeholder="0.00"></td>` : "")
+      + `<td><input data-k="amount" class="n" value="${toDollars(l.amount)}" placeholder="0.00"${sale ? " readonly tabindex=\"-1\"" : ""}></td><td><select data-k="tax">${Object.entries(S.books.tax).filter(([k]) => !sale || k !== "CAP").map(([k, t]) => `<option value="${k}"${(l.tax || "") === k ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></td>`
       + `<td class="n" data-gst></td><td><button type="button" class="ghost" data-rmline title="Remove the line">✕</button></td></tr>`;
-    const html = `<div><label class="f">${kind === "invoice" ? "Customer" : "Supplier"}<input id="acfParty" value="${esc(d.party || "")}" style="width:220px"></label>`
-      + `<label class="f">${kind === "invoice" ? "Invoice no. (blank = next)" : "Their invoice / receipt no."}<input id="acfNo" value="${esc(d.number || "")}" style="width:120px"></label>`
+    const html = `<div><label class="f">${sale ? "Customer" : "Supplier"}<input id="acfParty" value="${esc(d.party || "")}" style="width:220px"></label>`
+      + `<label class="f">${kind === "invoice" ? "Invoice no. (blank = next)" : kind === "quote" ? "Quote no. (blank = next)" : "Their invoice / receipt no."}<input id="acfNo" value="${esc(d.number || "")}" style="width:120px"></label>`
       + `<label class="f">Date<input type="date" id="acfDate" value="${esc(d.date || todayStr())}"></label>`
-      + (kind === "receipt" ? `<label class="f">Paid from<select id="acfFrom">${accOpts((a) => a.bank, d.paidFrom || "1100")}</select></label>` : `<label class="f">Due<input type="date" id="acfDue" value="${esc(d.due || "")}"></label>`)
+      + (kind === "receipt" ? `<label class="f">Paid from<select id="acfFrom">${accOpts((a) => a.bank, d.paidFrom || "1100")}</select></label>` : `<label class="f">${kind === "quote" ? "Valid until" : "Due"}<input type="date" id="acfDue" value="${esc(d.due || "")}" title="Blank = ${kind === "quote" ? S.books.settings.quoteDays + " days" : (S.books.settings.terms != null ? S.books.settings.terms : 14) + " days"} after the date"></label>`)
+      + (kind === "quote" ? `<label class="f">Status<select id="acfQst">${["draft", "sent", "accepted", "declined"].map((x) => `<option${(d.qstatus || "draft") === x ? " selected" : ""}>${x}</option>`).join("")}</select></label>` : "")
       + `<label class="f">Job<select id="acfJob">${jobOpts(d.job)}</select></label></div>`
-      + `<table class="actab" id="acfLines"><tr><th>Description</th><th>Account</th><th class="n">Amount incl. GST</th><th>Tax</th><th class="n">GST</th><th></th></tr>${d.lines.map(line).join("")}</table>`
-      + `<div class="acrow"><button type="button" class="ghost" id="acfAdd">＋ Line</button><span style="flex:1"></span><span id="acfTot" class="acnum"></span></div>`
+      + (sale ? `<div><label class="f">Customer's address<textarea id="acfAddr" rows="2" style="width:260px">${esc(d.partyAddress || "")}</textarea></label><label class="f">Customer's email<input id="acfEmail" value="${esc(d.partyEmail || "")}" style="width:200px"></label>`
+        + `<label class="f">Customer's ABN<input id="acfAbn" value="${esc(d.partyAbn || "")}" style="width:130px" placeholder="for $1,000 or more"></label></div>` : "")
+      + `<table class="actab" id="acfLines"><tr><th>Description</th><th>Account</th>${sale ? '<th class="n">Qty</th><th class="n">Unit price incl. GST</th>' : ""}<th class="n">Amount incl. GST</th><th>Tax</th><th class="n">GST</th><th></th></tr>${d.lines.map(line).join("")}</table>`
+      + `<div class="acrow"><button type="button" class="ghost" id="acfAdd">＋ Line</button><span style="flex:1"></span><span id="acfTot" class="acnum"></span></div><div id="acfWarn" class="acnote" style="color:#b1302a"></div>`
       + `<label class="f" style="display:flex">Notes<textarea id="acfNotes" rows="2" style="width:100%">${esc(d.notes || "")}</textarea></label>`
-      + `<div class="acrow"><button type="button" class="ghost" id="acfFileBtn">📎 Attach ${kind === "invoice" ? "a copy" : "the " + (kind === "bill" ? "bill" : "receipt")} (picture or PDF)…</button><span id="acfFileName" style="font-style:italic">${d.file ? "kept: " + esc(d.file) : ""}</span>`
+      + `<div class="acrow"><button type="button" class="ghost" id="acfFileBtn">📎 Attach ${sale ? "a copy" : "the " + (kind === "bill" ? "bill" : "receipt")} (picture or PDF)…</button><span id="acfFileName" style="font-style:italic">${d.file ? "kept: " + esc(d.file) : ""}</span>`
       + `<input type="file" id="acfFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none"></div>`;
     let fileData = "";
-    const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent" })[kind];
+    const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent", quote: "quote" })[kind];
     dialog(title, html, async () => {
       const lines = [...$("acfLines").querySelectorAll("tr")].slice(1).map((tr) => { const o = {}; tr.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.value; }); return o; }).filter((l) => l.amount !== "" || l.desc);
       const body = { doc: { id: d.id, kind, party: $("acfParty").value, number: $("acfNo").value, date: $("acfDate").value, due: $("acfDue") ? $("acfDue").value : "", paidFrom: $("acfFrom") ? $("acfFrom").value : "",
         job: $("acfJob").value, notes: $("acfNotes").value, lines }, file: fileData || undefined };
+      if (sale) Object.assign(body.doc, { partyAddress: $("acfAddr").value, partyEmail: $("acfEmail").value, partyAbn: $("acfAbn").value });
+      if (kind === "quote") body.doc.qstatus = $("acfQst").value;
       const saved = await api("/api/accounts/doc", body);
-      msg(`✔ ${saved.number || saved.party || "document"} kept - $${dollars(saved.total)} (GST $${dollars(saved.gst)})`);
+      msg(`✔ ${saved.number || saved.party || "document"} kept - $${dollars(saved.total)} (GST $${dollars(saved.gst)})${sale ? " - 🖨 on its row prints it" : ""}`);
     }, (b) => {
       const R = 0.1, tot = () => {
         let t = 0, g = 0;
         $("acfLines").querySelectorAll("tr").forEach((tr, i) => {
-          if (!i) return; const a = parseFloat(String((tr.querySelector('[data-k="amount"]') || {}).value || "").replace(/[$,]/g, "")) || 0, tax = (tr.querySelector('[data-k="tax"]') || {}).value;
+          if (!i) return;
+          if (sale) { const qv = parseFloat((tr.querySelector('[data-k="qty"]') || {}).value) || 0, uv = parseFloat(String((tr.querySelector('[data-k="unit"]') || {}).value || "").replace(/[$,]/g, "")) || 0; tr.querySelector('[data-k="amount"]').value = qv && uv ? (Math.round(qv * uv * 100) / 100).toFixed(2) : ""; }
+          const a = parseFloat(String((tr.querySelector('[data-k="amount"]') || {}).value || "").replace(/[$,]/g, "")) || 0, tax = (tr.querySelector('[data-k="tax"]') || {}).value;
           const gst = S.books.settings.gstRegistered && (tax === "GST" || tax === "CAP") ? Math.round(a * 100 * R / (1 + R)) : 0; t += Math.round(a * 100); g += gst;
           const cell = tr.querySelector("[data-gst]"); if (cell) cell.textContent = dollars(gst, true);
         });
         $("acfTot").textContent = `Total $${dollars(t)} · GST $${dollars(g)} · without GST $${dollars(t - g)}`;
+        // 2.878.0: the ATO - a tax invoice of $1,000 or more shows the buyer's identity or ABN
+        if (sale) $("acfWarn").textContent = S.books.settings.gstRegistered && t >= 100000 && !$("acfParty").value.trim() && !$("acfAbn").value.trim() ? "A tax invoice of $1,000 or more must show the buyer's name or ABN." : "";
       };
-      const setTax = (tr) => { const s = tr.querySelector('[data-k="account"]'), tx = tr.querySelector('[data-k="tax"]'), a = S.books.accounts.find((x) => x.code === s.value); if (a && !tx.dataset.touched) tx.value = kind === "invoice" && a.tax === "CAP" ? "GST" : a.tax; };
+      const setTax = (tr) => { const s = tr.querySelector('[data-k="account"]'), tx = tr.querySelector('[data-k="tax"]'), a = S.books.accounts.find((x) => x.code === s.value); if (a && !tx.dataset.touched) tx.value = sale && a.tax === "CAP" ? "GST" : a.tax; };
       b.addEventListener("input", tot);
       b.addEventListener("change", (e) => { const tr = e.target.closest("tr"); if (e.target.dataset.k === "tax") e.target.dataset.touched = "1"; if (e.target.dataset.k === "account" && tr) setTax(tr); tot(); });
       b.addEventListener("click", (e) => { if (e.target.closest("[data-rmline]")) { const tr = e.target.closest("tr"); if ($("acfLines").querySelectorAll("tr").length > 2) tr.remove(); tot(); } });
@@ -279,6 +298,7 @@
     on("acNewReceipt", "click", () => loadBooks().then(() => docForm("receipt")));
     on("acNewBill", "click", () => loadBooks().then(() => docForm("bill")));
     on("acNewInvoice", "click", () => loadBooks().then(() => docForm("invoice")));
+    on("acNewQuote", "click", () => loadBooks().then(() => docForm("quote")));
     on("acNewJournal", "click", () => loadBooks().then(journalForm));
     on("acTabs", "click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
     on("acDlgCancel", "click", () => $("acDlg").close());
@@ -294,6 +314,8 @@
       if (t.id === "acBasisKeep" && t.checked) api("/api/accounts/settings", { settings: { basis: $("acBasis").value } }).then(() => { S.basis = ""; msg("✔ the books' GST basis: " + $("acBasis").value); return refresh(); });
       if (t.id === "acGstReg") api("/api/accounts/settings", { settings: { gstRegistered: t.checked } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
       if (t.id === "acInvPre") api("/api/accounts/settings", { settings: { invoicePrefix: t.value } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
+      const SET = { acQPre: "quotePrefix", acTerms: "terms", acQDays: "quoteDays", acPayTo: "payTo", acProfile: "profile" };
+      if (SET[t.id]) api("/api/accounts/settings", { settings: { [SET[t.id]]: t.value } }).then(() => { msg("✔ kept"); return loadBooks(); }).catch((er) => msg("✗ " + er.message, true));
     });
     on("acPaper", "click", async (e) => {
       const t = e.target, B = S.books, one = (sel) => t.closest(sel);
@@ -301,6 +323,8 @@
         let x;
         if ((x = one("[data-filter]"))) { S.filter = x.dataset.filter; return show(); }
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
+        if ((x = one("[data-print]"))) { e.stopPropagation(); return printDoc(x.dataset.print, false); }
+        if ((x = one("[data-q2i]"))) { e.stopPropagation(); const q = B.docs.find((y) => y.id === x.dataset.q2i); if (await yes(`Make quote ${q.number} (${q.party}, $${dollars(q.total)}) an invoice dated today?`, "Make invoice")) { const inv = await api("/api/accounts/quote/" + q.id + "/invoice", { date: todayStr() }); await refresh(); msg(`✔ quote ${q.number} is invoice ${inv.number} - 🖨 to print it`); } return; }
         if ((x = one("[data-pay]"))) { e.stopPropagation(); return payForm(B.docs.find((d) => d.id === x.dataset.pay)); }
         if ((x = one("[data-del]"))) { e.stopPropagation(); const d = B.docs.find((y) => y.id === x.dataset.del); if (await yes(`Delete ${d.number || "the document"} ${d.party} ($${dollars(d.total)}) and its payments?`, "Delete")) { await api("/api/accounts/doc/" + d.id + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
         if ((x = one("[data-delpay]"))) { if (await yes("Delete this payment?", "Delete")) { await api("/api/accounts/payment/" + x.dataset.delpay + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
@@ -319,5 +343,5 @@
     setTimeout(look, 500);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, state: () => S }, pure);
+  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, state: () => S }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

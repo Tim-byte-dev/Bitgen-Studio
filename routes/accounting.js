@@ -10,9 +10,17 @@
 //   POST   /api/accounts/journal    {biz, entry}      a general journal entry;                   DELETE /api/accounts/journal/:id
 //   POST   /api/accounts/job        {biz, job};       DELETE /api/accounts/job/:code
 //   POST   /api/accounts/account    {biz, account};   DELETE /api/accounts/account/:code
-//   POST   /api/accounts/settings   {biz, settings}   cash / accrual, GST registered, invoice prefix
+//   POST   /api/accounts/settings   {biz, settings}   cash / accrual, GST registered, invoice / quote prefix, terms, how to pay, profile
+//   2.878.0  POST /api/accounts/quote/:id/state {state} · POST /api/accounts/quote/:id/invoice {date} · GET /api/accounts/print/:id?biz=&auto=1
 "use strict";
 const express = require("express");
+/** whose details head an invoice: the books' own business, else the one picked in Accounts (settings.profile), else the last used */
+function printBusiness(bizId, B) {
+  try {
+    const P = require("../lib/businessProfiles"), L = P.list();
+    return L.profiles.find((p) => p.id === bizId) || L.profiles.find((p) => p.id === B.settings.profile) || L.profiles.find((p) => p.id === L.last) || null;
+  } catch (e) { return null; }
+}
 function mount(app) {
   const A = () => require("../lib/accounting");
   const biz = (req) => String((req.body && req.body.biz) || req.query.biz || "main");
@@ -31,6 +39,18 @@ function mount(app) {
     let p = ""; try { p = A().filePath(biz(req), req.params.name); } catch (e) { /* bad biz */ }
     if (!p || !require("fs").existsSync(p)) return res.status(404).json({ error: "no such file" });
     res.sendFile(p);
+  });
+  // 2.878.0: ✍ invoices + quotes - a quote's state, a quote made an invoice, the page to print / Save as PDF
+  app.post("/api/accounts/quote/:id/state", small, wrap((req) => A().quoteState(biz(req), req.params.id, (req.body || {}).state)));
+  app.post("/api/accounts/quote/:id/invoice", small, wrap((req) => A().quoteToInvoice(biz(req), req.params.id, (req.body || {}).date)));
+  app.get("/api/accounts/print/:id", (req, res) => {
+    try {
+      const B = A().load(biz(req)), V = A().view(B), d = V.docs.find((x) => x.id === req.params.id);
+      if (!d || (d.kind !== "invoice" && d.kind !== "quote")) return res.status(404).json({ error: "no such invoice or quote" });
+      const business = printBusiness(biz(req), B);
+      const html = require("../lib/accountingPrint").printHtml(d, B, business, { auto: req.query.auto === "1", issues: A().invoiceIssues(B, d, business) });
+      res.type("html").send(html);
+    } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));

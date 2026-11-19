@@ -25,7 +25,7 @@
   function fromForm(v) {
     const o = v || {}, t = (x) => String(x == null ? "" : x).trim();
     return { id: t(o.id) || undefined, company: t(o.company), name: t(o.name), role: t(o.role), address: t(o.address), phone: t(o.phone),
-      email: t(o.email), website: t(o.website), services: t(o.services).split(/\r?\n/).map(t).filter(Boolean),
+      email: t(o.email), website: t(o.website), abn: t(o.abn), services: t(o.services).split(/\r?\n/).map(t).filter(Boolean),
       colours: (o.colours || []).filter((c) => c && c.on && /^#[0-9a-f]{6}$/i.test(c.hex)).map((c) => c.hex.toLowerCase()), front: t(o.front), back: t(o.back),
       card_size: /^[a-z0-9-]{1,24}$/.test(t(o.card_size)) ? t(o.card_size) : "" };
   }
@@ -60,6 +60,7 @@
           ${fld("pcbzCompany", "Company name", "Rosie's Bakery")}${fld("pcbzName", "Your name", "Rosie Smith")}
           ${fld("pcbzRole", "Role / title", "Owner - head baker")}${fld("pcbzPhone", "Phone number", "0412 345 678", "tel")}
           ${fld("pcbzEmail", "Email", "hello@rosiesbakery.com.au", "email")}${fld("pcbzWeb", "Website", "rosiesbakery.com.au")}
+          ${fld("pcbzAbn", "ABN (for tax invoices)", "51 824 753 556")}
           <label class="pcbz-f pcbz-w"><span>Address</span><textarea id="pcbzAddr" rows="2" placeholder="12 Main Street, Springfield QLD 4300"></textarea></label>
           <label class="pcbz-f pcbz-w"><span>Services - one a line</span><textarea id="pcbzServ" rows="4" placeholder="Sourdough and rye breads&#10;Celebration cakes&#10;Wholesale to cafes"></textarea></label>
         </div>
@@ -76,7 +77,7 @@
       const d = E.ui.dialog(TITLES[k] + " - your business details", html, (dd) => {
         const v = (id) => dd.querySelector("#" + id);
         const prof = fromForm({ id: cur ? cur.id : "", company: v("pcbzCompany").value, name: v("pcbzName").value, role: v("pcbzRole").value, address: v("pcbzAddr").value,
-          phone: v("pcbzPhone").value, email: v("pcbzEmail").value, website: v("pcbzWeb").value, services: v("pcbzServ").value,
+          phone: v("pcbzPhone").value, email: v("pcbzEmail").value, website: v("pcbzWeb").value, abn: v("pcbzAbn").value, services: v("pcbzServ").value,
           colours: [0, 1, 2].map((i) => ({ on: v("pcbzCon" + i).checked, hex: v("pcbzCol" + i).value })), front: v("pcbzFront").value, back: v("pcbzBack") ? v("pcbzBack").value : "",
           card_size: v("pcbzSize") ? v("pcbzSize").value : (cur && cur.card_size) || "" });
         if (!prof.company && !prof.name) { say("✨ give the company's name or your name"); v("pcbzCompany").focus(); return false; }
@@ -93,7 +94,7 @@
         const fill = (p) => {
           cur = p || null; logoData = ""; dropLogo = false;
           const P = p || {};
-          [["pcbzCompany", "company"], ["pcbzName", "name"], ["pcbzRole", "role"], ["pcbzPhone", "phone"], ["pcbzEmail", "email"], ["pcbzWeb", "website"], ["pcbzAddr", "address"], ["pcbzFront", "front"], ["pcbzBack", "back"]]
+          [["pcbzCompany", "company"], ["pcbzName", "name"], ["pcbzRole", "role"], ["pcbzPhone", "phone"], ["pcbzEmail", "email"], ["pcbzWeb", "website"], ["pcbzAbn", "abn"], ["pcbzAddr", "address"], ["pcbzFront", "front"], ["pcbzBack", "back"]]
             .forEach(([id, key]) => { if (v(id)) v(id).value = P[key] || ""; });
           v("pcbzServ").value = (P.services || []).join("\n");
           [0, 1, 2].forEach((i) => { const c = (P.colours || [])[i]; v("pcbzCon" + i).checked = !!c; v("pcbzCol" + i).value = c || DEF[i]; });

@@ -9826,6 +9826,26 @@ own books, kept on this computer (accounting/<business>/books.json).
 The BAS figures are a worksheet: lodge through the ATO or your tax agent. PAYG withholding, instalments and your own tax
 settings come later; writing invoices and quotes, and reading a receipt with the AI, are the next releases.
 
+## ✍ Invoices and quotes in Accounts (2.878.0)
+
+In the 📒 Accounts docker, **＋ 📝 Quote** and **＋ 📤 Invoice we sent** write the document itself: the customer's name,
+address, email and ABN, and each line as **quantity × unit price** including GST (the amount and the GST follow as you type).
+Quotes and invoices are numbered by themselves (Q-0001, INV-0001; the starts are set under Accounts).
+
+- **A quote** has a Valid until date (30 days unless you change it) and a status - draft, sent, accepted or declined; past its
+  date unanswered it shows expired. A quote puts **nothing** in the books (no journal, no GST, no BAS) until **➜📤** makes it
+  an invoice dated today, with the same customer and lines and the quote's number as its reference.
+- **🖨** on an invoice or quote opens the page to print - in the print box pick **Save as PDF** for a PDF. A GST-registered
+  business gets a **Tax Invoice** the ATO's way: your business name, address and **ABN**, the date, each line with its
+  quantity, price and GST (GST-free lines named), the totals, "Total price includes GST" when every line is taxable, the
+  buyer, how to pay (with the invoice number as the reference) and the due date; paid in full shows a PAID stamp. Not GST
+  registered: a plain Invoice.
+- The heading comes from the business details (✨ Create ▸ 💳 - now with an **ABN** field, checked as you save). For My
+  business's books, pick which business details head the invoices under **Accounts**, where you also set how to pay (bank,
+  BSB, account), the days to pay and how long quotes last.
+- A tax invoice of $1,000 or more must show the buyer's name or ABN - the dialog says so when both are missing; anything a
+  tax invoice still lacks (your ABN, your business name) shows above the printed page on screen, never on paper.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

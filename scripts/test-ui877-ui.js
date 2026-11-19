@@ -46,7 +46,7 @@ const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX
     // ＋ Invoice we sent
     await p.click("#acNewInvoice"); await p.waitForSelector("#acfParty");
     await p.fill("#acfParty", "J Smith"); await p.fill("#acfDate", "2026-10-05"); await p.fill("#acfDue", "2026-10-19"); await p.selectOption("#acfJob", "SMITH-01");
-    await p.fill('#acfLines [data-k="desc"]', "Kitchen fit-out"); await p.fill('#acfLines [data-k="amount"]', "11000");
+    await p.fill('#acfLines [data-k="desc"]', "Kitchen fit-out"); await p.fill('#acfLines [data-k="unit"]', "11000");   // 2.878.0: an invoice line = qty x unit price
     const tot1 = await ev(() => ({ t: document.getElementById("acfTot").textContent, gst: document.querySelector("#acfLines [data-gst]").textContent, tax: document.querySelector('#acfLines [data-k="tax"]').value, acc: document.querySelector('#acfLines [data-k="account"]').value, x: !!document.querySelector("#acDlg > .h3dlgx, #acDlg .h3dlgx") }));
     check("＋ Invoice we sent: the dialog works out GST as you type (11,000.00 incl. = 1,000.00 GST, Services Income, GST 10 %), a ✕ top right",
       /Total \$11,000\.00 · GST \$1,000\.00 · without GST \$10,000\.00/.test(tot1.t) && tot1.gst === "1,000.00" && tot1.tax === "GST" && tot1.acc === "4200" && tot1.x, tot1);

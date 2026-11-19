@@ -35,7 +35,7 @@ const PNG1 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzI
   check("a logo that is not a picture: refused", /PNG, JPEG, WebP, SVG or GIF/.test(e1), e1);
   check("remove", B.remove(p1.id) === true && !B.list().profiles.some((x) => x.id === p1.id) && B.remove(p1.id) === false);
   check("shaped for MariaDB later: the columns listed (FIELDS), services / colours as their own lists, git-ignored /business/",
-    B.FIELDS.map((f) => f[0]).join() === "company,name,role,address,phone,email,website,front,back" && /^\/business\/$/m.test(src(".gitignore")) && /later we will add it to mariadb/.test(src("lib/businessProfiles.js")));
+    B.FIELDS.map((f) => f[0]).join() === "company,name,role,address,phone,email,website,front,back,abn" && /^\/business\/$/m.test(src(".gitignore")) && /later we will add it to mariadb/.test(src("lib/businessProfiles.js")));
   const RB = src("routes/businessProfiles.js");
   check("routes: GET / POST / DELETE /api/business/profiles + the logo; mounted from routes/index.js",
     /app\.get\("\/api\/business\/profiles"/.test(RB) && /app\.post\("\/api\/business\/profiles"/.test(RB) && /app\.delete\("\/api\/business\/profiles\/:id"/.test(RB) && /\/api\/business\/profiles\/:id\/logo/.test(RB)
