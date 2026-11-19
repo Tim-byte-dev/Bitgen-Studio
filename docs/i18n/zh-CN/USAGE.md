@@ -6319,12 +6319,12 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - RGB MoCap 没有命令行——捕捉在它自己的窗口里完成，所以 bitGen 负责准备视频并把结果带回来。别处得到的 FBX / BVH 也可以放进 mocap 文件夹。
 
 ## 用 H3 Character Sheet Designer 制作角色设定表（2.870.0）
-<!-- en: character-sheets-with-the-h3-character-sheet-designer 2e50bf0ae3f2 -->
+<!-- en: character-sheets-with-the-h3-character-sheet-designer 57b91b9a5866 -->
 
 角色创建器的 **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）用 **H3 Character Sheet Designer**（ukr8b3g-cmyk 的 ComfyUI 节点包，MIT）从一张图片制作角色的参考设定表，由 **MiniMax H3 Image** 绘制。它取代了旧的设定表选项（Kind、Look、Pose sheet、Render style）和 pose_sheets 文件夹。
 
 1. 安装一次：**设置 ▸ 附加组件 ▸ H3 Character Sheet Designer** 会把节点包放进 ComfyUI 的 custom_nodes，并下载 MiniMax H3 Image 的 Transformer 和 VAE（如果视频还没带来 MiniMax H3 文本编码器，也会一并下载）。需要 **ComfyUI 0.45** 或更新版本；装好后重启一次 ComfyUI。还没安装？面板里的 **⬇ Install…**（或 ▶ Generate sheet）会弹出下载 / 取消框。
-2. **📂 Load picture** 载入图片，把框拖到一个主体上（或 **▣ Whole picture**），和以前一样。
+2. **📂 Load picture** 载入图片，把框拖到一个主体上（或 **▣ Whole picture**），和以前一样。还没有图片？在它下面描述角色，选一个**图像风格**（提示词面板的列表），然后按 **✨ Generate**（或 Enter）——图片会在那里打开，可以直接拖框，也会加入角色的 🎨 Create images。勾选 Basic Settings ▸ **Override style** 时，用这个风格自己的 Basic Settings 渲染（如果是提示词面板当前的风格，就用屏幕上的设置，否则用它上次的设置）；不勾选时用风格自身的设置——行下面会说明用的是哪种。
 3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13——或在 13 个视图（6 个头部、3 个全身、服装正面 / 背面、手、脚）中自己勾选。
 4. **Clothing**（与图片一致、裤子、裙子或长袍，动物或吉祥物用 **No clothing · natural body surface**——服装视图会被去掉）、**Hands**（赤手、手套）、**Feet**（穿鞋、不穿鞋）、**Style**（与图片一致、动漫、照片、绘画风格、3D 渲染）和 **Size**（Standard、High detail、最高 8 或 16 MP，或精确尺寸）。
 5. **Layout guide** 会把设计器的布局图一起送去安排视图（关闭时用文字安排）；大设定表在解码时卡住时，**Tiled decode** 会有帮助。

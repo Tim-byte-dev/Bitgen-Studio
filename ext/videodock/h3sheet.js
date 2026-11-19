@@ -16,6 +16,14 @@
  *   ✏ View instructions  a view's own instruction, edited (↺ Default puts the designer's back)
  *   The layout    drawn from the designer's own preview in ComfyUI (its panels, the canvas size in pixels / MP)
  * Not installed: the line says so and ⬇ Install… opens the Download / Cancel box (H3NeedInstall "h3sheet").
+ * 2.871.0 (Tim: "can we add a generate button with a prompt input in the character style dropdown to show image styles, if
+ * overide settings is checked then use the selected styles overide"): a row under 📂 Load picture - the words, an IMAGE
+ * style (the prompt docker's list; the prompt docker's style first, the pick kept) and ✨ Generate -> /api/genimage; the
+ * picture lands in the sheet's canvas (H3CharSheetPic.open) and in the character's 🎨 Create images strip. Basic Settings ▸
+ * Override style ticked = THAT style's Basic Settings (the live ones when it is the prompt docker's style now, else the ones
+ * it last had in misc/basic_settings.tmp - H3StyleBasic): size, steps, CFG, seed, checkpoint (+ LoRAs when live); unticked =
+ * the style's own settings. The line under the row says which.
+ *   fromSaved(vals, useModel) -> {body, words}   (pure: a style's saved Basic Settings as /api/genimage fields)
  *   ready()          -> Promise<bool>   installed (asks once with the box when not)
  *   appendTo(fd)     the settings + part pictures onto the FormData of a take -> the settings (for ↻ Regenerate)
  *   body()           the settings as JSON (+ the part pictures sent before, by name)
@@ -27,7 +35,7 @@
   var C = null;                         // the catalog from GET /api/charsheet/h3
   var S = { preset: "five", views: ["face_front", "face_left", "body_front", "body_left", "body_back"], clothing: "reference",
             hands: "reference", feet: "reference", style: "none", detail: "high", w: 3168, h: 1280, layout: false, tiled: false,
-            roles: ["same_character", "face", "clothing"], parts: {}, viewPrompts: {} };
+            roles: ["same_character", "face", "clothing"], parts: {}, viewPrompts: {}, picPrompt: "", picStyle: "" };
   var refs = [null, null, null];        // File objects
   var refNames = ["", "", ""];          // what the server kept (↻ Regenerate)
   var installed = null, previewT = 0, previewN = 0, defaults = {};
@@ -285,7 +293,7 @@
     if (!build()) return Promise.resolve(false);
     return fetch("/api/charsheet/h3").then(function (r) { return r.json(); }).then(function (d) {
       C = d.catalog; installed = !!d.installed;
-      paintSelects(); paintStatus(); preview();
+      paintSelects(); paintStatus(); paintPic(); preview();
       test("h3s_ready", installed);
       return installed;
     }).catch(function () { say("⚠ the sheet designer's settings could not be read", true); return false; });
@@ -323,9 +331,110 @@
     else say("⚠ " + ((d.missing && d.missing.length) ? d.missing.join(" · ") : d.error), true);
   }
 
+  /* ---- 2.871.0: ✨ Generate the character picture ---- */
+  var a16 = function (n) { return Math.max(16, Math.round(n / 16) * 16); };
+  /** a style's saved Basic Settings (basic_settings.tmp "basic") -> the /api/genimage fields + words (pure) */
+  function fromSaved(v, useModel) {
+    var b = {}, w = [];
+    v = v || {};
+    var res = parseInt(v.imgRes, 10), ar = String(v.imgAr || "1:1").split(":").map(Number);
+    if (Number.isFinite(res) && res > 0 && ar[0] > 0 && ar[1] > 0) {
+      if (ar[0] >= ar[1]) { b.width = a16(res); b.height = a16(res * ar[1] / ar[0]); } else { b.height = a16(res); b.width = a16(res * ar[0] / ar[1]); }
+      w.push(b.width + " × " + b.height);
+    }
+    var st = parseInt(v.imgSteps, 10); if (v.imgSteps !== "" && v.imgSteps != null && st > 0) { b.steps = st; w.push(st + " steps"); }
+    var cf = parseFloat(v.imgCfg); if (v.imgCfg !== "" && v.imgCfg != null && Number.isFinite(cf)) { b.cfg = cf; w.push("CFG " + cf); }
+    var sd = parseInt(v.imgSeed, 10); if (Number.isFinite(sd)) { b.seed = sd; w.push(sd >= 0 ? "seed " + sd : "random seed"); }
+    var ck = String(v.imgCkpt == null ? "" : v.imgCkpt).trim(); if (ck && useModel !== false) { b.model = ck; w.push(ck.split(/[\\/]/).pop()); }
+    return { body: b, words: w.join(", ") };
+  }
+  function imageStyles() {
+    var sel = $("styleSel");
+    return sel ? Array.prototype.filter.call(sel.options, function (o) { return o.value; }).map(function (o) { return { id: o.value, name: o.textContent.trim() }; }) : [];
+  }
+  var ovrOn = function () { var c = $("ovrStyle"); return c ? !!c.checked : false; };
+  var gcall = function (n, a) { try { var f = window[n]; return typeof f === "function" ? f(a) : undefined; } catch (e) { return undefined; } };
+  /** what the picked style renders with -> {body, words} */
+  function picSettings(id) {
+    if (!ovrOn()) return { body: {}, words: "Override style is off - the style's own settings" };
+    var sel = $("styleSel");
+    if (sel && sel.value === id && typeof window.imgBasicsBody === "function") {
+      var b = window.imgBasicsBody({}) || {}, w = [];
+      if (b.width) w.push(b.width + " × " + b.height); if (b.steps) w.push(b.steps + " steps"); if (b.cfg != null) w.push("CFG " + b.cfg);
+      if (b.model) w.push(String(b.model).split(/[\\/]/).pop()); if (b.extra_loras && b.extra_loras.length) w.push(b.extra_loras.length + " LoRA" + (b.extra_loras.length > 1 ? "s" : ""));
+      return { body: b, words: "Override style: Basic Settings now" + (w.length ? " · " + w.join(", ") : "") };
+    }
+    var SB = window.H3StyleBasic, e = SB && SB.file && ((SB.file() || {}).styles || {})["image:" + id];
+    if (!e || !e.basic) return { body: {}, words: "Override style: this style has no Basic Settings saved yet - its own settings" };
+    var r = fromSaved(e.basic, gcall("useMD", "image") !== false);
+    return { body: r.body, words: "Override style: this style's Basic Settings" + (r.words ? " · " + r.words : "") };
+  }
+  function buildPic() {
+    if ($("h3sPicBar")) return;
+    var load = $("chSheetLoad"), bar = load && load.closest(".chBar");
+    if (!bar) return;
+    var row = document.createElement("div");
+    row.className = "chBar"; row.id = "h3sPicBar";
+    row.innerHTML = '<input id="h3sPicPrompt" type="text" spellcheck="true" style="flex:1;min-width:160px" placeholder="Describe the character to generate…" aria-label="Describe the character to generate">'
+      + '<select id="h3sPicStyle" style="width:auto;max-width:240px" aria-label="Image style for the character picture" title="The image style that makes the picture"></select>'
+      + '<button class="ghost gbtn" id="h3sPicGo" type="button" title="Make the character picture with this style - it opens here, ready for the sheet" aria-label="Generate the character picture">✨ Generate</button>';
+    var note = document.createElement("div"); note.className = "hint"; note.id = "h3sPicNote"; note.setAttribute("aria-live", "polite");
+    bar.parentNode.insertBefore(note, bar.nextSibling);
+    bar.parentNode.insertBefore(row, bar.nextSibling);
+    $("h3sPicPrompt").value = S.picPrompt || "";
+    $("h3sPicPrompt").addEventListener("input", function () { S.picPrompt = $("h3sPicPrompt").value; save(); });
+    $("h3sPicPrompt").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); generatePic(); } });
+    $("h3sPicStyle").addEventListener("change", function () { S.picStyle = $("h3sPicStyle").value; save(); picNote(); });
+    $("h3sPicGo").addEventListener("click", generatePic);
+    var ov = $("ovrStyle"); if (ov) ov.addEventListener("change", function () { picNote(); });
+  }
+  function paintPic() {
+    buildPic();
+    var sel = $("h3sPicStyle"); if (!sel) return;
+    var list = imageStyles(), ps = $("styleSel"), pick = S.picStyle && list.some(function (x) { return x.id === S.picStyle; }) ? S.picStyle : (ps ? ps.value : "");
+    sel.innerHTML = "";
+    if (!list.length) { var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "no image styles"; sel.appendChild(o0); }
+    list.forEach(function (x) { var o = document.createElement("option"); o.value = x.id; o.textContent = x.name; sel.appendChild(o); });
+    if (pick) sel.value = pick;
+    picNote();
+  }
+  function picNote(t) {
+    var n = $("h3sPicNote"); if (!n) return;
+    var id = $("h3sPicStyle") && $("h3sPicStyle").value;
+    n.textContent = t || (id ? picSettings(id).words : "");
+  }
+  var picPoll = null;
+  function generatePic() {
+    var words = ($("h3sPicPrompt").value || "").trim(), id = $("h3sPicStyle").value;
+    if (!words) { picNote("write what the character looks like first"); $("h3sPicPrompt").focus(); return; }
+    if (!id) { picNote("pick an image style"); return; }
+    var ps = picSettings(id), body = Object.assign({ prompt: words, style_id: id, batch: 1 }, ps.body);
+    var go = $("h3sPicGo"); go.disabled = true;
+    picNote("queuing… · " + ps.words);
+    var ready = window.H3PodRoute && window.H3PodRoute.ready ? Promise.resolve(window.H3PodRoute.ready("image", id)) : Promise.resolve(true);
+    ready.then(function (ok) {
+      if (ok === false) throw new Error("ComfyUI is not running and could not be started - Settings ▸ ComfyUI");
+      return fetch("/api/genimage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok || !x.j.id) throw new Error((x.j && x.j.error) || "the picture could not be queued");
+      test("h3s_pic_job", x.j.id);
+      clearInterval(picPoll);
+      picPoll = setInterval(function () {
+        fetch("/api/jobs/" + encodeURIComponent(x.j.id)).then(function (r) { return r.json(); }).then(function (jj) {
+          if (jj.status === "running" || jj.status === "queued") { picNote((jj.status === "queued" ? "waiting in the Queue" : "rendering" + (window.H3Steps ? window.H3Steps.tag(jj.progress) : "")) + "…"); return; }
+          clearInterval(picPoll); go.disabled = false;
+          var outs = (jj.outputs && jj.outputs.length ? jj.outputs : jj.output ? [jj.output] : []).map(function (n) { return "/outputs/" + encodeURIComponent(String(n).split(/[\\/]/).pop()); });
+          if (jj.status !== "done" || !outs.length) { picNote(jj.status === "done" ? "✗ the picture came back empty" : "✗ render " + jj.status); return; }
+          picNote("✓ made - drag the box over the character, then ▶ Generate sheet");
+          if (window.H3CharSheetPic) { window.H3CharSheetPic.keep(outs); window.H3CharSheetPic.open(outs[0], decodeURIComponent(outs[0].split("/").pop())); }
+        }).catch(function () {});
+      }, 1500);
+    }).catch(function (e) { go.disabled = false; picNote("✗ " + (e.message || e)); });
+  }
+
   load();
   window.H3SheetDesign = { refresh: refresh, ready: ready, appendTo: appendTo, body: body, remember: remember, failed: failed,
     state: function () { return JSON.parse(JSON.stringify(S)); },
     setState: function (o) { Object.keys(o || {}).forEach(function (k) { if (k in S) S[k] = o[k]; }); save(); if (C) { paintSelects(); preview(); } },
-    choices: choices };
+    choices: choices, fromSaved: fromSaved, picSettings: picSettings, generatePic: generatePic };
 })();

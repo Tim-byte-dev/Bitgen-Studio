@@ -14478,6 +14478,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-870-live.js > /tmp/t870l.log 2>&
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui870-ui.js > /tmp/ui870.log 2>&1 \
   && ok "2.870.0 browser test: the designer's panel, the layout drawn, presets / ticks / No clothing, a part picture + role, notes + view instructions, ⬇ Install… box, ▶ Generate posts the take, remembered" \
   || { bad "2.870.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui870.log | head -12; }
+# ---- 2.871.0 (✨ the character picture made in the sheet tab)
+node scripts/test-871.js > /tmp/t871.log 2>&1 \
+  && ok "2.871.0 units: fromSaved (a style's saved Basic Settings -> size / steps / CFG / seed / checkpoint), the row, Override style live / saved / off, H3CharSheetPic" \
+  || { bad "2.871.0 units"; grep -a "^FAIL" -A1 /tmp/t871.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui871-ui.js > /tmp/ui871.log 2>&1 \
+  && ok "2.871.0 browser test: prompt + image styles + ✨ Generate in the sheet tab, the Override line, the style's saved settings sent, the picture in the canvas, kept" \
+  || { bad "2.871.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui871.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

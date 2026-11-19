@@ -1320,6 +1320,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🎛 元素属性** — 在 WYSIWYG 页面上选中任何东西并设置样式：尺寸、间距、每个角的半径（或四个一起）、边框、背景颜色 / 图片 / 线性或径向渐变、阴影 + 文字阴影、不透明度、文字
 - **🗄 网页构建器的数据库管理** — 在标签页中管理网站的数据库：表 + 视图、每次 50 行、双击修改单元格、＋ 行、🗑、⌨ SQL（危险语句先询问）、⤓ CSV / SQL / 整个数据库、⤒ .sql
 - **🕺 时间线动作捕捉（RGB MoCap）** — 设置 ▸ 附加组件 安装 RGB MoCap（Windows）；时间线的 🕺 动捕 为它准备片段、打开它，并把它的 FBX / BVH 作为播放动画的 🕺 3D 图层带回来
+- **✨ 在设定表标签里生成角色图片** — 描述角色、选一个图像风格并点 ✨ Generate：图片会在设定表的画布中打开，可直接拖框并生成设定表；勾选 Override style 时用这个风格自己的 Basic Settings 渲染。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet，在 📂 Load picture 下面。*Since:* 2.871.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

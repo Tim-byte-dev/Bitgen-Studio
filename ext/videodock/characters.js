@@ -3214,6 +3214,20 @@
       var f = el("chName");
       return (f && f.value.trim()) || "unnamed";
     }
+    /* 2.871.0: the sheet tab's ✨ Generate (ext/videodock/h3sheet.js) puts its picture here - the sheet's canvas, as if loaded -
+       and into this character's generations (the 🎨 Create images strip) */
+    window.H3CharSheetPic = {
+      open: function (url, name) {
+        var img = new Image();
+        img.onload = function () { chMaskOpen(img, name || "generated.png"); };
+        img.onerror = function () { chSheetSay("could not read the generated picture"); };
+        img.src = url;
+      },
+      keep: function (urls) {
+        return fetch("/api/characters/gens", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: ccName(), add: urls }) }).catch(function () {});
+      },
+    };
     /* 2.223.9 (by instruction): "load the style's settings and change the
        sliders and wxh settings to the styles" — the accordion is SET to the
        selected style's steps/cfg/size/scheduler, on populate and on every

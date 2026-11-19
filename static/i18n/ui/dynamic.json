@@ -25900,207 +25900,231 @@
   },
   {
    "s": "Click to select; the sheet button uses the selected image",
-   "src": "ext/videodock/characters.js:3305"
+   "src": "ext/videodock/characters.js:3319"
   },
   {
    "s": "Select for Auto Caption",
-   "src": "ext/videodock/characters.js:3665"
-  },
-  {
-   "s": "Remove this image (and its caption)",
-   "src": "ext/videodock/characters.js:3670"
-  },
-  {
-   "s": "caption",
    "src": "ext/videodock/characters.js:3679"
   },
   {
+   "s": "Remove this image (and its caption)",
+   "src": "ext/videodock/characters.js:3684"
+  },
+  {
+   "s": "caption",
+   "src": "ext/videodock/characters.js:3693"
+  },
+  {
    "s": "nobody selected — EVERYONE is in the scene",
-   "src": "ext/videodock/characters.js:3799"
+   "src": "ext/videodock/characters.js:3813"
   },
   {
    "s": "only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3885"
-  },
-  {
-   "s": "queued the tray picture from the References tray",
-   "src": "ext/videodock/characters.js:3897"
-  },
-  {
-   "s": "could not read that tray picture",
    "src": "ext/videodock/characters.js:3899"
   },
   {
+   "s": "queued the tray picture from the References tray",
+   "src": "ext/videodock/characters.js:3911"
+  },
+  {
+   "s": "could not read that tray picture",
+   "src": "ext/videodock/characters.js:3913"
+  },
+  {
    "s": "that is not a picture — only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3904"
+   "src": "ext/videodock/characters.js:3918"
   },
   {
    "s": "a clothing entry needs a type (jacket, armor",
-   "src": "ext/videodock/characters.js:3939"
+   "src": "ext/videodock/characters.js:3953"
   },
   {
    "s": "pick a clothing picture first",
-   "src": "ext/videodock/characters.js:3940"
+   "src": "ext/videodock/characters.js:3954"
   },
   {
    "s": "save the character first — the RefMod extracts from their dataset folder",
-   "src": "ext/videodock/characters.js:3956"
+   "src": "ext/videodock/characters.js:3970"
   },
   {
    "s": "queuing RefMod extraction",
-   "src": "ext/videodock/characters.js:3960"
+   "src": "ext/videodock/characters.js:3974"
   },
   {
    "s": "extraction refused",
-   "src": "ext/videodock/characters.js:3964"
+   "src": "ext/videodock/characters.js:3978"
   },
   {
    "s": "the mod did not land — see the job log",
-   "src": "ext/videodock/characters.js:3992"
-  },
-  {
-   "s": "save the character first — the dataset belongs to a saved character",
    "src": "ext/videodock/characters.js:4006"
   },
   {
+   "s": "save the character first — the dataset belongs to a saved character",
+   "src": "ext/videodock/characters.js:4020"
+  },
+  {
    "s": "nothing was added",
-   "src": "ext/videodock/characters.js:4027"
+   "src": "ext/videodock/characters.js:4041"
   },
   {
    "s": "could not create the dataset folder",
-   "src": "ext/videodock/characters.js:4036"
+   "src": "ext/videodock/characters.js:4050"
   },
   {
    "s": "Character sheet",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Clothing",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Hands",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Feet",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Layout guide",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Tiled decode (less VRAM)",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Part pictures",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Part notes",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "View instructions",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Default",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Which views the sheet has",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "The views on the sheet",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Clothing shape",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Rendering style",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Sheet size",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Bigger sheets take more VRAM and time",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Sheet width in pixels",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Sheet height in pixels",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Decodes the sheet in tiles - try it when a big sheet stops at the decode",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Choose a part picture",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "Which part the note is for",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "e.g. a scar over the left eye",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "The note for this part",
-   "src": "ext/videodock/h3sheet.js:80"
+   "src": "ext/videodock/h3sheet.js:88"
   },
   {
    "s": "My own views",
-   "src": "ext/videodock/h3sheet.js:142"
+   "src": "ext/videodock/h3sheet.js:150"
   },
   {
    "s": "Exact size",
-   "src": "ext/videodock/h3sheet.js:147"
+   "src": "ext/videodock/h3sheet.js:155"
   },
   {
    "s": "Head",
-   "src": "ext/videodock/h3sheet.js:156"
+   "src": "ext/videodock/h3sheet.js:164"
   },
   {
    "s": "Full body",
-   "src": "ext/videodock/h3sheet.js:156"
+   "src": "ext/videodock/h3sheet.js:164"
   },
   {
    "s": "Hands and feet",
-   "src": "ext/videodock/h3sheet.js:156"
+   "src": "ext/videodock/h3sheet.js:164"
   },
   {
    "s": "No clothing leaves the clothing views out",
-   "src": "ext/videodock/h3sheet.js:166"
+   "src": "ext/videodock/h3sheet.js:174"
   },
   {
    "s": "Add a part picture",
-   "src": "ext/videodock/h3sheet.js:185"
+   "src": "ext/videodock/h3sheet.js:193"
   },
   {
    "s": "Take this part picture off",
-   "src": "ext/videodock/h3sheet.js:195"
-  },
-  {
-   "s": "the designer's own instruction for this view",
    "src": "ext/videodock/h3sheet.js:203"
   },
   {
+   "s": "the designer's own instruction for this view",
+   "src": "ext/videodock/h3sheet.js:211"
+  },
+  {
    "s": "The designer's node pack and MiniMax H3 Image - Settings ▸ Add-ons ▸ H3 Character Sheet Designer",
-   "src": "ext/videodock/h3sheet.js:273"
+   "src": "ext/videodock/h3sheet.js:281"
+  },
+  {
+   "s": "Describe the character to generate",
+   "src": "ext/videodock/h3sheet.js:378"
+  },
+  {
+   "s": "Image style for the character picture",
+   "src": "ext/videodock/h3sheet.js:378"
+  },
+  {
+   "s": "The image style that makes the picture",
+   "src": "ext/videodock/h3sheet.js:378"
+  },
+  {
+   "s": "Make the character picture with this style - it opens here, ready for the sheet",
+   "src": "ext/videodock/h3sheet.js:378"
+  },
+  {
+   "s": "Generate the character picture",
+   "src": "ext/videodock/h3sheet.js:378"
+  },
+  {
+   "s": "no image styles",
+   "src": "ext/videodock/h3sheet.js:396"
   },
   {
    "s": "Fix the karaoke lyrics - the words the overlays show (then the scenes' overlays are remade)",
@@ -31786,123 +31810,123 @@
   },
   {
    "p": "{0} picture(s) picked — they upload when you press Save",
-   "src": "ext/videodock/characters.js:3609"
+   "src": "ext/videodock/characters.js:3623"
   },
   {
    "p": "{0} picture(s) picked — they upload when you press Add character",
-   "src": "ext/videodock/characters.js:3609"
+   "src": "ext/videodock/characters.js:3623"
   },
   {
    "p": "The caption — saved to {0}.txt when you leave the field",
-   "src": "ext/videodock/characters.js:3680"
+   "src": "ext/videodock/characters.js:3694"
   },
   {
    "p": "In the scene — click to bench: {0}",
-   "src": "ext/videodock/characters.js:3775"
+   "src": "ext/videodock/characters.js:3789"
   },
   {
    "p": "Benched — click to cast: {0}",
-   "src": "ext/videodock/characters.js:3775"
+   "src": "ext/videodock/characters.js:3789"
   },
   {
    "p": "{0} actor(s) in the scene — the chain and the writer see only them",
-   "src": "ext/videodock/characters.js:3799"
+   "src": "ext/videodock/characters.js:3813"
   },
   {
    "p": "{0} picture(s) queued from your computer",
-   "src": "ext/videodock/characters.js:3885"
+   "src": "ext/videodock/characters.js:3899"
   },
   {
    "p": "queued {0} from the References tray",
-   "src": "ext/videodock/characters.js:3897"
-  },
-  {
-   "p": "{0} is not a picture — only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3904"
-  },
-  {
-   "p": "queued {0} from the Images assets",
    "src": "ext/videodock/characters.js:3911"
   },
   {
+   "p": "{0} is not a picture — only pictures can be character sheets",
+   "src": "ext/videodock/characters.js:3918"
+  },
+  {
+   "p": "queued {0} from the Images assets",
+   "src": "ext/videodock/characters.js:3925"
+  },
+  {
    "p": "adopting {0} from the gallery",
-   "src": "ext/videodock/characters.js:3916"
+   "src": "ext/videodock/characters.js:3930"
   },
   {
    "p": "queued {0} (renamed — {1} was taken) from the gallery",
-   "src": "ext/videodock/characters.js:3921"
+   "src": "ext/videodock/characters.js:3935"
   },
   {
    "p": "queued {0} from the gallery",
-   "src": "ext/videodock/characters.js:3921"
+   "src": "ext/videodock/characters.js:3935"
   },
   {
    "p": "could not adopt {0}: {1}",
-   "src": "ext/videodock/characters.js:3926"
+   "src": "ext/videodock/characters.js:3940"
   },
   {
    "p": "extracting {0} from {1} dataset picture(s)… (job {2})",
-   "src": "ext/videodock/characters.js:3967"
+   "src": "ext/videodock/characters.js:3981"
   },
   {
    "p": "extracting {0} from {1} dataset picture(s) · step {2} of {3} (job {4})",
-   "src": "ext/videodock/characters.js:3974"
+   "src": "ext/videodock/characters.js:3988"
   },
   {
    "p": "extraction {0} — the Queue dock has the log",
-   "src": "ext/videodock/characters.js:3979"
+   "src": "ext/videodock/characters.js:3993"
   },
   {
    "p": "{0} extracted ({1}) — H3_Video_Ref renders now ride the mod",
-   "src": "ext/videodock/characters.js:3989"
+   "src": "ext/videodock/characters.js:4003"
   },
   {
    "p": "adding {0} file(s) to {1}'s dataset",
-   "src": "ext/videodock/characters.js:4017"
+   "src": "ext/videodock/characters.js:4031"
   },
   {
    "p": "{0} file(s) in {1}'s dataset — {2}",
-   "src": "ext/videodock/characters.js:4024"
+   "src": "ext/videodock/characters.js:4038"
   },
   {
    "p": "{0} file(s) in {1}'s dataset",
-   "src": "ext/videodock/characters.js:4024"
+   "src": "ext/videodock/characters.js:4038"
   },
   {
    "p": "dataset folder ready — {0} file(s) in it: {1}",
-   "src": "ext/videodock/characters.js:4036"
+   "src": "ext/videodock/characters.js:4050"
   },
   {
    "p": "{0} - click to change",
-   "src": "ext/videodock/h3sheet.js:185"
+   "src": "ext/videodock/h3sheet.js:193"
   },
   {
    "p": "Part picture {0}",
-   "src": "ext/videodock/h3sheet.js:186"
+   "src": "ext/videodock/h3sheet.js:194"
   },
   {
    "p": "What part picture {0} is for",
-   "src": "ext/videodock/h3sheet.js:191"
+   "src": "ext/videodock/h3sheet.js:199"
   },
   {
    "p": "Remove part picture {0}",
-   "src": "ext/videodock/h3sheet.js:195"
+   "src": "ext/videodock/h3sheet.js:203"
   },
   {
    "p": "Part notes ({0})",
-   "src": "ext/videodock/h3sheet.js:208"
+   "src": "ext/videodock/h3sheet.js:216"
   },
   {
    "p": "View instructions ({0} edited)",
-   "src": "ext/videodock/h3sheet.js:209"
+   "src": "ext/videodock/h3sheet.js:217"
   },
   {
    "p": "{0} × {1} px · {2} MP · {3} · big - needs a lot of VRAM",
-   "src": "ext/videodock/h3sheet.js:237"
+   "src": "ext/videodock/h3sheet.js:245"
   },
   {
    "p": "{0} × {1} px · {2} MP · {3}",
-   "src": "ext/videodock/h3sheet.js:237"
+   "src": "ext/videodock/h3sheet.js:245"
   },
   {
    "p": "renders at {0}x{1} -> upscaled to {2}x{3}",

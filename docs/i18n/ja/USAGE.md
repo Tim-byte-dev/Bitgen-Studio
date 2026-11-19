@@ -6085,12 +6085,12 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - RGB MoCap にはコマンドラインがありません - キャプチャはアプリ自身のウィンドウで行うので、bitGen は動画を準備して結果を持ち帰ります。他で作った FBX / BVH も mocap フォルダーに入れられます。
 
 ## H3 Character Sheet Designer でキャラクターシート（2.870.0）
-<!-- en: character-sheets-with-the-h3-character-sheet-designer 2e50bf0ae3f2 -->
+<!-- en: character-sheets-with-the-h3-character-sheet-designer 57b91b9a5866 -->
 
 キャラクタークリエイターの **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）は、1 枚の画像からキャラクターの参照シートを **H3 Character Sheet Designer**（ukr8b3g-cmyk 作の ComfyUI ノードパック、MIT）で作り、**MiniMax H3 Image** が描きます。以前のシートの設定（Kind、Look、Pose sheet、Render style）と pose_sheets フォルダーに代わるものです。
 
 1. 一度だけインストールします：**設定 ▸ アドオン ▸ H3 Character Sheet Designer** がノードパックを ComfyUI の custom_nodes に入れ、MiniMax H3 Image のトランスフォーマーと VAE をダウンロードします（動画でまだ入っていなければ MiniMax H3 テキストエンコーダーも）。**ComfyUI 0.45** 以降が必要で、終わったら ComfyUI を一度再起動します。まだインストールしていなければ、パネルの **⬇ Install…**（または ▶ Generate sheet）がダウンロード / キャンセルの確認を出します。
-2. **📂 Load picture** で画像を読み込み、枠を 1 体の被写体に合わせます（または **▣ Whole picture**）。これまでと同じです。
+2. **📂 Load picture** で画像を読み込み、枠を 1 体の被写体に合わせます（または **▣ Whole picture**）。これまでと同じです。まだ画像がなければ、その下にキャラクターの説明を書き、**画像スタイル**（プロンプトドッカーの一覧）を選んで **✨ Generate**（または Enter）を押します。画像はそこに開いて枠を合わせられる状態になり、キャラクターの 🎨 Create images にも加わります。Basic Settings ▸ **Override style** にチェックがあると、そのスタイル自身の Basic Settings（プロンプトドッカーのスタイルなら画面上の設定、それ以外は最後に使った設定）で描きます。チェックがなければスタイル自身の設定で描きます。どちらかは行の下に表示されます。
 3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13 - または 13 ビュー（頭 6、全身 3、服の正面 / 背面、手、足）から自分で選びます。
 4. **Clothing**（画像のとおり、パンツ、スカートまたはローブ、動物やマスコットには **No clothing · natural body surface** - 服のビューは入りません）、**Hands**（素手、手袋）、**Feet**（靴を履く、靴なし）、**Style**（画像のとおり、アニメ、写真、絵画風、3D レンダー）、**Size**（Standard、High detail、最大 8 / 16 MP、または正確なサイズ）。
 5. **Layout guide** はデザイナーのレイアウト画像を一緒に送ってビューを配置します（オフなら言葉で配置）。大きいシートがデコードで止まるときは **Tiled decode** を使います。

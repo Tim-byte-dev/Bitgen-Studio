@@ -9704,6 +9704,11 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
    has not brought it yet). It needs **ComfyUI 0.45** or newer; restart ComfyUI once afterwards. Not installed yet?
    **⬇ Install…** in the panel (or ▶ Generate sheet) asks with a Download / Cancel box.
 2. **📂 Load picture** and drag the box over one subject (or **▣ Whole picture**), as before.
+   No picture yet? Under it, describe the character, pick an **image style** (the prompt docker's list) and press
+   **✨ Generate** (or Enter) - the picture opens there, ready for the box, and joins the character's 🎨 Create images.
+   With Basic Settings ▸ **Override style** ticked it renders with that style's own Basic Settings (the ones on screen
+   when it is the prompt docker's style, else the ones it last had); unticked, with the style's own settings - the line
+   under the row says which.
 3. **Views**: Standard · 5 views, Basic · 4, Turnaround · 3, Head · 6, Clothing · 2, Single view, All · 13 - or tick
    your own of the 13 (six head views, three full-body views, clothing front / back, hands, feet).
 4. **Clothing** (as in the picture, pants, skirt or robe, or **No clothing · natural body surface** for an animal or a

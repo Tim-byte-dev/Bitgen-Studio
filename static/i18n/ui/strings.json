@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7028,
+ "count": 7044,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -65326,6 +65326,166 @@
    ],
    "where": [
     "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Image style for the character picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "The image style that makes the picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Make the character picture with this style - it opens here, ready for the sheet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Generate the character picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "no image styles",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Override style is off - the style's own settings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Override style: Basic Settings now",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Override style: this style's Basic Settings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "Override style: this style has no Basic Settings saved yet - its own settings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "write what the character looks like first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "pick an image style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "made - drag the box over the character, then ▶ Generate sheet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "the picture came back empty",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "the picture could not be queued",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "could not read the generated picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "queuing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
    ]
   }
  ]
