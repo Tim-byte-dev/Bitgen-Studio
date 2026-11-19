@@ -20,6 +20,9 @@ const B = (a) => Buffer.from(a);
   const y = SX.settingsYml("abc123", 8888);
   check("bitGen's SearXNG settings: JSON answers on, this computer only, its own secret, no limiter / image proxy / redis", /formats:\n    - html\n    - json/.test(y) && /bind_address: "127\.0\.0\.1"/.test(y) && /secret_key: "abc123"/.test(y) && /limiter: false/.test(y) && /image_proxy: false/.test(y) && /use_default_settings: true/.test(y) && /port: 8888/.test(y));
   check("installed from PyPI's simplexng (SearXNG for Windows too) + sniffio (its code needs it - found on a real start), in its own venv under <app>/searxng", /"simplexng", \.\.\.EXTRA/.test(src("lib/searxngLocal.js")) && /EXTRA = \["sniffio"\]/.test(src("lib/searxngLocal.js")) && SX.dir() === path.join(BASE, "searxng"));
+  check("2.886.1 Windows: no uvloop (it has no Windows build - simplexng still requires it): simplexng --no-deps, its dependencies minus uvloop (pins, else the newest wheels), a uvloop stand-in keeping asyncio's own loop",
+    SX.noUvloop({}) === (process.platform === "win32") && SX.noUvloop({ noUvloop: true }) && /def install\(\):\n    pass/.test(SX.UVLOOP_SHIM) && /asyncio\.new_event_loop\(\)/.test(SX.UVLOOP_SHIM)
+    && /"--no-deps", "simplexng"/.test(src("lib/searxngLocal.js")) && /q\.name\.lower\(\) == 'uvloop'/.test(src("lib/searxngLocal.js")) && /newest versions with ready-made wheels/.test(src("lib/searxngLocal.js")));
   check("not installed: search order stays Wikipedia, and its results carry the hint to install SearXNG", W.view().engine === "wikipedia" && W.view().searxng.local === false);
   W.FETCH.fn = async () => ({ query: { search: [{ title: "A", snippet: "b" }] } });
   check("...the hint", /Install SearXNG/.test((await W.search("x")).hint));
