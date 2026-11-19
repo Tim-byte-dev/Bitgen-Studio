@@ -1333,6 +1333,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✉ 郵寄發票和 ⤺ 貸項通知單** — 發票 / 報價單 / 貸項通知單的 ⤓ PDF 檔案（bitGen 生成），✉ 在 ✉ Mail 中開啟附有 PDF、客戶郵箱、主題和正文的郵件，傳送後標記 ✉✓；⤺ 為發票開具貸項通知單（GST 登記時為 Adjustment Note），應用到發票或單獨退款，帳簿和 BAS 中作為減少調整。 *Where:* 📒 Accounts ▸ Documents。 *Since:* 2.881.0
 - **🏦 銀行對帳單與對帳** — 匯入網上銀行的對帳單（澳大利亞銀行的 CSV、OFX / QFX、QIF，或貼上），與帳簿匹配（自動匹配唯一的相同金額，建議未結髮票 / 帳單和以前用過的帳戶），✚ 從一行建立付款、支出、銷售或轉帳，⚖ 用期末餘額檢查並 ✔ 對帳。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.882.0
 - **🧾 稅務設定與 👷 工資發放** — 組織形式、BAS 頻率、GST、PAYG 預扣（工資帳戶、12 % 養老金）和 PAYG 分期預繳（T7 金額或 T2 比率）；工資發放生成日記帳（稅前、預扣稅、實發、養老金）；BAS 顯示 W1 / W2 / 4、T1 / T11 / T7 / 5A 和 8A / 8B / 9。不儲存稅號。 *Where:* 📒 Accounts ▸ 🧾 Taxes / ＋ 👷 Pay run。 *Since:* 2.883.0
+- **📇 名片排版頁** — 開啟的名片在 A4 或 US Letter 上排滿（A4 上 10 張 90 × 55 mm），居中，頁邊有裁切標記，背面在第 2 頁並映象以便雙面列印，可選間隙和出血；生成 PDF 儲存到專案並下載，按實際尺寸列印。 *Where:* 影像編輯器 ▸ File ▸ 📇 Business Card Sheet…。 *Since:* 2.884.0
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

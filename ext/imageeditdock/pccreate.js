@@ -289,7 +289,7 @@
       // 2.875.0: the letter itself goes in a WP frame between the letterhead's head and foot
       if (kind === "letterhead" && pages.body && E.docText && E.docText.addFrame) { try { E.docText.addFrame(pages.body.x, pages.body.y, pages.body.w, pages.body.h, { k: 150 / 96 }, false); E.refresh(); E.renderLayersPanel(); } catch (e) { /* the letterhead stands */ } }
       const WORDS = { card: `💳 the business card (front + back, ${cs ? mmLabel(cs.size) + (cs.size.group === "pvc" ? " PVC " + cs.size.id.toUpperCase() : "") : ""})`, flyer: n === 2 ? "📰 the flyer (front + back)" : "📰 the flyer", brochure: "📑 the tri-fold brochure (outside + inside)", letterhead: "✉ the letterhead (type the letter in its frame)", poster: "🪧 the poster" };
-      return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print`;
+      return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print${kind === "card" ? " · 📇 File ▸ Business Card Sheet… for a sheet of them to print and cut" : ""}`;
     }
     /* ---- the box */
     function dialog(kind0, ask0) {

@@ -13339,6 +13339,46 @@
    "src": "ext/imageeditdock/pccalendar.js:259"
   },
   {
+   "s": "A4 (210 × 297 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:10"
+  },
+  {
+   "s": "US Letter (8.5 × 11 in)",
+   "src": "ext/imageeditdock/pccardsheet.js:10"
+  },
+  {
+   "s": "The card",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "Front + Back (pages 1 and 2)",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "Gap between cards",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "cut marks",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "backs on page 2 (mirrored for printing both sides)",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "Bleed",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "one side",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "s": "none (one cut between cards)",
+   "src": "ext/imageeditdock/pccardsheet.js:92"
+  },
+  {
    "s": "Drag: to another place in the column, or out of it (it floats again)",
    "src": "ext/imageeditdock/pccoldock.js:96"
   },
@@ -14472,10 +14512,6 @@
   },
   {
    "s": "Print-ready",
-   "src": "ext/imageeditdock/pcdtpout.js:622"
-  },
-  {
-   "s": "Bleed",
    "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
@@ -30897,6 +30933,18 @@
    "src": "ext/imageeditdock/pccalendar.js:218"
   },
   {
+   "p": "{0} × {1} mm",
+   "src": "ext/imageeditdock/pccardsheet.js:90"
+  },
+  {
+   "p": "{0} mm (cut each side)",
+   "src": "ext/imageeditdock/pccardsheet.js:92"
+  },
+  {
+   "p": "{0} mm (with a gap)",
+   "src": "ext/imageeditdock/pccardsheet.js:94"
+  },
+  {
    "p": "The picked dimension ({0} px) measures",
    "src": "ext/imageeditdock/pcdims.js:123"
   },
@@ -31187,10 +31235,6 @@
   {
    "p": "{0} corner radius",
    "src": "ext/imageeditdock/pcpropbar.js:138"
-  },
-  {
-   "p": "{0} × {1} mm",
-   "src": "ext/imageeditdock/pcquickbar.js:58"
   },
   {
    "p": "{0} page(s)",

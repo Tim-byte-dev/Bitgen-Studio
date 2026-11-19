@@ -14572,6 +14572,13 @@ node scripts/test-883.js > /tmp/t883.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui883-ui.js > /tmp/ui883.log 2>&1 \
   && ok "2.883.0 browser test: 🧾 Taxes (company, withholding, rate 4.5 %, accrual), ＋ 👷 Pay run (super 12 %, the net shown), the BAS tab W1 / W2 / 4, T1 / T2 / T11 / 5A, 8A / 8B / 9" \
   || { bad "2.883.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui883.log | head -12; }
+# ---- 2.884.0 (🖼 Image editor: 📇 File ▸ Business Card Sheet… - cards many-up on A4 / Letter with cut marks, mirrored backs, a PDF)
+node scripts/test-884.js > /tmp/t884.log 2>&1 \
+  && ok "2.884.0 units: pccardsheet.js sheetLayout (A4 / Letter, portrait / landscape, gap), backCell mirrored, cutMarks in the margin only, guessCard, wired into File + install + ✨ Create's message" \
+  || { bad "2.884.0 units"; grep -a "^FAIL" -A1 /tmp/t884.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui884-ui.js > /tmp/ui884.log 2>&1 \
+  && ok "2.884.0 browser test: a two-page 90 × 55 card, 📇 the box (10 on A4, 8 on Letter, preview + 18 marks), the PDF downloaded + saved, read back with pdf.js (red fronts, blue backs, marks)" \
+  || { bad "2.884.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui884.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

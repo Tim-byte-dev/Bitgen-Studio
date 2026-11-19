@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7222,
+ "count": 7232,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67336,6 +67336,106 @@
    ],
    "where": [
     "📒 Accounts ▸ 🧾 Taxes / 👷 Pay run (2.883.0)"
+   ]
+  },
+  {
+   "s": "Print at actual size (100 %, not \"fit to page\").",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "For the backs print page 2 on the back of the sheet, flipped on the long edge (or both sides at once: long-edge duplex).",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "Cut along the marks with a ruler or a guillotine.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "📇 Business Card Sheet…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "📇 Business Card Sheet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "📇 Make the PDF",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "portrait",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "landscape",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "A4",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "US Letter",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
    ]
   }
  ]

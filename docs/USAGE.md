@@ -9927,6 +9927,19 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   T11** or **T7** and **5A**; and the summary **8A** (1A + 4 + 5A), **8B** (1B) and **9** - payable or refundable. Check it
   with your tax agent before you lodge.
 
+## 📇 A sheet of business cards to print (2.884.0)
+
+- With a business card open in the image editor (✨ Create ▸ 💳 Business card, or any small document), **File ▸ 📇 Business
+  Card Sheet…** lays it out as many times as fit on **A4** or **US Letter** - 10 Australian 90 × 55 mm cards on A4 - centred,
+  with **cut marks** in the margin, portrait or landscape (whichever holds more). The box shows the sheet before you make it.
+- When the card has a Back page, page 2 of the PDF holds the backs with the columns mirrored, so they line up when you print
+  it on the back of the sheet flipped on the long edge (or the printer prints both sides at once, long-edge duplex).
+- **Gap between cards**: none (one cut between two cards) or 2 - 5 mm (cut each side - then a 1 - 2 mm **bleed** runs the
+  card's edge colours into the gap so a cut a little off shows no white).
+- **📇 Make the PDF** saves it in the project's pdf folder and downloads it. Print at **actual size (100 %)**, not "fit to page",
+  on card stock, then cut along the marks with a ruler or a guillotine. (A print shop wants the card itself as a print-ready
+  PDF - File ▸ Export ▸ Document; a PVC card printer prints single cards through 🖨 Print.)
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
