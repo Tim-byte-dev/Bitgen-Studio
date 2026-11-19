@@ -14489,6 +14489,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-872-live.js > /tmp/t872l.log 2>&
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui872-ui.js > /tmp/ui872.log 2>&1 \
   && ok "2.872.0 browser test: the 2K tick for H3 Long Video only, Generate -> /api/h3long with the prompt / memory / size / pictures, the Download / Cancel box" \
   || { bad "2.872.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui872.log | head -12; }
+# ---- 2.873.0 (🧍 3D mannequins for the character sheet - static/mannequin3d.js, static/mannequins/, Dress it optional)
+node scripts/test-873.js > /tmp/t873.log 2>&1 \
+  && ok "2.873.0 units: the canon (8 / 7.5 heads, shoulders, hips, waist, elbow / wrist / fingertips), the shipped pictures, the route, Dress it (optional, the mannequin as picture 1)" \
+  || { bad "2.873.0 units"; grep -a "^FAIL" -A1 /tmp/t873.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui873-ui.js > /tmp/ui873.log 2>&1 \
+  && ok "2.873.0 browser test: 🧍 Mannequin… Male / Female into the sheet's canvas, Dress it off by default, ticked = edit styles + the mannequin sent, asked for one without it" \
+  || { bad "2.873.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui873.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

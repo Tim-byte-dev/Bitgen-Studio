@@ -6,6 +6,7 @@
 //   POST /api/charsheet/h3/preview    {choices, layout, style, refs: [bool ×3]} -> {width, height, megapixels, panels
 //                                      [{id, rect, view}], defaults {view: instruction}, summary, experimental}
 //                                      | {offline: true, summary} (ComfyUI not running) | {nopack: true, summary} | 400 {error}
+//   POST /api/charsheet/h3/mannequin  {sex: male|female} -> {name, url, sheet, views, label, heads, height_cm} (2.873.0)
 //   POST /api/charsheet/h3            multipart: image (the character), ref1..ref3 (part pictures); fields choices (JSON),
 //                                      layout, style, tiled, seed, file (an earlier upload, for ↻), ref_files (JSON [3 names])
 //                                      -> a graph job + {input, refs, summary} | 400 / 409 / 503 {error, needs?}
@@ -61,6 +62,25 @@ function mount(app) {
     const s = S();
     return Object.assign({}, st, { catalog: { views: s.VIEWS, presets: s.PRESETS, clothing: s.CLOTHING, hands: s.HANDS,
       feet: s.FEET, styles: s.STYLES, roles: s.ROLES, parts: s.PARTS, sizes: s.SIZES }, pack: Object.assign({ present: st.pack }, s.PACK) });
+  }));
+
+  /* 2.873.0 (Tim: "create the mannequin character sheet using a 3d mannequin, for male and female"): bitGen Studio's own
+     3D mannequin (static/mannequin3d.js, rendered by scripts/make_mannequins.js into static/mannequins/) kept in the
+     project's Images as mannequin-<sex>.png - the sheet tab opens it as the start picture, Dress it sends it to an edit style */
+  app.post("/api/charsheet/h3/mannequin", J, wrap(async (req) => {
+    const sex = String((req.body || {}).sex || "");
+    const M = require("../static/mannequin3d.js");
+    if (!M.SEXES.includes(sex)) throw err(400, "pick the male or the female mannequin");
+    const src = path.join(core.BASE, "static", "mannequins", sex + "_front.png");
+    if (!fs.existsSync(src)) throw err(500, "the mannequin picture is missing - run node scripts/make_mannequins.js");
+    const dir = core.pDir("images");
+    fs.mkdirSync(dir, { recursive: true });
+    const name = "mannequin-" + sex + ".png";
+    fs.copyFileSync(src, path.join(dir, name));
+    const P = M.PROPS[sex];
+    return { name, url: "/passets/images/" + encodeURIComponent(name), sheet: "/static/mannequins/" + sex + "_sheet.png",
+      views: ["front", "side", "back"].map((v) => "/static/mannequins/" + sex + "_" + v + ".png"),
+      label: P.label, heads: P.heads, height_cm: Math.round(P.height_m * 100) };
   }));
 
   app.post("/api/charsheet/h3/preview", J, wrap(async (req) => {

@@ -9688,6 +9688,11 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
    With Basic Settings ▸ **Override style** ticked it renders with that style's own Basic Settings (the ones on screen
    when it is the prompt docker's style, else the ones it last had); unticked, with the style's own settings - the line
    under the row says which.
+   Or start from **🧍 Mannequin…**: **Male** (8 heads, 178 cm) or **Female** (7.5 heads, 165 cm) loads bitGen Studio's
+   own 3D mannequin - anatomically proportioned, smooth, in a neutral A-pose - as the picture, and ▶ Generate sheet
+   makes its sheet as it is. **Dress it** is optional and off by default (dressing can bring artefacts and clothes that
+   do not fit): ticked, the style list holds the edit styles and ✨ Generate puts the clothes you describe on the
+   mannequin, keeping its pose and body. Its views (front, side, back, the head) are in static/mannequins/.
 3. **Views**: Standard · 5 views, Basic · 4, Turnaround · 3, Head · 6, Clothing · 2, Single view, All · 13 - or tick
    your own of the 13 (six head views, three full-body views, clothing front / back, hands, feet).
 4. **Clothing** (as in the picture, pants, skirt or robe, or **No clothing · natural body surface** for an animal or a

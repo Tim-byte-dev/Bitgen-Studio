@@ -6303,12 +6303,12 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - RGB MoCap 沒有命令列——捕捉在它自己的窗口裡完成，所以 bitGen 負責準備影片並把結果帶回來。別處得到的 FBX / BVH 也可以放進 mocap 資料夾。
 
 ## 用 H3 Character Sheet Designer 製作角色設定表（2.870.0）
-<!-- en: character-sheets-with-the-h3-character-sheet-designer 57b91b9a5866 -->
+<!-- en: character-sheets-with-the-h3-character-sheet-designer a3781c67e16c -->
 
 角色建立器的 **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）用 **H3 Character Sheet Designer**（ukr8b3g-cmyk 的 ComfyUI 節點包，MIT）從一張圖片製作角色的參考設定表，由 **MiniMax H3 Image** 繪製。它取代了舊的設定表選項（Kind、Look、Pose sheet、Render style）和 pose_sheets 資料夾。
 
 1. 安裝一次：**設定 ▸ 附加元件 ▸ H3 Character Sheet Designer** 會把節點包放進 ComfyUI 的 custom_nodes，並下載 MiniMax H3 Image 的 Transformer 和 VAE（如果影片還沒帶來 MiniMax H3 文字編碼器，也會一併下載）。需要 **ComfyUI 0.45** 或更新版本；裝好後重新啟動一次 ComfyUI。還沒安裝？面板裡的 **⬇ Install…**（或 ▶ Generate sheet）會彈出下載 / 取消框。
-2. **📂 Load picture** 載入圖片，把框拖到一個主體上（或 **▣ Whole picture**），和以前一樣。還沒有圖片？在它下面描述角色，選一個**影像風格**（提示詞面板的清單），然後按 **✨ Generate**（或 Enter）——圖片會在那裡開啟，可以直接拖框，也會加入角色的 🎨 Create images。勾選 Basic Settings ▸ **Override style** 時，用這個風格自己的 Basic Settings 渲染（如果是提示詞面板目前的風格，就用螢幕上的設定，否則用它上次的設定）；不勾選時用風格自身的設定——行下面會說明用的是哪種。
+2. **📂 Load picture** 載入圖片，把框拖到一個主體上（或 **▣ Whole picture**），和以前一樣。還沒有圖片？在它下面描述角色，選一個**影像風格**（提示詞面板的清單），然後按 **✨ Generate**（或 Enter）——圖片會在那裡開啟，可以直接拖框，也會加入角色的 🎨 Create images。勾選 Basic Settings ▸ **Override style** 時，用這個風格自己的 Basic Settings 渲染（如果是提示詞面板目前的風格，就用螢幕上的設定，否則用它上次的設定）；不勾選時用風格自身的設定——行下面會說明用的是哪種。 也可以從 **🧍 Mannequin…** 開始：**Male**（8 頭身，178 cm）或 **Female**（7.5 頭身，165 cm）會把 bitGen Studio 自己的 3D 人體模型（解剖學比例、表面光滑、自然的 A 字姿勢）作為圖片載入，▶ Generate sheet 會直接為它產生設定表。**Dress it** 是選用的，預設關閉（穿衣可能帶來瑕疵，衣服也可能不合身）：勾選後，風格清單只顯示編輯風格，✨ Generate 會把你描述的衣服穿到人體模型上，並保持它的姿勢和體型。它的各個檢視（正面、側面、背面、頭部）在 static/mannequins/ 中。
 3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13——或在 13 個檢視（6 個頭部、3 個全身、服裝正面 / 背面、手、腳）中自己勾選。
 4. **Clothing**（與圖片一致、褲子、裙子或長袍，動物或吉祥物用 **No clothing · natural body surface**——服裝檢視會被去掉）、**Hands**（赤手、手套）、**Feet**（穿鞋、不穿鞋）、**Style**（與圖片一致、動漫、照片、繪畫風格、3D 渲染）和 **Size**（Standard、High detail、最高 8 或 16 MP，或精確尺寸）。
 5. **Layout guide** 會把設計器的佈局圖一起送去安排檢視（關閉時用文字安排）；大設定表在解碼時卡住時，**Tiled decode** 會有幫助。

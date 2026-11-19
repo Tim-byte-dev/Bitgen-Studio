@@ -35,7 +35,11 @@
   var C = null;                         // the catalog from GET /api/charsheet/h3
   var S = { preset: "five", views: ["face_front", "face_left", "body_front", "body_left", "body_back"], clothing: "reference",
             hands: "reference", feet: "reference", style: "none", detail: "high", w: 3168, h: 1280, layout: false, tiled: false,
-            roles: ["same_character", "face", "clothing"], parts: {}, viewPrompts: {}, picPrompt: "", picStyle: "" };
+            roles: ["same_character", "face", "clothing"], parts: {}, viewPrompts: {}, picPrompt: "", picStyle: "",
+            // 2.873.0: the 🧍 mannequin loaded as the start picture + the OPTIONAL Dress it tick (an edit style puts clothes on it)
+            mannequin: "", dress: false, dressStyle: "" };
+  var MANNEQUIN = { name: "", url: "" };  // the mannequin picture kept in the project's Images (Dress it sends it as picture 1)
+  var editIds = null;                   // the styles that can edit a picture (GET /api/aiedit/engines -> edit)
   var refs = [null, null, null];        // File objects
   var refNames = ["", "", ""];          // what the server kept (↻ Regenerate)
   var installed = null, previewT = 0, previewN = 0, defaults = {};
@@ -375,7 +379,10 @@
     if (!bar) return;
     var row = document.createElement("div");
     row.className = "chBar"; row.id = "h3sPicBar";
-    row.innerHTML = '<input id="h3sPicPrompt" type="text" spellcheck="true" style="flex:1;min-width:160px" placeholder="Describe the character to generate…" aria-label="Describe the character to generate">'
+    row.innerHTML = '<select id="h3sMannequin" style="width:auto" aria-label="Start from a 3D mannequin" title="Load bitGen Studio\'s 3D mannequin as the start picture - anatomically proportioned (male 8 heads, female 7.5), in a neutral A-pose. ▶ Generate sheet makes its sheet as it is">'
+      + '<option value="">🧍 Mannequin…</option><option value="male">🧍 Male (8 heads)</option><option value="female">🧍 Female (7.5 heads)</option></select>'
+      + '<label class="hint" style="display:inline-flex;gap:4px;align-items:center;white-space:nowrap" title="Optional: put clothes on the mannequin with an edit style before the sheet. Off by default - dressing can bring artefacts and clothes that do not fit"><input type="checkbox" id="h3sDress"> Dress it</label>'
+      + '<input id="h3sPicPrompt" type="text" spellcheck="true" style="flex:1;min-width:160px" placeholder="Describe the character to generate…" aria-label="Describe the character to generate">'
       + '<select id="h3sPicStyle" style="width:auto;max-width:240px" aria-label="Image style for the character picture" title="The image style that makes the picture"></select>'
       + '<button class="ghost gbtn" id="h3sPicGo" type="button" title="Make the character picture with this style - it opens here, ready for the sheet" aria-label="Generate the character picture">✨ Generate</button>';
     var note = document.createElement("div"); note.className = "hint"; note.id = "h3sPicNote"; note.setAttribute("aria-live", "polite");
@@ -384,16 +391,25 @@
     $("h3sPicPrompt").value = S.picPrompt || "";
     $("h3sPicPrompt").addEventListener("input", function () { S.picPrompt = $("h3sPicPrompt").value; save(); });
     $("h3sPicPrompt").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); generatePic(); } });
-    $("h3sPicStyle").addEventListener("change", function () { S.picStyle = $("h3sPicStyle").value; save(); picNote(); });
+    $("h3sPicStyle").addEventListener("change", function () { if (S.dress) S.dressStyle = $("h3sPicStyle").value; else S.picStyle = $("h3sPicStyle").value; save(); picNote(); });
     $("h3sPicGo").addEventListener("click", generatePic);
+    $("h3sMannequin").value = "";
+    $("h3sMannequin").addEventListener("change", function () { loadMannequin($("h3sMannequin").value); });
+    $("h3sDress").checked = !!S.dress;
+    $("h3sDress").addEventListener("change", function () { S.dress = $("h3sDress").checked; save(); paintPic(); });
     var ov = $("ovrStyle"); if (ov) ov.addEventListener("change", function () { picNote(); });
   }
   function paintPic() {
     buildPic();
     var sel = $("h3sPicStyle"); if (!sel) return;
-    var list = imageStyles(), ps = $("styleSel"), pick = S.picStyle && list.some(function (x) { return x.id === S.picStyle; }) ? S.picStyle : (ps ? ps.value : "");
+    var dress = !!S.dress;
+    if (dress && editIds === null) { loadEditIds(); }
+    var list = imageStyles().filter(function (x) { return !dress || !editIds || editIds.indexOf(x.id) >= 0; });
+    var want = dress ? S.dressStyle : S.picStyle, ps = $("styleSel");
+    var pick = want && list.some(function (x) { return x.id === want; }) ? want : (ps && list.some(function (x) { return x.id === ps.value; }) ? ps.value : (list[0] ? list[0].id : ""));
+    $("h3sPicPrompt").placeholder = dress ? "Describe the clothes to put on the mannequin…" : "Describe the character to generate…";
     sel.innerHTML = "";
-    if (!list.length) { var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "no image styles"; sel.appendChild(o0); }
+    if (!list.length) { var o0 = document.createElement("option"); o0.value = ""; o0.textContent = dress ? "no edit styles" : "no image styles"; sel.appendChild(o0); }
     list.forEach(function (x) { var o = document.createElement("option"); o.value = x.id; o.textContent = x.name; sel.appendChild(o); });
     if (pick) sel.value = pick;
     picNote();
@@ -401,14 +417,48 @@
   function picNote(t) {
     var n = $("h3sPicNote"); if (!n) return;
     var id = $("h3sPicStyle") && $("h3sPicStyle").value;
-    n.textContent = t || (id ? picSettings(id).words : "");
+    // 2.873.0: a loaded mannequin keeps its line (a repaint of the row says it again, then the style's settings)
+    n.textContent = t || [MANNEQUIN.line || "", id ? picSettings(id).words : ""].filter(Boolean).join(" · ");
+  }
+  /** the edit request that dresses the mannequin (pure - tested) */
+  function dressBody(words, name) {
+    return { images: [name], prompt: "Dress the mannequin in <Picture 1>: " + String(words).trim().replace(/[.\s]+$/, "")
+      + ". Keep its pose, body proportions, head, the plain light grey background, the lighting and the camera exactly the same; only add the clothes, fitted to its body." };
+  }
+  function loadEditIds() {
+    editIds = [];
+    return fetch("/api/aiedit/engines").then(function (r) { return r.json(); }).then(function (j) {
+      editIds = ((j && j.edit) || []).map(function (x) { return x.id; });
+      paintPic();
+    }).catch(function () { editIds = null; });
+  }
+  /** 🧍 the mannequin as the start picture: kept in the project's Images (POST /api/charsheet/h3/mannequin), opened in the sheet */
+  function loadMannequin(sex) {
+    if (!sex) return Promise.resolve(null);
+    picNote("loading the " + sex + " mannequin…");
+    return fetch("/api/charsheet/h3/mannequin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sex: sex }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+        if (!x.ok) throw new Error((x.j && x.j.error) || "the mannequin could not be loaded");
+        MANNEQUIN = { name: x.j.name, url: x.j.url, sex: sex }; S.mannequin = sex; save();
+        if (window.H3CharSheetPic) window.H3CharSheetPic.open(x.j.url, x.j.name);
+        MANNEQUIN.line = "🧍 " + x.j.label + " mannequin loaded (" + x.j.heads + " heads) - ▶ Generate sheet makes its sheet"
+          + (S.dress ? "; ✨ Generate dresses it first" : "; tick Dress it to put clothes on it first (optional)");
+        picNote();
+        test("h3s_mannequin", sex);
+        return x.j;
+      }).catch(function (e) { picNote("✗ " + (e.message || e)); return null; });
   }
   var picPoll = null;
   function generatePic() {
     var words = ($("h3sPicPrompt").value || "").trim(), id = $("h3sPicStyle").value;
-    if (!words) { picNote("write what the character looks like first"); $("h3sPicPrompt").focus(); return; }
+    if (!words) { picNote(S.dress ? "write the clothes to put on the mannequin first" : "write what the character looks like first"); $("h3sPicPrompt").focus(); return; }
     if (!id) { picNote("pick an image style"); return; }
     var ps = picSettings(id), body = Object.assign({ prompt: words, style_id: id, batch: 1 }, ps.body);
+    if (S.dress) {
+      // 2.873.0: Dress it - the edit style gets the mannequin as picture 1 and keeps its pose, body and framing
+      if (!MANNEQUIN.name) { picNote("pick a 🧍 mannequin first - Dress it puts clothes on it"); return; }
+      body = Object.assign(body, dressBody(words, MANNEQUIN.name));
+    }
     var go = $("h3sPicGo"); go.disabled = true;
     picNote("queuing… · " + ps.words);
     var ready = window.H3PodRoute && window.H3PodRoute.ready ? Promise.resolve(window.H3PodRoute.ready("image", id)) : Promise.resolve(true);
@@ -436,5 +486,6 @@
   window.H3SheetDesign = { refresh: refresh, ready: ready, appendTo: appendTo, body: body, remember: remember, failed: failed,
     state: function () { return JSON.parse(JSON.stringify(S)); },
     setState: function (o) { Object.keys(o || {}).forEach(function (k) { if (k in S) S[k] = o[k]; }); save(); if (C) { paintSelects(); preview(); } },
-    choices: choices, fromSaved: fromSaved, picSettings: picSettings, generatePic: generatePic };
+    choices: choices, fromSaved: fromSaved, picSettings: picSettings, generatePic: generatePic,
+    dressBody: dressBody, loadMannequin: loadMannequin, mannequin: function () { return Object.assign({}, MANNEQUIN); } };
 })();
