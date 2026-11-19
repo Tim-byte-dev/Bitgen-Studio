@@ -26,10 +26,18 @@ function mount(app) {
   app.post("/api/websearch/searxng/stop", wrap(() => ({ ok: true, stopped: SX().stop() })));
   app.get("/api/websearch/activity", (_req, res) => res.json({ busy: LIVE.busy, steps: LIVE.steps.slice(-6), at: LIVE.at }));
 }
-/** the chat turn with the web tools on (routes/index.js /api/chat calls this when context.web is true) */
+/** the chat turn with the tools on (routes/index.js /api/chat calls this when context.web and / or 2.887.0 context.files is on):
+ * opts.web / opts.files pick the tools; with files the folder + time limit come from Settings (lib/agentTools.js) and every
+ * change / command waits for the user's answer (agentTools.ask - the page shows it) */
 async function chatTurn(core, opts) {
   LIVE.busy = true; LIVE.steps = []; LIVE.at = Date.now();
-  try { return await require("../lib/llmAgent").run(core, Object.assign({}, opts, { onStep: (s) => LIVE.steps.push(s) })); }
-  finally { LIVE.busy = false; }
+  const o = Object.assign({}, opts, { onStep: (s) => LIVE.steps.push(s) });
+  if (o.files) {
+    const A = require("../lib/agentTools"), s = A.settings();
+    if (!s.folder || !s.exists || A.folderProblem(s.folder)) o.files = false;
+    else Object.assign(o, { folder: s.folder, timeout: s.timeout, ask: (d) => A.ask(d) });
+  }
+  try { return await require("../lib/llmAgent").run(core, o); }
+  finally { LIVE.busy = false; if (o.files) { try { require("../lib/agentTools").cancelAll("the answer ended"); } catch (e) { /* none waiting */ } } }
 }
 module.exports = { mount, chatTurn, LIVE };

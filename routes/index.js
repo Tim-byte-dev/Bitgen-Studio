@@ -295,6 +295,7 @@ function mount(app) {
   require("./gpuSplit").mount(app);   // 2.745.0: Basic Settings ▸ GPU - remote / local / both (lib/gpuSplit.js)
   require("./openRouter").mount(app); // 2.753.0: OpenRouter - the LLM on Settings ▸ Remote generation (lib/openRouter.js)
   require("./webSearch").mount(app);   // 2.885.0: 🌐 the LLM's web search + page reading (lib/webTools.js, lib/llmAgent.js)
+  require("./agent").mount(app);       // 2.887.0: 🧰 files + commands for the LLM, each change asked (lib/agentTools.js)
   require("./remoteDock").mount(app); // 2.754.0: the GPU docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
   require("./pods").mount(app);       // 2.756.0: the PODS docker - public templates, GPU prices, create / start / stop / terminate (lib/pods.js)
   require("./stylePods").mount(app);  // 2.763.0: your styles on your pods - links, the create-a-pod question, made ready (lib/stylePods.js)
@@ -3450,7 +3451,9 @@ const trap = require("../lib/trap");
     const t0 = Date.now();
     // 2.885.0: 🌐 web search on (the prompt docker's 🌐) = the tool loop - search + read pages only (routes/webSearch.js)
     const webOn = !arena && !!(b.context && (b.context.web === true || b.context.web === "1"));
-    const out = webOn ? await require("./webSearch").chatTurn(core, { messages, temperature: 0.6, max_tokens: 900, llm_file: b.llm_file })
+    // 2.887.0: 🧰 files + commands on (the prompt docker's 🧰, a folder picked) - each change / command asked on the page
+    const filesOn = !arena && !!(b.context && (b.context.files === true || b.context.files === "1"));
+    const out = webOn || filesOn ? await require("./webSearch").chatTurn(core, { messages, temperature: 0.6, max_tokens: filesOn ? 3000 : 900, llm_file: b.llm_file, web: webOn, files: filesOn })
       : await llmChat.complete(core, {
       messages, temperature: 0.8, max_tokens: 700, llm_file: b.llm_file });
     if (!out.ok) {
@@ -3472,7 +3475,7 @@ const trap = require("../lib/trap");
       return res.json({ session, reply: out.text, context: prior.length, song, arena: cand ? { n: cand.n, llm: cand.llm, secs: cand.secs } : null });
     }
     chatStore.append(dir, session, "assistant", out.text);
-    const web = webOn ? { files: out.files || [], steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [] } : undefined;
+    const web = webOn || filesOn ? { files: out.files || [], steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [], changes: out.changes || [], commands: out.commands || [] } : undefined;
     res.json(song ? { session, reply: out.text, context: prior.length, song, web }
                   : { session, reply: out.text, context: prior.length, web });
   });

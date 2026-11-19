@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7239,
+ "count": 7254,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67506,6 +67506,141 @@
    ],
    "where": [
     "🌐 Safe search (2.886.4)"
+   ]
+  },
+  {
+   "s": "A command stops after",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #s_agent"
+   ]
+  },
+  {
+   "s": "Command time limit in seconds",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "input#s_agTimeout"
+   ]
+  },
+  {
+   "s": "Files and commands for the LLM",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_agent"
+   ]
+  },
+  {
+   "s": "Files and commands for the chat",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button#ptFiles.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Files and commands for the chat - on: the LLM can look at the files in the folder you picked and, after you see each change or command and say yes, change files and run commands there (a backup of every changed file is kept). Right-click: pick another folder. Settings ▸ General ▸ 🧰",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#ptFiles.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "No folder - the 🧰 tools are off",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_agClear.ghost"
+   ]
+  },
+  {
+   "s": "Pick",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#s_agPick.ghost"
+   ]
+  },
+  {
+   "s": "Put the file back",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "h3#note_title"
+   ]
+  },
+  {
+   "s": "The folder the LLM may work in",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "input#s_agFolder"
+   ]
+  },
+  {
+   "s": "no folder - the 🧰 tools can't be used",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#s_agStatus.hint"
+   ]
+  },
+  {
+   "s": "no folder picked - the LLM can't use any files",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "input#s_agFolder"
+   ]
+  },
+  {
+   "s": "nothing outside this folder, never a whole drive, your home folder or bitGen's own folder; files inside .git are never changed; an answer that read web pages can't use the folder, and an answer that used the folder can't go on the web",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.hint.help in #s_agent"
+   ]
+  },
+  {
+   "s": "on in the prompt docker the chat's LLM can list, read and search the files in this folder, and - only after you see each one and say yes - change a file (you see the change: red lines out, green lines in) or run a command here (you see the command; it is stopped after the time limit). Every changed file is backed up first (📜 Log ▸ ↶ puts it back) and every change and command is written in the log",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.hint.help in #s_agent"
+   ]
+  },
+  {
+   "s": "that folder is not there any more",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#s_agStatus.hint"
+   ]
+  },
+  {
+   "s": "the LLM works in this folder when 🧰 is on",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#s_agStatus.hint"
    ]
   }
  ]

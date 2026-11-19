@@ -14593,6 +14593,13 @@ node scripts/test-886.js > /tmp/t886.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui886-ui.js > /tmp/ui886.log 2>&1 \
   && ok "2.886.0 browser test: ⬇ Install SearXNG here shown + 'Wikipedia only', a file in <project>/web/downloads listed by the Gallery (where web) and served" \
   || { bad "2.886.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui886.log | head -12; }
+# ---- 2.887.0 (🧰 files + commands for the LLM: lib/agentTools.js inside ONE folder, each change / command asked - routes/agent.js, ptagent.js)
+node scripts/test-887.js > /tmp/t887.log 2>&1 \
+  && ok "2.887.0 units: the folder (never a drive / home / bitGen's own), paths kept inside (.., links, .git), list / read / search, the diff, exact edits + CRLF, backups + log + restore, commands (exit code, time limit), asks, the loop (asked writes, a refusal changes nothing, web OR folder), loose JSON, wiring" \
+  || { bad "2.887.0 units"; grep -a "^FAIL" -A1 /tmp/t887.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui887-ui.js > /tmp/ui887.log 2>&1 \
+  && ok "2.887.0 browser test: Settings ▸ General ▸ 🧰 (folder, a whole drive refused, time limit, 📜 Log), the prompt docker's 🧰 sends context.files, the yes / refuse box (diff red / green, Yes to all, a command with its folder + limit, Esc = refuse)" \
+  || { bad "2.887.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui887.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

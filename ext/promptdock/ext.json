@@ -9,6 +9,7 @@
     "pfloat.js",
     "llmarena.js",
     "ptrestore.js",
-    "ptweb.js"
+    "ptweb.js",
+    "ptagent.js"
   ]
 }

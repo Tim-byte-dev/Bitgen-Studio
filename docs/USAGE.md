@@ -9970,6 +9970,26 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   program, script or archive is never saved), 40 MB a picture, 150 MB a sound, 500 MB a video, 20 a turn; the same address
   filters as reading (never this computer or your network). Nothing downloaded is ever run.
 
+## 🧰 Files and commands for the LLM (2.887.0)
+
+- **Pick the folder** the chat's LLM may work in: **Settings ▸ General ▸ 🧰 📁 Pick…** (or press **🧰** in the prompt docker -
+  with no folder yet it opens the folder dialog; **right-click 🧰** picks another). It can't be a whole drive, your home folder or
+  bitGen's own folder. **A command stops after** sets the time limit for commands (60 seconds by default, 5 to 600).
+- **Press 🧰** in the prompt docker (it lights up) and ask in the chat - *"what does src/app.js do?"*, *"rename the hello function
+  to greet everywhere"*, *"run the tests and fix what fails"*. The LLM **lists, reads and searches** the folder's text files by
+  itself (the "…thinking" line shows what it is doing).
+- **Every change is asked:** before a file is written or changed a box shows it - the file, **red lines taken out, green lines
+  put in** - with **✔ Yes**, **✔ Yes to all changes in this answer** and **✕ Refuse** (Esc = refuse). **Every command is asked**
+  with its folder and time limit - **▶ Yes, run it** or **✕ Refuse**, one by one. No answer in 5 minutes counts as a refusal. The reply ends with
+  what changed and what ran.
+- **Backups and the log:** a file is copied to *<project>/agent/backups/* before it is changed. **Settings ▸ General ▸ 🧰 📜 Log**
+  lists every change and command (with yes or no, exit codes); **↶** beside a change puts the file back.
+- **Safety:** nothing outside the folder is read or changed (paths with .. and links that lead out are refused, links are never
+  followed); files inside .git are never changed; binary files are not read; a command runs in the folder with the time limit
+  and is ended with everything it started. **An answer is web OR folder:** once the LLM has read web pages (🌐) the folder tools
+  are off for that answer, and once it has used the folder the web tools are off - so a web page can't change your files and
+  nothing from your folder is sent to a web page.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

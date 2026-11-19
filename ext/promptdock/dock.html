@@ -57,6 +57,11 @@
                  read pages (ptweb.js -> lib/llmAgent.js); search and read only - nothing downloaded, installed or run -->
             <button class="ghost gbtn" id="ptWeb" type="button" aria-label="Web search for the chat" aria-pressed="false"
               title="Web search for the chat - on: the LLM can search the web and read pages before it answers, with its sources (Settings ▸ General ▸ 🌐 Web search picks Brave, SearXNG or Wikipedia). Search and read only: nothing from the web is downloaded, installed or run">🌐</button>
+            <!-- 2.887.0 (the plan Tim went with: "abilities like claude code gives"): 🧰 the chat's LLM may work in ONE folder you pick -
+                 list / read / search its files, and change a file or run a command only after you see it and say yes (ptagent.js ->
+                 lib/agentTools.js). Right-click = pick another folder -->
+            <button class="ghost gbtn" id="ptFiles" type="button" aria-label="Files and commands for the chat" aria-pressed="false"
+              title="Files and commands for the chat - on: the LLM can look at the files in the folder you picked and, after you see each change or command and say yes, change files and run commands there (a backup of every changed file is kept). Right-click: pick another folder. Settings ▸ General ▸ 🧰">🧰</button>
           </div>
           <div class="pleft">
             <!-- 2.233.0 ATTACHED-IMAGE LAYOUT "like this website does": a
