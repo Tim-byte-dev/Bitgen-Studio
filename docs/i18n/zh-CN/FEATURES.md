@@ -1325,6 +1325,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🧍 用于角色设定表的 3D 人体模型** — bitGen Studio 自己的解剖学比例人体模型（男性 8 头身 / 178 cm，女性 7.5 头身 / 165 cm，自然的 A 字姿势）作为设定表的起始图片载入；Dress it（可选，默认关闭）用编辑风格穿上你描述的衣服。 *Where:* Character creator ▸ 🪪 Character sheet ▸ 🧍 Mannequin…。 *Since:* 2.873.0
 - **🪪 你自己的人体模型和设定表模板** — 添加你自己的人体模型图片（🧍 Mannequin… ▸ Your mannequins），并上传一张完成的角色设定表作为 Template：新的设定表遵循它的布局——面板、视图、姿势、构图——而角色来自你的图片；所有项目都能用。 *Where:* Character creator ▸ 🪪 Character sheet。 *Since:* 2.874.0
 - **💳 用于名片、信笺、传单和海报的业务信息** — 图像编辑器的 ✨ Create 会询问公司、名字、职位、电话、邮箱、网站、地址、服务、标志、品牌颜色以及正面 / 背面的要求，并保存（business/profiles.json）、原样使用；新增 ✉ Letterhead（A4，带写信用的 WP 框）和 🪧 Poster（A3）；标志会放入。每个对话框右上角都有 ✕；选中图形或文字会显示 Properties。 *Where:* 图像编辑器 ▸ ✨ Create With the AI。 *Since:* 2.875.0
+- **💳 名片尺寸——卡纸或 PVC** — 名片的业务信息对话框有 Card size ▾：按国家分的卡纸 / 纸（澳大利亚 90 × 55 mm、美国 3.5 × 2 英寸、英国 / 欧洲 85 × 55、日本 91 × 55、中国 90 × 54、东欧 90 × 50、方形、迷你），或带圆角的 PVC CR80 / CR79 / CR90 / CR100；名片按该尺寸（300 dpi）制作，尺寸与信息一起保存。 *Where:* 图像编辑器 ▸ ✨ Create With the AI ▸ 💳 Business card。 *Since:* 2.876.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

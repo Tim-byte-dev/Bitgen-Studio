@@ -14513,6 +14513,13 @@ node scripts/test-875.js > /tmp/t875.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui875-ui.js > /tmp/ui875.log 2>&1 \
   && ok "2.875.0 browser test: 💳 card -> the details dialog (✕), kept in profiles.json, the card with the logo both sides; ✉ letterhead filled from what was kept (A4 + WP frame); 🪧 poster A3; a text picked = Properties; File ▸ New's ✕" \
   || { bad "2.875.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui875.log | head -12; }
+# ---- 2.876.0 (💳 business card sizes - cardboard / paper or PVC)
+node scripts/test-876.js > /tmp/t876.log 2>&1 \
+  && ok "2.876.0 units: CARD_SIZES (paper by country + PVC CR80 / 79 / 90 / 100), cardSpec at 300 dpi + PVC round corners, cardLayout, Card size ▾ (groups translated), fromForm, card_size kept" \
+  || { bad "2.876.0 units"; grep -a "^FAIL" -A1 /tmp/t876.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui876-ui.js > /tmp/ui876.log 2>&1 \
+  && ok "2.876.0 browser test: 💳 Card size ▾ (Australia first), PVC CR80 = 1011 × 638 round-cornered, kept + chosen next time, US 1050 × 600 square, no size on a letterhead" \
+  || { bad "2.876.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui876.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

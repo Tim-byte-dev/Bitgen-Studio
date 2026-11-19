@@ -89,7 +89,7 @@ const PNG1 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzI
   const ZS = src("ext/imageeditdock/pcbizinfo.js");
   check("the dialog: saved details ▾ + 🗑, company, name, role, phone, email, website, address, services, the logo (📂, shown, ✕), three brand colours, the front / back; ✨ Create saves then makes it",
     ["pcbzPick", "pcbzDel", "pcbzCompany", "pcbzName", "pcbzRole", "pcbzPhone", "pcbzEmail", "pcbzWeb", "pcbzAddr", "pcbzServ", "pcbzLogoBtn", "pcbzLogoFile", "pcbzLogoNo", "pcbzCol", "pcbzCon", "pcbzFront", "pcbzBack"].every((id) => ZS.includes('id="' + id + '"') || ZS.includes(id + '"'))
-    && /win\.fetch\("\/api\/business\/profiles", \{ method: "POST"/.test(ZS) && /E\.create\.make\(\{ kind: k, ask: opt\.ask \|\| "", pictures: pics, business: saved \}\)/.test(ZS));
+    && /win\.fetch\("\/api\/business\/profiles", \{ method: "POST"/.test(ZS) && /E\.create\.make\(\{ kind: k, ask: opt\.ask \|\| "", pictures: pics, business: saved(, cardSize: [^}]+)? \}\)/.test(ZS));   // 2.876.0: + the card size
   /* ---- 5 Properties for a drawing / text */
   const PA = require("../ext/imageeditdock/pcpropsauto.js");
   check("isDrawing: shapes, texts, sketches, WP frames - not pictures, groups or adjustments",

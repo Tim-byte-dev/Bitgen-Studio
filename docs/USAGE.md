@@ -9783,6 +9783,19 @@ Two more changes come with it:
 - **Properties come up** when you pick a drawing or a text in the image editor (a shape, a vector line, a sketch, type
   or a WP frame): the Properties docker is shown and opened at its tab.
 
+## 💳 Business card sizes - cardboard or PVC (2.876.0)
+
+The business details dialog for a **💳 Business card** has a **Card size ▾** at its top, with the common trimmed sizes in
+two groups:
+
+- **Cardboard / paper**: Australia / NZ 90 × 55 mm (the first), US / Canada 88.9 × 50.8 mm (3.5 × 2 in), UK / Europe
+  85 × 55 mm, Japan 91 × 55 mm, China / Hong Kong / Singapore 90 × 54 mm, Eastern Europe / South America 90 × 50 mm,
+  Square 63.5 × 63.5 mm and Mini 70 × 32 mm.
+- **PVC (plastic)**: CR80 85.6 × 54 mm (credit card size), CR79 83.9 × 51 mm, CR90 92 × 60 mm and CR100 98.5 × 67 mm.
+
+The card is made at that size, front + back at 300 dpi. A PVC card gets round corners (3.18 mm, like a credit card) on its
+background and foot band. The size is kept with your details, so the next card for that business comes with it chosen.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -7,6 +7,8 @@
  *                                  services (one a line), the logo (a picture, shown), brand colours (up to three, ticked), the front
  *                                  (and for a card / flyer the back) described; ✨ Create keeps the details (POST /api/business/profiles
  *                                  - lib/businessProfiles.js, a JSON file) and makes it (E.create.make with the business)
+ *   2.876.0: a card's box has Card size ▾ (Cardboard / paper by country, PVC CR80 / CR79 / CR90 / CR100) - kept with the
+ *                                  details (card_size) and made at that size
  *   last() -> Promise<profile | null>   the details used last (the prompt docker's "make a business card …")
  * Pure (Node: scripts/test-875.js): fromForm(values) -> {profile}, sideLabels(kind) */
 (function (root) {
@@ -24,9 +26,16 @@
     const o = v || {}, t = (x) => String(x == null ? "" : x).trim();
     return { id: t(o.id) || undefined, company: t(o.company), name: t(o.name), role: t(o.role), address: t(o.address), phone: t(o.phone),
       email: t(o.email), website: t(o.website), services: t(o.services).split(/\r?\n/).map(t).filter(Boolean),
-      colours: (o.colours || []).filter((c) => c && c.on && /^#[0-9a-f]{6}$/i.test(c.hex)).map((c) => c.hex.toLowerCase()), front: t(o.front), back: t(o.back) };
+      colours: (o.colours || []).filter((c) => c && c.on && /^#[0-9a-f]{6}$/i.test(c.hex)).map((c) => c.hex.toLowerCase()), front: t(o.front), back: t(o.back),
+      card_size: /^[a-z0-9-]{1,24}$/.test(t(o.card_size)) ? t(o.card_size) : "" };
   }
-  const pure = { sideLabels, fromForm, TITLES };
+  /** 2.876.0: the Card size ▾ - <optgroup>s Cardboard / paper + PVC (plastic) of pccreate.js's CARD_SIZES, `sel` chosen */
+  function sizeOptions(sizes, groups, sel, esc0, tr0) {
+    const e = esc0 || ((x) => String(x)), tr = tr0 || ((x) => x), list = sizes || [], pick = list.some((c) => c.id === sel) ? sel : (list[0] || {}).id;
+    return Object.keys(groups || {}).map((g) => `<optgroup label="${e(tr(groups[g]))}">${list.filter((c) => c.group === g)
+      .map((c) => `<option value="${e(c.id)}"${c.id === pick ? " selected" : ""}>${e(c.label)} - ${+c.wmm.toFixed(1)} × ${+c.hmm.toFixed(1)} mm</option>`).join("")}</optgroup>`).join("");
+  }
+  const pure = { sideLabels, fromForm, sizeOptions, TITLES };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   function install(E) {
@@ -38,10 +47,14 @@
     const load = () => getJ("/api/business/profiles").then((j) => { cache = j || { profiles: [], last: "" }; return cache; });
     async function last() { const j = cache || await load(); return (j.profiles || []).find((p) => p.id === j.last) || null; }
     const DEF = ["#1f6feb", "#f5f7fa", "#1f2933"];
+    /** an <optgroup label> in the UI language (the page translator only turns text, titles and placeholders) */
+    const uiWord = (s) => { try { const L = win.H3UiLang, st = L && L.state(); const t = st && st.dict && L.tr(s, st.dict, st.pats); return t || s; } catch (e) { return s; } };
     function dialog(kind, o) {
       const opt = o || {}, k = TITLES[kind] ? kind : "card", side = sideLabels(k);
+      const PC = win.PCCreate || {}, store = E.store || { get: (a, d) => d, set: () => {} };
       const fld = (id, label, ph, type) => `<label class="pcbz-f"><span>${esc(label)}</span><input id="${id}" type="${type || "text"}" placeholder="${esc(ph || "")}" autocomplete="off"></label>`;
       const html = `<div class="pcbz">
+        ${k === "card" && PC.CARD_SIZES ? `<div class="kxrow pcbz-size"><span>Card size</span><select id="pcbzSize" style="flex:1">${sizeOptions(PC.CARD_SIZES, PC.CARD_GROUPS, store.get("create.cardSize", ""), esc, uiWord)}</select></div>` : ""}
         <div class="kxrow"><span>Saved details</span><select id="pcbzPick" style="flex:1"><option value="">＋ New details</option></select><button class="ghost" id="pcbzDel" type="button" title="Delete these saved details" hidden>🗑</button></div>
         <div class="pcbz-g">
           ${fld("pcbzCompany", "Company name", "Rosie's Bakery")}${fld("pcbzName", "Your name", "Rosie Smith")}
@@ -64,13 +77,15 @@
         const v = (id) => dd.querySelector("#" + id);
         const prof = fromForm({ id: cur ? cur.id : "", company: v("pcbzCompany").value, name: v("pcbzName").value, role: v("pcbzRole").value, address: v("pcbzAddr").value,
           phone: v("pcbzPhone").value, email: v("pcbzEmail").value, website: v("pcbzWeb").value, services: v("pcbzServ").value,
-          colours: [0, 1, 2].map((i) => ({ on: v("pcbzCon" + i).checked, hex: v("pcbzCol" + i).value })), front: v("pcbzFront").value, back: v("pcbzBack") ? v("pcbzBack").value : "" });
+          colours: [0, 1, 2].map((i) => ({ on: v("pcbzCon" + i).checked, hex: v("pcbzCol" + i).value })), front: v("pcbzFront").value, back: v("pcbzBack") ? v("pcbzBack").value : "",
+          card_size: v("pcbzSize") ? v("pcbzSize").value : (cur && cur.card_size) || "" });
         if (!prof.company && !prof.name) { say("✨ give the company's name or your name"); v("pcbzCompany").focus(); return false; }
         const pics = !!(v("pcbzPics") && v("pcbzPics").checked);
         win.fetch("/api/business/profiles", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: prof, logo: logoData || undefined, drop_logo: dropLogo }) })
           .then((r) => r.json().then((j) => { if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; }))
           .then((saved) => { cache = null; say("✨ your details are kept - making the " + TITLES[k].replace(/^\S+ /, "").toLowerCase() + "…");
-            return E.create.make({ kind: k, ask: opt.ask || "", pictures: pics, business: saved }); })
+            if (v("pcbzSize")) store.set("create.cardSize", v("pcbzSize").value);
+            return E.create.make({ kind: k, ask: opt.ask || "", pictures: pics, business: saved, cardSize: v("pcbzSize") ? v("pcbzSize").value : undefined }); })
           .then((m) => m && say(m)).catch((e) => say("✨ " + e.message));
       }, { okLabel: "✨ Create", wide: true, init: (dd) => {
         const v = (id) => dd.querySelector("#" + id);
@@ -83,6 +98,7 @@
           v("pcbzServ").value = (P.services || []).join("\n");
           [0, 1, 2].forEach((i) => { const c = (P.colours || [])[i]; v("pcbzCon" + i).checked = !!c; v("pcbzCol" + i).value = c || DEF[i]; });
           paintLogo(P.logo_url || ""); v("pcbzDel").hidden = !p;
+          if (v("pcbzSize") && P.card_size && [...v("pcbzSize").options].some((x) => x.value === P.card_size)) v("pcbzSize").value = P.card_size;   // 2.876.0: their size
         };
         [0, 1, 2].forEach((i) => v("pcbzCol" + i).addEventListener("input", () => { v("pcbzCon" + i).checked = true; }));
         v("pcbzLogoBtn").onclick = () => { v("pcbzLogoFile").value = ""; v("pcbzLogoFile").click(); };

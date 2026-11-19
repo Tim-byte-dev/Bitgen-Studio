@@ -8,7 +8,7 @@
  *   Flyer / Brochure / Business card / Website -> POST /api/create/plan (lib/createAi.js: the words, colours, picture ideas),
  *     then bitGen lays them out on real pages as EDITABLE layers (shapes + paragraph text + pictures): flyer A4 portrait;
  *     brochure A4 landscape, 2 pages (outside: flap | back | cover, inside: 3 panels) with fold guides; business card
- *     90 × 55 mm at 300 dpi, front + back; website 1440 × 900 web pages (Web View, then 🌐 Build Website).
+ *     front + back at 300 dpi in the size picked (2.876.0: CARD_SIZES - paper by country or PVC CR80 / 79 / 90 / 100); website 1440 × 900 web pages (Web View, then 🌐 Build Website).
  *     Pictures (ticked): made one at a time with the prompt docker's image style, each put in its box when ready.
  * Pure (Node: scripts/test-849.js): textH, flyerLayout, brochureLayout, cardLayout, webLayout, kindOf, KINDS.
  */
@@ -17,6 +17,32 @@
   const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["letterhead", "✉", "Letterhead"], ["poster", "🪧", "Poster"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"]];
   // 2.875.0: these four ask for the business's details first (pcbizinfo.js - the Business details dialog)
   const BIZ_KINDS = ["card", "letterhead", "flyer", "poster"];
+  /* 2.876.0 Tim (verbatim): "in the business card dialog add dropdown for size, cardboard or pvc those are common sizes".
+   * The common trimmed sizes, landscape (w x h mm). Paper / card stock by country; PVC = the ISO 7810 / CR plastic card sizes,
+   * printed with rounded corners (3.18 mm, the credit card's). The first is the default (Australia, where Tim is). */
+  const CARD_SIZES = [
+    { id: "au", group: "paper", label: "Australia / NZ", wmm: 90, hmm: 55 },
+    { id: "us", group: "paper", label: "US / Canada (3.5 × 2 in)", wmm: 88.9, hmm: 50.8 },
+    { id: "eu", group: "paper", label: "UK / Europe", wmm: 85, hmm: 55 },
+    { id: "jp", group: "paper", label: "Japan", wmm: 91, hmm: 55 },
+    { id: "cn", group: "paper", label: "China / Hong Kong / Singapore", wmm: 90, hmm: 54 },
+    { id: "ee", group: "paper", label: "Eastern Europe / South America", wmm: 90, hmm: 50 },
+    { id: "square", group: "paper", label: "Square", wmm: 63.5, hmm: 63.5 },
+    { id: "mini", group: "paper", label: "Mini (slim)", wmm: 70, hmm: 32 },
+    { id: "cr80", group: "pvc", label: "CR80 - credit card size", wmm: 85.6, hmm: 54, radius: 3.18 },
+    { id: "cr79", group: "pvc", label: "CR79 - a little smaller", wmm: 83.9, hmm: 51, radius: 3.18 },
+    { id: "cr90", group: "pvc", label: "CR90 - a little bigger", wmm: 92, hmm: 60, radius: 3.18 },
+    { id: "cr100", group: "pvc", label: "CR100 - oversize", wmm: 98.5, hmm: 67, radius: 3.18 }];
+  const CARD_GROUPS = { paper: "Cardboard / paper", pvc: "PVC (plastic)" };
+  /** a card size id -> the size (an unknown id = the first) */
+  const cardSize = (id) => CARD_SIZES.find((c) => c.id === id) || CARD_SIZES[0];
+  /** "85.6 × 54 mm" */
+  const mmLabel = (c) => `${+c.wmm.toFixed(1)} × ${+c.hmm.toFixed(1)} mm`;
+  /** a card size id -> {spec (the page at 300 dpi), radius (the corners in px at 300 dpi; 0 = square), size} */
+  function cardSpec(id) {
+    const c = cardSize(id);
+    return { size: c, radius: c.radius ? Math.round((c.radius / 25.4) * 300) : 0, spec: { preset: "Custom", wmm: c.wmm, hmm: c.hmm, orient: c.wmm >= c.hmm ? "landscape" : "portrait", dpi: 300 } };
+  }
   const L0 = (x, y, w, h, align) => ({ t: "logo", x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h), align: align || "center" });
   /** a paragraph's height: characters per line from the box width (average glyph = 0.52 em), at its leading */
   function textH(str, size, w, leading) {
@@ -108,15 +134,17 @@
     for (let k = 0; k < 3; k++) inside.push(...panel(k * pw, p.panels[k] || {}, k === 1 && pics[1] !== undefined ? pics[1] : k === 2 && pics[2] !== undefined ? pics[2] : undefined));
     return [guides(outside), guides(inside)];
   }
-  /** a business card: front + back (90 × 55 mm) */
+  /** a business card: front + back (its size picked - CARD_SIZES; p.radius = a PVC card's rounded corners in px) */
   function cardLayout(p, W, H) {
-    const c = p.palette, m = W * 0.07, cw = W - 2 * m;
-    const front = [R(0, 0, W, H, c.bg), R(0, H * 0.82, W, H * 0.18, c.accent)];
+    const c = p.palette, m = W * 0.07, cw = W - 2 * m, rd = p.radius > 0 ? { radius: p.radius } : null;
+    // 2.876.0: a PVC card's corners are round - the background and the foot band follow them (the band's top stays square)
+    const front = [R(0, 0, W, H, c.bg, rd), R(0, H * 0.82, W, H * 0.18, c.accent, rd)];
+    if (rd) front.push(R(0, H * 0.82, W, H * 0.09, c.accent));
     const lw = p.hasLogo ? H * 0.42 : 0;                    // 2.875.0: the logo top right of the front, big on the back
     if (lw) front.push(L0(W - m - lw, H * 0.1, lw, H * 0.3, "right"));
     front.push(...stack([[p.name, H * 0.13, { weight: 800, color: c.ink }], [p.role, H * 0.07, { color: c.accent, weight: 600 }]], m, H * 0.12, cw - (lw ? lw + m * 0.5 : 0), H * 0.03).els);
     front.push(...stack([[[p.phone, p.email, p.web].filter(Boolean).join("\n"), H * 0.065, { color: c.ink }], [p.address, H * 0.055, { color: c.ink }]], m, H * 0.45, cw, H * 0.02).els);
-    const back = [R(0, 0, W, H, c.accent)];
+    const back = [R(0, 0, W, H, c.accent, rd)];
     if (lw) back.push(L0(W / 2 - H * 0.35, H * 0.08, H * 0.7, H * 0.3));
     const bw = p.back || {}, sv = (p.services || []).slice(0, 4).join("  ·  ");
     back.push(...stack([[p.company || p.name, H * 0.13, { weight: 800, color: c.accentInk, align: "center" }], [bw.heading || p.tagline, H * 0.07, { color: c.accentInk, align: "center", weight: 600 }],
@@ -144,7 +172,7 @@
     if (/\b(flyer|flier|leaflet)\b/i.test(s)) return "flyer";
     return null;
   }
-  const pure = { KINDS, BIZ_KINDS, textH, flyerLayout, brochureLayout, cardLayout, webLayout, letterheadLayout, posterLayout, kindOf };
+  const pure = { KINDS, BIZ_KINDS, CARD_SIZES, CARD_GROUPS, cardSize, cardSpec, mmLabel, textH, flyerLayout, brochureLayout, cardLayout, webLayout, letterheadLayout, posterLayout, kindOf };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   /* ================================ the page ================================ */
@@ -246,7 +274,10 @@
         await lay(pages, false);
         return `✨ 🌐 "${plan.title}" - ${plan.pages.length} web pages (${plan.pages.map((p) => p.title).join(", ")}) as layers to change; 🌐 Build Website makes the site`;
       }
-      const [spec, n0] = SPECS[kind], n = kind === "flyer" && plan.back ? 2 : n0;
+      let [spec, n0] = SPECS[kind]; const n = kind === "flyer" && plan.back ? 2 : n0;
+      // 2.876.0: a card is the size picked in the Business details box (kept with the details), paper or PVC
+      const cs = kind === "card" ? cardSpec(a.cardSize || (biz && biz.card_size) || "") : null;
+      if (cs) { spec = cs.spec; plan.radius = cs.radius; }
       const NAMES = { card: plan.name || plan.company || "Business card", letterhead: (plan.company || "Letterhead") + " letterhead", poster: plan.headline || "Poster", flyer: plan.headline || "Flyer", brochure: plan.title || "Brochure" };
       E.pages.newDocument(spec, n, NAMES[kind]);
       if (kind === "flyer" && n === 2 && E.pages.rename) { E.pages.rename(0, "Front"); E.pages.rename(1, "Back"); }
@@ -257,7 +288,7 @@
       const pics = await lay(pages, !!a.pictures, logo);
       // 2.875.0: the letter itself goes in a WP frame between the letterhead's head and foot
       if (kind === "letterhead" && pages.body && E.docText && E.docText.addFrame) { try { E.docText.addFrame(pages.body.x, pages.body.y, pages.body.w, pages.body.h, { k: 150 / 96 }, false); E.refresh(); E.renderLayersPanel(); } catch (e) { /* the letterhead stands */ } }
-      const WORDS = { card: "💳 the business card (front + back)", flyer: n === 2 ? "📰 the flyer (front + back)" : "📰 the flyer", brochure: "📑 the tri-fold brochure (outside + inside)", letterhead: "✉ the letterhead (type the letter in its frame)", poster: "🪧 the poster" };
+      const WORDS = { card: `💳 the business card (front + back, ${cs ? mmLabel(cs.size) + (cs.size.group === "pvc" ? " PVC " + cs.size.id.toUpperCase() : "") : ""})`, flyer: n === 2 ? "📰 the flyer (front + back)" : "📰 the flyer", brochure: "📑 the tri-fold brochure (outside + inside)", letterhead: "✉ the letterhead (type the letter in its frame)", poster: "🪧 the poster" };
       return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print`;
     }
     /* ---- the box */
@@ -271,7 +302,7 @@
         <div class="kxrow pccr-o" data-for="invoice"><span>Make</span><select id="pccrInv"><option value="invoice">🧾 Invoice</option><option value="quote">📝 Quote</option><option value="receipt">🧾 Receipt</option></select></div>
         <div class="kxrow pccr-o" data-for="document story flyer brochure poster"><label><input type="checkbox" id="pccrPics"${store.get("create.pics", false) ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>
         <div class="pccr-o" data-for="website" style="color:var(--pc-dim)">3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website.</div>
-        <div class="pccr-o" data-for="card" style="color:var(--pc-dim)">90 × 55 mm at 300 dpi, front + back.</div>
+        <div class="pccr-o" data-for="card" style="color:var(--pc-dim)">Front + back at 300 dpi - pick the size (cardboard or PVC) in the next box.</div>
         <div class="pccr-o" data-for="brochure" style="color:var(--pc-dim)">A4 landscape tri-fold: page 1 = the outside (flap, back, cover), page 2 = the inside; fold lines as layers.</div>
         <div style="color:var(--pc-dim);margin-top:6px">The prompt docker's LLM writes it; bitGen lays it out as layers you can change.</div>`, (d) => {
         const kind = (d.querySelector('[name="pccrKind"]:checked') || {}).value || "flyer", v = (id) => d.querySelector("#" + id);

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7083,
+ "count": 7097,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -65898,6 +65898,132 @@
    ],
    "where": [
     "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Cardboard / paper",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "PVC (plastic)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Australia / NZ - 90 × 55 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "US / Canada (3.5 × 2 in) - 88.9 × 50.8 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "UK / Europe - 85 × 55 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Japan - 91 × 55 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "China / Hong Kong / Singapore - 90 × 54 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Eastern Europe / South America - 90 × 50 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Square - 63.5 × 63.5 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Mini (slim) - 70 × 32 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "CR80 - credit card size - 85.6 × 54 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "CR79 - a little smaller - 83.9 × 51 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "CR90 - a little bigger - 92 × 60 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "CR100 - oversize - 98.5 × 67 mm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
    ]
   }
  ]

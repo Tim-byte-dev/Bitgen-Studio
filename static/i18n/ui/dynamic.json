@@ -11636,67 +11636,67 @@
   },
   {
    "s": "Saved details",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "New details",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Services - one a line",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Company logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "no logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Choose",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Brand colours",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "the first is the main colour",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Pictures - made with the prompt docker's image style",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Kept on this computer for next time (business/profiles.json). The LLM writes the words around them; your details are used exactly",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Delete these saved details",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "12 Main Street, Springfield QLD 4300",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Sourdough and rye breads&#10;Celebration cakes&#10;Wholesale to cafes",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "No logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Clean and warm, cream with the logo top left, my name big, the phone and email under it",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "The logo in the middle on our main colour, the services under it",
-   "src": "ext/imageeditdock/pcbizinfo.js:44"
+   "src": "ext/imageeditdock/pcbizinfo.js:54"
   },
   {
    "s": "Open as a Blender layer",
@@ -12547,32 +12547,76 @@
    "src": "ext/imageeditdock/pccomps.js:130"
   },
   {
+   "s": "Australia / NZ",
+   "src": "ext/imageeditdock/pccreate.js:24"
+  },
+  {
+   "s": "US / Canada (3.5 × 2 in)",
+   "src": "ext/imageeditdock/pccreate.js:25"
+  },
+  {
+   "s": "UK / Europe",
+   "src": "ext/imageeditdock/pccreate.js:26"
+  },
+  {
+   "s": "Japan",
+   "src": "ext/imageeditdock/pccreate.js:27"
+  },
+  {
+   "s": "China / Hong Kong / Singapore",
+   "src": "ext/imageeditdock/pccreate.js:28"
+  },
+  {
+   "s": "Eastern Europe / South America",
+   "src": "ext/imageeditdock/pccreate.js:29"
+  },
+  {
+   "s": "Mini (slim)",
+   "src": "ext/imageeditdock/pccreate.js:31"
+  },
+  {
+   "s": "CR80 - credit card size",
+   "src": "ext/imageeditdock/pccreate.js:32"
+  },
+  {
+   "s": "CR79 - a little smaller",
+   "src": "ext/imageeditdock/pccreate.js:33"
+  },
+  {
+   "s": "CR90 - a little bigger",
+   "src": "ext/imageeditdock/pccreate.js:34"
+  },
+  {
+   "s": "CR100 - oversize",
+   "src": "ext/imageeditdock/pccreate.js:35"
+  },
+  {
    "s": "words",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "Invoice",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "Quote",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "Receipt",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
-   "s": "90 × 55 mm at 300 dpi, front + back",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "s": "Front + back at 300 dpi - pick the size (cardboard or PVC) in the next box",
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
-   "src": "ext/imageeditdock/pccreate.js:267"
+   "src": "ext/imageeditdock/pccreate.js:298"
   },
   {
    "s": "Distance from the walls (px)",
@@ -29845,6 +29889,10 @@
    "src": "ext/imageeditdock/pcbgi.js:295"
   },
   {
+   "p": "{0} - {1} × {2} mm",
+   "src": "ext/imageeditdock/pcbizinfo.js:36"
+  },
+  {
    "p": "The Blender skills are written for Blender {0} or newer. Install it from blender.org, then pick it in Settings ▸ Blender if bitGen does not find it",
    "src": "ext/imageeditdock/pcblendai.js:19"
   },
@@ -30863,10 +30911,6 @@
   {
    "p": "Pick a {0} profile",
    "src": "ext/pushpulldock/ppprofiledlg.js:60"
-  },
-  {
-   "p": "{0} - {1} × {2} mm",
-   "src": "ext/pushpulldock/ppprofiledlg.js:72"
   },
   {
    "p": "{0} nodes · {1} curves",
