@@ -53,6 +53,10 @@
                  🩹 - 🖼 Image + ✏ Edit + the restore instruction (ptrestore.js); Generate runs it -->
             <button class="ghost gbtn" id="ptRestore" type="button" aria-label="Restore / fix a photo"
               title="Restore / fix a photo — 🖼 Image mode, ✏ Edit and the restore instruction in the prompt (scratches, dust, stains, fading, noise, blur fixed; the people and framing kept). The photo: the 🖼 References docker, or the layer in the image editor. Then press ✏ Edit. Ctrl+click: restore and start it now. Shift+click: restore + colourise a black-and-white photo and start it now">🩹</button>
+            <!-- 2.885.0 (Tim: "is it possible to give bitgen llm live websearch ability"): 🌐 the chat's LLM may search the web and
+                 read pages (ptweb.js -> lib/llmAgent.js); search and read only - nothing downloaded, installed or run -->
+            <button class="ghost gbtn" id="ptWeb" type="button" aria-label="Web search for the chat" aria-pressed="false"
+              title="Web search for the chat - on: the LLM can search the web and read pages before it answers, with its sources (Settings ▸ General ▸ 🌐 Web search picks Brave, SearXNG or Wikipedia). Search and read only: nothing from the web is downloaded, installed or run">🌐</button>
           </div>
           <div class="pleft">
             <!-- 2.233.0 ATTACHED-IMAGE LAYOUT "like this website does": a

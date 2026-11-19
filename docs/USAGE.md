@@ -9940,6 +9940,24 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   on card stock, then cut along the marks with a ruler or a guillotine. (A print shop wants the card itself as a print-ready
   PDF - File ▸ Export ▸ Document; a PVC card printer prints single cards through 🖨 Print.)
 
+## 🌐 Web search for the LLM (2.885.0)
+
+- **🌐** in the prompt docker's left column lets the chat's LLM search the web and read pages before it answers. It decides
+  when it needs to (anything current, prices, versions, news, a page you name), searches, reads the best one or two pages and
+  answers in its own words with **Sources:** listed under the reply. While it works the "…thinking" line says what it is doing
+  (searching "…", reading a site). It works with every LLM bitGen uses - one on this computer, a pod, OpenRouter or an API
+  source - though bigger models use the tools better than small ones.
+- **Settings ▸ General ▸ 🌐 Web search for the LLM** picks the search engine: **☐ Use Brave Search** is off until you tick it and
+  needs your Brave Search API key (kept encrypted on this computer, never shown again - only its last 4 letters; Brave bills
+  searches after a free monthly allowance). Or the address of your own **SearXNG** server (its settings.yml must allow the json
+  format). With neither, Wikipedia's own search is used - no key. **Test** checks each one.
+- **Safety:** the web tools only search and read pages as text. Nothing from the web is downloaded, installed or run. Scripts,
+  styles, frames, forms and hidden text are taken out of a page; addresses on this computer or your own network are never
+  fetched (every address a name points to is checked, and redirects too); program files, scripts, installers and archives are
+  refused by their name, type and first bytes; pages are 2 MB at most. What a page says is given to the LLM as untrusted data,
+  and words that try to steer it ("ignore previous instructions", a download piped into a shell …) are flagged. While web pages
+  are in a turn no other kind of tool can act.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

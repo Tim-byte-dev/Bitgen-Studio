@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7232,
+ "count": 7237,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67436,6 +67436,56 @@
    ],
    "where": [
     "🖼 Image editor ▸ 📇 Business Card Sheet (2.884.0)"
+   ]
+  },
+  {
+   "s": "Web search for the chat",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web search for the LLM (2.885.0)"
+   ]
+  },
+  {
+   "s": "🌐 Web search for the LLM",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web search for the LLM (2.885.0)"
+   ]
+  },
+  {
+   "s": "Web search for the chat - on: the LLM can search the web and read pages before it answers, with its sources (Settings ▸ General ▸ 🌐 Web search picks Brave, SearXNG or Wikipedia). Search and read only: nothing from the web is downloaded, installed or run",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web search for the LLM (2.885.0)"
+   ]
+  },
+  {
+   "s": "🌐 web search on - the chat's LLM can search the web and read pages (search and read only)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web search for the LLM (2.885.0)"
+   ]
+  },
+  {
+   "s": "🌐 web search off",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web search for the LLM (2.885.0)"
    ]
   }
  ]

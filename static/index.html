@@ -2102,6 +2102,10 @@
       no Save As - and writes the model's card (picture, base model, keywords, cfg / steps) beside it. Some models download
       without a key; creators can require one. Saved in <span class="mono">custom.settings</span>, sent only to Civitai.</p>
 
+    <!-- 2.885.0 (Tim: "add brave but put it in settings-general tab with a checkbox, it will be off by default"): 🌐 the
+         LLM's web search - static/websearchset.js fills it -->
+    <div id="s_websearch"></div>
+
     <!-- 2.760.0 (Tim: "in general tab add currency (AUD,USD,CNY,JPY)etc. convert to this currency when showing prices"):
          static/currency.js + lib/currency.js -->
     <label class="f" style="margin-top:14px" for="s_cur">Currency</label>
@@ -3563,6 +3567,7 @@
 <script src="/static/currency.js"></script>  <!-- 2.760.0: Settings ▸ General ▸ Currency - prices in your money (H3Money) -->
 <script src="/static/audiodock.js"></script>  <!-- 2.760.0: the Audio docker - Music, Stems, SFX as tabs (H3Audio) -->
 <script src="/static/remotegpu.js"></script>  <!-- 2.520.0: Settings -> Remote generation (was Remote GPU; H3RemoteGpu - lib/remoteGpu.js) -->
+<script src="/static/websearchset.js"></script>  <!-- 2.885.0: Settings ▸ General ▸ 🌐 Web search for the LLM (H3WebSearchSet - lib/webTools.js) -->
 <script src="/static/openrouter.js"></script>  <!-- 2.753.0: its 🧠 LLM on OpenRouter (H3OpenRouter - lib/openRouter.js) -->
 <script src="/static/podload.js"></script>  <!-- 2.758.0: a pod's loading bar + its P_ styles (H3PodLoad) -->
 <script src="/static/podsetup.js"></script>  <!-- 2.761.0: what a pod is for, its folders / checkpoints / LoRAs, 💾 Save (H3PodSetup) -->
@@ -9844,6 +9849,7 @@ async function chatPost(t, chatLlm, arena) {
   // 2.581.0 / 2.585.0: the LoRAs in use - Override style on = Basic Settings' temporary LoRAs, off = the selected style's
   // (lib/loraWords.pathsFor reads the style) - never every LoRA in the app
   Object.assign(chatCtx, window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx(chatCtx.gen_mode) : { loras: [] });
+  if (window.H3WebTools && H3WebTools.on()) chatCtx.web = true;   // 2.885.0: 🌐 web search on for this chat turn (ext/promptdock/ptweb.js)
   /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
      with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
      server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */

@@ -14579,6 +14579,13 @@ node scripts/test-884.js > /tmp/t884.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui884-ui.js > /tmp/ui884.log 2>&1 \
   && ok "2.884.0 browser test: a two-page 90 × 55 card, 📇 the box (10 on A4, 8 on Letter, preview + 18 marks), the PDF downloaded + saved, read back with pdf.js (red fronts, blue backs, marks)" \
   || { bad "2.884.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui884.log | head -12; }
+# ---- 2.885.0 (🌐 web search for the LLM: lib/webTools.js search + read with the security filters, lib/llmAgent.js the tool loop)
+node scripts/test-885.js > /tmp/t885.log 2>&1 \
+  && ok "2.885.0 units: the filters (schemes, ports, private + rebinding addresses, file names / types / first bytes, HTML to words, steering words), Brave / SearXNG / Wikipedia, the key hidden + encrypted, the tool loop (protocol, untrusted results, refusals, 6 steps, sources), wiring" \
+  || { bad "2.885.0 units"; grep -a "^FAIL" -A1 /tmp/t885.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui885-ui.js > /tmp/ui885.log 2>&1 \
+  && ok "2.885.0 browser test: Settings ▸ General 🌐 (Brave off by default, the key saved + never shown, ticked = Brave), the prompt docker's 🌐 toggle sends context.web, activity route, a bad SearXNG address refused" \
+  || { bad "2.885.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui885.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
