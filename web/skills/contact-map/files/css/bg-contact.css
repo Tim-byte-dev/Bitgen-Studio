@@ -1,0 +1,14 @@
+/* bitGen web skill: 📍 contact and map */
+.bg-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+@media (max-width: 760px) { .bg-contact { grid-template-columns: 1fr; } }
+.bg-contact-info p { margin: 0 0 10px; line-height: 1.6; }
+.bg-map { position: relative; border-radius: var(--bg-radius, 10px); overflow: hidden; border: 1px solid var(--bg-line, #e3e5ea); margin-top: 12px; }
+.bg-map iframe { display: block; width: 100%; height: 320px; border: 0; }
+.bg-map-foot { display: flex; justify-content: space-between; gap: 8px; font-size: .8em; padding: 6px 10px; background: var(--bg-card, #fff); }
+.bg-contact-form { display: grid; gap: 10px; }
+.bg-contact-form label { display: grid; gap: 4px; }
+.bg-contact-form input, .bg-contact-form textarea { font: inherit; padding: 8px 10px; border: 1px solid var(--bg-line, #ccd); border-radius: var(--bg-radius, 8px); background: var(--bg-bg, #fff); color: inherit; }
+.bg-contact-msg { min-height: 1.4em; }
+.bg-contact-msg.bad { color: #c0392b; }
+.bg-contact-msg.ok { color: #1e8449; font-weight: 600; }
+.bg-contact .bg-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

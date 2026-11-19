@@ -1,0 +1,20 @@
+{
+  "name": "Contact and map",
+  "icon": "📍",
+  "group": "Customers",
+  "description": "Your address, phone and hours beside a map of where you are (OpenStreetMap - no key) and a contact form; what visitors send lands in ✉ Messages.",
+  "needs": "php",
+  "head": [
+    "css/bg-contact.css"
+  ],
+  "scripts": [
+    "js/bg-contact.js"
+  ],
+  "files": [
+    "css/bg-contact.css",
+    "js/bg-contact.js",
+    "contact.php",
+    "inc/bg-db.php",
+    "contact.html"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Blog and news",
+  "icon": "📰",
+  "group": "Content",
+  "description": "The CRM's 📰 Posts as a news page - newest first, a picture, the date and the start of each, pages of 6, each post on its own page (blog.html?p=…); the latest few on any page.",
+  "head": [
+    "css/bg-blog.css"
+  ],
+  "scripts": [
+    "js/bg-blog.js"
+  ],
+  "files": [
+    "css/bg-blog.css",
+    "js/bg-blog.js",
+    "blog.html"
+  ]
+}

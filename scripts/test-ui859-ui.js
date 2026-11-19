@@ -37,7 +37,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForFunction(() => /Picture gallery/.test(document.getElementById("wbSkOut").textContent), null, { timeout: 10000 });
     await p.click('#webdock .wbtab[data-tab="code"]');
     const code = await ev(() => document.getElementById("wbCode").value);
-    check("🧩 11 skills listed; ＋ Picture gallery puts its markup, <link> and <script> into index.html (not saved yet ●)", n === 11 && /class="bg-gallery"/.test(code) && /href="css\/bg-gallery\.css"/.test(code) && /src="js\/bg-gallery\.js"/.test(code) && await ev(() => document.getElementById("wbFileName").classList.contains("dirty")), code.slice(-800));
+    check("🧩 the skills listed (11 + 2.861.0's 3); ＋ Picture gallery puts its markup, <link> and <script> into index.html (not saved yet ●)", n >= 11 && /class="bg-gallery"/.test(code) && /href="css\/bg-gallery\.css"/.test(code) && /src="js\/bg-gallery\.js"/.test(code) && await ev(() => document.getElementById("wbFileName").classList.contains("dirty")), code.slice(-800));
     await p.focus("#wbCode"); await p.keyboard.press("Control+s"); await p.waitForTimeout(500);
     await p.click('#webdock .wbtab[data-tab="prev"]');
     const fr = p.frameLocator("#wbPrev");

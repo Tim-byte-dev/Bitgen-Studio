@@ -9641,6 +9641,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **inc/config.php** (the database settings, the admin's setup key) goes only when the host has none - or **send it again** / **never**. Tick **with the database password** to have it filled in from the CRM's 🌐 server - on the host only, never in the project.
 - **The site's database on cPanel**: make the database and its user in cPanel ▸ MySQL Databases (their names start with your cPanel user and _), give the user All Privileges, and add this computer's internet address in cPanel ▸ Remote MySQL. Put the server (your domain), that user and its password in 🗄 Database ▸ ⚙ Your server, then 🗂 CRM ▸ 🗄 Create the site's database… ▸ 🌐 Your server with the database's full name. **The site reaches it as** is localhost - the database is on the same server as the site.
 
+## 📅 📰 📍 More web skills (2.861.0)
+
+- **📅 Booking widget** (needs PHP): visitors pick a service, a day and a free time and book it. The times follow the CRM's booking calendar - its opening hours, services, step, notice, days ahead, how many at once, the most a day and the closed days - and are checked again on the server when the booking is made, so a time is never taken twice. The booking lands in 🗂 CRM ▸ 📅 Bookings (and the visitor in 👤 Clients) and the visitor is emailed.
+- **📰 Blog and news**: the CRM's 📰 Posts as a news page - newest first, pages of 6, each post on its own page (a blank line = a new paragraph, web addresses become links); [data-bg-blog-latest] shows the latest few on the home page. No PHP.
+- **📍 Contact and map** (needs PHP): your address, phone and hours beside an OpenStreetMap map (no key; the coordinates from openstreetmap.org ▸ right-click ▸ Show address) and a contact form; messages land in 🗂 CRM ▸ ✉ Messages, and in your inbox too when inc/config.php has CONTACT_EMAIL. A hidden trap field and 5 messages a 10 minutes per address keep robots out.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

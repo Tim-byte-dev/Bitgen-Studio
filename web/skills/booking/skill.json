@@ -1,0 +1,20 @@
+{
+  "name": "Booking widget",
+  "icon": "📅",
+  "group": "Customers",
+  "description": "Visitors pick a service, a day and a free time and book it - the times come from the CRM's booking calendar (opening hours, services, closed days, how many at once), the booking lands in 📅 Bookings.",
+  "needs": "php",
+  "head": [
+    "css/bg-book.css"
+  ],
+  "scripts": [
+    "js/bg-book.js"
+  ],
+  "files": [
+    "css/bg-book.css",
+    "js/bg-book.js",
+    "book.php",
+    "inc/bg-db.php",
+    "booking.html"
+  ]
+}

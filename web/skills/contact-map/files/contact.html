@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bg-theme.css">
+  <link rel="stylesheet" href="css/bg-contact.css">
+</head>
+<body>
+  <header class="site-head"><a class="brand" href="index.html">Home</a><nav><a href="contact.html">Contact</a></nav></header>
+  <main>
+    <section>
+      <h1>Contact us</h1>
+<div class="bg-contact">
+        <div class="bg-contact-info">
+          <h2>Find us</h2>
+          <p>12 Example Street<br>Your Town 4000</p>
+          <p><a href="tel:+61000000000">(00) 0000 0000</a> · <a href="mailto:hello@example.com">hello@example.com</a></p>
+          <p>Mon - Fri 9:00 - 17:00</p>
+          <div data-bg-map data-lat="-27.4698" data-lon="153.0251" data-zoom="15" data-label="12 Example Street"></div>
+        </div>
+        <form class="bg-contact-form" data-bg-contact>
+          <label>Your name <input name="name" required maxlength="120" autocomplete="name"></label>
+          <label>Email <input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+          <label>Subject <input name="subject" maxlength="200"></label>
+          <label>Message <textarea name="message" rows="5" required maxlength="10000"></textarea></label>
+          <div class="bg-hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+          <button class="bg-btn" type="submit">Send</button>
+          <div class="bg-contact-msg" role="status"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="js/bg-contact.js"></script>
+</body>
+</html>

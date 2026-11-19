@@ -14484,6 +14484,16 @@ node scripts/test-860-live.js > /tmp/t860l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui860-ui.js > /tmp/ui860.log 2>&1 \
   && ok "2.860.0 browser test: 📤 Host ✓ Test + Send against a real FTP server, kept settings, the DB form's cPanel part" \
   || { bad "2.860.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui860.log | head -12; }
+# ---- 2.861.0 (📅 📰 📍 three more web skills)
+node scripts/test-861.js > /tmp/t861.log 2>&1 \
+  && ok "2.861.0 skills units: booking / blog / contact-map files, one bg-db.php, ✨ routes, each script in jsdom (text only, the map, the forms)" \
+  || { bad "2.861.0 units"; grep -a "^FAIL" -A1 /tmp/t861.log | head -12; }
+node scripts/test-861-live.js > /tmp/t861l.log 2>&1 \
+  && ok "2.861.0 LIVE (PHP + MariaDB): book.php times + a booking into 📅 Bookings, overlaps / past closing refused, closed day, trap; contact.php into ✉ Messages, 429" \
+  || { bad "2.861.0 live"; grep -a "^FAIL" -A1 /tmp/t861l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui861-ui.js > /tmp/ui861.log 2>&1 \
+  && ok "2.861.0 browser test: the three skills listed, ＋ blog shows the CRM's posts, ＋ contact + map in the Preview" \
+  || { bad "2.861.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui861.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

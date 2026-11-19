@@ -1,0 +1,16 @@
+/* bitGen web skill: 📅 booking widget */
+.bg-book { display: grid; gap: 14px; max-width: 640px; font: inherit; }
+.bg-book label { display: grid; gap: 4px; font-size: .95em; }
+.bg-book select, .bg-book input, .bg-book textarea { font: inherit; padding: 8px 10px; border: 1px solid var(--bg-line, #ccd); border-radius: var(--bg-radius, 8px); background: var(--bg-bg, #fff); color: inherit; }
+.bg-book-times { display: flex; flex-wrap: wrap; gap: 6px; min-height: 2em; }
+.bg-book-times button { padding: 6px 12px; border: 1px solid var(--bg-accent, #2a6df4); border-radius: 999px; background: transparent; color: var(--bg-accent, #2a6df4); cursor: pointer; font: inherit; }
+.bg-book-times button[aria-pressed="true"] { background: var(--bg-accent, #2a6df4); color: #fff; }
+.bg-book-times button:disabled { opacity: .35; cursor: default; text-decoration: line-through; }
+.bg-book-form { display: grid; gap: 10px; }
+.bg-book-form[hidden] { display: none; }
+.bg-book-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 560px) { .bg-book-row { grid-template-columns: 1fr; } }
+.bg-book-msg { min-height: 1.4em; }
+.bg-book-msg.bad { color: #c0392b; }
+.bg-book-msg.ok { color: #1e8449; font-weight: 600; }
+.bg-book .bg-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
