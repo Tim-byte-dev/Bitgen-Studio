@@ -14520,6 +14520,13 @@ node scripts/test-876.js > /tmp/t876.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui876-ui.js > /tmp/ui876.log 2>&1 \
   && ok "2.876.0 browser test: 💳 Card size ▾ (Australia first), PVC CR80 = 1011 × 638 round-cornered, kept + chosen next time, US 1050 × 600 square, no size on a letterhead" \
   || { bad "2.876.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui876.log | head -12; }
+# ---- 2.877.0 (📒 Accounts - the books: documents, journals, ledger, trial balance, P&L, balance sheet, BAS, jobs)
+node scripts/test-877.js > /tmp/t877.log 2>&1 \
+  && ok "2.877.0 units: cents + GST 1/11, AU financial year + BAS quarters, documents checked, the double entry balances, ledger, TB, P&L, balance sheet, BAS accrual + cash (pro rata, G3 / G10 / G11, adjustments), aged, jobs, storage, routes before the 100 KB parser" \
+  || { bad "2.877.0 units"; grep -a "^FAIL" -A1 /tmp/t877.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui877-ui.js > /tmp/ui877.log 2>&1 \
+  && ok "2.877.0 browser test: 📒 on the app strip, the green columnar pad, an invoice / bill / receipt (picture) typed with GST as you type, 💵 received, a journal entry (unbalanced refused), filters, summary, journals, ledger, TB + balance sheet in balance, BAS accrual + cash, jobs" \
+  || { bad "2.877.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui877.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

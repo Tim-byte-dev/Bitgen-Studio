@@ -9796,6 +9796,36 @@ two groups:
 The card is made at that size, front + back at 300 dpi. A PVC card gets round corners (3.18 mm, like a credit card) on its
 background and foot band. The size is kept with your details, so the next card for that business comes with it chosen.
 
+## 📒 Accounts - the books, journals, ledger, balance sheet and BAS (2.877.0)
+
+📒 on the top bar opens the **Accounts** docker: a business's books on an accountant's green columnar pad. **Books of ▾**
+picks whose books - My business, or any business details you keep (✨ Create ▸ 💳 Business card). Each business has its
+own books, kept on this computer (accounting/<business>/books.json).
+
+- **＋ 🧾 Receipt** - something already paid. **＋ 📥 Bill to pay** - a supplier's invoice. **＋ 📤 Invoice we sent** - money
+  owed to us (numbered INV-0001 on by itself). Each has its date, a due date, lines (description, account, the amount
+  including GST, the tax code), a job, notes and the picture or PDF attached (📎). The GST is worked out as you type.
+- Tax codes: **GST 10 %**, **GST-free**, **Capital purchase (GST)** (equipment, vehicles) and **Not reportable** (wages,
+  drawings, loans). Each account brings its usual one.
+- **Documents** lists them with what is paid and still owing, stamped paid / due / overdue. The filters show due to be paid
+  to us, due to be paid by us, overdue, paid to us and paid by us. 💵 records money received on an invoice or a bill paid
+  (part payments too).
+- **＋ ✎ Journal entry** - a general journal entry; debits must equal credits.
+- **Journals** - the Sales, Purchases, Cash Receipts, Cash Payments and General journals in the old layout (credits indented
+  "To …", "(being …)"). **Ledger** - one account with Balance b/d, a running balance and Balance c/d.
+- **Trial Balance**, **Profit & Loss** (without GST) and **Balance Sheet** (assets = liabilities + equity, with this year's
+  earnings) for the period picked: this / last quarter, this / last financial year (1 July - 30 June), this month, all dates
+  or from … to ….
+- **BAS** - the GST worksheet: G1, G2, G3, G10, G11, 1A, 1B and what is payable or refunded, in whole dollars, on a **cash**
+  (when paid) or **accrual** (when invoiced) basis.
+- **Jobs** - each job's income, costs, profit, what its customer still owes and what we owe on it. **Summary** - the bank,
+  owed to us, we owe (overdue), this quarter's GST, this year's profit and the lists of who owes what.
+- **Accounts** - the chart of accounts (an Australian small-business chart); add your own, mark bank / cash / card accounts,
+  GST registered or not, the invoice number's start.
+
+The BAS figures are a worksheet: lodge through the ATO or your tax agent. PAYG withholding, instalments and your own tax
+settings come later; writing invoices and quotes, and reading a receipt with the AI, are the next releases.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

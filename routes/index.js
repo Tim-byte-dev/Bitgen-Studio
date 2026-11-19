@@ -134,6 +134,10 @@ function mount(app) {
   require("./createAi").mount(app);   // 2.849.0: ✨ Create With the AI - flyers, brochures, business cards, websites (lib/createAi.js)
   require("./siteCal").mount(app);   // 2.846.0: 📅 a web project's booking calendar in its database (lib/siteCal.js, static/sitecal.js)
   require("./pageTemplates").mount(app);   // 2.846.0: 📄 your page templates for the image editor's Page Properties (lib/pageTemplates.js)
+  // 2.876.0: business details (a logo is often over 100 KB - 2.875.0's upload was refused by the parser below) + 📒 the
+  // accounting docker (receipts / bills uploaded as pictures or PDFs) - both before the 100 KB json parser
+  require("./businessProfiles").mount(app);
+  require("./accounting").mount(app);   // 2.877.0: 📒 Accounts - journals, ledger, balance sheet, BAS (lib/accounting.js)
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
@@ -154,7 +158,6 @@ function mount(app) {
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run
-  require("./businessProfiles").mount(app);  // 2.875.0: the business details behind cards / letterheads / flyers / posters (lib/businessProfiles.js)
   require("./sheetLibrary").mount(app);  // 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
   require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder

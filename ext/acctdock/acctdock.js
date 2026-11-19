@@ -1,0 +1,323 @@
+/* acctdock.js — 📒 THE ACCOUNTS DOCKER (2.877.0), window.H3Accounts.
+ *
+ * Tim (verbatim): "I think one more docker for Accounting - allow user to upload receipts, invoices to pay, invoices paid to us,
+ * invoice due to be paid, invoices due to be paid to us, get the total due , the company jobs etc and total due, gst etc.(use au
+ * tax system, we will add a dialog for the users taxes and costs later. give the layout the old accounting style aesthetic, with
+ * journals, ledger, balance sheet, bas statement, write invoice, quotes etc."
+ *
+ * The books of a business (lib/accounting.js via routes/accounting.js) on an accountant's green columnar pad with index-card tabs:
+ *   Summary        banks, owed to us / we owe (overdue), this quarter's GST, this year's profit, due in 7 days, aged lists
+ *   Documents      🧾 receipts (paid), 📥 bills to pay, 📤 invoices we sent - filters (unpaid to us / by us, overdue, paid),
+ *                  ✎ edit, 💵 pay / receive, 📎 the attached picture / PDF, 🗑
+ *   Journals       Sales, Purchases, Cash Receipts, Cash Payments, General - the old journal layout (credits indented)
+ *   Ledger         one account: Balance b/d, each posting with its running balance, Balance c/d
+ *   Trial Balance · Profit & Loss · Balance Sheet · BAS (the worksheet: G1 G3 G10 G11 1A 1B, cash / accrual) · Jobs · Accounts
+ * Write invoice / quote (2.878.0) and reading a receipt with the vision LLM (2.879.0) come next.
+ * Pure (Node: scripts/test-877.js): dollars, filterDocs, FILTERS, TABS.
+ */
+(function (root) {
+  "use strict";
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  /** cents -> "1,234.50", a negative in brackets (the accountant's way); 0 -> "-" when `dash` */
+  function dollars(c, dash) {
+    const n = Math.round(Number(c) || 0);
+    if (!n && dash) return "–";
+    const a = Math.abs(n), s = String(Math.floor(a / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + String(a % 100).padStart(2, "0");
+    return n < 0 ? "(" + s + ")" : s;
+  }
+  const FILTERS = [["all", "All"], ["receipt", "Receipts"], ["bill", "Bills to pay"], ["invoice", "Invoices we sent"], ["owedToUs", "Due to be paid to us"],
+    ["owedByUs", "Due to be paid by us"], ["overdue", "Overdue"], ["paidToUs", "Paid to us"], ["paidByUs", "Paid by us"]];
+  /** the documents a filter shows */
+  function filterDocs(docs, f) {
+    return (docs || []).filter((d) => {
+      switch (f) {
+        case "receipt": case "bill": case "invoice": return d.kind === f;
+        case "owedToUs": return d.kind === "invoice" && d.balance > 0;
+        case "owedByUs": return d.kind === "bill" && d.balance > 0;
+        case "overdue": return d.status === "overdue";
+        case "paidToUs": return d.kind === "invoice" && d.balance <= 0;
+        case "paidByUs": return d.kind !== "invoice" && d.balance <= 0;
+        default: return true;
+      }
+    });
+  }
+  const TABS = [["summary", "Summary"], ["docs", "Documents"], ["journals", "Journals"], ["ledger", "Ledger"], ["tb", "Trial Balance"], ["pl", "Profit & Loss"],
+    ["bs", "Balance Sheet"], ["bas", "BAS"], ["jobs", "Jobs"], ["accounts", "Accounts"]];
+  const pure = { dollars, filterDocs, FILTERS, TABS };
+  if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
+
+  const doc = root.document, $ = (id) => doc.getElementById(id);
+  const store = { get: (k, d) => { try { const v = root.localStorage.getItem("h3.acct." + k); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { root.localStorage.setItem("h3.acct." + k, v); } catch (e) { /* fine */ } } };
+  const S = { biz: store.get("biz", "main"), tab: store.get("tab", "summary"), per: store.get("per", "quarter"), filter: "all", journal: "SJ", account: "1100", books: null, basis: "" };
+  const api = async (u, body, method) => {
+    const r = await root.fetch(u, body || method ? { method: method || "POST", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(Object.assign({ biz: S.biz }, body)) : undefined } : {});
+    const j = await r.json().catch(() => ({})); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j;
+  };
+  const msg = (t, bad) => { const m = $("acMsg"); if (m) { m.textContent = t || ""; m.classList.toggle("bad", !!bad); } };
+  const qs = (o) => Object.entries(o).filter(([, v]) => v != null && v !== "").map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+  const perQ = () => ({ period: S.per, from: S.per === "custom" ? $("acFrom").value : "", to: S.per === "custom" ? $("acTo").value : "" });
+  const report = (kind, extra) => api("/api/accounts/report?" + qs(Object.assign({ biz: S.biz, kind }, perQ(), extra || {})));
+  const N = (c, dash) => `<span class="${Number(c) < 0 ? "neg" : ""}">${dollars(c, dash)}</span>`;
+  const acc = (code) => (S.books.accounts.find((a) => a.code === code) || { name: "?" });
+  const STAMP = { paid: "paid", overdue: "overdue", due: "due", "part paid": "part" };
+  const KIND_ICON = { receipt: "🧾", bill: "📥", invoice: "📤" };
+  const yes = (t, title) => (typeof root.appConfirm === "function" ? root.appConfirm(t, title) : Promise.resolve(root.confirm(t)));
+
+  async function loadBooks() { S.books = await api("/api/accounts?" + qs({ biz: S.biz })); paintBiz(); return S.books; }
+  function paintBiz() {
+    const s = $("acBiz"), list = [{ id: "main", name: "My business" }].concat(S.books.businesses || []);
+    s.innerHTML = list.map((b) => `<option value="${esc(b.id)}"${b.id === S.biz ? " selected" : ""}>${esc(b.name)}</option>`).join("");
+  }
+  function paintTabs() { $("acTabs").innerHTML = TABS.map(([id, t]) => `<button type="button" data-tab="${id}"${id === S.tab ? ' class="on"' : ""}>${esc(t)}</button>`).join(""); }
+  async function show(tab) {
+    if (tab) { S.tab = tab; store.set("tab", tab); }
+    paintTabs();
+    const P = $("acPaper");
+    try {
+      if (!S.books) await loadBooks();
+      P.innerHTML = await (VIEWS[S.tab] || VIEWS.summary)();
+      msg("");
+    } catch (e) { P.innerHTML = `<div class="acnote">${esc(e.message)}</div>`; msg("✗ " + e.message, true); }
+  }
+  const refresh = () => loadBooks().then(() => show()).catch((e) => msg("✗ " + e.message, true));
+  const head = (title, sub) => `<h3>${esc(title)}</h3><div class="acsub">${esc(sub || "")}</div>`;
+
+  /* ---------------- the views ---------------- */
+  const VIEWS = {
+    async summary() {
+      const s = await report("summary"), bas = s.gst;
+      const card = (k, v, sub) => `<div class="accard"><div class="k">${esc(k)}</div><div class="v">$${dollars(v)}</div><div class="s">${esc(sub || "")}</div></div>`;
+      const aged = (rows, kind) => rows.length ? `<table class="actab"><tr><th>${kind === "invoice" ? "Customer" : "Supplier"}</th><th>No.</th><th>Due</th><th class="n">Balance</th><th>Status</th></tr>${rows.map((r) => `<tr class="click" data-doc="${esc(r.id)}"><td>${esc(r.party)}</td><td>${esc(r.number)}</td><td>${esc(r.due)}</td><td class="n">${N(r.balance)}</td><td><span class="acstamp ${STAMP[r.status]}">${esc(r.status)}${r.late ? " " + r.late + "d" : ""}</span></td></tr>`).join("")}</table>` : `<div class="acnote">Nothing outstanding.</div>`;
+      const [ar, ap] = await Promise.all([report("aged", { which: "invoice" }), report("aged", { which: "bill" })]);
+      return head("Summary", `As at ${s.at} · ${s.quarter.label} · ${s.fy.label}`)
+        + `<div class="accards">${s.banks.filter((b) => b.balance).map((b) => card(b.name, b.balance)).join("") || card("Bank", 0)}`
+        + card("Owed to us", s.owedToUs, s.overdueToUs ? `$${dollars(s.overdueToUs)} overdue` : `${s.unpaidInvoices} invoice(s)`)
+        + card("We owe", s.owedByUs, s.overdueByUs ? `$${dollars(s.overdueByUs)} overdue` : `${s.unpaidBills} bill(s)`)
+        + `<div class="accard"><div class="k">GST this quarter (${esc(S.books.settings.basis)})</div><div class="v">$${Math.abs(bas.net).toLocaleString("en-AU")}</div><div class="s">${esc(bas.verdict)} · 1A $${bas["1A"]} − 1B $${bas["1B"]}</div></div>`
+        + card(`Profit ${s.fy.label} to date`, s.profit, `income $${dollars(s.income)} (no GST)`) + `</div>`
+        + `<h3>Due to be paid to us</h3>${aged(ar.rows, "invoice")}<h3 style="margin-top:12px">Due to be paid by us</h3>${aged(ap.rows, "bill")}`
+        + `<div class="acnote">Amounts in Australian dollars. GST at 10 %; the financial year runs 1 July - 30 June. Your own tax settings come in a later release.</div>`;
+    },
+    async docs() {
+      const B = S.books, rows = filterDocs(B.docs, S.filter), sum = (k) => rows.reduce((s, d) => s + d[k], 0);
+      return head("Documents", "Receipts, bills to pay and invoices we sent - click a row to change it")
+        + `<div class="acfilters">${FILTERS.map(([id, t]) => `<button type="button" data-filter="${id}"${id === S.filter ? ' class="on"' : ""}>${esc(t)}</button>`).join("")}</div>`
+        + `<table class="actab"><tr><th>Date</th><th>No.</th><th></th><th>Party</th><th>Job</th><th>Due</th><th class="n">Total</th><th class="n">GST</th><th class="n">Paid</th><th class="n">Balance</th><th>Status</th><th></th></tr>`
+        + rows.map((d) => `<tr class="click" data-doc="${esc(d.id)}"><td>${esc(d.date)}</td><td>${esc(d.number)}</td><td title="${esc(B.kinds[d.kind])}">${KIND_ICON[d.kind]}</td><td>${esc(d.party)}</td><td>${esc(d.job)}</td>`
+          + `<td>${d.kind === "receipt" ? "" : esc(d.due)}</td><td class="n">${N(d.total)}</td><td class="n">${N(d.gst, 1)}</td><td class="n">${N(d.paid, 1)}</td><td class="n">${N(d.balance, 1)}</td>`
+          + `<td><span class="acstamp ${STAMP[d.status]}">${esc(d.status)}</span></td><td class="act">${d.file ? `<button type="button" data-file="${esc(d.file)}" title="Open the attached receipt / bill">📎</button>` : ""}`
+          + `${d.kind !== "receipt" && d.balance > 0 ? `<button type="button" data-pay="${esc(d.id)}" title="${d.kind === "invoice" ? "Money received" : "Pay it"}">💵</button>` : ""}<button type="button" data-del="${esc(d.id)}" title="Delete">🗑</button></td></tr>`).join("")
+        + `<tr class="tot gtot"><td colspan="6">${rows.length} document(s)</td><td class="n">${N(sum("total"))}</td><td class="n">${N(sum("gst"))}</td><td class="n">${N(sum("paid"))}</td><td class="n">${N(sum("balance"))}</td><td colspan="2"></td></tr></table>`
+        + (B.payments.length ? `<h3 style="margin-top:14px">Payments</h3><table class="actab"><tr><th>Date</th><th>For</th><th>Through</th><th>Ref</th><th class="n">Amount</th><th></th></tr>${B.payments.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((p) => { const d = B.docs.find((x) => x.id === p.doc) || {}; return `<tr><td>${esc(p.date)}</td><td>${KIND_ICON[d.kind] || ""} ${esc(d.number)} ${esc(d.party)}</td><td>${esc(acc(p.account).name)}</td><td>${esc(p.ref)}</td><td class="n">${N(p.amount)}</td><td class="act"><button type="button" data-delpay="${esc(p.id)}" title="Delete the payment">🗑</button></td></tr>`; }).join("")}</table>` : "");
+    },
+    async journals() {
+      const j = await report("journal", { journal: S.journal });
+      const sel = `<div class="acrow"><span>Journal</span><select id="acJnl">${Object.entries(S.books.journalNames).map(([k, t]) => `<option value="${k}"${k === S.journal ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`;
+      return head(j.name, j.period.label) + sel + `<table class="actab"><tr><th>Date</th><th>Particulars</th><th>Ref</th><th>Job</th><th class="n">Debit</th><th class="n">Credit</th><th></th></tr>`
+        + j.rows.map((r) => r.lines.map((l, i) => `<tr class="${l.cr && !l.dr ? "ind" : ""}"><td>${i ? "" : esc(r.date)}</td><td class="p">${l.cr && !l.dr ? "To " : ""}${esc(l.name)} <span style="color:#6b7c62">${esc(l.account)}</span></td><td>${i ? "" : esc(r.ref)}</td><td>${esc(l.job)}</td><td class="n">${N(l.dr, 1)}</td><td class="n">${N(l.cr, 1)}</td>`
+          + `<td class="act">${!i && r.src.type === "journal" ? `<button type="button" data-deljnl="${esc(r.src.id)}" title="Delete the entry">🗑</button>` : ""}</td></tr>`).join("")
+          + `<tr><td></td><td colspan="6" style="font-style:italic;color:#4c5d43;padding-left:34px">(being ${esc(r.memo || r.party || "entry")}${r.party && r.memo ? " - " + esc(r.party) : ""})</td></tr>`).join("")
+        + `<tr class="tot gtot"><td colspan="4">Totals</td><td class="n">${N(j.dr)}</td><td class="n">${N(j.cr)}</td><td></td></tr></table>`;
+    },
+    async ledger() {
+      const L = await report("ledger", { account: S.account }), a = L.account;
+      const sel = `<div class="acrow"><span>Account</span><select id="acAcc">${S.books.accounts.map((x) => `<option value="${x.code}"${x.code === S.account ? " selected" : ""}>${x.code} ${esc(x.name)}</option>`).join("")}</select></div>`;
+      return head(`${a.code} ${a.name}`, `${L.period.label} · ${a.type}`) + sel + `<table class="actab"><tr><th>Date</th><th>Particulars</th><th>Jnl</th><th>Ref</th><th class="n">Debit</th><th class="n">Credit</th><th class="n">Balance</th></tr>`
+        + `<tr><td>${esc(L.period.from)}</td><td><i>Balance b/d</i></td><td></td><td></td><td class="n"></td><td class="n"></td><td class="n">${N(L.opening)}</td></tr>`
+        + L.rows.map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.memo)}${r.party ? " - " + esc(r.party) : ""}</td><td>${esc(r.journal)}</td><td>${esc(r.ref)}</td><td class="n">${N(r.dr, 1)}</td><td class="n">${N(r.cr, 1)}</td><td class="n">${N(r.balance)}</td></tr>`).join("")
+        + `<tr class="tot gtot"><td>${esc(L.period.to)}</td><td><i>Balance c/d</i></td><td></td><td></td><td class="n"></td><td class="n"></td><td class="n">${N(L.closing)}</td></tr></table>`;
+    },
+    async tb() {
+      const t = await report("tb");
+      return head("Trial Balance", "As at " + t.to) + `<table class="actab"><tr><th>Code</th><th>Account</th><th class="n">Debit</th><th class="n">Credit</th></tr>`
+        + t.rows.map((r) => `<tr class="click" data-ledger="${r.code}"><td>${r.code}</td><td>${esc(r.name)}</td><td class="n">${N(r.dr, 1)}</td><td class="n">${N(r.cr, 1)}</td></tr>`).join("")
+        + `<tr class="tot gtot"><td></td><td>Totals <span class="acstamp ${t.balanced ? "ok" : "overdue"}">${t.balanced ? "in balance" : "out of balance"}</span></td><td class="n">${N(t.dr)}</td><td class="n">${N(t.cr)}</td></tr></table>`;
+    },
+    async pl() {
+      const p = await report("pl"), sec = (rows) => rows.map((r) => `<tr class="click ind" data-ledger="${r.code}"><td class="p">${esc(r.name)}</td><td class="n">${N(r.amount)}</td><td class="n"></td></tr>`).join("");
+      return head("Profit & Loss Statement", `${p.period.label} · amounts without GST`) + `<table class="actab" style="max-width:640px"><tr><th></th><th class="n"></th><th class="n"></th></tr>`
+        + `<tr class="sec"><td colspan="3">Income</td></tr>${sec(p.income)}<tr class="tot"><td>Total Income</td><td class="n"></td><td class="n">${N(p.totalIncome)}</td></tr>`
+        + `<tr class="sec"><td colspan="3">Less Cost of Sales</td></tr>${sec(p.cos)}<tr class="tot"><td>Total Cost of Sales</td><td class="n"></td><td class="n">${N(p.totalCos)}</td></tr>`
+        + `<tr class="tot"><td>Gross Profit</td><td class="n"></td><td class="n">${N(p.gross)}</td></tr>`
+        + `<tr class="sec"><td colspan="3">Less Expenses</td></tr>${sec(p.expenses)}<tr class="tot"><td>Total Expenses</td><td class="n"></td><td class="n">${N(p.totalExpenses)}</td></tr>`
+        + `<tr class="tot gtot"><td>Net ${p.net < 0 ? "Loss" : "Profit"}</td><td class="n"></td><td class="n">${N(p.net)}</td></tr></table>`;
+    },
+    async bs() {
+      const b = await report("bs"), sec = (rows) => rows.map((r) => `<tr class="${r.code ? "click " : ""}ind"${r.code ? ` data-ledger="${r.code}"` : ""}><td class="p">${esc(r.name)}</td><td class="n">${N(r.amount)}</td><td class="n"></td></tr>`).join("");
+      return head("Balance Sheet", "As at " + b.to) + `<table class="actab" style="max-width:640px"><tr><th></th><th class="n"></th><th class="n"></th></tr>`
+        + `<tr class="sec"><td colspan="3">Assets</td></tr>${sec(b.assets)}<tr class="tot"><td>Total Assets</td><td class="n"></td><td class="n">${N(b.totalAssets)}</td></tr>`
+        + `<tr class="sec"><td colspan="3">Liabilities</td></tr>${sec(b.liabilities)}<tr class="tot"><td>Total Liabilities</td><td class="n"></td><td class="n">${N(b.totalLiabilities)}</td></tr>`
+        + `<tr class="tot gtot"><td>Net Assets</td><td class="n"></td><td class="n">${N(b.netAssets)}</td></tr>`
+        + `<tr class="sec"><td colspan="3">Equity</td></tr>${sec(b.equity)}<tr class="tot gtot"><td>Total Equity <span class="acstamp ${b.balanced ? "ok" : "overdue"}">${b.balanced ? "balances" : "does not balance"}</span></td><td class="n"></td><td class="n">${N(b.totalEquity)}</td></tr></table>`;
+    },
+    async bas() {
+      const b = await report("bas", { basis: S.basis || S.books.settings.basis }), box = (cd, lbl, v) => `<div class="box"><span class="cd">${cd}</span><span class="lbl">${esc(lbl)}</span><span class="fig">$${Number(v).toLocaleString("en-AU")}</span></div>`;
+      return head("Business Activity Statement - GST worksheet", `${b.period.label} · ${b.basis} basis · ${b.docs} document(s)`)
+        + `<div class="acrow"><span>Basis</span><select id="acBasis"><option value="cash"${b.basis === "cash" ? " selected" : ""}>Cash (when paid)</option><option value="accrual"${b.basis === "accrual" ? " selected" : ""}>Accrual (when invoiced)</option></select>`
+        + `<label><input type="checkbox" id="acBasisKeep"> keep as these books' basis</label></div>`
+        + `<div class="acbas"><h4>GST amounts you owe the ATO from sales</h4>${box("G1", "Total sales (including any GST)", b.G1)}${box("G2", "Export sales", b.G2)}${box("G3", "Other GST-free sales", b.G3)}${box("1A", "GST on sales", b["1A"])}`
+        + `<h4>GST amounts the ATO owes you from purchases</h4>${box("G10", "Capital purchases (including any GST)", b.G10)}${box("G11", "Non-capital purchases (including any GST)", b.G11)}${box("1B", "GST on purchases", b["1B"])}`
+        + `<h4>Summary</h4><div class="box"><span class="lbl" style="font-weight:700">1A − 1B: ${esc(b.verdict)}</span><span class="fig">$${Math.abs(b.net).toLocaleString("en-AU")}</span></div></div>`
+        + (b.adjustments["1A"] || b.adjustments["1B"] ? `<div class="acnote">Includes GST adjustments from the General Journal: 1A $${dollars(b.adjustments["1A"])}, 1B $${dollars(b.adjustments["1B"])}.</div>` : "")
+        + `<div class="acnote">Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. PAYG withholding (W1, W2) and instalments come with the taxes settings later.</div>`;
+    },
+    async jobs() {
+      const r = await report("jobs");
+      return head("Jobs", `${r.period.label} · amounts without GST; owed = still unpaid now`)
+        + `<div class="acrow"><input id="acJobCode" placeholder="JOB-001" style="width:90px"><input id="acJobName" placeholder="What the job is"><input id="acJobClient" placeholder="Client"><button type="button" class="ghost" id="acJobAdd">＋ Add job</button></div>`
+        + `<table class="actab"><tr><th>Code</th><th>Job</th><th>Client</th><th>Status</th><th class="n">Income</th><th class="n">Costs</th><th class="n">Profit</th><th class="n">Owed to us</th><th class="n">We owe</th><th></th></tr>`
+        + r.jobs.map((j) => `<tr><td>${esc(j.code)}</td><td>${esc(j.name)}</td><td>${esc(j.client)}</td><td>${esc(j.status)}</td><td class="n">${N(j.income, 1)}</td><td class="n">${N(j.costs, 1)}</td><td class="n">${N(j.profit)}</td><td class="n">${N(j.owed, 1)}</td><td class="n">${N(j.toPay, 1)}</td>`
+          + `<td class="act"><button type="button" data-jobtoggle="${esc(j.code)}" title="${j.status === "open" ? "Close the job" : "Open it again"}">${j.status === "open" ? "✔" : "↺"}</button><button type="button" data-deljob="${esc(j.code)}" title="Delete (only without entries)">🗑</button></td></tr>`).join("")
+        + `<tr class="tot gtot"><td colspan="4">Totals</td>${["income", "costs", "profit", "owed", "toPay"].map((k) => `<td class="n">${N(r.jobs.reduce((s, j) => s + j[k], 0))}</td>`).join("")}<td></td></tr></table>`;
+    },
+    async accounts() {
+      const B = S.books, T = { asset: "Asset", liability: "Liability", equity: "Equity", income: "Income", cos: "Cost of sales", expense: "Expense" };
+      return head("Chart of Accounts", "Click an account for its ledger")
+        + `<div class="acrow"><input id="acAccCode" placeholder="6270" style="width:60px"><input id="acAccName" placeholder="Account name"><select id="acAccType">${Object.entries(T).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select>`
+        + `<select id="acAccTax">${Object.entries(B.tax).map(([k, t]) => `<option value="${k}">${esc(t)}</option>`).join("")}</select><label><input type="checkbox" id="acAccBank"> bank / cash / card</label><button type="button" class="ghost" id="acAccAdd">＋ Add / change</button></div>`
+        + `<div class="acrow"><span>GST registered</span><input type="checkbox" id="acGstReg"${B.settings.gstRegistered ? " checked" : ""}><span>Invoice numbers start</span><input id="acInvPre" value="${esc(B.settings.invoicePrefix)}" style="width:60px"></div>`
+        + `<table class="actab"><tr><th>Code</th><th>Account</th><th>Type</th><th>Tax code</th><th></th></tr>`
+        + B.accounts.map((a) => `<tr class="click" data-ledger="${a.code}"><td>${a.code}</td><td>${esc(a.name)}${a.bank ? " 🏦" : ""}</td><td>${T[a.type]}</td><td>${esc(a.tax)}</td><td class="act">${a.system ? "<i style='color:#6b7c62'>system</i>" : `<button type="button" data-delacc="${a.code}" title="Delete (only without entries)">🗑</button>`}</td></tr>`).join("") + `</table>`;
+    },
+  };
+
+  /* ---------------- the entry dialog ---------------- */
+  let dlgOk = null;
+  function dialog(title, html, ok, init) {
+    // a fresh body each time - the last dialog's listeners go with the old one
+    const d = $("acDlg"), old = $("acDlgB"), nb = doc.createElement("div"); nb.id = "acDlgB"; nb.className = "db"; old.replaceWith(nb);
+    $("acDlgT").textContent = title; nb.innerHTML = html; $("acDlgE").textContent = ""; dlgOk = ok;
+    if (!d.open) d.showModal();
+    if (init) init($("acDlgB"));
+  }
+  const accOpts = (filter, sel) => S.books.accounts.filter(filter).map((a) => `<option value="${a.code}"${a.code === sel ? " selected" : ""}>${a.code} ${esc(a.name)}</option>`).join("");
+  const jobOpts = (sel) => `<option value="">— no job —</option>` + S.books.jobs.filter((j) => j.status === "open" || j.code === sel).map((j) => `<option value="${esc(j.code)}"${j.code === sel ? " selected" : ""}>${esc(j.code)} ${esc(j.name)}</option>`).join("");
+  const todayStr = () => new Date().toISOString().slice(0, 10);
+  const toDollars = (c) => (c == null || c === "" ? "" : (Number(c) / 100).toFixed(2));
+  function docForm(kind0, d0) {
+    const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind;
+    const lineFilter = kind === "invoice" ? (a) => a.type === "income" : (a) => ["expense", "cos", "asset"].includes(a.type) && !a.system && !a.bank;
+    const defAcc = kind === "invoice" ? "4200" : "6900";
+    const line = (l) => `<tr><td><input data-k="desc" value="${esc(l.desc || "")}" placeholder="What it was" style="width:240px"></td><td><select data-k="account">${accOpts(lineFilter, l.account || defAcc)}</select></td>`
+      + `<td><input data-k="amount" class="n" value="${toDollars(l.amount)}" placeholder="0.00"></td><td><select data-k="tax">${Object.entries(S.books.tax).filter(([k]) => kind !== "invoice" || k !== "CAP").map(([k, t]) => `<option value="${k}"${(l.tax || "") === k ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></td>`
+      + `<td class="n" data-gst></td><td><button type="button" class="ghost" data-rmline title="Remove the line">✕</button></td></tr>`;
+    const html = `<div><label class="f">${kind === "invoice" ? "Customer" : "Supplier"}<input id="acfParty" value="${esc(d.party || "")}" style="width:220px"></label>`
+      + `<label class="f">${kind === "invoice" ? "Invoice no. (blank = next)" : "Their invoice / receipt no."}<input id="acfNo" value="${esc(d.number || "")}" style="width:120px"></label>`
+      + `<label class="f">Date<input type="date" id="acfDate" value="${esc(d.date || todayStr())}"></label>`
+      + (kind === "receipt" ? `<label class="f">Paid from<select id="acfFrom">${accOpts((a) => a.bank, d.paidFrom || "1100")}</select></label>` : `<label class="f">Due<input type="date" id="acfDue" value="${esc(d.due || "")}"></label>`)
+      + `<label class="f">Job<select id="acfJob">${jobOpts(d.job)}</select></label></div>`
+      + `<table class="actab" id="acfLines"><tr><th>Description</th><th>Account</th><th class="n">Amount incl. GST</th><th>Tax</th><th class="n">GST</th><th></th></tr>${d.lines.map(line).join("")}</table>`
+      + `<div class="acrow"><button type="button" class="ghost" id="acfAdd">＋ Line</button><span style="flex:1"></span><span id="acfTot" class="acnum"></span></div>`
+      + `<label class="f" style="display:flex">Notes<textarea id="acfNotes" rows="2" style="width:100%">${esc(d.notes || "")}</textarea></label>`
+      + `<div class="acrow"><button type="button" class="ghost" id="acfFileBtn">📎 Attach ${kind === "invoice" ? "a copy" : "the " + (kind === "bill" ? "bill" : "receipt")} (picture or PDF)…</button><span id="acfFileName" style="font-style:italic">${d.file ? "kept: " + esc(d.file) : ""}</span>`
+      + `<input type="file" id="acfFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none"></div>`;
+    let fileData = "";
+    const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent" })[kind];
+    dialog(title, html, async () => {
+      const lines = [...$("acfLines").querySelectorAll("tr")].slice(1).map((tr) => { const o = {}; tr.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.value; }); return o; }).filter((l) => l.amount !== "" || l.desc);
+      const body = { doc: { id: d.id, kind, party: $("acfParty").value, number: $("acfNo").value, date: $("acfDate").value, due: $("acfDue") ? $("acfDue").value : "", paidFrom: $("acfFrom") ? $("acfFrom").value : "",
+        job: $("acfJob").value, notes: $("acfNotes").value, lines }, file: fileData || undefined };
+      const saved = await api("/api/accounts/doc", body);
+      msg(`✔ ${saved.number || saved.party || "document"} kept - $${dollars(saved.total)} (GST $${dollars(saved.gst)})`);
+    }, (b) => {
+      const R = 0.1, tot = () => {
+        let t = 0, g = 0;
+        $("acfLines").querySelectorAll("tr").forEach((tr, i) => {
+          if (!i) return; const a = parseFloat(String((tr.querySelector('[data-k="amount"]') || {}).value || "").replace(/[$,]/g, "")) || 0, tax = (tr.querySelector('[data-k="tax"]') || {}).value;
+          const gst = S.books.settings.gstRegistered && (tax === "GST" || tax === "CAP") ? Math.round(a * 100 * R / (1 + R)) : 0; t += Math.round(a * 100); g += gst;
+          const cell = tr.querySelector("[data-gst]"); if (cell) cell.textContent = dollars(gst, true);
+        });
+        $("acfTot").textContent = `Total $${dollars(t)} · GST $${dollars(g)} · without GST $${dollars(t - g)}`;
+      };
+      const setTax = (tr) => { const s = tr.querySelector('[data-k="account"]'), tx = tr.querySelector('[data-k="tax"]'), a = S.books.accounts.find((x) => x.code === s.value); if (a && !tx.dataset.touched) tx.value = kind === "invoice" && a.tax === "CAP" ? "GST" : a.tax; };
+      b.addEventListener("input", tot);
+      b.addEventListener("change", (e) => { const tr = e.target.closest("tr"); if (e.target.dataset.k === "tax") e.target.dataset.touched = "1"; if (e.target.dataset.k === "account" && tr) setTax(tr); tot(); });
+      b.addEventListener("click", (e) => { if (e.target.closest("[data-rmline]")) { const tr = e.target.closest("tr"); if ($("acfLines").querySelectorAll("tr").length > 2) tr.remove(); tot(); } });
+      $("acfAdd").onclick = () => { const tb = $("acfLines").tBodies[0]; tb.insertAdjacentHTML("beforeend", line({})); setTax(tb.lastElementChild); tot(); };
+      $("acfFileBtn").onclick = () => { $("acfFile").value = ""; $("acfFile").click(); };
+      $("acfFile").onchange = () => { const f = $("acfFile").files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { $("acDlgE").textContent = "the file is over 25 MB"; return; } const fr = new root.FileReader(); fr.onload = () => { fileData = String(fr.result); $("acfFileName").textContent = "📎 " + f.name; }; fr.readAsDataURL(f); };
+      if (!d.id) $("acfLines").querySelectorAll("tr").forEach((tr, i) => { if (i) { const tx = tr.querySelector('[data-k="tax"]'); if (tx && !d.lines[i - 1].tax) setTax(tr); } });
+      tot(); setTimeout(() => $("acfParty").focus(), 0);
+    });
+  }
+  function payForm(d) {
+    const html = `<div>${KIND_ICON[d.kind]} ${esc(d.number)} ${esc(d.party)} - total $${dollars(d.total)}, still owing <b>$${dollars(d.balance)}</b></div><br>`
+      + `<label class="f">Date<input type="date" id="acpDate" value="${todayStr() < d.date ? d.date : todayStr()}"></label><label class="f">Amount<input id="acpAmt" class="n" value="${toDollars(d.balance)}"></label>`
+      + `<label class="f">${d.kind === "invoice" ? "Into" : "From"}<select id="acpAcc">${accOpts((a) => a.bank, "1100")}</select></label><label class="f">Reference<input id="acpRef" style="width:140px"></label>`;
+    dialog(d.kind === "invoice" ? "Money received" : "Pay the bill", html, async () => {
+      await api("/api/accounts/payment", { payment: { doc: d.id, date: $("acpDate").value, amount: $("acpAmt").value, account: $("acpAcc").value, ref: $("acpRef").value } });
+      msg(`✔ $${$("acpAmt").value} ${d.kind === "invoice" ? "received" : "paid"} - ${d.party}`);
+    });
+  }
+  function journalForm() {
+    const line = () => `<tr><td><select data-k="account">${accOpts(() => true, "")}</select></td><td><input data-k="dr" class="n" placeholder="0.00"></td><td><input data-k="cr" class="n" placeholder="0.00"></td><td><select data-k="job">${jobOpts("")}</select></td><td><input data-k="memo" style="width:160px"></td></tr>`;
+    const html = `<label class="f">Date<input type="date" id="acjDate" value="${todayStr()}"></label><label class="f">Being (what it is for)<input id="acjMemo" style="width:300px"></label><label class="f">Ref<input id="acjRef" style="width:90px"></label>`
+      + `<table class="actab" id="acjLines"><tr><th>Account</th><th class="n">Debit</th><th class="n">Credit</th><th>Job</th><th>Note</th></tr>${line()}${line()}</table>`
+      + `<div class="acrow"><button type="button" class="ghost" id="acjAdd">＋ Line</button><span style="flex:1"></span><span id="acjTot" class="acnum"></span></div>`;
+    dialog("General journal entry", html, async () => {
+      const lines = [...$("acjLines").querySelectorAll("tr")].slice(1).map((tr) => { const o = {}; tr.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.value; }); return o; });
+      await api("/api/accounts/journal", { entry: { date: $("acjDate").value, memo: $("acjMemo").value, ref: $("acjRef").value, lines } });
+      msg("✔ journal entry kept");
+    }, (b) => {
+      const tot = () => { let dr = 0, cr = 0; b.querySelectorAll('[data-k="dr"]').forEach((i) => { dr += Math.round((parseFloat(i.value.replace(/[$,]/g, "")) || 0) * 100); }); b.querySelectorAll('[data-k="cr"]').forEach((i) => { cr += Math.round((parseFloat(i.value.replace(/[$,]/g, "")) || 0) * 100); }); $("acjTot").textContent = `Dr $${dollars(dr)} · Cr $${dollars(cr)} ${dr === cr && dr ? "✓ balances" : "- must balance"}`; };
+      b.addEventListener("input", tot); $("acjAdd").onclick = () => { $("acjLines").tBodies[0].insertAdjacentHTML("beforeend", line()); }; tot();
+    });
+  }
+
+  /* ---------------- wiring ---------------- */
+  function wire() {
+    const d = $("acctdock"); if (!d) return;
+    try { if (root.localStorage.getItem("h3.g.acctdock") == null) { root.localStorage.setItem("h3.g.acctdock", "1"); d.classList.add("dockgone"); } } catch (e) { /* fine */ }
+    const on = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
+    $("acPer").value = S.per;
+    const custom = () => { const c = S.per === "custom"; $("acFrom").style.display = $("acTo").style.display = c ? "" : "none"; };
+    custom();
+    on("acCloseBtn", "click", (e) => { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("acctdock", "tX_acctdock"); });
+    on("acBiz", "change", (e) => { S.biz = e.target.value; store.set("biz", S.biz); refresh(); });
+    on("acPer", "change", (e) => { S.per = e.target.value; store.set("per", S.per); custom(); if (S.per !== "custom" || ($("acFrom").value && $("acTo").value)) show(); });
+    on("acFrom", "change", () => $("acTo").value && show()); on("acTo", "change", () => $("acFrom").value && show());
+    on("acNewReceipt", "click", () => loadBooks().then(() => docForm("receipt")));
+    on("acNewBill", "click", () => loadBooks().then(() => docForm("bill")));
+    on("acNewInvoice", "click", () => loadBooks().then(() => docForm("invoice")));
+    on("acNewJournal", "click", () => loadBooks().then(journalForm));
+    on("acTabs", "click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
+    on("acDlgCancel", "click", () => $("acDlg").close());
+    on("acDlgOk", "click", async () => {
+      if (!dlgOk) return; const b = $("acDlgOk"); b.disabled = true;
+      try { await dlgOk(); $("acDlg").close(); await refresh(); } catch (e) { $("acDlgE").textContent = e.message; } finally { b.disabled = false; }
+    });
+    on("acPaper", "change", (e) => {
+      const t = e.target;
+      if (t.id === "acJnl") { S.journal = t.value; show(); }
+      if (t.id === "acAcc") { S.account = t.value; show(); }
+      if (t.id === "acBasis") { S.basis = t.value; if ($("acBasisKeep").checked) api("/api/accounts/settings", { settings: { basis: t.value } }).then(refresh); else show(); }
+      if (t.id === "acBasisKeep" && t.checked) api("/api/accounts/settings", { settings: { basis: $("acBasis").value } }).then(() => { S.basis = ""; msg("✔ the books' GST basis: " + $("acBasis").value); return refresh(); });
+      if (t.id === "acGstReg") api("/api/accounts/settings", { settings: { gstRegistered: t.checked } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
+      if (t.id === "acInvPre") api("/api/accounts/settings", { settings: { invoicePrefix: t.value } }).then(refresh).catch((er) => msg("✗ " + er.message, true));
+    });
+    on("acPaper", "click", async (e) => {
+      const t = e.target, B = S.books, one = (sel) => t.closest(sel);
+      try {
+        let x;
+        if ((x = one("[data-filter]"))) { S.filter = x.dataset.filter; return show(); }
+        if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
+        if ((x = one("[data-pay]"))) { e.stopPropagation(); return payForm(B.docs.find((d) => d.id === x.dataset.pay)); }
+        if ((x = one("[data-del]"))) { e.stopPropagation(); const d = B.docs.find((y) => y.id === x.dataset.del); if (await yes(`Delete ${d.number || "the document"} ${d.party} ($${dollars(d.total)}) and its payments?`, "Delete")) { await api("/api/accounts/doc/" + d.id + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
+        if ((x = one("[data-delpay]"))) { if (await yes("Delete this payment?", "Delete")) { await api("/api/accounts/payment/" + x.dataset.delpay + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
+        if ((x = one("[data-deljnl]"))) { if (await yes("Delete this journal entry?", "Delete")) { await api("/api/accounts/journal/" + x.dataset.deljnl + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
+        if ((x = one("[data-deljob]"))) { if (await yes(`Delete the job ${x.dataset.deljob}?`, "Delete")) { await api("/api/accounts/job/" + encodeURIComponent(x.dataset.deljob) + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
+        if ((x = one("[data-jobtoggle]"))) { const j = B.jobs.find((y) => y.code === x.dataset.jobtoggle); await api("/api/accounts/job", { job: Object.assign({}, j, { status: j.status === "open" ? "closed" : "open" }) }); return refresh(); }
+        if ((x = one("[data-delacc]"))) { e.stopPropagation(); if (await yes(`Delete the account ${x.dataset.delacc}?`, "Delete")) { await api("/api/accounts/account/" + x.dataset.delacc + "?biz=" + encodeURIComponent(S.biz), null, "DELETE"); await refresh(); } return; }
+        if (t.id === "acJobAdd") { await api("/api/accounts/job", { job: { code: $("acJobCode").value, name: $("acJobName").value, client: $("acJobClient").value } }); msg("✔ job added"); return refresh(); }
+        if (t.id === "acAccAdd") { await api("/api/accounts/account", { account: { code: $("acAccCode").value, name: $("acAccName").value, type: $("acAccType").value, tax: $("acAccTax").value, bank: $("acAccBank").checked } }); msg("✔ account kept"); return refresh(); }
+        if ((x = one("tr[data-ledger]"))) { S.account = x.dataset.ledger; return show("ledger"); }
+        if ((x = one("tr[data-doc]"))) { const d = B.docs.find((y) => y.id === x.dataset.doc); if (d) docForm(d.kind, d); }
+      } catch (er) { msg("✗ " + er.message, true); }
+    });
+    const look = () => { if (!d.classList.contains("dockgone") && !S.books) show(); };
+    if (root.MutationObserver) new root.MutationObserver(look).observe(d, { attributes: true, attributeFilter: ["class"] });
+    setTimeout(look, 500);
+  }
+  if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
+  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, state: () => S }, pure);
+})(typeof window !== "undefined" ? window : globalThis);

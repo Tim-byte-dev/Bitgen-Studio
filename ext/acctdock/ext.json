@@ -1,0 +1,9 @@
+{
+  "id": "acctdock",
+  "name": "Accounts",
+  "order": 99,
+  "html": "dock.html",
+  "scripts": [
+    "acctdock.js"
+  ]
+}

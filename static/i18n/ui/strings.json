@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7097,
+ "count": 7152,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66024,6 +66024,611 @@
    ],
    "where": [
     "🖼 Image editor ▸ ✨ Create ▸ 💳 the business details ▸ Card size (2.876.0)"
+   ]
+  },
+  {
+   "s": "Books of",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Whose books - the business details you keep (✨ Create ▸ 💳 Business card) or My business",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "The period the reports cover",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "This quarter",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Last quarter",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "This financial year",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Last financial year",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "All dates",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "From … to …",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "＋ 🧾 Receipt",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "＋ 📥 Bill to pay",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "＋ 📤 Invoice we sent",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "＋ ✎ Journal entry",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "A receipt for something already paid - upload its picture or PDF",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "A supplier's invoice we have to pay",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "An invoice we sent - money owed to us",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "A general journal entry (debits = credits)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the 📒 button on the top bar shows it again)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Profit & Loss Statement",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Business Activity Statement - GST worksheet",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Chart of Accounts",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Click an account for its ledger",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Receipts, bills to pay and invoices we sent - click a row to change it",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Total sales (including any GST)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Export sales",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Other GST-free sales",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "GST on sales",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Capital purchases (including any GST)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Non-capital purchases (including any GST)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "GST on purchases",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "New receipt (paid)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "New bill to pay",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "New invoice we sent",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Change receipt (paid)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Change bill to pay",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Change invoice we sent",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Pay the bill",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "General journal entry",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "＋ Line",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Sales Journal",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Purchases Journal",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Cash Receipts Journal",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Cash Payments Journal",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "General Journal",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "GST 10 %",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "GST-free",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Capital purchase (GST)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Not reportable",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Receipt (paid)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Bill to pay",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Invoice we sent",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Asset",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Liability",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Cost of sales",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
+   ]
+  },
+  {
+   "s": "Expense",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "📒 Accounts docker (2.877.0)"
    ]
   }
  ]
