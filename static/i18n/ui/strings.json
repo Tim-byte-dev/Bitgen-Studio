@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7271,
+ "count": 7278,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67796,6 +67796,69 @@
    ],
    "where": [
     "div.hint in #s_skList"
+   ]
+  },
+  {
+   "s": "Pay the ATO…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#acPayAto.ghost"
+   ]
+  },
+  {
+   "s": "A BAS period into the books (GST, PAYG withheld, the instalment - into the ATO account) and what you paid the ATO, or the refund",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#acPayAto.ghost"
+   ]
+  },
+  {
+   "s": "Pay super…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#acPaySuper.ghost"
+   ]
+  },
+  {
+   "s": "The super the pay runs owe, paid to the fund or clearing house",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#acPaySuper.ghost"
+   ]
+  },
+  {
+   "s": "Pay the ATO",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div#acDlgT"
+   ]
+  },
+  {
+   "s": "Pay super",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div#acDlgT"
+   ]
+  },
+  {
+   "s": "Lodge + pay this BAS…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button.ghost in #acPaper"
    ]
   }
  ]

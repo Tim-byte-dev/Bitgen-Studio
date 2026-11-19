@@ -14607,6 +14607,13 @@ node scripts/test-888.js > /tmp/t888.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui888-ui.js > /tmp/ui888.log 2>&1 \
   && ok "2.888.0 browser test: Settings ▸ General ▸ 🎛 Skills (built-ins, ＋ New, ✎ copy of a built-in, 🗑 asked), the prompt docker's 🎛 sends context.app + the app's state, the page does app asks (H3Voice.act) and answers with what happened" \
   || { bad "2.888.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui888.log | head -12; }
+# ---- 2.889.0 (💵 pay the ATO and pay super in Accounts: lib/accountingSettle.js, acctsettle.js)
+node scripts/test-889.js > /tmp/t889.log 2>&1 \
+  && ok "2.889.0 units: the BAS lodging journal (GST, PAYG withheld, instalments, rounding into 2330), refusals (twice, early, over-paying), payments and refunds against 2330, the next BAS ignores the settle journal, super owed from pay runs + paid, routes" \
+  || { bad "2.889.0 units"; grep -a "^FAIL" -A1 /tmp/t889.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui889-ui.js > /tmp/ui889.log 2>&1 \
+  && ok "2.889.0 browser test: Accounts' 💵 Pay the ATO… (the plan, lodge + pay, already lodged), 💵 Pay super… (owed, pay), the BAS tab's Lodge + pay this BAS…" \
+  || { bad "2.889.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui889.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

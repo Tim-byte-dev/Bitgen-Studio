@@ -12,6 +12,8 @@
 //   POST   /api/accounts/account    {biz, account};   DELETE /api/accounts/account/:code
 //   POST   /api/accounts/settings   {biz, settings}   cash / accrual, GST registered, invoice / quote prefix, terms, how to pay, profile
 //   2.883.0  🧾 GET / POST /api/accounts/tax {tax} · POST /api/accounts/payrun {pay}
+//   2.889.0  💵 GET /api/accounts/settle/ato ?period|from&to&basis (the plan) · POST /settle/ato {lodge: {from, to, basis, date, pay}}
+//            · POST /settle/atopay {pay: {date, amount, account, refund}} · GET /settle/super ?at · POST /settle/super {pay: {date, amount, account, fund}}
 //   2.882.0  🏦 Bank (lib/bankRec.js + lib/bankStatement.js): GET /api/accounts/bank?biz=&account= · POST /api/accounts/bank/import
 //            {account, name, text, dayFirst, map} · POST /api/accounts/bank/line/:id/match {key} | /unmatch | /ignore {on} | /create {how}
 //            DELETE /api/accounts/bank/line/:id · GET /api/accounts/bank/check?account=&date=&balance= · POST /api/accounts/bank/reconcile
@@ -101,6 +103,13 @@ function mount(app) {
   app.get("/api/accounts/tax", wrap((req) => ({ tax: TX().settings(A().load(biz(req))), structures: TX().STRUCT, cycles: TX().CYCLE, instalments: TX().INSTAL })));
   app.post("/api/accounts/tax", small, wrap((req) => TX().saveTax(biz(req), (req.body || {}).tax)));
   app.post("/api/accounts/payrun", small, wrap((req) => TX().payRun(biz(req), (req.body || {}).pay)));
+  // 2.889.0: 💵 the BAS lodged + paid to the ATO, super paid (lib/accountingSettle.js)
+  const ST = () => require("../lib/accountingSettle");
+  app.get("/api/accounts/settle/ato", wrap((req) => { const q = req.query || {}, B = A().load(biz(req)), per = q.from && q.to ? { from: q.from, to: q.to } : A().period(q.period || "lastquarter", q.at); return ST().atoPlan(B, per.from, per.to, q.basis); }));
+  app.post("/api/accounts/settle/ato", small, wrap((req) => ST().lodge(biz(req), (req.body || {}).lodge)));
+  app.post("/api/accounts/settle/atopay", small, wrap((req) => ST().atoPay(biz(req), (req.body || {}).pay)));
+  app.get("/api/accounts/settle/super", wrap((req) => ST().superPlan(A().load(biz(req)), (req.query || {}).at)));
+  app.post("/api/accounts/settle/super", small, wrap((req) => ST().superPay(biz(req), (req.body || {}).pay)));
   // 2.882.0: 🏦 bank statements matched against the books, reconciled
   const R = () => require("../lib/bankRec");
   app.get("/api/accounts/bank", wrap((req) => R().viewOf(biz(req), req.query.account)));

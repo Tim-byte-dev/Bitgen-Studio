@@ -105,6 +105,9 @@
           <button class="ghost" id="acNewJournal" type="button" title="A general journal entry (debits = credits)">＋ ✎ Journal entry</button>
           <button class="ghost" id="acPayRun" type="button" title="Pay someone: the gross, the tax withheld, super - the journal entry is made for you (W1 / W2 on the BAS)">＋ 👷 Pay run</button>
           <button class="ghost" id="acTaxes" type="button" title="Your business's tax settings: structure, GST, PAYG withholding, PAYG instalments, super">🧾 Taxes…</button>
+          <!-- 2.889.0: 💵 the BAS lodged + paid to the ATO, super paid (acctsettle.js -> lib/accountingSettle.js) -->
+          <button class="ghost" id="acPayAto" type="button" title="A BAS period into the books (GST, PAYG withheld, the instalment - into the ATO account) and what you paid the ATO, or the refund">💵 Pay the ATO…</button>
+          <button class="ghost" id="acPaySuper" type="button" title="The super the pay runs owe, paid to the fund or clearing house">💵 Pay super…</button>
           <span id="acMsg"></span>
         </div>
         <div id="acTabs"></div>

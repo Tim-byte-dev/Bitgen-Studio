@@ -251,6 +251,7 @@
             + `<h4>PAYG income tax instalment</h4>${b.payg.instalments === "rate" ? box("T1", "PAYG instalment income", b.payg.T1) + `<div class="box"><span class="cd">T2</span><span class="lbl">${esc("Instalment rate")}</span><span class="fig">${b.payg.T2} %</span></div>` + box("T11", "T1 × T2", b.payg.T11) : b.payg.instalments === "amount" ? box("T7", "Instalment amount (from the ATO)", b.payg.T7) : ""}${box("5A", "PAYG income tax instalment", b.payg["5A"])}`
             + `<h4>Summary</h4>${box("8A", "Owed to the ATO (1A + 4 + 5A)", b.payg["8A"])}${box("8B", "Owed by the ATO (1B)", b.payg["8B"])}<div class="box"><span class="cd">9</span><span class="lbl" style="font-weight:700">${esc(b.payg.verdictAll)}</span><span class="fig">$${Math.abs(b.payg["9"]).toLocaleString("en-AU")}</span></div></div>`
           : `<h4>Summary</h4><div class="box"><span class="lbl" style="font-weight:700">1A − 1B: ${esc(b.verdict)}</span><span class="fig">$${Math.abs(b.net).toLocaleString("en-AU")}</span></div></div>`)
+        + `<div class="acrow"><button type="button" class="ghost" data-settlebas data-from="${esc(b.period.from)}" data-to="${esc(b.period.to)}" data-basis="${esc(b.basis)}" title="Put this BAS in the books (into the ATO account) and record what you paid the ATO">💵 Lodge + pay this BAS…</button></div>`   // 2.889.0
         + (b.adjustments["1A"] || b.adjustments["1B"] ? `<div class="acnote">Includes GST adjustments from the General Journal: 1A $${dollars(b.adjustments["1A"])}, 1B $${dollars(b.adjustments["1B"])}.</div>` : "")
         + `<div class="acnote">Whole dollars, cents left off, as the ATO asks. A worksheet for your BAS - lodge it through the ATO or your tax agent and check it with them. ${b.payg && b.payg.paygShown ? "PAYG figures from your pay runs (👷) and the tax settings." : "PAYG withholding (W1, W2) and instalments (T1, T7): set them in 🧾 Taxes."}</div>`;
     },
@@ -418,11 +419,15 @@
     // 2.883.0: 🧾 the tax settings + 👷 a pay run (accttax.js)
     on("acTaxes", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.open(ctx())).catch((er) => msg("✗ " + er.message, true)));
     on("acPayRun", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.payRun(ctx())).catch((er) => msg("✗ " + er.message, true)));
+    // 2.889.0: 💵 the BAS lodged + paid, super paid (acctsettle.js)
+    on("acPayAto", "click", () => loadBooks().then(() => root.H3AcctSettle && root.H3AcctSettle.ato(ctx())).catch((er) => msg("✗ " + er.message, true)));
+    on("acPaySuper", "click", () => loadBooks().then(() => root.H3AcctSettle && root.H3AcctSettle.superPay(ctx())).catch((er) => msg("✗ " + er.message, true)));
     on("acTabs", "click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
     on("acDlgCancel", "click", () => $("acDlg").close());
     on("acDlgOk", "click", async () => {
       if (!dlgOk) return; const b = $("acDlgOk"); b.disabled = true;
-      try { await dlgOk(); $("acDlg").close(); await refresh(); } catch (e) { $("acDlgE").textContent = e.message; } finally { b.disabled = false; }
+      // 2.889.0: what the dialog's save said stays on the message line (the refresh's show() cleared it at once)
+      try { await dlgOk(); $("acDlg").close(); const said = $("acMsg").textContent, wasBad = $("acMsg").classList.contains("bad"); await refresh(); if (said) msg(said, wasBad); } catch (e) { $("acDlgE").textContent = e.message; } finally { b.disabled = false; }
     });
     on("acPaper", "change", (e) => {
       const t = e.target;
@@ -445,6 +450,7 @@
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
         if ((x = one("[data-csv]"))) { e.stopPropagation(); return root.open("/api/accounts/csv?" + reportQ(x.dataset.csv), "_blank"); }
         if ((x = one("[data-basprint]"))) { e.stopPropagation(); return root.open("/api/accounts/bas-print?" + reportQ("bas"), "_blank"); }
+        if ((x = one("[data-settlebas]"))) { e.stopPropagation(); return root.H3AcctSettle && root.H3AcctSettle.ato(ctx(), { from: x.dataset.from, to: x.dataset.to, basis: x.dataset.basis }); }   // 2.889.0
         if ((x = one("[data-pdf]"))) { e.stopPropagation(); return root.open("/api/accounts/pdf/" + encodeURIComponent(x.dataset.pdf) + "?" + qs({ biz: S.biz }), "_blank"); }
         if ((x = one("[data-email]"))) { e.stopPropagation(); return emailDoc(x.dataset.email); }
         if ((x = one("[data-credit]"))) { e.stopPropagation(); const inv = B.docs.find((y) => y.id === x.dataset.credit);

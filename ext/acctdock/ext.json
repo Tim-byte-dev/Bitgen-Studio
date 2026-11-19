@@ -6,6 +6,7 @@
   "scripts": [
     "acctdock.js",
     "acctbank.js",
-    "accttax.js"
+    "accttax.js",
+    "acctsettle.js"
   ]
 }

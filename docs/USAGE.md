@@ -10007,6 +10007,24 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
 - **Safety:** an answer that has read web pages (🌐) can't use the app's actions, so a web page can never press Generate or
   change your prompt. 🎛, 🌐 and 🧰 can be on together; skills can be used whenever any of them is on.
 
+## 💵 Pay the ATO and pay super in Accounts (2.889.0)
+
+- **💵 Pay the ATO…** (the Accounts toolbar, or **💵 Lodge + pay this BAS…** under the BAS tab's figures) puts a BAS period in
+  the books: pick the period (last quarter by default) and the GST basis, and the dialog shows the entry - GST on sales (1A)
+  taken out of *2200 GST Collected*, GST on purchases (1B) out of *2210 GST Paid*, the PAYG withheld (W2) out of *2300*, the PAYG
+  instalment (5A) into *1350 PAYG Instalments Paid* (income tax paid ahead), the cents the ATO drops into *6270 BAS Rounding*,
+  and the total (label 9) into **2330 ATO Integrated Client Account**. Give the date it was lodged and tick **Paid now** with
+  the amount, the bank account and the date - or record the payment later.
+- A period already in the books opens as a **payment only**: what is still owed to the ATO, paid all at once or in parts. A BAS
+  that ends in a **refund** is recorded the same way - tick **Refund received** when the money arrives. A period can't be put in
+  twice (delete its journal entry first), a payment can't be more than is owed, and the next BAS never counts the entry as a GST
+  adjustment. With the cash basis, GST on invoices not paid yet stays in 2200 / 2210 for the quarter they are paid in.
+- **💵 Pay super…** shows the super owed on the day (what the pay runs 👷 put in *2310 Superannuation Payable*) and the pay runs
+  since the last super payment, person by person; the amount is filled in - give the fund or clearing house and the bank
+  account. It can't be more than is owed.
+- Both are entries in the General Journal with a bank line, so the **🏦 Bank** tab matches them to your statement like any other
+  payment. Lodge the BAS and pay the super through the ATO, your tax agent or your clearing house - this keeps the books in step.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
