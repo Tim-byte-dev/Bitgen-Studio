@@ -9803,6 +9803,22 @@
    "src": "static/websearchset.js:12"
   },
   {
+   "s": "Safe search",
+   "src": "static/websearchset.js:12"
+  },
+  {
+   "s": "Moderate",
+   "src": "static/websearchset.js:12"
+  },
+  {
+   "s": "Strict",
+   "src": "static/websearchset.js:12"
+  },
+  {
+   "s": "the engines' adult-content filter",
+   "src": "static/websearchset.js:12"
+  },
+  {
    "s": "With",
    "src": "static/websearchset.js:12"
   },
@@ -9840,15 +9856,15 @@
   },
   {
    "s": "installing SearXNG",
-   "src": "static/websearchset.js:53"
+   "src": "static/websearchset.js:55"
   },
   {
    "s": "installing - a few minutes",
-   "src": "static/websearchset.js:55"
+   "src": "static/websearchset.js:57"
   },
   {
    "s": "installed - it starts when the chat searches",
-   "src": "static/websearchset.js:55"
+   "src": "static/websearchset.js:57"
   },
   {
    "s": "Make and edit pictures - the image editor, the prompt, references, assets and the gallery",
@@ -30714,11 +30730,11 @@
   },
   {
    "p": "key saved (…{0}) - type to replace it",
-   "src": "static/websearchset.js:36"
+   "src": "static/websearchset.js:38"
   },
   {
    "p": "bitGen's SearXNG is running ({0})",
-   "src": "static/websearchset.js:55"
+   "src": "static/websearchset.js:57"
   },
   {
    "p": "In the books, not on a statement yet ({0})",

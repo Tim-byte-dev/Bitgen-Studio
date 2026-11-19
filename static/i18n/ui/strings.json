@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7238,
+ "count": 7239,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67496,6 +67496,16 @@
    ],
    "where": [
     "🔎 SearXNG (2.886.0)"
+   ]
+  },
+  {
+   "s": "The search engines' own filter on adult results (Brave, SearXNG). The security filters - nothing downloaded to run, never this computer or your network - always stay on",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Safe search (2.886.4)"
    ]
   }
  ]

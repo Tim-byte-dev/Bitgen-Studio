@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.886.4** — 🌐 Safe Search Off / Moderate / Strict in Settings ▸ General ▸ 🌐 Web Search - the Search Engines' Own Adult-Content Filter for Brave and SearXNG (Moderate by Default); the Security Filters (Nothing Downloaded to Run, Never This Computer or Your Network) Are Not Content Filters and Stay On
 - **2.886.3** — 🔎 SearXNG Starts on Windows (2): Its Calculator Plugin Needs Python's "fork", Which Windows Lacks ("plugin searx.plugins.calculator.SXNGPlugin is not implemented") - bitGen's settings.yml Now Lists SearXNG's Plugins Without It (the Rest Kept), and a settings.yml From an Earlier Install Is Brought Up to Date at Start With Its Own Secret Key
 - **2.886.2** — 🔎 SearXNG Starts on Windows: SearXNG's Database Module Imports the Unix-Only pwd Module ("No module named 'pwd'") - a Small Stand-In Is Added Next to the uvloop One, Written at Install and Again Before Every Start (So an Install From 2.886.1 Gets It Too)
 - **2.886.1** — 🔎 SearXNG Installs on Windows: SimpleXNG Requires uvloop, Which Has No Windows Build ("uvloop does not support Windows") - on Windows bitGen Installs It Without Its Dependencies, Then Its Dependencies Minus uvloop (the Pinned Versions, Else the Newest Ones With Ready-Made Wheels), and a Small Stand-In That Keeps Python's Own Event Loop

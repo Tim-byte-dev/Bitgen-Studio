@@ -34,6 +34,8 @@ const B = (a) => Buffer.from(a);
   let asked = ""; W.FETCH.fn = async (u) => { asked = u; return { results: [], unresponsive_engines: [["google", "Suspended: HTTP connection error"]] }; };
   const r = await W.search("sourdough");
   check("installed: bitGen's own SearXNG is used (this computer's 8888, format=json) when Brave is off and no address is typed; no answers = which engines did not answer", W.view().engine === "searxng" && W.view().searxng.local && asked === `http://${"127.0." + "0.1"}:8888/search?q=sourdough&format=json&safesearch=1` && /did not answer \(google: Suspended/.test(r.hint), { asked, r });
+  W.save({ safe: 0 }); asked = ""; await W.search("q2");
+  check("2.886.4: Safe search Off reaches SearXNG (safesearch=0); default Moderate (1); Strict 2; Settings has the dropdown", /safesearch=0$/.test(asked) && W.view().safe === 0 && W.save({ safe: 9 }).safe === 1 && W.save({ safe: 2 }).safe === 2 && /id="s_wsSafe"/.test(src("static/websearchset.js")), asked);
   CFG = { websearch: { brave: { on: true, key: "K" } } };
   check("Brave ticked + a key still comes first", W.view().engine === "brave");
   CFG = {}; W.FETCH.fn = null;

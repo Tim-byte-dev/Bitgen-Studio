@@ -21,6 +21,8 @@
     <div class="rowbtns" style="margin-top:6px;align-items:center"><button class="ghost" id="s_wsSxInstall" type="button" title="SearXNG asks many search engines at once - free, no key, runs on this computer (127.0.0.1 only). About 100 MB.">⬇ Install SearXNG here (free, no key)</button>
       <button class="ghost" id="s_wsSxStart" type="button" style="display:none">▶ Start</button><span id="s_wsSx" class="hint" style="flex:1"></span></div>
     <pre id="s_wsSxLog" class="mono" style="display:none;max-height:110px;overflow:auto;font-size:11px;margin:4px 0;white-space:pre-wrap"></pre>
+    <div class="rowbtns" style="margin-top:6px;align-items:center"><span>Safe search</span><select id="s_wsSafe" style="flex:none;width:auto" title="The search engines' own filter on adult results (Brave, SearXNG). The security filters - nothing downloaded to run, never this computer or your network - always stay on.">
+      <option value="0">Off</option><option value="1">Moderate</option><option value="2">Strict</option></select><span class="hint" style="flex:1">the engines' adult-content filter</span></div>
     <div class="rowbtns" style="margin-top:6px;align-items:center"><span id="s_wsStatus" class="hint" style="flex:1"></span></div>
     <p class="hint help" style="margin-top:4px">With <b>🌐</b> on in the prompt docker the chat's LLM searches the web and reads pages before it answers, with
       its sources listed. It uses Brave Search when ticked here, else your SearXNG server (its settings.yml must allow the json format),
@@ -32,7 +34,7 @@
   async function fill() {
     try {
       const v = await api("/api/websearch/settings");
-      $("s_wsBrave").checked = !!v.brave.on; $("s_wsKeyRow").style.opacity = v.brave.on ? "1" : ".55";
+      $("s_wsBrave").checked = !!v.brave.on; $("s_wsSafe").value = String(v.safe == null ? 1 : v.safe); $("s_wsKeyRow").style.opacity = v.brave.on ? "1" : ".55";
       if (doc.activeElement !== $("s_wsKey")) { $("s_wsKey").value = ""; $("s_wsKey").placeholder = v.brave.hasKey ? `key saved (…${v.brave.tail}) - type to replace it` : "Brave Search API key (api-dashboard.search.brave.com → API Keys)"; }
       if (doc.activeElement !== $("s_wsSearx")) $("s_wsSearx").value = v.searxng.url || "";
       status("searching with: " + NAMES[v.engine] + (v.brave.on && !v.brave.hasKey ? " - Brave is ticked but has no key yet" : ""));
@@ -61,6 +63,7 @@
     const host = $("s_websearch"); if (!host || host.dataset.wired) return; host.dataset.wired = "1";
     host.innerHTML = HTML;
     $("s_wsBrave").onchange = (e) => save({ braveOn: e.target.checked });
+    $("s_wsSafe").onchange = (e) => save({ safe: +e.target.value });
     let t = null;
     $("s_wsKey").addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { const v = $("s_wsKey").value.trim(); if (v) save({ braveKey: v }).then(() => { $("s_wsKey").value = ""; }); }, 700); });
     $("s_wsSearx").addEventListener("change", () => save({ searxngUrl: $("s_wsSearx").value.trim() }));
