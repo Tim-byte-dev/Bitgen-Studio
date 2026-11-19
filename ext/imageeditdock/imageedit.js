@@ -3106,6 +3106,8 @@
     if (win.PCCalendar && win.PCCalendar.install) win.PCCalendar.install(E);   // 2.846.0: 📅 a booking calendar for a website (pccalendar.js, static/sitecal.js)
     if (win.PCViews && win.PCViews.install) win.PCViews.install(E);       // 2.844.0: 📝 WP · ✒ Vector · 🖼 Image · 🌐 Web View on the top strip (pcviews.js) - after every panel, docker and ribbon exists
     if (win.PCCreate && win.PCCreate.install) win.PCCreate.install(E);
+    if (win.PCBizInfo && win.PCBizInfo.install) win.PCBizInfo.install(E);   // 2.875.0: the business details dialog for cards / letterheads / flyers / posters (pcbizinfo.js)
+    if (win.PCPropsAuto && win.PCPropsAuto.install) win.PCPropsAuto.install(E);   // 2.875.0: a drawing or text picked = the Properties docker shown (pcpropsauto.js) - after PCTabDock (reveal)
     if (win.PCWebAi && win.PCWebAi.install) win.PCWebAi.install(E);       // 2.852.0: 🌐 Build Me a Website - the whole site from one ask     // 2.849.0: ✨ Create With the AI - documents, stories, flyers, brochures, business cards, websites, invoices (pccreate.js)
     if (win.PCQuickBar && win.PCQuickBar.install) win.PCQuickBar.install(E);   // 2.849.0: the icon toolbar under the menus + 🔍 Print Preview (pcquickbar.js)
     if (win.PCUELive && win.PCUELive.placeFirst) win.PCUELive.placeFirst(E);

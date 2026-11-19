@@ -154,6 +154,7 @@ function mount(app) {
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run
+  require("./businessProfiles").mount(app);  // 2.875.0: the business details behind cards / letterheads / flyers / posters (lib/businessProfiles.js)
   require("./sheetLibrary").mount(app);  // 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
   require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder

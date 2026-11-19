@@ -9755,6 +9755,34 @@ Long Video makes its own sound and cannot follow the song's lips.
 Restart ComfyUI once after a new node pack. If a part is missing when you press Generate, the Download / Cancel box
 offers it. The graph is built from what your ComfyUI says each node takes, so a newer version of the pack still runs.
 
+## 💳 Business details for cards, letterheads, flyers and posters (2.875.0)
+
+In the image editor's **✨ Create With the AI**, a click on **💳 Business card**, **✉ Letterhead**, **📰 Flyer** or
+**🪧 Poster** opens the **business details** dialog first:
+
+- **Company name**, **your name**, **role / title**, **phone number**, **email**, **website**, **address** and the
+  **services** you provide (one a line).
+- The **company logo** (📂 Choose… a PNG, JPEG, WebP, SVG or GIF picture; ✕ for none).
+- Up to three **brand colours** (tick the ones to use - the first is the main colour).
+- What the **front** should look like and say, and for a card or a flyer the **back** (leave a flyer's back empty for
+  one side).
+
+**✨ Create** keeps the details on this computer (business/profiles.json, the logos beside it) and the next dialog opens
+with them; **Saved details ▾** switches between businesses, 🗑 deletes one. The LLM writes the words around your details,
+which are used exactly - phone numbers, emails and addresses are never invented. The logo is laid in as its own layer:
+top right of a card's front and big on its back, top left of a letterhead, top right of a flyer or poster.
+
+- **✉ Letterhead**: an A4 page with the logo and company at the head, the contact line and your services at the foot,
+  and a WP frame between them to type the letter in.
+- **🪧 Poster**: an A3 page (150 dpi) - a big headline, the picture, the points, the call to action, the contact.
+- "Make a business card / letterhead / poster for …" in the prompt docker uses the details you kept last.
+
+Two more changes come with it:
+
+- **Every dialog has a ✕** at its top right. It does what Esc does (or presses the dialog's own Cancel / Close).
+- **Properties come up** when you pick a drawing or a text in the image editor (a shape, a vector line, a sketch, type
+  or a WP frame): the Properties docker is shown and opened at its tab.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

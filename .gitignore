@@ -131,6 +131,8 @@ textfx/user/
 model_settings.tmp
 # 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
 /charsheet_library/
+# 2.875.0: your business details + logos (lib/businessProfiles.js - a JSON file until MariaDB)
+/business/
 community.json
 # 2.748.0: the user's API keys, encrypted (settings/keys.json) + the key that opens them (settings/keys.master) - never in
 # the repo, so an update never touches them

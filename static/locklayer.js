@@ -52,7 +52,7 @@
     title = String(ttl || "Working…");
     if (!el) {
       el = document.createElement("div"); el.id = "h3lock";
-      el.setAttribute("role", "alertdialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-busy", "true"); el.setAttribute("aria-live", "polite");
+      el.setAttribute("role", "alertdialog"); el.setAttribute("data-noclose", "");   // 2.875.0: no ✕ (static/dialogclose.js) el.setAttribute("aria-modal", "true"); el.setAttribute("aria-busy", "true"); el.setAttribute("aria-live", "polite");
       el.tabIndex = -1;
       el.innerHTML = '<div class="box"><div class="ring" aria-hidden="true"></div><div class="t"></div><div class="s"></div><div class="bar" aria-hidden="true"><i></i></div><div class="c"></div></div>';
       ["pointerdown", "mousedown", "click", "dblclick", "contextmenu", "wheel", "dragstart", "drop"].forEach(function (k) { el.addEventListener(k, function (e) { e.preventDefault(); e.stopPropagation(); }, true); });

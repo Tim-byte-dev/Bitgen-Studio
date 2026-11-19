@@ -2403,6 +2403,10 @@
    "src": "static/dgdock.js:232"
   },
   {
+   "s": "Close (Esc)",
+   "src": "static/dialogclose.js:67"
+  },
+  {
    "s": "DLSS 5 enhance",
    "src": "static/dlss5panel.js:38"
   },
@@ -7919,10 +7923,6 @@
    "src": "static/statsdlg.js:118"
   },
   {
-   "s": "Close (Esc)",
-   "src": "static/statsdlg.js:118"
-  },
-  {
    "s": "Read again",
    "src": "static/statsdlg.js:118"
   },
@@ -11635,6 +11635,70 @@
    "src": "ext/imageeditdock/pcbgi.js:302"
   },
   {
+   "s": "Saved details",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "New details",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Services - one a line",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Company logo",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "no logo",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Choose",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Brand colours",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "the first is the main colour",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Pictures - made with the prompt docker's image style",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Kept on this computer for next time (business/profiles.json). The LLM writes the words around them; your details are used exactly",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Delete these saved details",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "12 Main Street, Springfield QLD 4300",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Sourdough and rye breads&#10;Celebration cakes&#10;Wholesale to cafes",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "No logo",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "Clean and warm, cream with the logo top left, my name big, the phone and email under it",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
+   "s": "The logo in the middle on our main colour, the services under it",
+   "src": "ext/imageeditdock/pcbizinfo.js:44"
+  },
+  {
    "s": "Open as a Blender layer",
    "src": "ext/imageeditdock/pcblendai.js:27"
   },
@@ -12484,35 +12548,31 @@
   },
   {
    "s": "words",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "Invoice",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "Quote",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "Receipt",
-   "src": "ext/imageeditdock/pccreate.js:195"
-  },
-  {
-   "s": "Pictures - made with the prompt docker's image style",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "90 × 55 mm at 300 dpi, front + back",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
-   "src": "ext/imageeditdock/pccreate.js:195"
+   "src": "ext/imageeditdock/pccreate.js:267"
   },
   {
    "s": "Distance from the walls (px)",

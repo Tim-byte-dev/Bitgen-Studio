@@ -73,7 +73,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
     && /if \(e\.kind === "box"\) return/.test(src("lib/siteBuild.js")) && /full-width coloured BAND/.test(B0.SYSTEM) && /\.band\{margin:0 calc\(50% - 50vw\)/.test(B0.BASE_CSS));
   /* ---- the wiring */
   check("POST /api/siteai/plan (routes/createAi.js, not server.js); pcwebai.js after pccreate.js and installed; File ▸ 🌐 Build Me a Website…; the Web ribbon's ✨ Build Me a Website; Create ▸ 🌐 Website opens it; the build sends the products + their pictures",
-    /app\.post\("\/api\/siteai\/plan"/.test(src("routes/createAi.js")) && !/siteai/.test(src("misc/server.js")) && /"pccreate\.js", "pcwebai\.js"/.test(src("ext/imageeditdock/ext.json")) && /PCWebAi\.install\(E\)/.test(src("ext/imageeditdock/imageedit.js"))
+    /app\.post\("\/api\/siteai\/plan"/.test(src("routes/createAi.js")) && !/siteai/.test(src("misc/server.js")) && /"pccreate\.js", (?:"pcbizinfo\.js", "pcpropsauto\.js", )?"pcwebai\.js"/.test(src("ext/imageeditdock/ext.json")) && /PCWebAi\.install\(E\)/.test(src("ext/imageeditdock/imageedit.js"))
     && /addCmd\("file\.webai", "🌐 Build Me a Website…"/.test(src("ext/imageeditdock/pcwebai.js")) && /\["cmd", "file\.webai", "Build Me a Website", "✨"\]/.test(src("ext/imageeditdock/pcviews.js")) && /kind === "website" && E\.webAi/.test(src("ext/imageeditdock/pccreate.js"))
     && /a\.seed \? \{ seed: a\.seed \}/.test(src("ext/imageeditdock/pcsite.js")) && /c\.assets\.concat\(Array\.isArray\(a\.assets\)/.test(src("ext/imageeditdock/pcsite.js")));
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

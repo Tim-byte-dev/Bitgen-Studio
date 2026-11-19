@@ -101,7 +101,7 @@
     "pcdocfig.js",
     "pcdocmargins.js",
     "pcdoctpl.js",
-    "pcsite.js", "pcpageprops.js", "pccalendar.js", "pcviews.js", "pccreate.js", "pcwebai.js", "pcquickbar.js",
+    "pcsite.js", "pcpageprops.js", "pccalendar.js", "pcviews.js", "pccreate.js", "pcbizinfo.js", "pcpropsauto.js", "pcwebai.js", "pcquickbar.js",
     "pcuelive.js",
     "pctabdock.js",
     "pccoldock.js",

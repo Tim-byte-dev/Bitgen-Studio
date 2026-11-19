@@ -14506,6 +14506,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-874-live.js > /tmp/t874l.log 2>&
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui874-ui.js > /tmp/ui874.log 2>&1 \
   && ok "2.874.0 browser test: ＋ Upload a character sheet (picked, drawn as the layout, Layout guide locked), ＋ Add your own mannequin (Your mannequins, opened), ▶ Generate sheet sends the template, kept over a reload, deleted = gone" \
   || { bad "2.874.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui874.log | head -12; }
+# ---- 2.875.0 (💳 business details for cards / letterheads / flyers / posters, ✕ on every dialog, Properties for a drawing / text)
+node scripts/test-875.js > /tmp/t875.log 2>&1 \
+  && ok "2.875.0 units: business/profiles.json (clean, save + logo, update, remove), the plan told the business + used exactly + brand colours, letterhead / poster / logo / back layouts, the dialog, isDrawing, the ✕ (jsdom)" \
+  || { bad "2.875.0 units"; grep -a "^FAIL" -A1 /tmp/t875.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui875-ui.js > /tmp/ui875.log 2>&1 \
+  && ok "2.875.0 browser test: 💳 card -> the details dialog (✕), kept in profiles.json, the card with the logo both sides; ✉ letterhead filled from what was kept (A4 + WP frame); 🪧 poster A3; a text picked = Properties; File ▸ New's ✕" \
+  || { bad "2.875.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui875.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

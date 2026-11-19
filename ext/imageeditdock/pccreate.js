@@ -14,7 +14,10 @@
  */
 (function (root) {
   "use strict";
-  const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"]];
+  const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["letterhead", "✉", "Letterhead"], ["poster", "🪧", "Poster"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"]];
+  // 2.875.0: these four ask for the business's details first (pcbizinfo.js - the Business details dialog)
+  const BIZ_KINDS = ["card", "letterhead", "flyer", "poster"];
+  const L0 = (x, y, w, h, align) => ({ t: "logo", x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h), align: align || "center" });
   /** a paragraph's height: characters per line from the box width (average glyph = 0.52 em), at its leading */
   function textH(str, size, w, leading) {
     const cpl = Math.max(4, Math.floor(w / (size * 0.52))), lines = String(str || "").split("\n").reduce((n, ln) => n + Math.max(1, Math.ceil(ln.length / cpl)), 0);
@@ -34,7 +37,9 @@
   function flyerLayout(p, W, H) {
     const c = p.palette, m = W * 0.07, cw = W - 2 * m, els = [R(0, 0, W, H, c.bg)];
     els.push(R(0, 0, W, H * 0.06, c.accent));
-    const top = stack([[p.headline, W * 0.075, { weight: 800, color: c.ink }], [p.subheadline, W * 0.032, { color: c.accent, weight: 600 }]], m, H * 0.09, cw, W * 0.02);
+    const lw = p.hasLogo ? W * 0.2 : 0;
+    if (lw) els.push(L0(W - m - lw, H * 0.08, lw, lw * 0.6, "right"));
+    const top = stack([[p.headline, W * 0.075, { weight: 800, color: c.ink }], [p.subheadline, W * 0.032, { color: c.accent, weight: 600 }]], m, H * 0.09, cw - (lw ? lw + W * 0.03 : 0), W * 0.02);
     els.push(...top.els);
     const ph = H * 0.3; els.push(P(m, top.y, cw, ph, p.picture, c.accent));
     const mid = stack([[p.body, W * 0.026, { color: c.ink }], [bullets(p.bullets), W * 0.026, { color: c.ink, weight: 600 }]], m, top.y + ph + W * 0.035, cw, W * 0.025);
@@ -42,6 +47,44 @@
     if (p.cta) { const bh = W * 0.1, by = Math.max(mid.y, H * 0.78); els.push(R(m, by, cw, bh, c.accent, { radius: bh * 0.2 })); els.push(Object.assign(T(p.cta, m, by + bh * 0.22, cw, W * 0.045, { weight: 800, color: c.accentInk, align: "center" }), { h: Math.round(bh * 0.7) })); }
     const foot = stack([[p.contact, W * 0.024, { color: c.ink, align: "center", weight: 600 }], [p.footer, W * 0.017, { color: c.ink, align: "center" }]], m, H * 0.89, cw, W * 0.01);
     els.push(...foot.els);
+    if (!p.back) return [els];
+    // 2.875.0: the back of a two-sided flyer (the Business details dialog's "back")
+    const bk = [R(0, 0, W, H, c.bg), R(0, H - H * 0.06, W, H * 0.06, c.accent)];
+    if (p.hasLogo) bk.push(L0(W / 2 - W * 0.15, H * 0.06, W * 0.3, W * 0.18));
+    bk.push(...stack([[p.back.heading, W * 0.06, { weight: 800, color: c.accent, align: "center" }], [p.back.text, W * 0.028, { color: c.ink, align: "center" }],
+      [bullets(p.services), W * 0.027, { color: c.ink, weight: 600 }]], m, H * (p.hasLogo ? 0.22 : 0.1), cw, W * 0.03).els);
+    bk.push(...stack([[p.contact, W * 0.026, { color: c.ink, align: "center", weight: 700 }]], m, H * 0.84, cw, 0).els);
+    return [els, bk];
+  }
+  /** 2.875.0: a letterhead (A4): the logo + company at the head, the contact line + the services at the foot; the letter goes
+   *  between (a WP frame - pccreate make) -> [els] + .body {x, y, w, h} */
+  function letterheadLayout(p, W, H) {
+    const c = p.palette, m = W * 0.08, cw = W - 2 * m, els = [R(0, 0, W, H, "#ffffff")];
+    const lh = H * 0.07, lw = p.hasLogo ? lh * 1.8 : 0;
+    if (lw) els.push(L0(m, H * 0.04, lw, lh, "left"));
+    const tx = m + (lw ? lw + W * 0.03 : 0), head = stack([[p.company, W * 0.04, { weight: 800, color: c.accent }], [p.tagline, W * 0.018, { color: c.ink }]], tx, H * 0.045, W - m - tx, W * 0.006);
+    els.push(...head.els);
+    const hb = Math.max(H * 0.04 + lh, head.y) + H * 0.012;
+    els.push(R(m, hb, cw, Math.max(2, H * 0.003), c.accent));
+    const fy = H * 0.9;
+    els.push(R(m, fy, cw, Math.max(2, H * 0.002), c.accent));
+    els.push(...stack([[p.contact, W * 0.016, { color: c.ink, align: "center", weight: 600 }], [p.footer, W * 0.014, { color: c.ink, align: "center" }]], m, fy + H * 0.01, cw, W * 0.004).els);
+    const out = [els];
+    out.body = { x: Math.round(m), y: Math.round(hb + H * 0.04), w: Math.round(cw), h: Math.round(fy - hb - H * 0.07) };
+    return out;
+  }
+  /** 2.875.0: a poster (A3 portrait): the logo, a big headline, the picture, the points, the call to action, the contact */
+  function posterLayout(p, W, H) {
+    const c = p.palette, m = W * 0.06, cw = W - 2 * m, els = [R(0, 0, W, H, c.bg), R(0, 0, W, H * 0.03, c.accent)];
+    const lw = p.hasLogo ? W * 0.22 : 0;
+    if (lw) els.push(L0(W - m - lw, H * 0.045, lw, lw * 0.55, "right"));
+    const top = stack([[p.headline, W * 0.09, { weight: 900, color: c.ink }], [p.subheadline, W * 0.036, { color: c.accent, weight: 700 }]], m, H * 0.05, cw - (lw ? lw + W * 0.03 : 0), W * 0.02);
+    els.push(...top.els);
+    const ph = H * 0.36; els.push(P(m, top.y + W * 0.01, cw, ph, p.picture, c.accent));
+    const mid = stack([[p.body, W * 0.028, { color: c.ink }], [bullets(p.bullets), W * 0.03, { color: c.ink, weight: 700 }]], m, top.y + ph + W * 0.05, cw, W * 0.025);
+    els.push(...mid.els);
+    if (p.cta) { const bh = W * 0.11, by = Math.max(mid.y, H * 0.8); els.push(R(m, by, cw, bh, c.accent, { radius: bh * 0.25 })); els.push(Object.assign(T(p.cta, m, by + bh * 0.2, cw, W * 0.05, { weight: 900, color: c.accentInk, align: "center" }), { h: Math.round(bh * 0.7) })); }
+    els.push(...stack([[p.contact, W * 0.026, { color: c.ink, align: "center", weight: 700 }], [p.footer, W * 0.018, { color: c.ink, align: "center" }]], m, H * 0.92, cw, W * 0.01).els);
     return [els];
   }
   /** a tri-fold brochure: two A4 landscape pages - outside (inside flap | back | cover), inside (3 panels) */
@@ -69,10 +112,15 @@
   function cardLayout(p, W, H) {
     const c = p.palette, m = W * 0.07, cw = W - 2 * m;
     const front = [R(0, 0, W, H, c.bg), R(0, H * 0.82, W, H * 0.18, c.accent)];
-    front.push(...stack([[p.name, H * 0.13, { weight: 800, color: c.ink }], [p.role, H * 0.07, { color: c.accent, weight: 600 }]], m, H * 0.12, cw, H * 0.03).els);
+    const lw = p.hasLogo ? H * 0.42 : 0;                    // 2.875.0: the logo top right of the front, big on the back
+    if (lw) front.push(L0(W - m - lw, H * 0.1, lw, H * 0.3, "right"));
+    front.push(...stack([[p.name, H * 0.13, { weight: 800, color: c.ink }], [p.role, H * 0.07, { color: c.accent, weight: 600 }]], m, H * 0.12, cw - (lw ? lw + m * 0.5 : 0), H * 0.03).els);
     front.push(...stack([[[p.phone, p.email, p.web].filter(Boolean).join("\n"), H * 0.065, { color: c.ink }], [p.address, H * 0.055, { color: c.ink }]], m, H * 0.45, cw, H * 0.02).els);
     const back = [R(0, 0, W, H, c.accent)];
-    back.push(...stack([[p.company || p.name, H * 0.14, { weight: 800, color: c.accentInk, align: "center" }], [p.tagline, H * 0.07, { color: c.accentInk, align: "center" }]], m, H * 0.33, cw, H * 0.04).els);
+    if (lw) back.push(L0(W / 2 - H * 0.35, H * 0.08, H * 0.7, H * 0.3));
+    const bw = p.back || {}, sv = (p.services || []).slice(0, 4).join("  ·  ");
+    back.push(...stack([[p.company || p.name, H * 0.13, { weight: 800, color: c.accentInk, align: "center" }], [bw.heading || p.tagline, H * 0.07, { color: c.accentInk, align: "center", weight: 600 }],
+      [bw.text || sv, H * 0.055, { color: c.accentInk, align: "center" }]], m, H * (lw ? 0.44 : 0.3), cw, H * 0.03).els);
     return [front, back];
   }
   /** one web page (W × H) of a website plan */
@@ -90,11 +138,13 @@
     const s = String(text || "");
     if (!/\b(make|create|design|write|draft|do|generate|need|want)\b/i.test(s)) return null;
     if (/\bbusiness ?cards?\b/i.test(s)) return "card";
+    if (/\bletter ?-?heads?\b/i.test(s)) return "letterhead";              // 2.875.0
+    if (/\bposters?\b/i.test(s)) return "poster";                          // 2.875.0 (was a flyer)
     if (/\b(brochure|pamphlet|tri-?fold)\b/i.test(s)) return "brochure";
-    if (/\b(flyer|flier|poster|leaflet)\b/i.test(s)) return "flyer";
+    if (/\b(flyer|flier|leaflet)\b/i.test(s)) return "flyer";
     return null;
   }
-  const pure = { KINDS, textH, flyerLayout, brochureLayout, cardLayout, webLayout, kindOf };
+  const pure = { KINDS, BIZ_KINDS, textH, flyerLayout, brochureLayout, cardLayout, webLayout, letterheadLayout, posterLayout, kindOf };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   /* ================================ the page ================================ */
@@ -104,7 +154,16 @@
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
     const api = async (u, body) => { const r = await win.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const j = await r.json().catch(() => ({})); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; };
     /** an element -> a layer on the current page (shapes, paragraph text, a picture box) */
+    let logoImg = null;                                     // 2.875.0: the business's logo while a layout is laid
     function place(e) {
+      if (e.t === "logo") {
+        if (!logoImg) return null;
+        const L = E.makeLayer("Logo", S.w, S.h), g = L.canvas.getContext("2d");
+        const k = Math.min(e.w / logoImg.naturalWidth, e.h / logoImg.naturalHeight), w = logoImg.naturalWidth * k, h = logoImg.naturalHeight * k;
+        const x = e.align === "left" ? e.x : e.align === "right" ? e.x + e.w - w : e.x + (e.w - w) / 2;
+        g.imageSmoothingQuality = "high"; g.drawImage(logoImg, x, e.y + (e.h - h) / 2, w, h);
+        E.addLayer(L, "✨ create", false); return L;
+      }
       if (e.t === "rect" || (e.t === "picture" && !e.url)) {
         const L = E.makeLayer(e.t === "picture" ? "🖼 Picture" : e.name === "fold" ? "Fold line" : "Shape", S.w, S.h, "shape");
         L.shape = Object.assign({}, D.SHAPE_DEFAULT, { kind: "rect", x: e.x, y: e.y, w: e.w, h: e.h, radius: e.radius || 0, fill: e.fill || "#cccccc", fillOn: true, strokeOn: false });
@@ -127,7 +186,8 @@
     }
     const loadImg = (url) => new Promise((ok, no) => { const im = new win.Image(); im.onload = () => ok(im); im.onerror = () => no(new Error("the picture did not load")); im.src = url; });
     /** pages of elements -> the open document; pictures afterwards, one job at a time (page by page) */
-    async function lay(pages, pictures) {
+    async function lay(pages, pictures, logo) {
+      logoImg = logo || null;
       const boxes = [];
       for (let i = 0; i < pages.length; i++) {
         if (E.pages.count() > 1) E.pages.go(i);
@@ -153,11 +213,12 @@
       return n;
     }
     const SPECS = { flyer: [{ preset: "A4", wmm: 210, hmm: 297, orient: "portrait", dpi: 150 }, 1], brochure: [{ preset: "A4", wmm: 210, hmm: 297, orient: "landscape", dpi: 150 }, 2],
-      card: [{ preset: "Custom", wmm: 90, hmm: 55, orient: "landscape", dpi: 300 }, 2] };
+      card: [{ preset: "Custom", wmm: 90, hmm: 55, orient: "landscape", dpi: 300 }, 2],
+      letterhead: [{ preset: "A4", wmm: 210, hmm: 297, orient: "portrait", dpi: 150 }, 1], poster: [{ preset: "A3", wmm: 297, hmm: 420, orient: "portrait", dpi: 150 }, 1] };
     /** make one: {kind, ask, pictures, words, docKind, invoiceKind} -> the line said */
     async function make(o) {
       const a = o || {}, kind = a.kind, ask = String(a.ask || "").trim();
-      if (!ask) throw new Error("say what it is for");
+      if (!ask && !(a.business && BIZ_KINDS.includes(kind))) throw new Error("say what it is for");
       if (kind === "invoice") return E.docTpl ? E.docTpl.aiMake(ask, a.invoiceKind || "invoice", true) : "🧾 the templates are not loaded";
       if (kind === "document" || kind === "story") {
         if (!E.docText || !E.docAi) throw new Error("the WP layer is not loaded");
@@ -170,7 +231,12 @@
       // 2.852.0: a website = 🌐 Build Me a Website (the whole site: pages, pictures, shop, booking, the build)
       if (kind === "website" && E.webAi) { E.webAi.dialog(ask); return "🌐 the Build Me a Website box is open with your words"; }
       say(`✨ the LLM is writing the ${kind === "card" ? "business card" : kind}…`);
-      const { plan } = await api("/api/create/plan", { kind, ask });
+      // 2.875.0: the business details (the Business details dialog / your last saved ones) ride with the ask; their logo is laid in
+      const biz = a.business || null;
+      const { plan } = await api("/api/create/plan", { kind, ask: ask || (biz && (biz.front || biz.company)) || "", business: biz || undefined });
+      let logo = null;
+      if (biz && biz.logo_url) { try { logo = await loadImg(biz.logo_url); } catch (e) { say("✨ the logo did not load - laid out without it"); } }
+      plan.hasLogo = !!logo;
       if (kind === "website") {
         if (E.views && E.views.apply) E.views.apply("web");
         E.pages.newDocument({ preset: "Custom", wmm: 508, hmm: 317.5, orient: "landscape", dpi: 72 }, plan.pages.length, plan.title || "Website");
@@ -180,13 +246,19 @@
         await lay(pages, false);
         return `✨ 🌐 "${plan.title}" - ${plan.pages.length} web pages (${plan.pages.map((p) => p.title).join(", ")}) as layers to change; 🌐 Build Website makes the site`;
       }
-      const [spec, n] = SPECS[kind];
-      E.pages.newDocument(spec, n, kind === "card" ? (plan.name || "Business card") : plan.title || plan.headline || (kind === "flyer" ? "Flyer" : "Brochure"));
+      const [spec, n0] = SPECS[kind], n = kind === "flyer" && plan.back ? 2 : n0;
+      const NAMES = { card: plan.name || plan.company || "Business card", letterhead: (plan.company || "Letterhead") + " letterhead", poster: plan.headline || "Poster", flyer: plan.headline || "Flyer", brochure: plan.title || "Brochure" };
+      E.pages.newDocument(spec, n, NAMES[kind]);
+      if (kind === "flyer" && n === 2 && E.pages.rename) { E.pages.rename(0, "Front"); E.pages.rename(1, "Back"); }
       if (kind === "brochure" && E.pages.rename) { E.pages.rename(0, "Outside"); E.pages.rename(1, "Inside"); }
       if (kind === "card" && E.pages.rename) { E.pages.rename(0, "Front"); E.pages.rename(1, "Back"); }
-      const pages = kind === "flyer" ? flyerLayout(plan, S.w, S.h) : kind === "brochure" ? brochureLayout(plan, S.w, S.h) : cardLayout(plan, S.w, S.h);
-      const pics = await lay(pages, !!a.pictures);
-      return `✨ ${kind === "card" ? "💳 the business card (front + back)" : kind === "flyer" ? "📰 the flyer" : "📑 the tri-fold brochure (outside + inside)"} is laid out as layers to change${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print`;
+      const LAY = { flyer: flyerLayout, brochure: brochureLayout, card: cardLayout, letterhead: letterheadLayout, poster: posterLayout };
+      const pages = LAY[kind](plan, S.w, S.h);
+      const pics = await lay(pages, !!a.pictures, logo);
+      // 2.875.0: the letter itself goes in a WP frame between the letterhead's head and foot
+      if (kind === "letterhead" && pages.body && E.docText && E.docText.addFrame) { try { E.docText.addFrame(pages.body.x, pages.body.y, pages.body.w, pages.body.h, { k: 150 / 96 }, false); E.refresh(); E.renderLayersPanel(); } catch (e) { /* the letterhead stands */ } }
+      const WORDS = { card: "💳 the business card (front + back)", flyer: n === 2 ? "📰 the flyer (front + back)" : "📰 the flyer", brochure: "📑 the tri-fold brochure (outside + inside)", letterhead: "✉ the letterhead (type the letter in its frame)", poster: "🪧 the poster" };
+      return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print`;
     }
     /* ---- the box */
     function dialog(kind0, ask0) {
@@ -197,7 +269,7 @@
         <div class="kxrow pccr-o" data-for="document"><span>Kind</span><select id="pccrDoc">${["document", "article", "report", "letter", "essay", "summary"].map((x) => `<option>${x}</option>`).join("")}</select><span>About</span><input type="number" id="pccrWords" value="800" min="150" max="6000" style="width:80px"><span>words</span></div>
         <div class="kxrow pccr-o" data-for="story"><span>About</span><input type="number" id="pccrSWords" value="1500" min="300" max="6000" style="width:80px"><span>words</span></div>
         <div class="kxrow pccr-o" data-for="invoice"><span>Make</span><select id="pccrInv"><option value="invoice">🧾 Invoice</option><option value="quote">📝 Quote</option><option value="receipt">🧾 Receipt</option></select></div>
-        <div class="kxrow pccr-o" data-for="document story flyer brochure"><label><input type="checkbox" id="pccrPics"${store.get("create.pics", false) ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>
+        <div class="kxrow pccr-o" data-for="document story flyer brochure poster"><label><input type="checkbox" id="pccrPics"${store.get("create.pics", false) ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>
         <div class="pccr-o" data-for="website" style="color:var(--pc-dim)">3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website.</div>
         <div class="pccr-o" data-for="card" style="color:var(--pc-dim)">90 × 55 mm at 300 dpi, front + back.</div>
         <div class="pccr-o" data-for="brochure" style="color:var(--pc-dim)">A4 landscape tri-fold: page 1 = the outside (flap, back, cover), page 2 = the inside; fold lines as layers.</div>
@@ -209,6 +281,15 @@
       }, { okLabel: "✨ Create", wide: true, init: (d) => {
         const show = () => { const k = (d.querySelector('[name="pccrKind"]:checked') || {}).value; d.querySelectorAll(".pccr-o").forEach((x) => { x.style.display = x.dataset.for.split(" ").includes(k) ? "" : "none"; }); };
         d.querySelectorAll('[name="pccrKind"]').forEach((r) => r.addEventListener("change", show)); show();
+        // 2.875.0 (Tim: "when user clicks image-edit ai template business card, letterhead,flyer,poster the get user details"): a
+        // click on one of those four opens the Business details dialog (pcbizinfo.js) with what is typed here
+        d.querySelectorAll('[name="pccrKind"]').forEach((r) => r.addEventListener("click", () => {
+          if (!BIZ_KINDS.includes(r.value) || !E.bizInfo) return;
+          store.set("create.kind", r.value);
+          const ask = (d.querySelector("#pccrAsk") || {}).value || "", pics = !!(d.querySelector("#pccrPics") || {}).checked;
+          d.remove();
+          E.bizInfo.dialog(r.value, { ask, pictures: pics });
+        }));
         setTimeout(() => { const t = d.querySelector("#pccrAsk"); if (t) t.focus(); }, 0);
       } });
     }
@@ -221,7 +302,9 @@
     async function route(text) {
       const k = kindOf(text); if (!k) return null;
       const dock = doc.getElementById("imageeditdock"); if (dock && (dock.classList.contains("dockgone") || dock.classList.contains("collapsed"))) return null;
-      return make({ kind: k, ask: String(text), pictures: store.get("create.pics", false) });
+      // 2.875.0: your last saved business details ride along (the dialog is for a click; a typed ask uses what you kept)
+      const business = BIZ_KINDS.includes(k) && E.bizInfo ? await E.bizInfo.last().catch(() => null) : null;
+      return make({ kind: k, ask: String(text), pictures: store.get("create.pics", false), business });
     }
     root.H3ChatRoutes = [route].concat(root.H3ChatRoutes || []);
     E.create = { dialog, make, lay };

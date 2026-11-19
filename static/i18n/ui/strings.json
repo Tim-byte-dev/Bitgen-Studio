@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7062,
+ "count": 7083,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -65667,6 +65667,237 @@
    ],
    "where": [
     "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.874.0)"
+   ]
+  },
+  {
+   "s": "＋ New details",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "📂 Choose…",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Company name",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Role / title",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Phone number",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Letterhead",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Poster",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Front of the card - what it should look like and say",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Back of the card - what it should look like and say",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Front - what the flyer should look like and say",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "Back - leave empty for a one-sided flyer",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "The letterhead - how it should look (layout, mood, what to show)",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "The poster - what it is for and how it should look",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "💳 Business card",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "✉ Letterhead",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "📰 Flyer",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "🪧 Poster",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "💳 Business card - your business details",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "✉ Letterhead - your business details",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "📰 Flyer - your business details",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
+   ]
+  },
+  {
+   "s": "🪧 Poster - your business details",
+   "kinds": [
+    "text",
+    "title",
+    "placeholder"
+   ],
+   "where": [
+    "🖼 Image editor ▸ ✨ Create ▸ the business details (2.875.0)"
    ]
   }
  ]

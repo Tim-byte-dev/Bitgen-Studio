@@ -29,7 +29,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
   const w = (await A.plan({ kind: "website", ask: "a dentist" })).plan;
   A.setComplete(async () => ({ ok: true, text: "sorry I can't" }));
   let e1 = ""; try { await A.plan({ kind: "card", ask: "x" }); } catch (e) { e1 = e.message; }
-  let e2 = ""; try { await A.plan({ kind: "poster", ask: "x" }); } catch (e) { e2 = e.message; }
+  let e2 = ""; try { await A.plan({ kind: "billboard", ask: "x" }); } catch (e) { e2 = e.message; }   // 2.875.0: a poster is a kind now
   check("plan(website): pages with menu names, headings, sections; a non-JSON answer said; an unknown kind refused", w.pages.length === 2 && w.pages[0].title === "Home" && w.pages[0].sections.length === 2 && /not the card/.test(e1) && /make what/.test(e2), { w, e1, e2 });
   const card = A.clean("card", { name: "Dr Jane Lee", role: "Dentist", company: "Smile Dental", phone: "02 9999 0000", email: "jane@smile.example", palette: { bg: "#ffffff", accent: "#0e7490" } });
   const bro = A.clean("brochure", { title: "Happy Paws", tagline: "Care for every pet", panels: [{ heading: "Check-ups", body: "…" }, { heading: "Vaccinations", body: "…" }], pictures: ["a vet with a dog", "a cat"] });
@@ -53,8 +53,8 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
   check("the prompt docker: \"make a flyer / brochure / business cards …\" -> Create (words without a verb, or other things, left alone)", C.kindOf("make a flyer for my bakery") === "flyer" && C.kindOf("create business cards for Jane") === "card" && C.kindOf("design a tri-fold brochure") === "brochure" && C.kindOf("a flyer") === null && C.kindOf("make an invoice") === null);
   /* ---- the wiring */
   const pc = src("ext/imageeditdock/pccreate.js");
-  check("✨ Create: 7 kinds; documents / stories into a new A4 WP layer (pcdocai write), invoices via pcdoctpl aiMake, websites in Web View as web pages; File ▸ ✨ Create With the AI…",
-    C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,website,invoice" && /E\.docAi\.write\(/.test(pc) && /E\.docTpl\.aiMake\(ask/.test(pc) && /E\.views\.apply\("web"\)/.test(pc) && /"file\.createai", "✨ Create With the AI…"/.test(pc)
+  check("✨ Create: 9 kinds (2.875.0: + letterhead, poster); documents / stories into a new A4 WP layer (pcdocai write), invoices via pcdoctpl aiMake, websites in Web View as web pages; File ▸ ✨ Create With the AI…",
+    C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,letterhead,poster,website,invoice" && /E\.docAi\.write\(/.test(pc) && /E\.docTpl\.aiMake\(ask/.test(pc) && /E\.views\.apply\("web"\)/.test(pc) && /"file\.createai", "✨ Create With the AI…"/.test(pc)
     && /aiMake/.test(src("ext/imageeditdock/pcdoctpl.js")) && /picture, files:/.test(src("ext/imageeditdock/pcdocai.js")));
   const ej = src("ext/imageeditdock/ext.json"), ie = src("ext/imageeditdock/imageedit.js");
   check("wiring: pccreate + pcquickbar in ext.json right after pcviews and installed after PCViews (every menu + docker exists); POST /api/create/plan from routes/index.js (not server.js)",
