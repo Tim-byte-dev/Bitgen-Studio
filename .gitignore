@@ -159,3 +159,6 @@ mail/
 
 # 2.886.0: bitGen's own SearXNG (lib/searxngLocal.js)
 /searxng/
+
+# 2.888.0: your own skills for the chat's LLM (lib/skills.js - <app>/my-skills/<name>/SKILL.md) - user state
+/my-skills/

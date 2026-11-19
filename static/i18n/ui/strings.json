@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7254,
+ "count": 7271,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67641,6 +67641,161 @@
    ],
    "where": [
     "span#s_agStatus.hint"
+   ]
+  },
+  {
+   "s": "A SKILL.md file: a --- name / description --- block, then the instructions",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_skImport.ghost"
+   ]
+  },
+  {
+   "s": "App actions and skills for the chat",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button#ptApp.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "App actions and skills for the chat - on: the LLM can work the app for you (write the prompt, pick a style or a Basic Settings value, press Generate, add or render a StoryBoard scene, show a docker) and follow the skills in Settings ▸ General ▸ 🎛 Skills. Never while web pages are in its answer",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#ptApp.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Import a SKILL.md",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#s_skImport.ghost"
+   ]
+  },
+  {
+   "s": "Make your own copy of this skill to change",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.ghost in #s_skList"
+   ]
+  },
+  {
+   "s": "New skill",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#s_skNew.ghost"
+   ]
+  },
+  {
+   "s": "Skills for the chat",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_skills"
+   ]
+  },
+  {
+   "s": "With",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.hint.help in #s_websearch",
+    "p.hint.help in #s_agent",
+    "p.hint.help in #s_skills"
+   ]
+  },
+  {
+   "s": "make-a-picture",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #s_skList"
+   ]
+  },
+  {
+   "s": "making a music video from a song in bitGen - the song cut into segments, one scene per segment, lip sync",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #s_skList"
+   ]
+  },
+  {
+   "s": "making a still picture (an image) from a description - picking the image style and writing the prompt",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #s_skList"
+   ]
+  },
+  {
+   "s": "music-video",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #s_skList"
+   ]
+  },
+  {
+   "s": "on in the prompt docker the chat's LLM can work the app for you (write the prompt, pick a style or a Basic Settings value, press Generate, add or render a StoryBoard scene, show a docker) and it can follow these skills - instructions for a kind of job, loaded when your ask fits a skill's description. A skill is words only: it never runs anything itself. Yours are kept in my-skills beside the app; one with a built-in's name is used instead of it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.hint.help in #s_skills"
+   ]
+  },
+  {
+   "s": "storyboard-from-story",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #s_skList"
+   ]
+  },
+  {
+   "s": "turning a story, a script or an idea into StoryBoard scenes (shots) to render one by one",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #s_skList"
+   ]
+  },
+  {
+   "s": "write-video-prompt",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #s_skList"
+   ]
+  },
+  {
+   "s": "writing or improving a prompt for a video (a shot, a clip, a scene) in the prompt box",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #s_skList"
    ]
   }
  ]

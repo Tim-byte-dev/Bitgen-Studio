@@ -2109,6 +2109,9 @@
     <!-- 2.887.0: 🧰 files and commands for the LLM - the folder it may work in, the command time limit, the log (static/agentset.js) -->
     <div id="s_agent"></div>
 
+    <!-- 2.888.0: 🎛 skills for the chat's LLM - the built-in ones and yours (static/skillsset.js, lib/skills.js) -->
+    <div id="s_skills"></div>
+
     <!-- 2.760.0 (Tim: "in general tab add currency (AUD,USD,CNY,JPY)etc. convert to this currency when showing prices"):
          static/currency.js + lib/currency.js -->
     <label class="f" style="margin-top:14px" for="s_cur">Currency</label>
@@ -3572,6 +3575,7 @@
 <script src="/static/remotegpu.js"></script>  <!-- 2.520.0: Settings -> Remote generation (was Remote GPU; H3RemoteGpu - lib/remoteGpu.js) -->
 <script src="/static/websearchset.js"></script>  <!-- 2.885.0: Settings ▸ General ▸ 🌐 Web search for the LLM (H3WebSearchSet - lib/webTools.js) -->
 <script src="/static/agentset.js"></script>  <!-- 2.887.0: Settings ▸ General ▸ 🧰 Files and commands for the LLM (H3AgentSet - lib/agentTools.js) -->
+<script src="/static/skillsset.js"></script>  <!-- 2.888.0: Settings ▸ General ▸ 🎛 Skills (H3SkillsSet - lib/skills.js) -->
 <script src="/static/openrouter.js"></script>  <!-- 2.753.0: its 🧠 LLM on OpenRouter (H3OpenRouter - lib/openRouter.js) -->
 <script src="/static/podload.js"></script>  <!-- 2.758.0: a pod's loading bar + its P_ styles (H3PodLoad) -->
 <script src="/static/podsetup.js"></script>  <!-- 2.761.0: what a pod is for, its folders / checkpoints / LoRAs, 💾 Save (H3PodSetup) -->
@@ -9855,6 +9859,7 @@ async function chatPost(t, chatLlm, arena) {
   Object.assign(chatCtx, window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx(chatCtx.gen_mode) : { loras: [] });
   if (window.H3WebTools && H3WebTools.on()) chatCtx.web = true;   // 2.885.0: 🌐 web search on for this chat turn (ext/promptdock/ptweb.js)
   if (window.H3AgentTools && H3AgentTools.on()) chatCtx.files = true;   // 2.887.0: 🧰 files + commands on for this chat turn (ext/promptdock/ptagent.js)
+  if (window.H3AppTools && H3AppTools.on()) { chatCtx.app = true; try { chatCtx.app_state = window.H3Voice && H3Voice.state ? H3Voice.state() : null; } catch (e) { chatCtx.app_state = null; } }   // 2.888.0: 🎛 app actions + skills (ext/promptdock/ptapp.js)
   /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
      with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
      server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */

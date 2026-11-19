@@ -37,7 +37,9 @@ async function chatTurn(core, opts) {
     if (!s.folder || !s.exists || A.folderProblem(s.folder)) o.files = false;
     else Object.assign(o, { folder: s.folder, timeout: s.timeout, ask: (d) => A.ask(d) });
   }
+  // 2.888.0: 🎛 the app's own actions - done by the page (ptagent.js answers each one with what happened; 60 s each)
+  if (o.app) o.appRun = (d) => require("../lib/agentTools").ask(d, 60000);
   try { return await require("../lib/llmAgent").run(core, o); }
-  finally { LIVE.busy = false; if (o.files) { try { require("../lib/agentTools").cancelAll("the answer ended"); } catch (e) { /* none waiting */ } } }
+  finally { LIVE.busy = false; if (o.files || o.app) { try { require("../lib/agentTools").cancelAll("the answer ended"); } catch (e) { /* none waiting */ } } }
 }
 module.exports = { mount, chatTurn, LIVE };

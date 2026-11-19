@@ -81,7 +81,7 @@
     polling = true;
     try {
       const j = await api("/api/agent/asks");
-      const L = j.asks || [];
+      const L = (j.asks || []).filter((a) => a.kind === "write" || a.kind === "exec");   // 2.888.0: 🎛 app asks are ptapp.js's
       if (shown && !L.some((a) => a.id === shown)) { const d = $("agentAskDlg"); if (d && d.open) { d.onclose = null; d.close(); } shown = null; }
       const next = L.find((a) => !seen.has(a.id));
       if (!shown && next) show(next);

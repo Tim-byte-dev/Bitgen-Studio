@@ -9990,6 +9990,23 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   are off for that answer, and once it has used the folder the web tools are off - so a web page can't change your files and
   nothing from your folder is sent to a web page.
 
+## 🎛 App actions and skills for the LLM (2.888.0)
+
+- **Press 🎛** in the prompt docker (it lights up) and the chat's LLM can **work the app for you**: write or add to the prompt,
+  the negative prompt, choose what Generate makes, the video mode, an image or video style, a Basic Settings value (steps, CFG,
+  seconds, seed, resolution, aspect, format, Override style), press **Generate** or make a picture, stop the running job, add or
+  render a StoryBoard scene, and show a docker - the same actions as the 🎙 voice chat, done on screen. Ask in plain words:
+  *"write a prompt for a fox in the snow and make it square"*, *"turn this story into StoryBoard scenes"*. It presses Generate
+  only when you ask it to make something. The reply ends with what it did in the app.
+- **Skills** are instructions for a kind of job. The LLM sees each skill's name and the line that says when it is used, and
+  loads the one that fits your ask. Four come with bitGen: **write-video-prompt**, **storyboard-from-story**, **make-a-picture**
+  and **music-video**. **Settings ▸ General ▸ 🎛 Skills**: **＋ New skill** (a name, when it is used, the instructions),
+  **✎** to change one (on a built-in skill it makes your own copy, used instead of it), **🗑** to delete yours, **⤒ Import a
+  SKILL.md** (a `---` block with `name:` and `description:`, then the instructions). Yours are kept in *my-skills* beside the
+  app. Skills are words only - they never run anything themselves.
+- **Safety:** an answer that has read web pages (🌐) can't use the app's actions, so a web page can never press Generate or
+  change your prompt. 🎛, 🌐 and 🧰 can be on together; skills can be used whenever any of them is on.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

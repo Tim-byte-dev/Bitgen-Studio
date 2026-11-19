@@ -3453,7 +3453,9 @@ const trap = require("../lib/trap");
     const webOn = !arena && !!(b.context && (b.context.web === true || b.context.web === "1"));
     // 2.887.0: 🧰 files + commands on (the prompt docker's 🧰, a folder picked) - each change / command asked on the page
     const filesOn = !arena && !!(b.context && (b.context.files === true || b.context.files === "1"));
-    const out = webOn || filesOn ? await require("./webSearch").chatTurn(core, { messages, temperature: 0.6, max_tokens: filesOn ? 3000 : 900, llm_file: b.llm_file, web: webOn, files: filesOn })
+    // 2.888.0: 🎛 the app's own actions + skills on (the prompt docker's 🎛) - the page does each action and says what happened
+    const appOn = !arena && !!(b.context && (b.context.app === true || b.context.app === "1"));
+    const out = webOn || filesOn || appOn ? await require("./webSearch").chatTurn(core, { messages, temperature: 0.6, max_tokens: filesOn ? 3000 : appOn ? 1500 : 900, llm_file: b.llm_file, web: webOn, files: filesOn, app: appOn, appState: appOn ? b.context.app_state : null })
       : await llmChat.complete(core, {
       messages, temperature: 0.8, max_tokens: 700, llm_file: b.llm_file });
     if (!out.ok) {
@@ -3475,7 +3477,7 @@ const trap = require("../lib/trap");
       return res.json({ session, reply: out.text, context: prior.length, song, arena: cand ? { n: cand.n, llm: cand.llm, secs: cand.secs } : null });
     }
     chatStore.append(dir, session, "assistant", out.text);
-    const web = webOn || filesOn ? { files: out.files || [], steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [], changes: out.changes || [], commands: out.commands || [] } : undefined;
+    const web = webOn || filesOn || appOn ? { files: out.files || [], steps: out.steps || [], sources: (out.sources || []).map((x) => ({ n: x.n, title: x.title, url: x.url })), warnings: out.warnings || [], changes: out.changes || [], commands: out.commands || [], app: out.app || [] } : undefined;
     res.json(song ? { session, reply: out.text, context: prior.length, song, web }
                   : { session, reply: out.text, context: prior.length, web });
   });

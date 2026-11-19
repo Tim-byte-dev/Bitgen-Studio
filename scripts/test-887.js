@@ -101,7 +101,7 @@ const err = (f) => { try { f(); return ""; } catch (e) { return e.message; } };
   check("↶ restore puts the file back from its backup (the current one backed up first); a path outside the backups refused", rs.ok && /return 'hi'/.test(fs.readFileSync(path.join(WORK, "src", "app.js"), "utf8")) && fs.existsSync(rs.backup) && /not there/.test(err(() => AT.restore("p1", path.join(TMP, "secret.txt")))));
   // wiring
   check("wiring: routes/agent.js mounted; /api/chat runs the loop with context.files (3000 tokens) and returns changes + commands; the turn's asks cancelled at its end",
-    /require\("\.\/agent"\)\.mount\(app\)/.test(src("routes/index.js")) && /const filesOn = !arena/.test(src("routes/index.js")) && /max_tokens: filesOn \? 3000 : 900/.test(src("routes/index.js")) && /changes: out\.changes/.test(src("routes/index.js"))
+    /require\("\.\/agent"\)\.mount\(app\)/.test(src("routes/index.js")) && /const filesOn = !arena/.test(src("routes/index.js")) && /max_tokens: filesOn \? 3000 : /.test(src("routes/index.js")) && /changes: out\.changes/.test(src("routes/index.js"))
     && /cancelAll\("the answer ended"\)/.test(src("routes/webSearch.js")) && /\/api\/agent\/answer/.test(src("routes/agent.js")) && /\/api\/agent\/restore/.test(src("routes/agent.js")));
   check("wiring: the prompt docker's 🧰 (#ptFiles, ptagent.js in ext.json), chatPost sends context.files, Settings ▸ General ▸ 🧰 (#s_agent + agentset.js)",
     /id="ptFiles"/.test(src("ext/promptdock/dock.html")) && /"ptagent\.js"/.test(src("ext/promptdock/ext.json")) && /chatCtx\.files = true/.test(src("static/index.html")) && /<div id="s_agent"><\/div>/.test(src("static/index.html")) && /\/static\/agentset\.js/.test(src("static/index.html"))

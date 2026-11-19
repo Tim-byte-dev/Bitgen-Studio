@@ -15,8 +15,8 @@
   }
   function set(v) { try { root.localStorage.setItem(KEY, v ? "1" : "0"); } catch (e) { /* fine */ } paint(); }
   // 2.887.0: the folder's tools (🧰) in the same "…thinking" line
-  const FILE_LINE = { file_list: (s) => `📁 looking in ${(s.args && s.args.path) || "the folder"}`, file_read: (s) => `📄 reading ${(s.args && s.args.path) || ""}`, file_search: (s) => `🔍 finding “${(s.args && s.args.pattern) || ""}”`, file_write: (s) => `✏ writing ${(s.args && s.args.path) || ""}`, file_edit: (s) => `✏ changing ${(s.args && s.args.path) || ""}`, run_command: (s) => `▶ running ${(s.args && s.args.command) || ""}` };
-  const line = (s) => FILE_LINE[s.tool] ? FILE_LINE[s.tool](s) + (s.ok ? (s.detail ? " - " + s.detail : "") : " - " + s.error) : s.tool === "web_download" ? `⬇ downloading${s.ok ? " " + s.detail : " - " + s.error}` : s.tool === "web_search" ? `🌐 searching “${(s.args && s.args.query) || ""}”${s.ok ? " - " + s.detail : " - " + s.error}` : s.tool === "web_read" ? `📄 reading ${(() => { try { return new URL(s.args.url).hostname; } catch (e) { return (s.args && s.args.url) || ""; } })()}${s.ok ? "" : " - " + s.error}` : s.tool;
+  const FILE_LINE = { file_list: (s) => `📁 looking in ${(s.args && s.args.path) || "the folder"}`, file_read: (s) => `📄 reading ${(s.args && s.args.path) || ""}`, file_search: (s) => `🔍 finding “${(s.args && s.args.pattern) || ""}”`, file_write: (s) => `✏ writing ${(s.args && s.args.path) || ""}`, file_edit: (s) => `✏ changing ${(s.args && s.args.path) || ""}`, run_command: (s) => `▶ running ${(s.args && s.args.command) || ""}`, use_skill: (s) => `📘 reading the skill ${(s.args && (s.args.skill || s.args.name)) || ""}`, app_state: () => "🎛 looking at the app" };
+  const line = (s) => !FILE_LINE[s.tool] && /^app_/.test(s.tool) ? "🎛 " + (s.ok ? s.detail || s.tool.slice(4).replace(/_/g, " ") : s.tool.slice(4).replace(/_/g, " ") + " - " + s.error) : FILE_LINE[s.tool] ? FILE_LINE[s.tool](s) + (s.ok ? (s.detail ? " - " + s.detail : "") : " - " + s.error) : s.tool === "web_download" ? `⬇ downloading${s.ok ? " " + s.detail : " - " + s.error}` : s.tool === "web_search" ? `🌐 searching “${(s.args && s.args.query) || ""}”${s.ok ? " - " + s.detail : " - " + s.error}` : s.tool === "web_read" ? `📄 reading ${(() => { try { return new URL(s.args.url).hostname; } catch (e) { return (s.args && s.args.url) || ""; } })()}${s.ok ? "" : " - " + s.error}` : s.tool;
   // while a chat turn runs with 🌐 on, the "…thinking" bubble shows the tool loop's steps (GET /api/websearch/activity)
   let polling = false, wasBusy = false, sawDownload = false;
   async function tick() {
@@ -24,7 +24,7 @@
     // 2.886.0: a turn that downloaded something -> the Gallery shows it (web/downloads)
     if (!busy && wasBusy && sawDownload && typeof root.refreshGallery === "function") { try { root.refreshGallery(); } catch (e) { /* later */ } }
     if (!busy) { wasBusy = false; sawDownload = false; }
-    if (!busy || !(on() || (root.H3AgentTools && root.H3AgentTools.on())) || polling) return;
+    if (!busy || !(on() || (root.H3AgentTools && root.H3AgentTools.on()) || (root.H3AppTools && root.H3AppTools.on())) || polling) return;
     wasBusy = true;
     polling = true;
     try {

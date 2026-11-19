@@ -14600,6 +14600,13 @@ node scripts/test-887.js > /tmp/t887.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui887-ui.js > /tmp/ui887.log 2>&1 \
   && ok "2.887.0 browser test: Settings ▸ General ▸ 🧰 (folder, a whole drive refused, time limit, 📜 Log), the prompt docker's 🧰 sends context.files, the yes / refuse box (diff red / green, Yes to all, a command with its folder + limit, Esc = refuse)" \
   || { bad "2.887.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui887.log | head -12; }
+# ---- 2.888.0 (🎛 the app's own actions as tools + skills: lib/appActions.js, lib/skills.js, ptapp.js, skillsset.js)
+node scripts/test-888.js > /tmp/t888.log 2>&1 \
+  && ok "2.888.0 units: skills (SKILL.md, built in + yours, override, save / delete / import, use_skill), the app_ tools (args, the name clash, done by the page with its result, app_state), refused after web pages, the loop + 'In the app:', the four built-in skills, wiring" \
+  || { bad "2.888.0 units"; grep -a "^FAIL" -A1 /tmp/t888.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui888-ui.js > /tmp/ui888.log 2>&1 \
+  && ok "2.888.0 browser test: Settings ▸ General ▸ 🎛 Skills (built-ins, ＋ New, ✎ copy of a built-in, 🗑 asked), the prompt docker's 🎛 sends context.app + the app's state, the page does app asks (H3Voice.act) and answers with what happened" \
+  || { bad "2.888.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui888.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
