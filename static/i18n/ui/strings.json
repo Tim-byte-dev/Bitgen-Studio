@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7178,
+ "count": 7200,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66896,6 +66896,226 @@
    ],
    "where": [
     "📒 Accounts - credit notes, PDF, email (2.881.0)"
+   ]
+  },
+  {
+   "s": "🏦 Bank",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Bank - statements matched to the books",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "To match",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Matched",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Ignored",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "⤒ Import a statement…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "📋 Paste…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "⚖ Check",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "✔ Reconcile",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "↶ Undo last",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "✚ Make…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "✚ Make it in the books",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Which column is which?",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "📋 Paste a statement",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Payment received on an invoice we sent",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Payment of a bill (or a credit note refunded)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "A sale with no invoice (GST worked out)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "A spend with no bill (a receipt - GST worked out)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Bank reconciliation",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "Balance in the books",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "= What the statement should say",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
+   ]
+  },
+  {
+   "s": "The statement says",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts ▸ 🏦 Bank (2.882.0)"
    ]
   }
  ]

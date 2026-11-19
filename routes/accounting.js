@@ -11,6 +11,10 @@
 //   POST   /api/accounts/job        {biz, job};       DELETE /api/accounts/job/:code
 //   POST   /api/accounts/account    {biz, account};   DELETE /api/accounts/account/:code
 //   POST   /api/accounts/settings   {biz, settings}   cash / accrual, GST registered, invoice / quote prefix, terms, how to pay, profile
+//   2.882.0  🏦 Bank (lib/bankRec.js + lib/bankStatement.js): GET /api/accounts/bank?biz=&account= · POST /api/accounts/bank/import
+//            {account, name, text, dayFirst, map} · POST /api/accounts/bank/line/:id/match {key} | /unmatch | /ignore {on} | /create {how}
+//            DELETE /api/accounts/bank/line/:id · GET /api/accounts/bank/check?account=&date=&balance= · POST /api/accounts/bank/reconcile
+//            {account, date, balance} · POST /api/accounts/bank/unreconcile {account}
 //   2.878.0  POST /api/accounts/quote/:id/state {state} · POST /api/accounts/quote/:id/invoice {date} · GET /api/accounts/print/:id?biz=&auto=1
 "use strict";
 const express = require("express");
@@ -91,6 +95,18 @@ function mount(app) {
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
   app.post("/api/accounts/doc/:id/sent", small, wrap((req) => A().markSent(biz(req), req.params.id, (req.body || {}).date)));
+  // 2.882.0: 🏦 bank statements matched against the books, reconciled
+  const R = () => require("../lib/bankRec");
+  app.get("/api/accounts/bank", wrap((req) => R().viewOf(biz(req), req.query.account)));
+  app.post("/api/accounts/bank/import", big, wrap((req) => { const b = req.body || {}; return R().importText(biz(req), String(b.account || ""), String(b.text || ""), { name: b.name, dayFirst: b.dayFirst !== false, map: b.map }); }));
+  app.post("/api/accounts/bank/line/:id/match", small, wrap((req) => R().matchLine(biz(req), req.params.id, String((req.body || {}).key || ""))));
+  app.post("/api/accounts/bank/line/:id/unmatch", small, wrap((req) => R().unmatchLine(biz(req), req.params.id)));
+  app.post("/api/accounts/bank/line/:id/ignore", small, wrap((req) => R().ignoreLine(biz(req), req.params.id, (req.body || {}).on !== false)));
+  app.post("/api/accounts/bank/line/:id/create", small, wrap((req) => R().createFor(biz(req), req.params.id, (req.body || {}).how)));
+  app.delete("/api/accounts/bank/line/:id", wrap((req) => ({ ok: R().deleteLine(biz(req), req.params.id) })));
+  app.get("/api/accounts/bank/check", wrap((req) => R().checkRec(biz(req), req.query.account, req.query.date, req.query.balance)));
+  app.post("/api/accounts/bank/reconcile", small, wrap((req) => { const b = req.body || {}; return R().doReconcile(biz(req), b.account, b.date, b.balance); }));
+  app.post("/api/accounts/bank/unreconcile", small, wrap((req) => R().undoReconcile(biz(req), (req.body || {}).account)));
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));
   app.post("/api/accounts/journal", small, wrap((req) => A().saveJournal(biz(req), (req.body || {}).entry)));

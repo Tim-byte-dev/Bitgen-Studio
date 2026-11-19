@@ -47,7 +47,7 @@
     });
   }
   const TABS = [["summary", "Summary"], ["docs", "Documents"], ["journals", "Journals"], ["ledger", "Ledger"], ["tb", "Trial Balance"], ["pl", "Profit & Loss"],
-    ["bs", "Balance Sheet"], ["bas", "BAS"], ["jobs", "Jobs"], ["accounts", "Accounts"]];
+    ["bs", "Balance Sheet"], ["bas", "BAS"], ["bank", "🏦 Bank"], ["jobs", "Jobs"], ["accounts", "Accounts"]];
   const pure = { dollars, filterDocs, FILTERS, TABS };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
@@ -166,7 +166,10 @@
   }
 
   /* ---------------- the views ---------------- */
+  // 2.882.0: 🏦 the Bank tab lives in acctbank.js (window.H3AcctBank) - it gets the docker's own helpers through ctx()
+  const ctx = () => ({ S, api, qs, esc, dollars, N, head, dialog, msg, show, refresh, loadBooks, yes, accOpts, jobOpts, todayStr, store });
   const VIEWS = {
+    async bank() { return root.H3AcctBank ? root.H3AcctBank.view(ctx()) : `<div class="acnote">${esc("The bank tab did not load.")}</div>`; },
     async summary() {
       const s = await report("summary"), bas = s.gst;
       const card = (k, v, sub) => `<div class="accard"><div class="k">${esc(k)}</div><div class="v">$${dollars(v)}</div><div class="s">${esc(sub || "")}</div></div>`;
@@ -416,6 +419,7 @@
     });
     on("acPaper", "change", (e) => {
       const t = e.target;
+      if (S.tab === "bank" && root.H3AcctBank && root.H3AcctBank.change(e, ctx())) return;
       if (t.id === "acJnl") { S.journal = t.value; show(); }
       if (t.id === "acAcc") { S.account = t.value; show(); }
       if (t.id === "acBasis") { S.basis = t.value; if ($("acBasisKeep").checked) api("/api/accounts/settings", { settings: { basis: t.value } }).then(refresh); else show(); }
@@ -429,6 +433,7 @@
       const t = e.target, B = S.books, one = (sel) => t.closest(sel);
       try {
         let x;
+        if (S.tab === "bank" && root.H3AcctBank && (await root.H3AcctBank.click(e, ctx()))) return;
         if ((x = one("[data-filter]"))) { S.filter = x.dataset.filter; return show(); }
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
         if ((x = one("[data-csv]"))) { e.stopPropagation(); return root.open("/api/accounts/csv?" + reportQ(x.dataset.csv), "_blank"); }
@@ -459,5 +464,5 @@
     setTimeout(look, 500);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, readReceipt, asPicture, emailDoc, state: () => S }, pure);
+  root.H3Accounts = Object.assign({ ctx, show, refresh, docForm, payForm, journalForm, printDoc, designLayout, readReceipt, asPicture, emailDoc, state: () => S }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

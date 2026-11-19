@@ -4,6 +4,7 @@
   "order": 99,
   "html": "dock.html",
   "scripts": [
-    "acctdock.js"
+    "acctdock.js",
+    "acctbank.js"
   ]
 }

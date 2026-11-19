@@ -14558,6 +14558,13 @@ node scripts/test-881-pdf.js > /tmp/t881p.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui881-ui.js > /tmp/ui881.log 2>&1 \
   && ok "2.881.0 browser test: ⤺ a credit note from the invoice row (CN-0001 applied, balance down), ⤓ the PDF, ✉ ✉ Mail's composer with the PDF + words, ➤ Send marks ✉✓" \
   || { bad "2.881.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui881.log | head -12; }
+# ---- 2.882.0 (📒 Accounts ▸ 🏦 Bank: statements imported, matched, ✚ made, reconciled)
+node scripts/test-882.js > /tmp/t882.log 2>&1 \
+  && ok "2.882.0 units: lib/bankStatement.js (CSV with / without a header, debit + credit, day-first dates, OFX, QIF), lib/bankRec.js (no doubles, auto-match exact + only, suggestions, ✚ payment / spend / sale / transfer, rules, check + reconcile + undo, a card account), routes, the Bank tab" \
+  || { bad "2.882.0 units"; grep -a "^FAIL" -A1 /tmp/t882.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui882-ui.js > /tmp/ui882.log 2>&1 \
+  && ok "2.882.0 browser test: 🏦 Bank - a CSV through the file box (1 matched by itself), ✚ the open invoice paid, ✚ Make… a GST-free bank fee, the next one 'as before', ⚖ out by $0.10, ✔ reconciled" \
+  || { bad "2.882.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui882.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

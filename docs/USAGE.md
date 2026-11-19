@@ -9897,6 +9897,22 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   decreasing adjustment: on an accrual basis in its own period; on a cash basis through the invoice's payments (or when a
   credit on its own is refunded).
 
+## 🏦 Bank statements and reconciling in Accounts (2.882.0)
+
+- **📒 Accounts ▸ 🏦 Bank** takes a statement from your internet banking: **⤒ Import a statement…** (CSV from any
+  Australian bank - with or without a header row, one Amount column or Debit / Credit columns - OFX / QFX or QIF) or
+  **📋 Paste…** the lines. Pick the bank, card or cash account first. Dates are read day first (05/07/2026 = 5 July) unless
+  you untick it. A statement read twice is not doubled; when the columns cannot be found you pick them.
+- Each line is matched to the money the books already have (a payment, a paid receipt, a journal through that account).
+  One entry with the same amount within 3 days is **matched by bitGen**; otherwise **✓** suggestions show the entries of the
+  same amount, an open invoice or bill owing exactly that, and the account used before for the same words.
+- **✚ Make…** puts what the books lack from the line: a payment received on an invoice / paid on a bill (or a credit note
+  refunded), a **spend** (a paid receipt, GST worked out), a **sale** with no invoice (an invoice paid the same day) or a
+  **transfer** - a loan, owner's money, another account (a journal, no GST). **⊘** ignores a line, **↶** unmatches one.
+- **⚖ Reconcile**: the statement's date and closing balance (filled in from the statement when it has one) - ⚖ Check shows
+  the books' balance, less money in the books not on the statement yet, plus lines not in the books, against the statement.
+  When it agrees to the cent, **✔ Reconcile** marks the lines to that date reconciled (**↶ Undo last** frees them).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
