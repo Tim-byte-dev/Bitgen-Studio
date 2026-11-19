@@ -24767,6 +24767,58 @@
    "src": "ext/timelinedock/tlmask.js:324"
   },
   {
+   "s": "no video clips on the timeline",
+   "src": "ext/timelinedock/tlmocap.js:31"
+  },
+  {
+   "s": "RGB MoCap is installed",
+   "src": "ext/timelinedock/tlmocap.js:36"
+  },
+  {
+   "s": "RGB MoCap is not installed",
+   "src": "ext/timelinedock/tlmocap.js:36"
+  },
+  {
+   "s": "Settings ▸ Add-ons ▸ RGB MoCap",
+   "src": "ext/timelinedock/tlmocap.js:36"
+  },
+  {
+   "s": "Nothing exported yet - export FBX / BVH from RGB MoCap into the folder above",
+   "src": "ext/timelinedock/tlmocap.js:41"
+  },
+  {
+   "s": "Motion capture - RGB MoCap",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Clip",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Prepare the clip",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Open RGB MoCap",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Export FBX (or BVH) into",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Copy the path",
+   "src": "ext/timelinedock/tlmocap.js:70"
+  },
+  {
+   "s": "Mocap",
+   "src": "ext/timelinedock/tlmocap.js:98"
+  },
+  {
+   "s": "Motion capture with RGB MoCap: a clip of a person -> editable body animation -> a 🕺 3D layer on the timeline",
+   "src": "ext/timelinedock/tlmocap.js:99"
+  },
+  {
    "s": "Morph",
    "src": "ext/timelinedock/tlmorph.js:238"
   },
@@ -31191,6 +31243,10 @@
   {
    "p": "{0} key(s)",
    "src": "ext/timelinedock/tlgraph.js:197"
+  },
+  {
+   "p": "{0} - you can still bring in FBX / BVH files exported elsewhere into the folder below",
+   "src": "ext/timelinedock/tlmocap.js:36"
   },
   {
    "p": "speed % {0}",

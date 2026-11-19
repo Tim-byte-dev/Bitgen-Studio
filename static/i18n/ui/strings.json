@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6918,
+ "count": 6940,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -64226,6 +64226,226 @@
    ],
    "where": [
     "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "no video clips on the timeline",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "RGB MoCap is installed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "RGB MoCap is not installed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Settings ▸ Add-ons ▸ RGB MoCap",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Nothing exported yet - export FBX / BVH from RGB MoCap into the folder above",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Motion capture - RGB MoCap",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Clip",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Prepare the clip",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Open RGB MoCap",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Export FBX (or BVH) into",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Copy the path",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Mocap",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Motion capture with RGB MoCap: a clip of a person -> editable body animation -> a 🕺 3D layer on the timeline",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "put a video clip on the timeline first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "cutting the clip",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "Cut the clip's used part into the project's mocap folder for RGB MoCap to open",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "RGB MoCap's own window - File ▸ Open Video, Reconstruct 3D, Export",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "RGB MoCap is opening (its console stays open while it runs)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "ready - in RGB MoCap, File ▸ Open Video ▸ the path below; export into the same folder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "ready - its path is copied: in RGB MoCap, File ▸ Open Video and paste it; export into the same folder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "select + Ctrl+C - this window may not copy by itself",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "To the timeline",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
    ]
   }
  ]

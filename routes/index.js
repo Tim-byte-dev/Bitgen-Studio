@@ -237,6 +237,7 @@ function mount(app) {
   require("./speechDialog").mount(app);
   require("./comfyDetect").mount(app);    // 2.622.0: the ComfyUI installed here, when Settings has no folder (lib/comfyDetect.js)   // 2.621.0: the SFX docker's speech / dialog (lib/speechDialog.js)
   require("./basicTmp").mount(app);    // 2.615.0: Basic Settings kept per style in misc/basic_settings.tmp (lib/basicTmp.js)
+  require("./rgbMocap").mount(app);    // 2.869.0: 🕺 RGB MoCap for the timeline (lib/rgbMocap.js - Windows app, FBX / BVH back)
   require("./tlJoin").mount(app);      // 2.612.0: a cut clip's two parts joined into one file (lib/tlJoin.js)
   require("./layerBake").mount(app);   // 2.490.0: baked timeline layers - a parented layer drawn by the page (lib/layerBake.js)     // 2.488.0: Select ▸ Subject with the AI matte - one still (lib/subjectMatte.js)  // 2.485.0: Export As ▸ AVIF - made with ffmpeg on this computer (lib/imgConvert.js)
   require("./quickprompts").mount(app);   // 2.451.0: the prompt docker's quick prompts - quick_prompts.json

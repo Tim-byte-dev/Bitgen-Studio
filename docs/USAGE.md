@@ -9686,6 +9686,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Double-click a cell** to change it (Enter keeps, Esc not, ∅ = NULL), **＋ Row** adds one (blank = the column's default), **🗑** deletes one (asked first) - by the row's primary key, always sent safely. A view, or a table without a primary key, is read only here (⌨ SQL still changes it).
 - **⌨ SQL** runs statements (Ctrl+Enter) and shows the results; DROP / DELETE / UPDATE / TRUNCATE / ALTER are asked first. **⤓ CSV / SQL** downloads a table, **⤓ .sql** the whole database (tables, rows and views), **⤒ .sql** runs a .sql file into it (it stops at the first error and says which).
 
+## 🕺 Motion capture on the timeline with RGB MoCap (2.869.0)
+
+- **Settings ▸ Add-ons ▸ RGB MoCap** installs RGB MoCap by toyxyz - a Windows app that turns a video of a person into editable body animation (PEAR, ExMR, FlowHMR, GVHMR, MAMMA, PromptHMR; foot contacts; retargeting to your own character). bitGen downloads it and runs its own install.cmd (Blender, FFmpeg and its runtimes - about 32 GB free); you pick its models (about 70 GB) in **its** Model Manager. It needs 64-bit Windows and an NVIDIA GPU. The app is MIT; each model keeps its own licence (some are non-commercial - its THIRD_PARTY_NOTICES.md).
+- **🎞 Timeline ▸ 🕺 Mocap**: ① pick the clip (the one under the playhead comes first) and **✂ Prepare the clip** - its used part is cut into the project's mocap folder and the path is copied; ② **▶ Open RGB MoCap** - File ▸ Open Video (paste the path), Reconstruct 3D, then export FBX (or BVH) into that same folder; ③ what you export there is listed - **⤓ To the timeline** adds a 🕺 3D layer at the playhead that plays the animation (a .bvh is turned into an .fbx by Blender first).
+- RGB MoCap has no command line - its own window does the capture, so bitGen prepares the video and brings the result back. FBX / BVH files from anywhere can be dropped into the mocap folder too.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

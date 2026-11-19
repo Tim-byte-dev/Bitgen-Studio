@@ -6310,6 +6310,13 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **雙擊儲存格** 即可修改（Enter 儲存，Esc 取消，∅ = NULL），**＋ 行** 新增一行（留空 = 列的預設值），**🗑** 刪除一行（先詢問）——按行的主鍵，始終安全傳送。檢視或沒有主鍵的表在這裡唯讀（⌨ SQL 仍可修改）。
 - **⌨ SQL** 執行語句（Ctrl+Enter）並顯示結果；DROP / DELETE / UPDATE / TRUNCATE / ALTER 會先詢問。**⤓ CSV / SQL** 下載一個表，**⤓ .sql** 下載整個資料庫（表、行和檢視），**⤒ .sql** 把 .sql 檔案執行到其中（遇到第一個錯誤即停止並說明是哪條）。
 
+## 🕺 用 RGB MoCap 在時間軸上做動作捕捉（2.869.0）
+<!-- en: motion-capture-on-the-timeline-with-rgb-mocap-2-869-0 ead3fe3d7862 -->
+
+- **設定 ▸ 附加元件 ▸ RGB MoCap** 安裝 toyxyz 的 RGB MoCap——一個把人物影片變成可編輯身體動畫的 Windows 應用（PEAR、ExMR、FlowHMR、GVHMR、MAMMA、PromptHMR；腳部接觸；重定向到你自己的角色）。bitGen 下載它並執行它自己的 install.cmd（Blender、FFmpeg 及其執行環境——約需 32 GB 空間）；模型（約 70 GB）在 **它自己的** 模型管理器中選擇。需要 64 位 Windows 和 NVIDIA 顯示卡。應用為 MIT 許可；每個模型保留自己的許可（有些僅限非商業用途——見其 THIRD_PARTY_NOTICES.md）。
+- **🎞 時間軸 ▸ 🕺 動捕**：① 選擇片段（播放頭下的排在最前）並按 **✂ 準備片段**——使用的部分被剪到專案的 mocap 資料夾，路徑已複製；② **▶ 開啟 RGB MoCap**——檔案 ▸ 開啟影片（貼上路徑）、3D 重建，然後把 FBX（或 BVH）匯出到同一個資料夾；③ 匯出到那裡的內容會列出——**⤓ 到時間軸** 在播放頭處加一個播放該動畫的 🕺 3D 圖層（.bvh 先由 Blender 轉成 .fbx）。
+- RGB MoCap 沒有命令列——捕捉在它自己的窗口裡完成，所以 bitGen 負責準備影片並把結果帶回來。別處得到的 FBX / BVH 也可以放進 mocap 資料夾。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -14549,6 +14549,13 @@ node scripts/test-868-live.js > /tmp/t868l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui868-ui.js > /tmp/ui868.log 2>&1 \
   && ok "2.868.0 browser test: 🗄 DB tab on the site's database, a cell changed, ＋ Row, 🗑 asked, ⌨ SQL, DROP asked" \
   || { bad "2.868.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui868.log | head -12; }
+# ---- 2.869.0 (🕺 RGB MoCap on the timeline)
+node scripts/test-869.js > /tmp/t869.log 2>&1 \
+  && ok "2.869.0 RGB MoCap units: Windows only, clone + install.cmd / update.cmd, ffmpeg cut of the used part, results, .fbx copy / .bvh via Blender, paths refused" \
+  || { bad "2.869.0 units"; grep -a "^FAIL" -A1 /tmp/t869.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui869-ui.js > /tmp/ui869.log 2>&1 \
+  && ok "2.869.0 browser test: 🕺 Mocap panel, the clips, ✂ Prepare into mocap/, an export listed, ⤓ = a 🕺 3D layer" \
+  || { bad "2.869.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui869.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
