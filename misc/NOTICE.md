@@ -107,6 +107,7 @@ Blender tools (LODs, UV packing, baking, export, toon, time of day, weather, tur
 | Electron | the optional desktop shell | https://github.com/electron/electron |
 | CadQuery | runs the part code for ✨ Generate in SolidCraft (Settings ▸ Add-ons ▸ CAD generate, its own venv) | https://github.com/CadQuery/cadquery |
 | cadrille | writes that part code from a description or a picture (optional; CAD generate's ticked item) | https://github.com/col14m/cadrille |
+| H3 Character Sheet Designer (ukr8b3g-cmyk) | lays out and writes the Character creator's character sheet (2.870.0 - Settings ▸ Add-ons ▸ H3 Character Sheet Designer clones it into ComfyUI's custom_nodes). Its code is MIT; its mannequin artwork and pictures are outside that licence and are not used or copied by bitGen Studio | https://github.com/ukr8b3g-cmyk/H3-Character-Sheet-Designer |
 
 ComfyUI is **GPL-3.0**; llama.cpp, stable-diffusion.cpp, faster-whisper and
 Electron are **MIT**. The remaining projects — and every custom node pack you

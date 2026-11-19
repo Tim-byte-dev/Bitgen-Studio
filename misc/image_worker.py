@@ -188,57 +188,8 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
     graph = _cimg.load_workflow(str(wf))
     say(f"[worker] workflow {wf.name} ({len(graph)} nodes)")
 
-    # 2.223.12 (by instruction): the H3-Character_creator look-sheet
-    # workflow — Tim's own ComfyUI export, run AS EXPORTED. The generic
-    # patcher would hunt for a positive prompt and inject style text into a
-    # graph whose prompt is built by its own H3LookSheets nodes, so this
-    # branch touches ONLY what must change: both LoadImage slots get the
-    # uploaded character picture, every scalar seed is re-rolled, and BOTH
-    # outputs — the SaveImage sheet AND the SaveVideo turnaround — are
-    # downloaded (saved outputs only; the graph's own previews stay in
-    # ComfyUI's temp).
-    if params.get("h3sheet"):
-        uploaded = []
-        for src in (params.get("images") or []):
-            sp = resolve(cfg["_app_dir"], src)
-            if not Path(sp).exists():
-                fail(f"character picture not found: {sp}")
-            uploaded.append(_comfy.upload_image(base, sp))
-        graph, ireport = _cimg.apply_images(graph, uploaded)
-        for nid, name, how in ireport:
-            say(f"[worker] image slot {nid}: {name if how != 'bypassed' else 'bypassed'}")
-        seed = int(params.get("seed") or 0)
-        if seed > 0:
-            for nid, node in graph.items():
-                ins = node.setdefault("inputs", {})
-                for k in ("seed", "noise_seed"):
-                    if k in ins and not isinstance(ins[k], list):
-                        ins[k] = seed
-                        say(f"[worker] seed -> node {nid}.{k}")
-        say("[worker] ===== chunk 1/1 (H3 look sheet)")
-        _comfy.clear_before_gen(base, cfg, say, graph)
-        pid, outputs = _cprog.run(_comfy, base, graph, say)          # 2.574.0: with its steps
-        imgs = [it for it in _comfy.output_images(outputs)
-                if it.get("type", "output") == "output"]
-        vids = [it for it in _comfy.output_videos(outputs)
-                if it.get("type", "output") == "output"]
-        if not imgs:
-            fail("the H3 look-sheet run finished but produced no saved image — "
-                 "check the workflow's SaveImage node in ComfyUI")
-        produced = []
-        for i, it in enumerate(imgs + vids):
-            ext = Path(str(it.get("filename") or "")).suffix or ".png"
-            name = _iname.reserve(
-                output_dir, _iname.image_name(stem, i, len(imgs) + len(vids)))
-            name = str(Path(name).with_suffix(ext))
-            dest = output_dir / name
-            _comfy.download(base, it, dest)
-            if not dest.exists() or dest.stat().st_size == 0:
-                fail(f"downloaded an empty file for {it.get('filename')}")
-            produced.append(name)
-            say(f"[worker] output {i + 1}/{len(imgs) + len(vids)} written -> {name}")
-        say(f"[worker] {len(imgs)} sheet image(s) + {len(vids)} video(s) complete")
-        return produced
+    # 2.870.0: the H3-Character_creator look-sheet branch (params.h3sheet) is gone - the Character creator's sheet is a
+    # graph job now (lib/charSheetH3.js -> graph_worker.py).
 
     # 2.209.0 (Tim's card: "unet_name 'flux-2-klein-base-9b-fp8.safetensors'
     # not in (list of length 56)" — while the same style renders daily from

@@ -5,8 +5,8 @@
   "html": "dock.html",
   "scripts": [
     "qedit.js",
+    "h3sheet.js",
     "characters.js",
-    "posepick.js",
     "audioseg.js",
     "rendersettings.js",
     "karaoke.js",

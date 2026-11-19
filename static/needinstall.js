@@ -5,7 +5,8 @@
  * needs to be installed show the download/cancel msgbox and download the model instead of asking user to find install"
  *
  *   ensure(which, why) -> Promise<true = installed (now), false = not>   which = demucs | whisper (POST /api/audio/install
- *                 knows them); why = what it is needed for, said in the box. Installed already (GET its status) = true at
+ *                 knows them) | h3sheet (2.870.0 - a Settings ▸ Add-ons add-on: /api/addons/h3sheet/install + /api/addons/job);
+ *                 why = what it is needed for, said in the box. Installed already (GET its status) = true at
  *                 once - the box is never shown for nothing.
  *   THE MESSAGE BOX  the same as the models-not-found one (static/modelsfound.js): what is missing, what it does, its
  *                 size, where it goes. ⬇ Download queues the install (the job the Stems / Speech dockers' Install buttons
@@ -23,6 +24,10 @@
     whisper: { name: "Speech to text (Whisper)", desc: "Hears the words that are sung or spoken.",
       hint: "about 2 GB: PyTorch and faster-whisper, installed once into venvs/whisper; its model comes with the first use",
       status: "/api/asr" },
+    // 2.870.0: an add-on (Settings ▸ Add-ons) - installed by /api/addons/<addon>/install, followed on /api/addons/job
+    h3sheet: { name: "H3 Character Sheet Designer", desc: "Makes the character sheet: the designer's node pack in ComfyUI and the MiniMax H3 Image model that draws it.",
+      hint: "about 28 GB: the node pack (under 1 MB) and MiniMax H3 Image (transformer + VAE) into ComfyUI's models, plus the MiniMax H3 text encoder if the video has not brought it yet; ComfyUI 0.45 or newer, restarted once afterwards",
+      status: "/api/charsheet/h3", addon: "h3sheet" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -57,7 +62,32 @@
     return "";
   }
   /** queue the install and follow its job; resolves {ok, error} */
+  /** 2.870.0: an add-on part - its Settings ▸ Add-ons install, followed line by line; resolves {ok, error} */
+  function installAddon(P, ui) {
+    return root.fetch("/api/addons/" + encodeURIComponent(P.addon) + "/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j.error || !j.ok) throw new Error(j.error || "the install could not be started");
+        log("installing " + P.addon + " (Settings ▸ Add-ons)");
+        var from = 0, lines = [];
+        return new Promise(function (resolve) {
+          (function tick() {
+            if (ui.gone()) { resolve({ ok: false, error: "closed" }); return; }
+            root.fetch("/api/addons/job?from=" + from).then(function (r) { return r.json(); }).then(function (jj) {
+              if (Array.isArray(jj.lines)) { lines = lines.concat(jj.lines).slice(-40); from = jj.next || from; }
+              var t = lastLine(lines), m = /(\d+) %$/.exec(t);
+              ui.progress(m ? +m[1] : null, t);
+              var st = jj.job && jj.job.state;
+              if (st === "done") { resolve({ ok: true }); return; }
+              if (st && st !== "running") { resolve({ ok: false, error: (jj.job.error || "the install failed") }); return; }
+              setTimeout(tick, 1500);
+            }).catch(function () { setTimeout(tick, 2500); });
+          })();
+        });
+      });
+  }
   function install(which, ui) {
+    if (PARTS[which] && PARTS[which].addon) return installAddon(PARTS[which], ui);
     return root.fetch("/api/audio/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ which: which }) })
       .then(function (r) { return r.json(); })
       .then(function (j) {

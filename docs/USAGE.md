@@ -72,8 +72,9 @@ In the **Video** docker's **Characters** section:
   side / back picture) and optionally a **voice clip**. Its `@tag` (e.g.
   `@anna`) is how prompts and the screenplay refer to it.
 - **🖼 NEW** — make a character *from one picture*: upload a photo or a render
-  and a reference sheet is generated (your own pose sheet from the pose_sheets
-  folder, photo or illustrated style), then **Keep** it.
+  and the **H3 Character Sheet Designer** makes its reference sheet (up to 13
+  views - see *Character sheets with the H3 Character Sheet Designer*), then
+  **Keep** it.
 - **🎭 Actors** — choose who is in the current scene; only they ride the
   references and the screenplay.
 - Each character keeps a dataset folder for **RefMod** (identity models),
@@ -9691,6 +9692,32 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Settings ▸ Add-ons ▸ RGB MoCap** installs RGB MoCap by toyxyz - a Windows app that turns a video of a person into editable body animation (PEAR, ExMR, FlowHMR, GVHMR, MAMMA, PromptHMR; foot contacts; retargeting to your own character). bitGen downloads it and runs its own install.cmd (Blender, FFmpeg and its runtimes - about 32 GB free); you pick its models (about 70 GB) in **its** Model Manager. It needs 64-bit Windows and an NVIDIA GPU. The app is MIT; each model keeps its own licence (some are non-commercial - its THIRD_PARTY_NOTICES.md).
 - **🎞 Timeline ▸ 🕺 Mocap**: ① pick the clip (the one under the playhead comes first) and **✂ Prepare the clip** - its used part is cut into the project's mocap folder and the path is copied; ② **▶ Open RGB MoCap** - File ▸ Open Video (paste the path), Reconstruct 3D, then export FBX (or BVH) into that same folder; ③ what you export there is listed - **⤓ To the timeline** adds a 🕺 3D layer at the playhead that plays the animation (a .bvh is turned into an .fbx by Blender first).
 - RGB MoCap has no command line - its own window does the capture, so bitGen prepares the video and brings the result back. FBX / BVH files from anywhere can be dropped into the mocap folder too.
+
+## Character sheets with the H3 Character Sheet Designer
+
+The Character creator's **🪪 Character sheet** (StoryBoard ▸ **🖼 NEW**) makes a character's reference sheet from one
+picture with the **H3 Character Sheet Designer** - ukr8b3g-cmyk's ComfyUI node pack (MIT) - drawn by **MiniMax H3
+Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style) and the pose_sheets folder.
+
+1. Install it once: **Settings ▸ Add-ons ▸ H3 Character Sheet Designer** puts the node pack into ComfyUI's
+   custom_nodes and downloads the MiniMax H3 Image transformer and VAE (the MiniMax H3 text encoder too, if the video
+   has not brought it yet). It needs **ComfyUI 0.45** or newer; restart ComfyUI once afterwards. Not installed yet?
+   **⬇ Install…** in the panel (or ▶ Generate sheet) asks with a Download / Cancel box.
+2. **📂 Load picture** and drag the box over one subject (or **▣ Whole picture**), as before.
+3. **Views**: Standard · 5 views, Basic · 4, Turnaround · 3, Head · 6, Clothing · 2, Single view, All · 13 - or tick
+   your own of the 13 (six head views, three full-body views, clothing front / back, hands, feet).
+4. **Clothing** (as in the picture, pants, skirt or robe, or **No clothing · natural body surface** for an animal or a
+   mascot - the clothing views are left out), **Hands** (bare, gloves), **Feet** (shoes on, no shoes), **Style** (as in
+   the picture, anime, photo, painting styles, 3D render) and **Size** (Standard, High detail, up to 8 or 16 MP, or an
+   exact size).
+5. **Layout guide** sends the designer's layout picture along to place the views (off = its words place them);
+   **Tiled decode** helps when a big sheet stops at the decode.
+6. **Part pictures**: up to three more pictures, each with what it is for - face, head and hair, clothing (front /
+   back), hands, footwear or more of the same character. **✏ Part notes** add words for one part (a scar over the left
+   eye); **✏ View instructions** edit one view's own instruction (**↺ Default** puts it back).
+7. **Layout** draws the sheet's panels and says its size in pixels and megapixels while ComfyUI runs.
+8. **▶ Generate sheet** - every press is a take with a fresh seed; **🧵 Stitch**, **↻ Regenerate** and **✔ Keep** work
+   as before. Your choices are remembered (the part pictures are not).
 
 ## Tips
 

@@ -29,8 +29,7 @@ check("P-H3 Image Edit, one picture: the sampler's guider is still the BasicGuid
 check("…picture 1 in slot 51, slots 52-58 gone and their images.image_N inputs dropped", [r[2] for r in rep] == ["slot"] + ["bypassed"] * 7 and sorted(k for k in g["9"]["inputs"] if k.startswith("images.")) == ["images.image_1"] and not any(str(n) in g for n in range(52, 59)))
 g3, _ = C.apply_images(load("img_ph3_edit.json"), ["a.png", "b.png", "c.png"])
 check("…three pictures: images.image_1-3 kept, the guider kept", sorted(k for k in g3["9"]["inputs"] if k.startswith("images.")) == ["images.image_1", "images.image_2", "images.image_3"] and not bad_links(g3))
-gc, _ = C.apply_images(load("h3_character_creator.json"), ["a.png"])
-check("the character creator's two BasicGuiders kept too (the same bug)", all(gc[s]["inputs"]["guider"][0] in gc and "Guider" in gc[gc[s]["inputs"]["guider"][0]]["class_type"] for s in gc if gc[s]["class_type"] == "SamplerCustomAdvanced"))
+# 2.870.0: the H3-Character_creator workflow is gone (the H3 Character Sheet Designer makes the sheet - lib/charSheetH3.js)
 # every shipped workflow with picture slots: no sampler guider left pointing at a non-guider, no ReferenceLatent of an unused slot left
 broken = []
 for f in sorted(glob.glob(os.path.join(ROOT, "comfy_workflows", "*.json"))):

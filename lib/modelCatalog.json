@@ -38,6 +38,10 @@
       "label": "Images - P-H3 Image (PrunaAI's image model on MiniMax H3; Settings ▸ Add-ons ▸ P-H3 Image)"
     },
     {
+      "id": "h3img",
+      "label": "Images - MiniMax H3 Image (the Character creator's 🪪 Character sheet; Settings ▸ Add-ons ▸ H3 Character Sheet Designer)"
+    },
+    {
       "id": "fibo",
       "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
     },
@@ -1507,6 +1511,26 @@
       "dest": "comfy/text_encoders",
       "size": 6700000000,
       "for": "every P-H3 Image style - turns a short request into the full prompt the model wants (Qwen3.5 9B)"
+    },
+    {
+      "id": "h3img_dit",
+      "group": "h3img",
+      "label": "MiniMax H3 Image transformer (int8)",
+      "repo": "Comfy-Org/MiniMax-H3-Image",
+      "file": "diffusion_models/minimax_h3_image_pruned_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 22500000000,
+      "for": "the Character creator's 🪪 Character sheet (the H3 Character Sheet Designer) - size approximate until the first download"
+    },
+    {
+      "id": "h3img_vae",
+      "group": "h3img",
+      "label": "MiniMax H3 Image VAE (fp16)",
+      "repo": "Comfy-Org/MiniMax-H3-Image",
+      "file": "vae/minimax_h3_image_vae_fp16.safetensors",
+      "dest": "comfy/vae",
+      "size": 5600000000,
+      "for": "the Character creator's 🪪 Character sheet - size approximate until the first download"
     },
     {
       "id": "fibo_edit_w4a8",

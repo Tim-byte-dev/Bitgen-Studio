@@ -3066,11 +3066,7 @@
       el("chSheetPanel").style.display = "block";
       // 2.206.0: the status NAMES the style and its LoRAs ("none" when the
       // style carries none) so a rogue LoRA shows here, not in the render.
-      var chSheetVia = (job.style_name ? " · style: " + job.style_name : "")
-        + (job.loras ? " · LoRAs: " + (job.loras.length
-            ? job.loras.map(function (l) { return l.name; }).join(", ") : "none") : "")
-        + (job.pose_name ? " · pose: " + job.pose_name
-                         : (job.pose_note ? " · " + job.pose_note : ""));
+      var chSheetVia = job.summary ? " · " + job.summary : "";   // 2.870.0: the designer's views and size
       // 2.212.0: the dialog STAYS OPEN and jobs accumulate — this only ADDS
       // a take and makes sure the poll is running.
       chSheetJobs.push({ id: job.id, via: chSheetVia, status: "queued", out: "", kept: "" });
@@ -3090,75 +3086,37 @@
     el("chSheetLoad").addEventListener("click", function () {
       el("chNewPicFile").click();
     });
-    function chSheetOpts() {
-      var sSel = document.getElementById("styleSel");
-      // 2.223.4 (by instruction): "make the label with the style name into
-      // a dropdown with style names that the user can change" — the dialog's
-      // own chSheetStyleSel now decides (2.207.0 made the Prompt dock the
-      // source; it remains the SEED each open, the user changes it here).
-      var dlgSel = el("chSheetStyleSel");
-      return { kind: el("chOptKind").value, gender: el("chOptGender").value,
-               style: el("chOptStyle").value, description: el("chOptDesc").value,
-               pose: el("chOptPose").value,
-               style_id: (dlgSel && dlgSel.value) || (sSel ? sSel.value : "") };
-    }
-    // The DROPDOWN lists every reference-capable style (LoRA count in the
-    // label) from /api/characters/sheetstyles — the same helper sheetgen
-    // reads, so what it says is what renders. Seeded with the Prompt dock's
-    // styleSel each open; when that style cannot take the reference the
-    // first capable one is selected and the hint says why. (2.223.4 — the
-    // old chSheetStyleHint label became this select, by instruction.)
-    function chStyleHint() {
-      var sSel = document.getElementById("styleSel");
-      var seed = sSel ? sSel.value : "";
-      var name = sSel && sSel.selectedIndex >= 0
-        ? sSel.options[sSel.selectedIndex].textContent : "";
-      var sel = el("chSheetStyleSel"), hint = el("chSheetStyleHint");
-      hint.textContent = "";
-      fetch("/api/characters/sheetstyles").then(function (r) { return r.json(); })
-        .then(function (d) {
-          var rows = (d && d.styles) || [];
-          sel.innerHTML = "";
-          rows.forEach(function (row) {
-            var o = document.createElement("option");
-            o.value = row.id;
-            o.textContent = row.name + " · " + (row.loras
-              ? row.loras + " LoRA" + (row.loras > 1 ? "s" : "") : "no LoRAs");
-            sel.appendChild(o);
-          });
-          if (!rows.length) {
-            hint.textContent = "⚠ no reference-capable style installed (Settings → Image)";
-            return;
-          }
-          var seeded = rows.some(function (r2) { return r2.id === seed; });
-          sel.value = seeded ? seed : rows[0].id;
-          if (!seeded && name) hint.textContent =
-            "⚠ the Prompt dock's \"" + name + "\" can't take the reference — using "
-            + rows[0].name;
-        }).catch(function () { hint.textContent = "⚠ style list unavailable"; });
-    }
+    /* 2.870.0 (Tim: "https://github.com/ukr8b3g-cmyk/H3-Character-Sheet-Designer can we integrate this into bitgen, if
+       we can then remove our character designer and use this one"): the sheet's options are the H3 Character Sheet
+       Designer's (ext/videodock/h3sheet.js - window.H3SheetDesign: views, clothing, hands, feet, style, size, layout
+       guide, part pictures and notes) and the take is a /api/charsheet/h3 graph job. Kind / Look / Pose sheet / Render
+       style are gone with the old designer. */
+    function chStyleHint() { if (window.H3SheetDesign) window.H3SheetDesign.refresh(); }
     var chSheetLastOpts = null;
     function chSheetUpload(blob, name) {
-      var fd = new FormData();
-      fd.append("image", blob, name || "subject.png");
-      chSheetLastOpts = chSheetOpts();
-      Object.keys(chSheetLastOpts).forEach(function (k) {
-        if (chSheetLastOpts[k]) fd.append(k, chSheetLastOpts[k]);
-      });
+      var D = window.H3SheetDesign;
+      if (!D) { chSheetSay("the sheet designer did not load - reload the page"); return; }
       el("chSheetPanel").style.display = "block";
-      chSheetSay("uploading " + (name || "the picture") + "…");
-      fetch("/api/characters/sheetgen", { method: "POST", body: fd })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-          el("chNewPicFile").value = "";
-          if (d && d.id) {
-            chSheetInput = d.input || "";
-            if (d.input && chSheetSrcs.indexOf(d.input) < 0) chSheetSrcs.push(d.input);
-            chSheetWatch(d);
-          }
-          else chSheetSay((d && d.error) || "sheet generation failed to start");
-        })
-        .catch(function (e) { chSheetSay("sheet generation failed: " + (e && e.message || e)); });
+      D.ready().then(function (ok) {
+        if (!ok) { chSheetSay("the H3 Character Sheet Designer is not installed yet - Settings ▸ Add-ons ▸ H3 Character Sheet Designer"); return; }
+        var fd = new FormData();
+        fd.append("image", blob, name || "subject.png");
+        chSheetLastOpts = D.appendTo(fd);
+        chSheetSay("uploading " + (name || "the picture") + "…");
+        fetch("/api/charsheet/h3", { method: "POST", body: fd })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            el("chNewPicFile").value = "";
+            if (d && d.id) {
+              chSheetInput = d.input || "";
+              if (d.input && chSheetSrcs.indexOf(d.input) < 0) chSheetSrcs.push(d.input);
+              D.remember(d.refs);
+              chSheetWatch(d);
+            }
+            else { chSheetSay((d && d.error) || "sheet generation failed to start"); D.failed(d); }
+          })
+          .catch(function (e) { chSheetSay("sheet generation failed: " + (e && e.message || e)); });
+      });
     }
     // 2.203.0 (by instruction): pick ONE subject out of a group. A rectangle
     // mask with corner handles over the picture; ✔ composes the picture at
@@ -3563,11 +3521,12 @@
     el("chSheetRegen").addEventListener("click", function () {
       if (!chSheetInput) { chSheetSay("upload a picture first"); return; }
       try { el("chSheetDlg").close(); } catch (er) {}
-      scPost("/api/characters/sheetgen",
-             Object.assign({ file: chSheetInput }, chSheetLastOpts || chSheetOpts()))
+      var D2 = window.H3SheetDesign;
+      scPost("/api/charsheet/h3",
+             Object.assign({ file: chSheetInput }, chSheetLastOpts || (D2 ? D2.body() : {})))
         .then(function (d) {
           if (d && d.id) chSheetWatch(d);
-          else chSheetSay((d && d.error) || "regenerate failed to start");
+          else { chSheetSay((d && d.error) || "regenerate failed to start"); if (D2) D2.failed(d); }
         });
     });
     function chSheetFullscreen() {

@@ -208,9 +208,7 @@ check("routes: the stitch endpoint rides chars.stitchFiles into the OUTPUT dir (
 check("routes: adopt-sheet copies the session's SOURCE pictures into the dataset",
       /for \(const s of \(Array\.isArray\(b\.sources\) \? b\.sources : \[\]\)\)/.test(R2)
       && R2.includes('chars.datasetAdd(name, sp, path.basename(sp), b.project)'));
-check("routes: the 2.223.12 TDZ bug is fixed — `photo` is declared BEFORE the h3charcreator branch that reads it",
-      R2.indexOf('const photo = path.join(core.pDir("images"), refName)')
-      < R2.indexOf('if (b.style_id === "h3charcreator")'));
+// 2.870.0: the 2.223.12 TDZ check went with the old sheetgen route (the H3 Character Sheet Designer makes the sheet)
 
 /* ---- UI PINS (shape — the DOM legs live in test-sceneui) --------------- */
 const SHELL = fs.readFileSync(path.join(__dirname, "..", "static", "index.html"), "utf8");

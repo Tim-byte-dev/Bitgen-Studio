@@ -25,11 +25,8 @@ const framePlan = require("../lib/framePlan");
 const tlspan = require("../lib/timelineSpan");
 const timelines = require("../lib/timelines");
 const chapterRefs = require("../lib/chapterRefs");
-const sheetStyles = require("../lib/sheetStyles");   // 2.206.0: wraps imageRefs for the sheet path
-const poseSheets = require("../lib/poseSheets");     // 2.577.0: the user's pose sheets (pose_sheets/)
 const clothing = require("../lib/clothing");         // 2.224.0: the scene-mention clothing resolver
 const refmods = require("../lib/refmods");           // 2.225.0: H3 identity mods from the dataset
-const imageSeed = require("../lib/imageSeed");
 const tempLoras = require("../lib/tempLoras");
 const renderSettings = require("../lib/renderSettings");   // 2.312.0: the video docker's ⚙
 const h3Long = require("../lib/h3Long");                     // 2.503.0: Long video - one H3 run up to 30 s
@@ -2839,209 +2836,16 @@ function mount(app) {
       res.json({ ok: true, ...r, refs: chapterRefs.load(b.project) });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
-  // CHARACTER SHEET FROM ONE PICTURE (2.199.0, by instruction: "i upload a
-  // picture and it generates the character sheet, i will have option to
-  // regenerate or add to characters"). One route owns THE prompt; the job is
-  // the same Klein reference-edit image job /api/genimage queues, so the
-  // queue, the gallery and the stubs all treat it as any other still.
-  // 2.201.0 (Tim: "will the character sheet work with animals as well as
-  // humans?") — the MODEL always could; the PROMPT could not: "this exact
-  // person ... neutral A-pose ... head-and-shoulders ... same clothing"
-  // degrades a horse or a car. Subject-neutral now, and b.subject ("a
-  // horse", "a red pickup truck") pins it outright when given. The rest of
-  // the pipeline was already ready: the character editor's TYPE dropdown
-  // (person/animal/vehicle) and subjectDefinition handle non-humans.
-  const SHEET_PROMPT = "Create a character reference sheet of this exact "
-    + "subject: a full-body front view, a full-body side view and a "
-    + "full-body back view in a natural, neutral standing stance for this "
-    + "kind of subject, plus a close-up front portrait of the head or face "
-    + "and a close-up side-profile portrait, arranged in clean panels on a "
-    + "flat grey background. Identical subject in every panel — same face "
-    + "or markings, same colors, same fur and surface details, and exactly "
-    + "what the subject wears or carries in the source picture, if anything "
-    + "— nothing added, nothing removed, nothing substituted — "
-    + "consistent proportions, concept-art style.";
-  // 2.207.0 (Tim: "the current renders might be using the character sheet
-  // like an image to image or lineart controlnet holding onto the shapes
-  // instead of just the poses ... and artifacts from the reference image is
-  // in the sheet"): with a pose template riding SLOT 1 — the image being
-  // edited — the render anchors layout and poses to black line figures, and
-  // the photo (slot 2) contributes IDENTITY ONLY. The prompt has to say all
-  // of that out loud or the model happily edits the photo anyway.
-  // 2.577.0: the pose sheet is the user's own picture (any layout, any
-  // drawing style), so the prompt names no fixed panels.
-  const SHEET_PROMPT_POSED = "The first picture is a pose sheet for a "
-    + "character reference sheet: its panels, each with a figure in a pose "
-    + "and a camera angle. The second picture shows the subject. Redraw the "
-    + "pose sheet as a finished character reference sheet of that exact "
-    + "subject: keep the pose sheet's panel layout and the pose and camera "
-    + "angle in every panel, but replace each figure with the subject, fully "
-    + "rendered. Take ONLY identity from the second picture — the same face "
-    + "or markings, colors, fur and surface details, and EXACTLY what the "
-    + "subject wears or carries in the second picture, if anything: nothing "
-    + "added, nothing removed, nothing substituted. If the subject wears or "
-    + "carries nothing in the second picture, it wears and carries nothing "
-    + "here either. Never take the second picture's "
-    + "pose, camera angle, lighting, background or composition. Do not keep "
-    + "the pose sheet's drawing style or its figures' own looks, and do not carry any background or artifacts "
-    + "from the second picture into the sheet. Identical subject in every "
-    + "panel, consistent proportions, on a flat grey background.";
-  // 2.206.0: the dialog's image-style dropdown. Every sheet-capable image
-  // style with its live LoRA count and names — the same helper sheetgen
-  // picks from, so the dropdown can never disagree with the render.
+  /* 2.870.0 (Tim: "https://github.com/ukr8b3g-cmyk/H3-Character-Sheet-Designer can we integrate this into bitgen, if we can
+     then remove our character designer and use this one"): the sheet from one picture is made by the H3 Character Sheet
+     Designer now - routes/charSheetH3.js, lib/charSheetH3.js. The Klein / H3-Character_creator sheet prompts, the
+     sheet-style list (/api/characters/sheetstyles) and /api/characters/sheetgen are gone, and so are the pose sheets. */
   // 2.223.7: the character creator's strip — THIS character's generations
   app.get("/api/characters/gens", (req, res) =>
     res.json({ gens: chars.gensList(String((req.query || {}).name || "")) }));
   app.post("/api/characters/gens", (req, res) => {
     const b = req.body || {};
     res.json({ gens: chars.gensAdd(String(b.name || ""), b.add) });
-  });
-  app.get("/api/characters/sheetstyles", (_req, res) => {
-    try { res.json({ styles: sheetStyles.list(core.STYLES_DIR, core.BASE).concat([{ id: "h3charcreator", name: "H3-Character_creator", loras: 0, video: true }]) }); }
-    catch (e) { res.status(500).json({ error: e.message }); }
-  });
-  app.post("/api/characters/sheetgen", upload.single("image"), (req, res) => {
-    const b = req.body || {};
-    let refName;
-    if (req.file && (req.file.path || req.file.buffer)) {
-      const ext = (path.extname(req.file.originalname || "") || ".png").toLowerCase();
-      refName = `charsheet-${Date.now().toString(36)}${ext}`;
-      fs.mkdirSync(core.pDir("images"), { recursive: true });
-      if (req.file.buffer)
-        fs.writeFileSync(path.join(core.pDir("images"), refName), req.file.buffer);
-      else fs.copyFileSync(req.file.path, path.join(core.pDir("images"), refName));
-    } else if (b.file) {                       // REGENERATE reuses the upload
-      refName = path.basename(String(b.file));
-      if (!fs.existsSync(path.join(core.pDir("images"), refName)))
-        return res.status(400).json({ error: `reference ${refName} is not in this project's Images assets any more — upload the picture again` });
-    } else return res.status(400).json({ error: "upload a picture of the character" });
-    // 2.224.0 FIX: this const lived BELOW the h3charcreator branch that
-    // reads it — a temporal-dead-zone ReferenceError killed every
-    // H3-Character_creator render since 2.223.12. Declared before first use.
-    const photo = path.join(core.pDir("images"), refName);
-    // 2.206.0 (Tim: "hybrid horses ... only load loras when there are loras
-    // in the style"): the style decision — the chosen one, else the first
-    // that swaps to its edit sibling — and the LoRA report both live in
-    // lib/sheetStyles.js, the same helper the dialog's dropdown reads, so
-    // what renders is what the dropdown SAID would render. The patcher
-    // already bypasses every slot a LoRA-less style leaves empty; the rogue
-    // LoRAs came from the alphabetical auto-pick landing on a style that
-    // carried some, invisibly.
-    /* 2.223.12 (by instruction): the H3-Character_creator option — Tim's
-       own tested ComfyUI export (comfy_workflows/h3_character_creator.json),
-       run AS EXPORTED by the worker's h3sheet branch: the character picture
-       fills BOTH LoadImage slots (person + outfit described from the same
-       photo), seeds re-roll, and the job returns the look-sheet PNG plus
-       the SaveVideo turnaround. Offered ONLY through the sheet dialog's
-       sheetstyles listing, nowhere else, per the instruction. */
-    if (b.style_id === "h3charcreator") {
-      if ((core.getConfig().engine || {}).backend !== "comfy")
-        return res.status(400).json({ error:
-          "H3-Character_creator renders on the ComfyUI engine — switch it on "
-          + "in Settings → ComfyUI → Engine" });
-      const p2 = { mode: "image", h3sheet: true, prompt: "",
-                   style: { id: "h3charcreator", name: "H3-Character_creator",
-                            engine: "comfy",
-                            workflow: "comfy_workflows/h3_character_creator.json" },
-                   style_id: "h3charcreator", style_name: "H3-Character_creator",
-                   batch: 1, images: [photo, photo] };
-      const rolled2 = imageSeed.forRequest(styles.numOrNull(b.seed));
-      p2.seed = rolled2.seed; p2.seed_random = rolled2.random;
-      const job2 = core.makeJob(p2);
-      job2.chunk = { i: 0, n: 1 };
-      return res.json(Object.assign(core.jobDict(job2),
-        { input: refName, style_id: "h3charcreator",
-          style_name: "H3-Character_creator", h3video: true }));
-    }
-    const picked = sheetStyles.pick(core.STYLES_DIR, core.BASE, b.style_id);
-    if (!picked) return res.status(400).json({ error:
-      "no reference-capable image style is installed — a FLUX.2 Klein 9B "
-      + "style (Settings → Image) is what turns one picture into a sheet" });
-    const { style, styled, loras } = picked;
-    const subject = String(b.subject || "").trim().slice(0, 120);
-    // 2.205.0 (Tim: "creating furries instead of animals and only
-    // cartoons") — explicit options drive the prompt. kind kills the
-    // anthropomorphizing outright; style kills the cartoon default that
-    // "concept-art style" invited.
-    const KINDS = {
-      person: "The subject is a human person.",
-      animal: "The subject is a REAL animal with natural anatomy — NOT "
-        + "anthropomorphic, NOT a furry character, no human traits. The "
-        + "subject wears or carries NOTHING unless the source picture shows "
-        + "it; whatever the source picture shows stays on the animal exactly "
-        + "as shown, and nothing else is ever added. Natural stance for "
-        + "the species.",
-      vehicle: "The subject is a vehicle — exterior views, true "
-        + "proportions.",
-      object: "The subject is an inanimate object — true proportions and "
-        + "materials.",
-    };
-    const STYLES_TXT = {
-      photo: "Photorealistic photograph style: natural lighting, realistic "
-        + "skin, fur and material textures, shallow studio look. NOT a "
-        + "cartoon, NOT an illustration.",
-      "2.5d": "High-quality stylized 2.5D 3D-render style: soft shading, "
-        + "realistic proportions with gentle stylization.",
-      anime: "Clean anime illustration style: crisp line work, cel "
-        + "shading.",
-    };
-    const kind = KINDS[String(b.kind || "").toLowerCase()] || "";
-    const styleTxt = STYLES_TXT[String(b.style || "").toLowerCase()] || "";
-    const gender = String(b.gender || "").trim().slice(0, 60);
-    const desc = String(b.description || "").trim().slice(0, 300);
-    // 2.577.0: the pose sheet - the user's own picture in pose_sheets/, picked
-    // in the creator's 🧍 Pose sheet dialog (b.pose = its id); "" / "none" = none.
-    const pose = poseSheets.pick(b.pose);
-    let images = pose ? [pose.file, photo] : [photo];
-    // The template only helps when the render workflow can take BOTH
-    // pictures; with fewer than two slots the photo keeps its ride
-    // (identity beats layout) and the prompt falls back with it.
-    let rw = sheetStyles.probe(styled, core.BASE, images.length);
-    let poseNote = "";
-    let posed = !!pose;
-    if (pose && (!rw || (rw.slots | 0) < 2)) {
-      posed = false; images = [photo];
-      poseNote = `pose sheet "${pose.name}" skipped — the render workflow `
-        + `has ${rw ? (rw.slots | 0) : 0} reference slot(s), two are needed`;
-      rw = sheetStyles.probe(styled, core.BASE, 1);
-    }
-    // A style that cannot take ANY reference would silently render text-to-
-    // image and ignore the uploaded picture — refuse instead, now that any
-    // style in the Prompt dock's dropdown can be sent here (2.207.0).
-    if (!rw || (!rw.swapped && (rw.slots | 0) < 1)) return res.status(400).json({
-      error: `style "${style.name}" cannot take the reference picture — `
-        + "pick a FLUX.2 Klein 9B style or one whose workflow has LoadImage "
-        + "slots (Settings → Image)" });
-    const sheetPrompt =
-      (posed ? SHEET_PROMPT_POSED : SHEET_PROMPT.replace(", concept-art style.", "."))
-      + (kind ? " " + kind : "")
-      + (gender ? ` The subject's gender: ${gender}.` : "")
-      + (subject ? ` The subject is ${subject}.` : "")
-      + (desc ? ` Details: ${desc}` + (/[.!?]$/.test(desc) ? "" : ".") : "")
-      + (styleTxt ? " " + styleTxt : "");
-    const p = { mode: "image", prompt: sheetPrompt,
-                style: styled, style_id: style.id, style_name: style.name,
-                width: 1664, height: 944, batch: 1,
-                images };
-    if (rw.swapped) { p.workflow = rw.workflow; p.workflow_note = rw.note; }
-    else if (rw.note) p.workflow_note = rw.note;
-    if (poseNote) p.pose_note = poseNote;
-    const rolled = imageSeed.forRequest(styles.numOrNull(b.seed));
-    p.seed = rolled.seed; p.seed_random = rolled.random;
-    const job = core.makeJob(p);
-    job.chunk = { i: 0, n: 1 };
-    // The response SAYS which style rendered and which LoRAs will load —
-    // "none" when the style carries none — so a rogue LoRA is visible in
-    // the dialog's status line instead of only in a hybrid render.
-    res.json(Object.assign(core.jobDict(job),
-                           { input: refName, sheet_prompt: sheetPrompt,
-                             style_id: style.id || null, style_name: style.name,
-                             pose_id: posed ? pose.id : null,
-                             pose_name: posed ? pose.name : null,
-                             pose_note: poseNote || null,
-                             loras: loras.map((l) => ({
-                               name: l.path.split(/[\\/]/).pop(),
-                               weight: l.weight })) }));
   });
   // ADD TO CHARACTERS: the rendered sheet becomes a character's first
   // reference sheet — addAsset creates the profile when it is new, and the

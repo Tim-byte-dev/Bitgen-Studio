@@ -9923,12 +9923,6 @@ node scripts/test-refmods.js > /tmp/refmods.log 2>&1 \
 node scripts/test-clothing.js > /tmp/clothing.log 2>&1 \
   && ok "clothing: the mention resolver (select/inherit/replace), the dataset landing points, the stitch extraction, the chain leg" \
   || { bad "clothing: 2.224.0 multi-sheet/clothing/dataset tests"; tail -14 /tmp/clothing.log; }
-node scripts/test-sheetstyles.js > /tmp/sheetstyles.log 2>&1 \
-  && ok "sheet styles: eligibility + live-LoRA report agree with the patcher, and the alphabetical auto-pick trap is demonstrated" \
-  || { bad "sheet styles: lib/sheetStyles.js tests"; tail -14 /tmp/sheetstyles.log; }
-node scripts/test-posesheets.js > /tmp/posesheets.log 2>&1 \
-  && ok "pose sheets: all six line-drawing templates ship, the kind is authoritative, species words refine, vehicles get none" \
-  || { bad "pose sheets: lib/poseSheets.js tests"; tail -14 /tmp/posesheets.log; }
 python3 scripts/test-comfyrepair.py > /tmp/comfyrepair.log 2>&1 \
   && ok "comfy repairs: swap inherits PROVEN loader names (LoraLoader excluded, ambiguity left alone) and required inputs fill from the server's own defaults" \
   || { bad "comfy repairs: scripts/test-comfyrepair.py"; tail -14 /tmp/comfyrepair.log; }
@@ -10187,113 +10181,36 @@ def png(p):
     open(p,'wb').write(raw+ch(b'IHDR',ihdr)+ch(b'IDAT',idat)+ch(b'IEND',b''))
 png('/tmp/e2e_face.png')
 "
-# 2.577.0: pose sheets are the user's own files in pose_sheets/ - one is put there and picked by its file name
-mkdir -p pose_sheets && cp scripts/fixtures/sample-animal.png pose_sheets/e2e_horse.png
-SG=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -F "image=@/tmp/e2e_face.png" -F "kind=animal" -F "style=photo" -F "gender=female" -F "description=a chestnut mare" -F "pose=e2e_horse.png")
-# 2.206.0: the dropdown endpoint — E2E Klein must be listed as sheet-capable
-# (its t2i swaps to the edit sibling) carrying ZERO LoRAs.
-SS=$(curl -sf http://127.0.0.1:8311/api/characters/sheetstyles)
-echo "$SS" | python3 -c "
-import json,sys; rows=json.load(sys.stdin)['styles']
-r=[x for x in rows if x['name']=='E2E Klein']
-assert r and r[0]['swapped'] is True and r[0]['loras']==0 and r[0]['lora_names']==[], rows
-" \
-  && ok "sheetstyles: the dialog's dropdown lists E2E Klein as sheet-capable with ZERO LoRAs" \
-  || bad "sheetstyles listing wrong: $(echo "$SS" | head -c 300)"
-SGID=$(echo "$SG" | jget "['id']" 2>/dev/null)
-SGIN=$(echo "$SG" | jget "['input']" 2>/dev/null)
-for i in $(seq 1 120); do
-  s=$(curl -sf "http://127.0.0.1:8311/api/jobs/$SGID" | jget "['status']")
-  [ "$s" = done ] || [ "$s" = failed ] && break; sleep 1
-done
-SGOUT=$(curl -sf "http://127.0.0.1:8311/api/jobs/$SGID" | python3 -c "import json,sys,os; print(os.path.basename(json.load(sys.stdin).get('output') or ''))")
-{ [ "$s" = done ] && [ -n "$SGOUT" ] || { bad "sheetgen STEP-0 (render) failed: status '$s' out '$SGOUT'"; false; }; } \
-  && printf '%s' "$SG" > /tmp/sg1.json \
-  && python3 -c "
-import json; import sys; sys.stdin = open('/tmp/sg1.json')
+# 2.870.0: the sheet is made by the H3 Character Sheet Designer in ComfyUI (routes/charSheetH3.js) - this stub runs no
+# ComfyUI, so: the catalog, the layout preview says ComfyUI is off, a take is refused in words on another engine; a take
+# file in the project's output then goes through ✔ adopt, 💾 keep and the drop-attach exactly as before.
+H3C=$(curl -sf http://127.0.0.1:8311/api/charsheet/h3)
+echo "$H3C" | python3 -c "
+import json,sys; d=json.load(sys.stdin); c=d['catalog']
+assert len(c['views'])==13 and [p['id'] for p in c['presets']][0]=='five' and 'installed' in d, d.keys()
+" && ok "2.870.0 the sheet designer's catalog: 13 views, the presets, installed or not" || bad "charsheet catalog wrong: $(echo "$H3C" | head -c 300)"
+H3P=$(curl -s -X POST http://127.0.0.1:8311/api/charsheet/h3/preview -H 'Content-Type: application/json' -d '{"choices":{"views":["face_front","body_front"]}}')
+echo "$H3P" | python3 -c "
 import json,sys; d=json.load(sys.stdin)
-assert d.get('input','').startswith('charsheet-'), d.get('input')
-assert 'reference sheet' in d.get('sheet_prompt',''), 'the canonical prompt must ride the response'
-# 2.201.0: subject-neutral wording — no 'person', no 'A-pose' — so animals
-# and vehicles sheet as well as humans
-assert 'A-pose' not in d.get('sheet_prompt',''), d.get('sheet_prompt')
-# 2.205.0: the options drive the prompt — animal forbids furries outright,
-# photo forbids the cartoon default, gender and description ride verbatim
-sp=d.get('sheet_prompt','')
-assert 'NOT a furry character' in sp and 'Photorealistic photograph style' in sp, sp
-assert 'gender: female' in sp and 'a chestnut mare' in sp, sp
-# 2.206.0 (hybrid horses): the response NAMES the style and reports the LoRAs
-# that will load — the E2E Klein style carries none, so NONE may load.
-assert d.get('style_name') == 'E2E Klein', ('the sheet must SAY which style renders it', d.get('style_name'))
-assert isinstance(d.get('loras'), list) and d['loras'] == [], ('a LoRA-less style must load NO LoRAs', d.get('loras'))
-# 2.577.0: the picked pose sheet (pose_sheets/e2e_horse.png) rides SLOT 1
-# (the image being edited) so the render anchors to its poses, and the photo
-# rides slot 2, identity only.
-assert d.get('pose_id') == 'e2e_horse.png' and d.get('pose_name') == 'e2e_horse', (d.get('pose_id'), d.get('pose_note'))
-assert 'The first picture is a pose sheet' in sp and 'pose, camera angle' in sp, sp
-# 2.211.0 (Tim: characters came out wearing hats/glasses/a harness he never
-# asked for): naming items as examples PRIMES the model into drawing them —
-# the prompts must keep the keep-what-is-there rule while naming NO item
-assert 'nothing added, nothing removed, nothing substituted' in sp, sp
-assert 'wears and carries nothing' in sp and 'nothing else is ever added' in sp, sp
-assert 'saddle' not in sp and 'harness' not in sp and 'glasses' not in sp and 'bridle' not in sp, sp
-imgs = (d.get('params') or {}).get('images') or []
-assert len(imgs) == 2 and imgs[0].replace(chr(92), '/').endswith('pose_sheets/e2e_horse.png'), imgs
-assert imgs[1].replace(chr(92), '/').endswith(d.get('input','')), imgs
-" 2>/tmp/sheet1.err || { bad "sheetgen STEP-1 (submit asserts) failed: $(tail -c 400 /tmp/sheet1.err) ·· $(echo "$SG" | head -c 120)"; false; } \
-  && { RG2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -H 'Content-Type: application/json' \
-       -d "{\"file\":\"$SGIN\",\"subject\":\"a rearing chestnut horse\",\"style_id\":\"$KSID\",\"pose\":\"none\"}"); echo "$RG2" | python3 -c "
-import json,sys; d=json.load(sys.stdin)
-assert d.get('id') and d.get('input'), ('regenerate did not queue', d)
-assert 'The subject is a rearing chestnut horse.' in d.get('sheet_prompt',''), d.get('sheet_prompt')
-# 2.206.0: an explicit style_id is honored and echoed back
-assert d.get('style_id') == '$KSID' and d.get('style_name') == 'E2E Klein', (d.get('style_id'), d.get('style_name'))
-# 2.207.0: pose='none' switches the template OFF — one reference, the plain
-# prompt, and the response says no pose rode
-assert d.get('pose_id') is None, d.get('pose_id')
-assert 'natural, neutral standing stance' in d.get('sheet_prompt','') and 'The first picture is a pose sheet' not in d.get('sheet_prompt',''), d.get('sheet_prompt')
-imgs=(d.get('params') or {}).get('images') or []
-assert len(imgs)==1, imgs
-" || { bad "sheetgen STEP-2 (regenerate) failed: $(echo "$RG2" | head -c 300)"; false; }; rm -f pose_sheets/e2e_horse.png; } \
-  && { AD2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/adopt-sheet -H 'Content-Type: application/json' \
+assert d.get('offline') or d.get('nopack') or d.get('panels'), d
+assert d.get('summary','').startswith('2 views'), d
+" && ok "2.870.0 the layout preview answers without ComfyUI (offline + the summary)" || bad "charsheet preview: $(echo "$H3P" | head -c 300)"
+H3G=$(curl -s -X POST http://127.0.0.1:8311/api/charsheet/h3 -F "image=@/tmp/e2e_face.png" -F 'choices={"views":["body_front"]}')
+echo "$H3G" | grep -q "ComfyUI" && ok "2.870.0 a sheet take on another engine is refused in words" || bad "charsheet take: $(echo "$H3G" | head -c 300)"
+SGP0=$(curl -sf http://127.0.0.1:8311/api/scenes | python3 -c "import json,sys; print(json.load(sys.stdin).get('project') or 'default')")
+mkdir -p "projects/$SGP0/output" && cp /tmp/e2e_face.png "projects/$SGP0/output/e2e_sheet_take.png"
+SGOUT=e2e_sheet_take.png
+{ AD2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/adopt-sheet -H 'Content-Type: application/json' \
        -d "{\"name\":\"Sheet Guy\",\"file\":\"$SGOUT\"}"); echo "$AD2" | python3 -c "
 import json,sys; d=json.load(sys.stdin)
 assert d.get('ok') is True and d['profile']['images'], d
 assert 'sheet' in d['file'], d['file']
-" || { bad "sheetgen STEP-3 (adopt) failed: $(echo "$AD2" | head -c 300)"; false; }; } \
+" || { bad "sheet STEP-3 (adopt) failed: $(echo "$AD2" | head -c 300)"; false; }; } \
   && { CL2=$(curl -sf http://127.0.0.1:8311/api/characters); echo "$CL2" | python3 -c "
 import json,sys; cs=json.load(sys.stdin)['characters']
 g=[c for c in cs if 'Sheet' in c['name']]
 assert g and g[0]['images'], ('adopted character missing', [c['name'] for c in cs])
-" || { bad "sheetgen STEP-4 (cast list) failed: $(echo "$CL2" | head -c 300)"; false; }; } \
-  && ok "character from one picture: upload -> Klein-edit sheet renders -> regenerate requeues -> ✔ adopt creates the character WITH the sheet"
-# 2.212.0 (by instruction: "keep the dialog open when generating image, allow
-# the user to generate multiple images and save images they like ... allow
-# user to drag images from gallery or reference images or asset images").
-# Server side that means: EVERY press queues its OWN job with its OWN fresh
-# seed (two presses = two jobs, both logged), a liked take ADOPTS into the
-# project's Images assets (the keeper marking — never a re-save), and the
-# editor's drop-attach endpoint files an EXISTING Images asset onto a
-# character WITHOUT re-uploading bytes. A name that is nowhere refuses in
-# words. Uses STEP-0's SGIN/SGID/SGOUT and the Sheet Guy cast entry above.
-SG2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -H 'Content-Type: application/json' \
-  -d "{\"file\":\"$SGIN\",\"style_id\":\"$KSID\",\"pose\":\"none\"}")
-SG2ID=$(echo "$SG2" | jget "['id']" 2>/dev/null)
-s2=""
-for i in $(seq 1 120); do
-  [ -n "$SG2ID" ] || break
-  s2=$(curl -sf "http://127.0.0.1:8311/api/jobs/$SG2ID" | jget "['status']")
-  [ "$s2" = done ] || [ "$s2" = failed ] && break; sleep 1
-done
-{ [ -n "$SG2ID" ] && [ "$SG2ID" != "$SGID" ] && [ "$s2" = done ] \
-    || { bad "multi-take STEP-A (second press) failed: id '$SG2ID' vs first '$SGID', status '$s2' ·· $(echo "$SG2" | head -c 200)"; false; }; } \
-  && { echo "$SG2" | python3 -c "
-import json,sys; d=json.load(sys.stdin)
-p=d.get('params') or {}
-# a second press is NOT a repeat: the request rolled its own fresh seed
-assert p.get('seed_random') is True, ('every press rolls its OWN fresh seed', p.get('seed'), p.get('seed_random'))
-assert isinstance(p.get('seed'), int), p.get('seed')
-" || { bad "multi-take STEP-A (fresh seed) failed: $(echo "$SG2" | head -c 200)"; false; }; } \
+" || { bad "sheet STEP-4 (cast list) failed: $(echo "$CL2" | head -c 300)"; false; }; } \
   && { KP=$(curl -s -X POST http://127.0.0.1:8311/api/passets/adopt -H 'Content-Type: application/json' \
        -d "{\"name\":\"$SGOUT\",\"kind\":\"images\"}"); KPN=$(echo "$KP" | jget "['name']" 2>/dev/null);
        [ -n "$KPN" ] || { bad "multi-take STEP-B (keeper adopt) failed: $(echo "$KP" | head -c 200)"; false; }; } \
@@ -10312,7 +10229,8 @@ assert len((d.get('profile') or {}).get('images') or []) >= 2, ('drop-attach mus
        -H 'Content-Type: application/json' -d '{"file":"never-there.png"}' \
        | grep -q "not in this project" \
        || { bad "multi-take STEP-D (a missing file must refuse in words)"; false; }; } \
-  && ok "multi-take sheets: two presses = two logged jobs with fresh seeds, 💾 adopts the keeper into Images assets, and drop-attach files it onto the character without re-upload"
+  && ok "a sheet take: ✔ adopt makes the character WITH the sheet, 💾 keeps it in Images assets, drop-attach files it onto the character without re-upload"
+rm -f "projects/$SGP0/output/e2e_sheet_take.png"
 curl -s -X DELETE "http://127.0.0.1:8311/api/characters/Sheet%20Guy" > /dev/null 2>&1 || true
 # ---- 2.216.0 (by instruction): ids, the 🎭 cast, and the writer's RAG -----
 # Every character carries a unique id (its FOLDER name); persona/backstory
@@ -12333,13 +12251,7 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui576-ui.js > /tmp/ui576.log 2>&
   && ok "2.576.0 browser test: 🧩 To model… picks the model the picture was made with, copies it with its prompt / seed and makes it the thumbnail; Ctrl+↓ on a model's picture; Ctrl+↓ elsewhere opens the picker; reading 45% chip - or SKIP without playwright" \
   || { bad "2.576.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui576.log | head -14; }
 
-# ---- 2.577.0 (the user's own pose sheets: pose_sheets/ + the Character creator's 🧍 Pose sheet dialog)
-node scripts/test-posesheets.js > /tmp/ps577.log 2>&1 \
-  && ok "2.577.0 units (pose_sheets/ list / file / pick - sub-folders, no traversal; the built-in templates gone; posepick label / filter; /api/pose-sheets routes; sheetgen uses the pick; never zipped or committed)" \
-  || { bad "2.577.0 units"; grep -a "^FAIL" -A2 /tmp/ps577.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui577-ui.js > /tmp/ui577.log 2>&1 \
-  && ok "2.577.0 browser test: 🧍 Pose sheet - thumbnails of pose_sheets/ (sub-folders), ↻ Refresh, search, pick + ✔ Use -> #chOptPose + the button, remembered over a reload, No pose sheet by double click - or SKIP without playwright" \
-  || { bad "2.577.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui577.log | head -14; }
+# ---- 2.577.0 the user's own pose sheets: gone in 2.870.0 (the H3 Character Sheet Designer makes the sheet)
 
 # ---- 2.578.0 (the 📐 SolidCraft docker: SolidCraft's browser build as an add-on + the bridge)
 node scripts/test-solidcraft578.js > /tmp/sc578.log 2>&1 \
@@ -14556,6 +14468,16 @@ node scripts/test-869.js > /tmp/t869.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui869-ui.js > /tmp/ui869.log 2>&1 \
   && ok "2.869.0 browser test: 🕺 Mocap panel, the clips, ✂ Prepare into mocap/, an export listed, ⤓ = a 🕺 3D layer" \
   || { bad "2.869.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui869.log | head -12; }
+# ---- 2.870.0 (🪪 character sheets by the H3 Character Sheet Designer)
+node scripts/test-870.js > /tmp/t870.log 2>&1 \
+  && ok "2.870.0 units: the designer's state (whitelisted, 32s, caps, No clothing), model names from ComfyUI's lists, readiness in words, the graph wiring, the add-on with fakes, the lists, the old designer gone" \
+  || { bad "2.870.0 units"; grep -a "^FAIL" -A1 /tmp/t870.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-870-live.js > /tmp/t870l.log 2>&1 \
+  && ok "2.870.0 live (a stand-in ComfyUI): the catalog, the pack's preview, a take as a graph job, ↻ by the kept names, 409 / 400 / 503 in words" \
+  || { bad "2.870.0 live"; grep -a "^FAIL" -A1 /tmp/t870l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui870-ui.js > /tmp/ui870.log 2>&1 \
+  && ok "2.870.0 browser test: the designer's panel, the layout drawn, presets / ticks / No clothing, a part picture + role, notes + view instructions, ⬇ Install… box, ▶ Generate posts the take, remembered" \
+  || { bad "2.870.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui870.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -189,28 +189,13 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
     const RTS = fsx.readFileSync(px.join(__dirname, "..", "routes", "characters.js"), "utf8");
     const IW = fsx.readFileSync(px.join(__dirname, "..", "misc", "image_worker.py"), "utf8");
     const CC = fsx.readFileSync(px.join(__dirname, "..", "scripts", "comfy_client.py"), "utf8");
-    check("2.223.12: the workflow ships and IS Tim's export (both LoadImages, SaveImage + SaveVideo, LookSheets nodes)",
-          (() => { const g = JSON.parse(fsx.readFileSync(px.join(__dirname, "..",
-                     "comfy_workflows", "h3_character_creator.json"), "utf8"));
-                   const cts = Object.values(g).map((n) => n.class_type);
-                   return cts.includes("SaveVideo") && cts.includes("SaveImage")
-                       && cts.filter((x) => x === "LoadImage").length === 2
-                       && cts.includes("H3LookSheetsSelectFrames"); })());
-    check("2.223.12: offered ONLY through the sheet dialog's sheetstyles listing, nowhere else",
-          /concat\(\[\{ id: "h3charcreator"/.test(RTS)
-          && !/h3charcreator/.test(fsx.readFileSync(px.join(__dirname, "..", "routes", "index.js"), "utf8"))
-          && !/h3charcreator/.test(fsx.readFileSync(px.join(__dirname, "..", "lib", "styles.js"), "utf8")));
-    check("2.223.12: sheetgen branches — comfy engine required, both LoadImage slots get the picture, synthetic style carries the workflow",
-          /b\.style_id === "h3charcreator"/.test(RTS)
-          && /images: \[photo, photo\]/.test(RTS)
-          && /workflow: "comfy_workflows\/h3_character_creator\.json"/.test(RTS)
-          && /switch it on/.test(RTS));
-    check("2.223.12: the worker runs the export AS-IS — no patcher, seeds re-rolled via setdefault, saved outputs only",
-          /params\.get\("h3sheet"\)/.test(IW)
-          && /node\.setdefault\("inputs", \{\}\)/.test(IW)
-          && /output_videos/.test(IW)
-          && /it\.get\("type", "output"\) == "output"/.test(IW)
-          && /def output_videos/.test(CC));
+    check("2.870.0: the H3-Character_creator look sheet is gone - no workflow, no sheetgen / sheetstyles routes, no worker branch",
+          !fsx.existsSync(px.join(__dirname, "..", "comfy_workflows", "h3_character_creator.json"))
+          && !/sheetgen|sheetstyles|h3charcreator/.test(RTS.replace(/\/\*[\s\S]*?\*\//g, ""))
+          && !/params\.get\("h3sheet"\)/.test(IW) && /def output_videos/.test(CC));
+    check("2.870.0: the sheet is the H3 Character Sheet Designer's graph job (/api/charsheet/h3) - the take's options from window.H3SheetDesign",
+          /fetch\("\/api\/charsheet\/h3", \{ method: "POST", body: fd \}\)/.test(SRCB) && /D\.appendTo\(fd\)/.test(SRCB)
+          && /D\.ready\(\)/.test(SRCB));
     check("2.223.12: the dialog gains a video player, shown only when a take carries a video, cleared otherwise",
           !!d.getElementById("chSheetVid")
           && /j\.vid = outs\.filter/.test(SRCB)
@@ -283,8 +268,8 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
           && !/width:100%/.test(d.getElementById("chMaskCanvas").getAttribute("style") || "")
           && /\.chStage > canvas, #chMaskDlg \.chStage > img \{[^}]*max-width: 100%; max-height: 100%;\s*width: auto; height: auto/.test(DOCK));
     check("2.369.0: the fields are full-width rows of a label/control grid (no fixed 120px / flex:1 inputs), ✕ in the header",
-          !!d.getElementById("chOptGender").closest(".chForm") && !!d.getElementById("chOptDesc").closest(".chForm")
-          && !!d.getElementById("ccLoraSel").closest(".chForm") && !/width:120px/.test(d.getElementById("chOptGender").getAttribute("style") || "")
+          !!d.getElementById("chH3Opts") && !!d.getElementById("chH3Opts").closest(".chSide")   /* 2.870.0: the designer's panel */
+          && !!d.getElementById("ccLoraSel").closest(".chForm")
           && !!d.getElementById("chMaskCancel").closest(".chHead"));
   }
   for (const id of ["ccPrev", "ccPrompt", "ccStyle", "ccStrip", "ccMakeSheet",
@@ -906,8 +891,8 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
           d.getElementById("chSheetStatus").textContent);
     const CODE2 = require("fs").readFileSync(
       require("path").join(__dirname, "..", "ext", "videodock", "characters.js"), "utf8");
-    check("the flow is wired: upload posts sheetgen, preview serves /outputs/, adopt reopens the editor",
-          /\/api\/characters\/sheetgen/.test(CODE2)
+    check("the flow is wired: upload posts the sheet designer (2.870.0), preview serves /outputs/, adopt reopens the editor",
+          /\/api\/charsheet\/h3/.test(CODE2)
           && /"\/outputs\/" \+ encodeURIComponent\(chSheetOut\)/.test(CODE2)
           && /adopt-sheet/.test(CODE2) && /card\.click\(\)/.test(CODE2));
   }
@@ -954,7 +939,7 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
     check("the mask is wired: corner handles, move + resize with a 24px floor, blackout preview",
           /chMaskHandles/.test(CODE4) && /"nw"/.test(CODE4) && /"se"/.test(CODE4)
           && /MIN = 24/.test(CODE4) && /rgba\(0,0,0,0\.72\)/.test(CODE4));
-    check("✔ composes at FULL resolution — black fills outside the box, png uploads to sheetgen",
+    check("✔ composes at FULL resolution — black fills outside the box, png uploads to the sheet designer",
           /naturalWidth; out\.height = img\.naturalHeight/.test(CODE4)
           && /fillStyle = "#000"/.test(CODE4)
           && /toBlob/.test(CODE4) && /chSheetUpload\(b,/.test(CODE4));
@@ -965,18 +950,16 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
 
   // ---- 2.205.0: options + Generate-only; autostart checkboxes ------------
   {
-    check("the mask dialog carries the options: kind (person/animal/vehicle/object), gender, style (photo/2.5d/anime), description",
-          d.getElementById("chOptKind") && d.getElementById("chOptKind").options.length === 4
-          && !!d.getElementById("chOptGender")
-          && d.getElementById("chOptStyle") && /photo/.test(d.getElementById("chOptStyle").innerHTML)
-          && !!d.getElementById("chOptDesc") && !!d.getElementById("chSheetGen"));
+    check("2.870.0: kind / gender / look / description are gone - the H3 Character Sheet Designer's panel holds the options",
+          !d.getElementById("chOptKind") && !d.getElementById("chOptGender") && !d.getElementById("chOptStyle")
+          && !d.getElementById("chOptDesc") && !!d.getElementById("chH3Opts") && !!d.getElementById("chSheetGen"));
     const CODE5 = require("fs").readFileSync(
       require("path").join(__dirname, "..", "ext", "videodock", "characters.js"), "utf8");
     check("NOTHING renders until ▶ Generate: the mask buttons only pick the mode; Generate composes",
           /chMaskUse"\)\.addEventListener\("click", function \(\) \{ chMaskPick\(true\); \}/.test(CODE5)
           && /chSheetGen"\)\.addEventListener\("click", function \(\) \{ chMaskCompose\(chMaskMode\); \}/.test(CODE5));
     check("the options ride the upload AND the regenerate",
-          /chSheetLastOpts = chSheetOpts\(\)/.test(CODE5)
+          /chSheetLastOpts = D\.appendTo\(fd\)/.test(CODE5)
           && /Object\.assign\(\{ file: chSheetInput \}, chSheetLastOpts/.test(CODE5));
     check("Settings has both autostart checkboxes (ComfyUI tab + LLM tab)",
           !!d.getElementById("s_cauto") && !!d.getElementById("s_lauto")
@@ -998,33 +981,17 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
   {
     const CODE6 = require("fs").readFileSync(
       require("path").join(__dirname, "..", "ext", "videodock", "characters.js"), "utf8");
-    // 2.577.0: the dropdown is gone - a 🧍 Pose sheet button opens a dialog of the user's own pose sheets
-    // (pose_sheets/, ext/videodock/posepick.js); the pick rides the hidden #chOptPose
-    check("2.577.0: the mask dialog's pose dropdown became the 🧍 Pose sheet button (+ the hidden #chOptPose the options read)",
-          d.getElementById("chOptPose")
-          && d.getElementById("chOptPose").tagName === "INPUT" && d.getElementById("chOptPose").type === "hidden"
-          && !!d.getElementById("chPoseBtn")
-          && /posepick\.js/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "ext", "videodock", "ext.json"), "utf8")));
-    check("2.223.4: the style LABEL became a DROPDOWN — capable styles listed with LoRA counts, refreshed each open",
-          !!d.getElementById("chSheetStyleSel")
-          && d.getElementById("chSheetStyleSel").tagName === "SELECT"
-          && /\/api\/characters\/sheetstyles/.test(CODE6)
-          && /chStyleHint\(\);/.test(CODE6.split("chMaskDraw();")[1] || ""));
-    check("2.223.4: seeded from the Prompt dock's styleSel, the USER can change it, and the pick renders",
-          /sel\.value = seeded \? seed : rows\[0\]\.id/.test(CODE6)
-          && /style_id: \(dlgSel && dlgSel\.value\) \|\| \(sSel \? sSel\.value : ""\)/.test(CODE6));
-    check("2.223.4: an incapable Prompt-dock style falls to the first capable one and the hint says why",
-          /can't take the reference — using/.test(CODE6));
+    // 2.870.0: the pose sheets, the render-style dropdown and the LoRA report are gone with the old designer
+    check("2.870.0: no pose sheet button, no render-style dropdown; h3sheet.js replaced posepick.js; the panel is refreshed each open",
+          !d.getElementById("chOptPose") && !d.getElementById("chPoseBtn") && !d.getElementById("chSheetStyleSel")
+          && /h3sheet\.js/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "ext", "videodock", "ext.json"), "utf8"))
+          && !/posepick/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "ext", "videodock", "ext.json"), "utf8"))
+          && /chStyleHint\(\);/.test(CODE6.split("chMaskDraw();")[1] || "") && /window\.H3SheetDesign\.refresh\(\)/.test(CODE6));
     check("2.223.4: the dialog is DOUBLE size (980 -> 1960, viewport-capped, width set for real)",
           /max-width:min\(96vw,1960px\);width:min\(96vw,1960px\)/.test(
             d.getElementById("chMaskDlg").getAttribute("style")));
-    check("the pose choice rides the sheet options (upload AND regenerate)",
-          /pose: el\("chOptPose"\)\.value/.test(CODE6));
-    check("the hint reports the LoRA count and warns when the style can't take the reference",
-          /no LoRAs/.test(CODE6) && /can't take the reference/.test(CODE6));
-    check("the status line reports style, LoRAs and the pose template in use",
-          /chSheetVia/.test(CODE6) && /LoRAs: /.test(CODE6)
-          && /pose: " \+ job\.pose_name/.test(CODE6));
+    check("the status line names the take's views and size (2.870.0)",
+          /chSheetVia = job\.summary/.test(CODE6));
   }
 
   // ---- 2.212.0: multi-take sheets + drops into the character editor -------

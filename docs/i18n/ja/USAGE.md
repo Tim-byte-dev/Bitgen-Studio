@@ -52,12 +52,12 @@
 `/br/` を単独の行に書くと、プロンプトが複数のジョブに分割され、順番に実行されます。プロンプト内で **Enter** を押すと、ローカル LLM がプロンプトを改善します。**⏫ Enhance** は、選択した動画をアップスケールします（*SeedVR2 で動画をアップスケールする* を参照してください）。
 
 ## キャラクター
-<!-- en: characters 80f5593fe0ff -->
+<!-- en: characters 607afcf03589 -->
 
 **Video** ドッカーの **Characters** セクションでは、次の操作ができます。
 
 - **NEW** — 名前、詳細、**character sheet**（キャラクターシート：正面 / 側面 / 背面の画像）、および任意で **voice clip**（ボイスクリップ）を持つキャラクターを作ります。プロンプトや脚本では、その `@tag`（例：`@anna`）でキャラクターを参照します。
-- **🖼 NEW** — *1 枚の画像から*キャラクターを作ります。写真やレンダリング画像をアップロードすると参照シートが生成されます（pose_sheets フォルダーにある自作のポーズシートを使用し、写真風またはイラスト風を選べます）。気に入ったら **Keep** で保存します。
+- **🖼 NEW** — *1 枚の画像から*キャラクターを作ります。写真やレンダリング画像をアップロードすると、**H3 Character Sheet Designer** が参照シートを作ります（最大 13 ビュー - 「H3 Character Sheet Designer でキャラクターシート」を参照）。気に入ったら **Keep** で保存します。
 - **🎭 Actors** — 現在のシーンに登場するキャラクターを選びます。選ばれたキャラクターだけが参照画像と脚本に使われます。
 - 各キャラクターは、**RefMod**（アイデンティティモデル）用のデータセットフォルダー、シーンからシーンへとキャラクターに引き継がれる衣装エントリ、そしてネイティブ音声のセリフに使う専用のボイスを持ちます。
 
@@ -6083,6 +6083,20 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **設定 ▸ アドオン ▸ RGB MoCap** は toyxyz の RGB MoCap をインストールします - 人物の動画を編集できる体のアニメーションにする Windows アプリです（PEAR、ExMR、FlowHMR、GVHMR、MAMMA、PromptHMR。足の接地、自分のキャラクターへのリターゲット）。bitGen がダウンロードし、その install.cmd（Blender、FFmpeg とランタイム - 約 32 GB の空き）を実行します。モデル（約 70 GB）は **アプリ自身の** モデルマネージャーで選びます。64 ビット Windows と NVIDIA GPU が必要です。アプリは MIT、各モデルはそれぞれのライセンスです（非商用のものもあります - THIRD_PARTY_NOTICES.md）。
 - **🎞 タイムライン ▸ 🕺 モーキャプ**：① クリップを選び（再生ヘッドの下のものが先頭）**✂ クリップを準備** - 使用部分がプロジェクトの mocap フォルダーに切り出され、パスがコピーされます。② **▶ RGB MoCap を開く** - ファイル ▸ 動画を開く（パスを貼り付け）、3D 再構成、そして同じフォルダーに FBX（または BVH）を書き出します。③ そこに書き出したものが一覧になり、**⤓ タイムラインへ** で再生ヘッドの位置にアニメーションを再生する 🕺 3D レイヤーが加わります（.bvh は先に Blender で .fbx にします）。
 - RGB MoCap にはコマンドラインがありません - キャプチャはアプリ自身のウィンドウで行うので、bitGen は動画を準備して結果を持ち帰ります。他で作った FBX / BVH も mocap フォルダーに入れられます。
+
+## H3 Character Sheet Designer でキャラクターシート（2.870.0）
+<!-- en: character-sheets-with-the-h3-character-sheet-designer 2e50bf0ae3f2 -->
+
+キャラクタークリエイターの **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）は、1 枚の画像からキャラクターの参照シートを **H3 Character Sheet Designer**（ukr8b3g-cmyk 作の ComfyUI ノードパック、MIT）で作り、**MiniMax H3 Image** が描きます。以前のシートの設定（Kind、Look、Pose sheet、Render style）と pose_sheets フォルダーに代わるものです。
+
+1. 一度だけインストールします：**設定 ▸ アドオン ▸ H3 Character Sheet Designer** がノードパックを ComfyUI の custom_nodes に入れ、MiniMax H3 Image のトランスフォーマーと VAE をダウンロードします（動画でまだ入っていなければ MiniMax H3 テキストエンコーダーも）。**ComfyUI 0.45** 以降が必要で、終わったら ComfyUI を一度再起動します。まだインストールしていなければ、パネルの **⬇ Install…**（または ▶ Generate sheet）がダウンロード / キャンセルの確認を出します。
+2. **📂 Load picture** で画像を読み込み、枠を 1 体の被写体に合わせます（または **▣ Whole picture**）。これまでと同じです。
+3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13 - または 13 ビュー（頭 6、全身 3、服の正面 / 背面、手、足）から自分で選びます。
+4. **Clothing**（画像のとおり、パンツ、スカートまたはローブ、動物やマスコットには **No clothing · natural body surface** - 服のビューは入りません）、**Hands**（素手、手袋）、**Feet**（靴を履く、靴なし）、**Style**（画像のとおり、アニメ、写真、絵画風、3D レンダー）、**Size**（Standard、High detail、最大 8 / 16 MP、または正確なサイズ）。
+5. **Layout guide** はデザイナーのレイアウト画像を一緒に送ってビューを配置します（オフなら言葉で配置）。大きいシートがデコードで止まるときは **Tiled decode** を使います。
+6. **Part pictures**：最大 3 枚の追加画像を、それぞれ用途（顔、頭と髪、服（正面 / 背面）、手、履物、同じキャラクターの別の画像）付きで渡せます。**✏ Part notes** は 1 つのパーツにメモを加えます（左目の上の傷など）。**✏ View instructions** は 1 つのビューの指示を編集します（**↺ Default** で元に戻します）。
+7. **Layout** は ComfyUI が動いている間、シートのパネルを描き、サイズをピクセルとメガピクセルで示します。
+8. **▶ Generate sheet** - 押すたびに新しいシードのテイクになります。**🧵 Stitch**、**↻ Regenerate**、**✔ Keep** はこれまでどおりです。選んだ設定は記憶されます（パーツ画像は記憶されません）。
 
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->

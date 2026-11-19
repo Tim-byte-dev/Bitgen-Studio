@@ -61,15 +61,14 @@
 改進提示詞。**⏫ Enhance** 會放大所選影片（參見 *使用 SeedVR2 放大影片*）。
 
 ## 角色
-<!-- en: characters 80f5593fe0ff -->
+<!-- en: characters 607afcf03589 -->
 
 在 **Video** 面板的 **Characters**（角色）部分中：
 
 - **NEW**——建立一個角色，包含名稱、詳細資訊、一張 **character sheet**（角色設定圖，即正面 /
   側面 / 背面圖片），還可選配一段 **voice clip**（語音片段）。它的 `@tag`（例如
   `@anna`）是提示詞和劇本引用該角色的方式。
-- **🖼 NEW**——*用一張圖片*建立角色：上傳一張照片或渲染圖，即可生成一張參考設定圖（可使用
-  pose_sheets 資料夾中你自己的姿勢設定圖，照片風格或插畫風格均可），然後點選 **Keep** 保留它。
+- **🖼 NEW**——*用一張圖片*建立角色：上傳一張照片或渲染圖，**H3 Character Sheet Designer** 會製作它的參考設定表（最多 13 個檢視——見《用 H3 Character Sheet Designer 製作角色設定表》），然後點選 **Keep** 保留它。
 - **🎭 Actors**——選擇目前場景中出場的角色；只有他們會參與參考圖和劇本。
 - 每個角色都有一個用於 **RefMod**（身分模型）的資料集資料夾、在各場景間跟隨角色的服裝條目，以及用於原生音訊對白的專屬聲音。
 
@@ -6316,6 +6315,20 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **設定 ▸ 附加元件 ▸ RGB MoCap** 安裝 toyxyz 的 RGB MoCap——一個把人物影片變成可編輯身體動畫的 Windows 應用（PEAR、ExMR、FlowHMR、GVHMR、MAMMA、PromptHMR；腳部接觸；重定向到你自己的角色）。bitGen 下載它並執行它自己的 install.cmd（Blender、FFmpeg 及其執行環境——約需 32 GB 空間）；模型（約 70 GB）在 **它自己的** 模型管理器中選擇。需要 64 位 Windows 和 NVIDIA 顯示卡。應用為 MIT 許可；每個模型保留自己的許可（有些僅限非商業用途——見其 THIRD_PARTY_NOTICES.md）。
 - **🎞 時間軸 ▸ 🕺 動捕**：① 選擇片段（播放頭下的排在最前）並按 **✂ 準備片段**——使用的部分被剪到專案的 mocap 資料夾，路徑已複製；② **▶ 開啟 RGB MoCap**——檔案 ▸ 開啟影片（貼上路徑）、3D 重建，然後把 FBX（或 BVH）匯出到同一個資料夾；③ 匯出到那裡的內容會列出——**⤓ 到時間軸** 在播放頭處加一個播放該動畫的 🕺 3D 圖層（.bvh 先由 Blender 轉成 .fbx）。
 - RGB MoCap 沒有命令列——捕捉在它自己的窗口裡完成，所以 bitGen 負責準備影片並把結果帶回來。別處得到的 FBX / BVH 也可以放進 mocap 資料夾。
+
+## 用 H3 Character Sheet Designer 製作角色設定表（2.870.0）
+<!-- en: character-sheets-with-the-h3-character-sheet-designer 2e50bf0ae3f2 -->
+
+角色建立器的 **🪪 Character sheet**（StoryBoard ▸ **🖼 NEW**）用 **H3 Character Sheet Designer**（ukr8b3g-cmyk 的 ComfyUI 節點包，MIT）從一張圖片製作角色的參考設定表，由 **MiniMax H3 Image** 繪製。它取代了舊的設定表選項（Kind、Look、Pose sheet、Render style）和 pose_sheets 資料夾。
+
+1. 安裝一次：**設定 ▸ 附加元件 ▸ H3 Character Sheet Designer** 會把節點包放進 ComfyUI 的 custom_nodes，並下載 MiniMax H3 Image 的 Transformer 和 VAE（如果影片還沒帶來 MiniMax H3 文字編碼器，也會一併下載）。需要 **ComfyUI 0.45** 或更新版本；裝好後重新啟動一次 ComfyUI。還沒安裝？面板裡的 **⬇ Install…**（或 ▶ Generate sheet）會彈出下載 / 取消框。
+2. **📂 Load picture** 載入圖片，把框拖到一個主體上（或 **▣ Whole picture**），和以前一樣。
+3. **Views**：Standard · 5 views、Basic · 4、Turnaround · 3、Head · 6、Clothing · 2、Single view、All · 13——或在 13 個檢視（6 個頭部、3 個全身、服裝正面 / 背面、手、腳）中自己勾選。
+4. **Clothing**（與圖片一致、褲子、裙子或長袍，動物或吉祥物用 **No clothing · natural body surface**——服裝檢視會被去掉）、**Hands**（赤手、手套）、**Feet**（穿鞋、不穿鞋）、**Style**（與圖片一致、動漫、照片、繪畫風格、3D 渲染）和 **Size**（Standard、High detail、最高 8 或 16 MP，或精確尺寸）。
+5. **Layout guide** 會把設計器的佈局圖一起送去安排檢視（關閉時用文字安排）；大設定表在解碼時卡住時，**Tiled decode** 會有幫助。
+6. **Part pictures**：最多再加三張圖片，每張註明用途——臉部、頭部和頭髮、服裝（正面 / 背面）、手、鞋，或同一角色的更多圖片。**✏ Part notes** 為某個部位加上文字（例如左眼上方的一道疤）；**✏ View instructions** 編輯某個檢視自己的指令（**↺ Default** 恢復原樣）。
+7. ComfyUI 執行時，**Layout** 會畫出設定表的各個分格，並顯示像素和百萬像素尺寸。
+8. **▶ Generate sheet**——每按一次就是一次使用新種子的生成；**🧵 Stitch**、**↻ Regenerate** 和 **✔ Keep** 和以前一樣。你的選擇會被記住（部點陣圖片不會）。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

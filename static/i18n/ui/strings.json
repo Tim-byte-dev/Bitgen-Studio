@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6940,
+ "count": 7028,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -64446,6 +64446,886 @@
    ],
    "where": [
     "🎞 Timeline ▸ 🕺 Mocap (2.869.0)"
+   ]
+  },
+  {
+   "s": "H3 Character Sheet Designer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Makes the character sheet: the designer's node pack in ComfyUI and the MiniMax H3 Image model that draws it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Hands",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Feet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Layout guide",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Tiled decode (less VRAM)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Part pictures",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Part notes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "View instructions",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Default",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Which views the sheet has",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The views on the sheet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Clothing shape",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Rendering style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Sheet size",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Bigger sheets take more VRAM and time",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Sheet width in pixels",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Sheet height in pixels",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Decodes the sheet in tiles - try it when a big sheet stops at the decode",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Choose a part picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Which part the note is for",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "e.g. a scar over the left eye",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The note for this part",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "My own views",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Exact size",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Full body",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Hands and feet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "No clothing leaves the clothing views out",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Add a part picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Take this part picture off",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "the designer's own instruction for this view",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The designer's node pack and MiniMax H3 Image - Settings ▸ Add-ons ▸ H3 Character Sheet Designer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face - front",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face - left profile",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face - right profile",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face - left three-quarter",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face - right three-quarter",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Head - back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Full body - front",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Full body - side",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Full body - back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Clothing - front",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Clothing - back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Feet / footwear",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Turnaround",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Single view",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "As in the picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Pants",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Skirt or robe",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "No clothing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "natural body surface",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Bare hands",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Gloves",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Shoes on",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "No shoes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Realistic painting",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Semi-realistic anime",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Oil painting",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Gouache",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Coloured pencil",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "3D render",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "More of the same character",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Face",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Head and hair",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Footwear",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Head, hair and headwear",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Upper clothing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Back of the clothing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Lower body",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Anything else",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "High detail",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Up to 8 MP",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Up to 16 MP",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The H3 Character Sheet Designer is not installed yet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Start ComfyUI to see the layout",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "Restart ComfyUI so it loads the designer, to see the layout",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "the sheet designer's settings could not be read",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "big - needs a lot of VRAM",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "the sheet designer did not load - reload the page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "the H3 Character Sheet Designer is not installed yet - Settings ▸ Add-ons ▸ H3 Character Sheet Designer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "about 28 GB: the node pack (under 1 MB) and MiniMax H3 Image (transformer + VAE) into ComfyUI's models, plus the MiniMax H3 text encoder if the video has not brought it yet; ComfyUI 0.45 or newer, restarted once afterwards",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The character sheet is made by the H3 Character Sheet Designer in ComfyUI, drawn by MiniMax H3 Image",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "H3 Character Sheet Designer (character sheets)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "The Character creator's 🪪 Character sheet: one picture of a character becomes a reference sheet of up to 13 views (6 head, 3 full body, clothing front / back, hands, feet), with part pictures and notes, drawn by MiniMax H3 Image. The designer is ukr8b3g-cmyk's ComfyUI node pack (MIT)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "ComfyUI 0.45 or newer (its MiniMax H3 Image Conditioning node), git for the pack; a big NVIDIA card - MiniMax H3 Image int8 is the size of the video model",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "H3 Character Sheet Designer (GitHub)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "ready - the Character creator's 🪪 Character sheet (ComfyUI 0.45+ with the pack loaded)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
+   ]
+  },
+  {
+   "s": "partly installed - Install again for the rest",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet (2.870.0)"
    ]
   }
  ]

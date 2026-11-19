@@ -153,7 +153,7 @@ function mount(app) {
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
-  require("./poseSheets").mount(app);  // 2.577.0: the Character creator's pose sheets - <install>/pose_sheets/ (lib/poseSheets.js)
+  require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
   require("./cadGen").mount(app);      // 2.581.0: ✨ Generate in the 📐 SolidCraft docker - a part from a description / picture (lib/cadGen.js, cad_worker.py)
   extensions.mountServers(app);        // 2.589.0: an extension's own server part (ext/<id>/ext.json "server") - the optional Team render farm (ext/teamdock)
