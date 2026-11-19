@@ -17,6 +17,8 @@
 //   {full?, keepGone?, config missing|always|never, withPassword?} -> started · GET /api/web/host/progress {running, total, done, file, result|error}
 //   2.863.0 💳 POST /api/web/host/pay {secret?, webhook?, currency?, forget?} -> {hasSecret, hasWebhook, mode, currency}; send {withPay}
 //   2.865.0 ✨ POST /api/web/ai/edit {path, text, ask, a?, b?} -> {text, part, a, b, added, removed} (lib/webAi.js - nothing saved)
+//   2.868.0 🗄 GET /api/web/dbm?scope&db (none = the CRM's link) · POST /api/web/dbm/cell {table, key, col, value} · /insert {table, values}
+//   · /delete {table, key} · /import {sql} · GET /api/web/dbm/export?table=&format=csv|sql (no table = the whole database as .sql)
 //   GET  /web-preview/<path>           the site as files (the Preview + WYSIWYG tabs; no PHP is run)
 "use strict";
 const express = require("express");
@@ -51,6 +53,18 @@ function mount(app) {
   app.post("/api/web/host", J, wrap((req) => HF().save(req.body || {})));
   app.post("/api/web/host/test", J, wrap((req) => HF().test(req.body || {})));
   app.post("/api/web/host/send", J, wrap((req) => HF().start(req.body || {})));
+  // 2.868.0 🗄 the DB manager tab (lib/webDbAdmin.js; reading = /api/db/schema, /api/db/rows, /api/db/sql)
+  const DA = () => require("../lib/webDbAdmin");
+  app.get("/api/web/dbm", wrap((req) => DA().info(req.query)));
+  app.post("/api/web/dbm/cell", J, wrap((req) => DA().cell(req.body || {})));
+  app.post("/api/web/dbm/insert", J, wrap((req) => DA().insert(req.body || {})));
+  app.post("/api/web/dbm/delete", J, wrap((req) => DA().remove(req.body || {})));
+  app.post("/api/web/dbm/import", J, wrap((req) => DA().importSql(req.body || {})));
+  app.get("/api/web/dbm/export", async (req, res) => {
+    try { const r = req.query.table ? await DA().exportTable(req.query) : { name: (DA().where(req.query).db) + ".sql", type: "application/sql", text: await DA().dump(req.query) };
+      res.set("Content-Disposition", `attachment; filename="${r.name.replace(/[^\w.-]/g, "_")}"`).type(r.type).send(r.text); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message }); }
+  });
   app.post("/api/web/ai/edit", J, wrap((req) => require("../lib/webAi").edit(req.body || {})));   // 2.865.0 ✨ the AI prompt docker
   app.get("/api/web/host/progress", wrap(() => HF().progress()));
   app.post("/api/web/host/pay", J, wrap((req) => HF().savePay(req.body || {})));   // 2.863.0 💳 the Stripe keys, kept encrypted here

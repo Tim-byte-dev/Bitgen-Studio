@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6895,
+ "count": 6918,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -63996,6 +63996,236 @@
    ],
    "where": [
     "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "SQL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "sql",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Run",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Statements that remove or change tables are asked first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Pick a table on the left",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Which database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Read it again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Run SQL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "The whole database as a .sql file",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Run a .sql file into this database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "no databases",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "No database yet - 🗂 CRM ▸ 🗄 Create the site's database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "in this page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "This table as CSV",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "This table as SQL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Delete this row",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Make it NULL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Add the row",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "Row",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "The site's database - tables, rows, SQL, export and import",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "a view (read only)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "no primary key: change it with ⌨ SQL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
+   ]
+  },
+  {
+   "s": "All news",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗄 DB (2.868.0)"
    ]
   }
  ]

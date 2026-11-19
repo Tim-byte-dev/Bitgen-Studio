@@ -26251,6 +26251,78 @@
    "src": "ext/webdock/wbcode.js:170"
   },
   {
+   "s": "SQL",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "sql",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Run",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Statements that remove or change tables are asked first",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Pick a table on the left",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Which database",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Read it again",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Run SQL",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "The whole database as a .sql file",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "Run a .sql file into this database",
+   "src": "ext/webdock/wbdbm.js:25"
+  },
+  {
+   "s": "no databases",
+   "src": "ext/webdock/wbdbm.js:46"
+  },
+  {
+   "s": "No database yet - 🗂 CRM ▸ 🗄 Create the site's database",
+   "src": "ext/webdock/wbdbm.js:53"
+  },
+  {
+   "s": "in this page",
+   "src": "ext/webdock/wbdbm.js:76"
+  },
+  {
+   "s": "This table as CSV",
+   "src": "ext/webdock/wbdbm.js:76"
+  },
+  {
+   "s": "This table as SQL",
+   "src": "ext/webdock/wbdbm.js:76"
+  },
+  {
+   "s": "Delete this row",
+   "src": "ext/webdock/wbdbm.js:81"
+  },
+  {
+   "s": "Make it NULL",
+   "src": "ext/webdock/wbdbm.js:104"
+  },
+  {
+   "s": "Add the row",
+   "src": "ext/webdock/wbdbm.js:120"
+  },
+  {
    "s": "Clear styles",
    "src": "ext/webdock/wbprops.js:67"
   },
@@ -31771,6 +31843,26 @@
   {
    "p": "{0} - wraps the selection",
    "src": "ext/webdock/wbcode.js:170"
+  },
+  {
+   "p": "{0} (the site's)",
+   "src": "ext/webdock/wbdbm.js:46"
+  },
+  {
+   "p": "{0} row(s) · double-click a cell to change it",
+   "src": "ext/webdock/wbdbm.js:76"
+  },
+  {
+   "p": "{0} row(s)",
+   "src": "ext/webdock/wbdbm.js:136"
+  },
+  {
+   "p": "{0} row(s) changed · id {1}",
+   "src": "ext/webdock/wbdbm.js:137"
+  },
+  {
+   "p": "{0} row(s) changed",
+   "src": "ext/webdock/wbdbm.js:137"
   },
   {
    "p": "{0} MB",

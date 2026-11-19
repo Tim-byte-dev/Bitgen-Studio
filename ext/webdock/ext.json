@@ -8,6 +8,7 @@
     "wbcode.js",
     "wbai.js",
     "wbwys.js",
-    "wbprops.js"
+    "wbprops.js",
+    "wbdbm.js"
   ]
 }

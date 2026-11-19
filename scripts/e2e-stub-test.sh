@@ -14539,6 +14539,16 @@ node scripts/test-867.js > /tmp/t867.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui867-ui.js > /tmp/ui867.log 2>&1 \
   && ok "2.867.0 browser test: pick on the WYSIWYG page, corners one by one / all four, shadow, opacity, gradient, text, saved without the mark, ⬆, ✕" \
   || { bad "2.867.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui867.log | head -12; }
+# ---- 2.868.0 (🗄 the web builder's DB manager tab)
+node scripts/test-868.js > /tmp/t868.log 2>&1 \
+  && ok "2.868.0 DB manager units: the CRM's link, parameterised UPDATE / INSERT / DELETE, refusals, CSV cells, danger()" \
+  || { bad "2.868.0 units"; grep -a "^FAIL" -A1 /tmp/t868.log | head -12; }
+node scripts/test-868-live.js > /tmp/t868l.log 2>&1 \
+  && ok "2.868.0 LIVE (MariaDB): cell / row / delete by key, a nasty value kept, refusals, CSV, the .sql dump run into a new database" \
+  || { bad "2.868.0 live"; grep -a "^FAIL" -A1 /tmp/t868l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui868-ui.js > /tmp/ui868.log 2>&1 \
+  && ok "2.868.0 browser test: 🗄 DB tab on the site's database, a cell changed, ＋ Row, 🗑 asked, ⌨ SQL, DROP asked" \
+  || { bad "2.868.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui868.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

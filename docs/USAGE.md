@@ -9680,6 +9680,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - On the **✎ WYSIWYG** tab a click on anything on the page picks it (a dashed outline that is never saved) and the **🎛 Properties** docker beside the page shows its values: the id and classes, **Size** (width, height, max width, display), **Spacing** (margin, padding), **Corners** - each corner its own radius, or 🔗 all four together, **Border** (width, style, colour), **Background** (colour and how see-through, a picture, a **gradient** - linear or radial, its angle, two colours and where each stops), **Shadow** (across, down, blur, spread, colour, see-through, inset, and a text shadow), **Opacity** and **Text** (colour, size, weight, line height, letter spacing, align, font).
 - Every change goes into that element's own style at once - the page is marked changed and 💾 Save keeps it. **⬆** picks the parent, **✕ Clear styles** takes the element's own styles off, Esc lets go; ▸ folds the docker.
 
+## 🗄 The web builder's DB manager (2.868.0)
+
+- **🌐 Web editor ▸ 🗄 DB** is the site's database: the one 🗂 CRM ▸ 🗄 linked is picked (▾ any other database of this project or your server). The tables (and 👁 views) are listed with their rows; a table shows its columns (type, 🔑 key, → links) and its rows 50 at a time, 🔍 filters the page.
+- **Double-click a cell** to change it (Enter keeps, Esc not, ∅ = NULL), **＋ Row** adds one (blank = the column's default), **🗑** deletes one (asked first) - by the row's primary key, always sent safely. A view, or a table without a primary key, is read only here (⌨ SQL still changes it).
+- **⌨ SQL** runs statements (Ctrl+Enter) and shows the results; DROP / DELETE / UPDATE / TRUNCATE / ALTER are asked first. **⤓ CSV / SQL** downloads a table, **⤓ .sql** the whole database (tables, rows and views), **⤒ .sql** runs a .sql file into it (it stops at the first error and says which).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

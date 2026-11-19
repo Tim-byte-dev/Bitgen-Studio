@@ -44,7 +44,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("the files panel on the right collapses to a strip and opens again", shut.s && shut.w < 40 && open > 150 && await ev(() => { const m = document.getElementById("wbMain").getBoundingClientRect(), f = document.getElementById("wbFiles").getBoundingClientRect(); return f.left > m.left; }), { shut, open });
     // 4 tabs
     const tabs = await ev(() => [...document.querySelectorAll("#webdock .wbtab")].map((x) => x.textContent.trim()));
-    check("4 tabs: 🗂 CRM, ✎ WYSIWYG, </> Code, 👁 Preview", tabs.join("|") === "🗂 CRM|✎ WYSIWYG|</> Code|👁 Preview", tabs);
+    check("the tabs: 🗂 CRM, ✎ WYSIWYG, </> Code, 👁 Preview (+ 2.868.0's 🗄 DB)", tabs.slice(0, 4).join("|") === "🗂 CRM|✎ WYSIWYG|</> Code|👁 Preview", tabs);
     // code
     await p.click('#webdock .wbtab[data-tab="code"]');
     const code0 = await ev(() => document.getElementById("wbCode").value);

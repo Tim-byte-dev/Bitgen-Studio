@@ -145,7 +145,7 @@
     doc.querySelectorAll("#webdock .wbpane").forEach((p) => p.classList.toggle("on", p.dataset.pane === t));
     paintTab();
   }
-  function paintTab() { if (St.tab === "wys") paintWys(); else if (St.tab === "code") paintCode(); else if (St.tab === "prev") paintPrev(); else if (St.tab === "crm") loadKind(St.kind); }
+  function paintTab() { if (St.tab === "wys") paintWys(); else if (St.tab === "code") paintCode(); else if (St.tab === "prev") paintPrev(); else if (St.tab === "crm") loadKind(St.kind); else if (St.tab === "dbm" && root.WbDbm) root.WbDbm.paint(); }
   /* ✎ WYSIWYG */
   function paintWys() {
     const f = $("wbWys"), ok = isHtml(St.path);

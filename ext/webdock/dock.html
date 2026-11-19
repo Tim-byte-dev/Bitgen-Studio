@@ -31,6 +31,28 @@
           #wbAskRow { display: none; gap: 3px; }
           #wbAskRow.on { display: flex; }
           #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          /* 2.868.0 🗄 the DB manager tab (wbdbm.js) */
+          #wbDbm { gap: 4px; font-size: 12px; }
+          #wbDbmBody { flex: 1; display: flex; gap: 6px; min-height: 0; }
+          #wbDbmTables { width: 190px; flex: none; overflow-y: auto; border-right: 1px solid var(--line); }
+          #wbDbmTables .it { padding: 3px 6px; cursor: pointer; border-radius: 4px; display: flex; gap: 4px; }
+          #wbDbmTables .it span { margin-left: auto; color: var(--dim); font-size: 11px; }
+          #wbDbmTables .it.on, #wbDbmTables .it:hover { background: var(--panel-2, rgba(127,127,127,.15)); }
+          #wbDbmMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+          #wbDbmNone { color: var(--dim); padding: 20px; text-align: center; }
+          .wbDbmCols { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; } .wbDbmCols i { color: var(--dim); font-style: normal; }
+          .wbDbmGrid { flex: 1; overflow: auto; min-height: 60px; border: 1px solid var(--line); }
+          .wbDbmGrid table { border-collapse: collapse; font-size: 12px; }
+          .wbDbmGrid th, .wbDbmGrid td { border: 1px solid var(--line); padding: 2px 6px; text-align: left; white-space: nowrap; max-width: 320px; overflow: hidden; text-overflow: ellipsis; }
+          .wbDbmGrid th { position: sticky; top: 0; background: var(--panel, #222); }
+          .wbDbmGrid td.nul { color: var(--dim); }
+          .wbDbmIn { min-width: 140px; }
+          #wbDbmAddForm { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 4px; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; }
+          #wbDbmAddForm[hidden], #wbDbmSql[hidden] { display: none; }
+          #wbDbmAddForm label { display: flex; gap: 6px; align-items: center; } #wbDbmAddForm label span { width: 90px; color: var(--dim); }
+          #wbDbmSql { display: flex; flex-direction: column; gap: 4px; } #wbDbmSqlT { font: 12px Consolas, monospace; }
+          #wbDbmRes .err, #wbDbmOut.err { color: #e53935; } #wbDbmOut { font-size: 11px; margin-left: 6px; }
+          .wbDbmImp { cursor: pointer; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; }
           /* 2.867.0 🎛 the element properties docker (wbprops.js) */
           #wbProps { width: 250px; flex: none; display: flex; flex-direction: column; border-left: 1px solid var(--line); padding: 0 4px; min-height: 0; overflow-y: auto; font-size: 12px; }
           #wbProps.shut { width: 30px; overflow: hidden; }
@@ -140,6 +162,7 @@
             <button class="ghost wbtab" type="button" data-tab="wys" title="Edit the open page as it looks - type on it, the toolbar formats">✎ WYSIWYG</button>
             <button class="ghost wbtab" type="button" data-tab="code" title="The open file's code (Ctrl+S saves)">&lt;/&gt; Code</button>
             <button class="ghost wbtab" type="button" data-tab="prev" title="The site as a browser shows it">👁 Preview</button>
+            <button class="ghost wbtab" type="button" data-tab="dbm" title="The site's database - tables, rows, SQL, export and import">🗄 DB</button>
             <span class="sep"></span>
             <span id="wbFileName" title="The open file">no file open</span>
             <button class="ghost" type="button" id="wbSave" title="Save the open file (Ctrl+S)">💾 Save</button>
@@ -271,6 +294,7 @@
               </div>
               <div id="wbPrevBox"><iframe id="wbPrev" class="wbframe" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-same-origin" title="Preview"></iframe></div>
             </div>
+            <div class="wbpane" data-pane="dbm" id="wbDbm"></div>
           </div>
           <div id="wbFiles">
             <div id="wbFilesHead" title="Show / hide the files"><span id="wbFilesArrow">▸</span><span>Files</span></div>
