@@ -9647,6 +9647,10 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **📰 Blog and news**: the CRM's 📰 Posts as a news page - newest first, pages of 6, each post on its own page (a blank line = a new paragraph, web addresses become links); [data-bg-blog-latest] shows the latest few on the home page. No PHP.
 - **📍 Contact and map** (needs PHP): your address, phone and hours beside an OpenStreetMap map (no key; the coordinates from openstreetmap.org ▸ right-click ▸ Show address) and a contact form; messages land in 🗂 CRM ▸ ✉ Messages, and in your inbox too when inc/config.php has CONTACT_EMAIL. A hidden trap field and 5 messages a 10 minutes per address keep robots out.
 
+## 🌏 The web skill cards in your language (2.862.0)
+
+- The 🌐 Web editor's 🧩 Skills cards - each skill's name, what it does, its group and the "needs PHP" note - follow the language dropdown (日本語, 简体中文, 繁體中文) like the rest of the app. The theme and layout skills are now in the group **Design**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -14494,6 +14494,13 @@ node scripts/test-861-live.js > /tmp/t861l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui861-ui.js > /tmp/ui861.log 2>&1 \
   && ok "2.861.0 browser test: the three skills listed, ＋ blog shows the CRM's posts, ＋ contact + map in the Preview" \
   || { bad "2.861.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui861.log | head -12; }
+# ---- 2.862.0 (🌏 the web skill cards in the app's languages)
+node scripts/test-862.js > /tmp/t862.log 2>&1 \
+  && ok "2.862.0 every skill's name / description / group an app word, translated in ja / zh-CN / zh-TW; the Design group" \
+  || { bad "2.862.0 units"; grep -a "^FAIL" -A1 /tmp/t862.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui862-ui.js > /tmp/ui862.log 2>&1 \
+  && ok "2.862.0 browser test: the 🧩 cards in 日本語 (names, descriptions, groups, the PHP note) and back to English" \
+  || { bad "2.862.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui862.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

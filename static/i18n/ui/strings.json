@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6746,
+ "count": 6780,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62540,6 +62540,312 @@
    ],
    "where": [
     "🌐 Web editor ▸ 📤 Host (2.860.0)"
+   ]
+  },
+  {
+   "s": "Galleries",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Design",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Members",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Scripts",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Shop",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "AJAX",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Lists filled from data/content.json (posts, products) without a page load, and forms sent in the background with the answer shown under them.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Blog and news",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "The CRM's 📰 Posts as a news page - newest first, a picture, the date and the start of each, pages of 6, each post on its own page (blog.html?p=…); the latest few on any page.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Booking widget",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Visitors pick a service, a day and a free time and book it - the times come from the CRM's booking calendar (opening hours, services, closed days, how many at once), the booking lands in 📅 Bookings.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Cart and checkout",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "cart.html (quantities, remove, the total), checkout.html (name, email, address) and checkout.php - the order priced again on the server and saved in the site's database, shown in the CRM's 🧾 Orders. Needs PHP + the CRM's 🗄 database.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Catalogue with categories",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "The products of 🛍 Products as cards with category chips and a search - shop.html?c=Bread opens one category; ＋ Add to cart on each.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Contact and map",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Your address, phone and hours beside a map of where you are (OpenStreetMap - no key) and a contact form; what visitors send lands in ✉ Messages.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "3D model gallery",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "3D models (.glb, .gltf, .obj) you turn with the mouse or a finger and zoom - each turns slowly by itself; loaded when scrolled to.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Audio playlist",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Songs or recordings in a list with one player - ▶ / ⏸, a seek bar, the time; the next track plays by itself.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Picture gallery",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "A grid of pictures; a click opens them big - ← → keys, swipe on phones, Esc. Fills itself from a JSON list too.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Video gallery",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Video thumbnails with ▶; a click plays the video big - ← → for the next one.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Layout",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "A header with a menu that folds into ☰ on phones, a hero, sections, card grids, two columns and a footer.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Member login",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "login.php, register.php, account.php (their orders) and logout - passwords hashed, safe session cookies, a CSRF token on every form, 5 wrong tries = a 10-minute wait. Needs PHP + the CRM's 🗄 database.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Product page",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "product.html?p=<product> - its picture, price (and sale price), stock, description, quantity and Add to cart.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Theme and buttons",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "Colours, type, buttons, cards and form fields as CSS variables - light and dark (follows the computer, or a 🌓 button).",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
+   ]
+  },
+  {
+   "s": "⚠ needs PHP on the host",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills cards (2.862.0)"
    ]
   }
  ]
