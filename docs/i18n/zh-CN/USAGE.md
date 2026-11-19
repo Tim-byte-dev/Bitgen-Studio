@@ -6419,6 +6419,15 @@ BAS 数字是工作表：请通过 ATO 或你的税务代理申报。PAYG 预扣
 - 在 Accounts ▸ Accounts 的 **Invoice layout ▾** 或 **Quote layout ▾** 中选择它（账页样式是内置的那个）。**🎨 Design a layout in the image editor…** 打开一个带字段列表的新 A4 页面。
 - 之后发票或报价单上的 **🖨** 会在图像编辑器中打开你的版式，并用该单据的数字填好——每个字段都在你放的位置。打印（File ▸ 🔍 Print Preview / 🖨 Print）或用 File ▸ Export ▸ Document 导出 PDF。
 
+## ✨ AI 读取收据、CSV 和打印 BAS (2.880.0)
+<!-- en: receipts-read-by-the-ai-csv-and-the-bas-to-print-2-880-0 fbf76c7a0e92 -->
+
+- 📒 Accounts 停靠窗中的 **＋ ✨ Read a receipt…**：选择一张收据或账单——照片、扫描件或 PDF（其第一页会画成图片）。你已在使用的视觉模型（Basic Settings / ☁ Runs on ▸ Vision LLM——这台电脑、pod 或 OpenRouter）读取供应商、ABN、编号、日期、到期日、明细、合计和 GST，然后打开已填好并附上文件的收据或账单对话框。**在你核对并 Save 之前不会记入任何内容。**
+- bitGen 会检查读取的内容：澳大利亚日期（日在前），明细之和必须等于合计（否则改为合计一行），GST 必须约为应税明细的 1/11（不符时会提示），标为免 GST 的明细保持免 GST，有到期日即为待付账单，供应商 ABN 必须有效，科目根据供应商和文字选择（燃油 -> Motor Vehicle Expenses、Telstra -> Telephone and Internet、Bunnings -> Purchases and Materials 等）。
+- 收据或账单对话框中的 **✨ Read it** 对你在那里附上的文件做同样的事。
+- Documents、Journals、Ledger、Trial Balance、Profit & Loss、Balance Sheet、BAS 和 Jobs 顶部的 **⤓ CSV** 将该列表保存为 .csv 文件，可用任何电子表格（包括 ▦ Spreadsheet 停靠窗）打开或交给会计师。
+- BAS 标签页上的 **🖨 Print**：把 GST 工作表做成页面——你的企业和 ABN、期间和基础、G1、G2、G3、G10、G11、1A、1B 以及应缴或应退金额——打印或另存为 PDF，留作记录或交给税务代理。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

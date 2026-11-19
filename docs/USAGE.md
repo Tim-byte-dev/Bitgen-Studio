@@ -9867,6 +9867,22 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
 - **🖨** on an invoice or quote then opens your layout in the image editor, filled with that document's figures - each
   field where you put it. Print it (File ▸ 🔍 Print Preview / 🖨 Print) or File ▸ Export ▸ Document for a PDF.
 
+## ✨ Receipts read by the AI, CSV and the BAS to print (2.880.0)
+
+- **＋ ✨ Read a receipt…** in the 📒 Accounts docker: pick a receipt or bill - a photo, a scan or a PDF (its first page is
+  drawn to a picture). The vision model you already use (Basic Settings / ☁ Runs on ▸ Vision LLM - this computer, a pod or
+  OpenRouter) reads the supplier, ABN, number, date, due date, the items, the total and the GST, and the receipt or bill
+  dialog opens filled in, with the file attached. **Nothing is entered until you check it and Save.**
+- bitGen checks what it read: Australian dates (day first), the items must add up to the total (else one line of the
+  total), the GST must be about 1/11 of the taxable items (said when it is not), items marked GST-free stay GST-free, a
+  due date makes it a bill to pay, the supplier's ABN must check out, and the account is picked from the supplier and the
+  words (fuel -> Motor Vehicle Expenses, Telstra -> Telephone and Internet, Bunnings -> Purchases and Materials …).
+- **✨ Read it** in a receipt or bill dialog does the same for the file you attached there.
+- **⤓ CSV** at the top of Documents, Journals, Ledger, Trial Balance, Profit & Loss, Balance Sheet, BAS and Jobs saves that
+  list as a .csv file for any spreadsheet (the ▦ Spreadsheet docker too) or your accountant.
+- **🖨 Print** on the BAS tab: the GST worksheet as a page - your business and ABN, the period and basis, G1, G2, G3, G10,
+  G11, 1A, 1B and what is payable or refunded - to print or save as PDF for your records and your tax agent.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

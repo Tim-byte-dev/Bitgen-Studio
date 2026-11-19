@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7169,
+ "count": 7174,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -66806,6 +66806,56 @@
    ],
    "where": [
     "🧾 Insert Field + 📒 Accounts layouts (2.879.0)"
+   ]
+  },
+  {
+   "s": "✨ Read it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
+   ]
+  },
+  {
+   "s": "＋ ✨ Read a receipt…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
+   ]
+  },
+  {
+   "s": "Pick a receipt or bill (a picture or PDF) - the vision model reads it and fills in the dialog for you to check",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
+   ]
+  },
+  {
+   "s": "⤓ CSV",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
+   ]
+  },
+  {
+   "s": "read by the vision model - check it before you save",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "📒 Accounts - read a receipt, CSV, BAS print (2.880.0)"
    ]
   }
  ]

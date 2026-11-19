@@ -14541,6 +14541,13 @@ node scripts/test-879.js > /tmp/t879.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui879-ui.js > /tmp/ui879.log 2>&1 \
   && ok "2.879.0 browser test: Accounts off + listed in Settings ▸ Dockers + 👁 on, 🧾 Insert Field (text layers + table), saved as an invoice template, Invoice layout ▾, 🖨 fills it in the image editor - the balance due where it was put, a row per line" \
   || { bad "2.879.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui879.log | head -12; }
+# ---- 2.880.0 (📒 Accounts: ✨ receipts read by the vision LLM, ⤓ CSV, 🖨 the BAS worksheet)
+node scripts/test-880.js > /tmp/t880.log 2>&1 \
+  && ok "2.880.0 units: the receipt question, the answer checked (numbers, AU dates, total, lines add up, GST 1/11, GST-free, bill vs receipt, ABN, account), read() via captioner.describe, CSV of every list, the BAS page, routes" \
+  || { bad "2.880.0 units"; grep -a "^FAIL" -A1 /tmp/t880.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui880-ui.js > /tmp/ui880.log 2>&1 \
+  && ok "2.880.0 browser test: ＋ ✨ Read a receipt with a PDF (drawn to PNG), the bill dialog filled + saved with the PDF, ✨ Read it in the dialog, ⤓ CSV download, 🖨 the BAS worksheet page" \
+  || { bad "2.880.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui880.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

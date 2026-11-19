@@ -59,6 +59,23 @@ function mount(app) {
     const business = printBusiness(biz(req), B);
     return Object.assign(require("../lib/accountingPrint").fieldsFor(d, B, business), { kind: d.kind, number: d.number, layout: d.kind === "quote" ? B.settings.quoteLayout || "" : B.settings.invoiceLayout || "", issues: A().invoiceIssues(B, d, business) });
   }));
+  // 2.880.0: ✨ a receipt / bill read by the vision LLM (a draft for the dialog), ⤓ CSV of a list / report, 🖨 the BAS worksheet page
+  app.post("/api/accounts/read", big, async (req, res) => {
+    try { res.json(await require("../lib/receiptRead").read((req.body || {}).file, { name: (req.body || {}).name, today: (req.body || {}).today })); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
+  app.get("/api/accounts/csv", (req, res) => {
+    try {
+      const B = A().load(biz(req)), kind = String(req.query.kind || ""), C = require("../lib/accountingCsv");
+      const R = kind === "docs" ? A().view(B) : A().report(B, Object.assign({}, req.query, { kind }));
+      const name = `${biz(req) === "main" ? "accounts" : "accounts-" + biz(req)}-${kind}${R.period ? "-" + R.period.from + "_" + R.period.to : ""}.csv`;
+      res.set("Content-Disposition", `attachment; filename="${name}"`).type("text/csv; charset=utf-8").send(C.csv(C.rowsFor(kind, R, B)));
+    } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
+  app.get("/api/accounts/bas-print", (req, res) => {
+    try { const B = A().load(biz(req)); res.type("html").send(require("../lib/accountingCsv").basHtml(A().report(B, Object.assign({}, req.query, { kind: "bas" })), B, printBusiness(biz(req), B))); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));
   app.post("/api/accounts/journal", small, wrap((req) => A().saveJournal(biz(req), (req.body || {}).entry)));

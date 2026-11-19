@@ -14,7 +14,8 @@
  *   Trial Balance · Profit & Loss · Balance Sheet · BAS (the worksheet: G1 G3 G10 G11 1A 1B, cash / accrual) · Jobs · Accounts
  * 2.878.0 ✍ write invoices + quotes: ＋ 📝 Quote, the customer (address, email, ABN), lines as quantity x unit price, 🖨 the page
  *   to print / Save as PDF (lib/accountingPrint.js - a tax invoice the ATO's way), ➜📤 a quote made an invoice, invoice settings.
- * Reading a receipt with the vision LLM (2.879.0) comes next.
+ * 2.880.0 ✨ Read a receipt… (bar) / ✨ Read it (the dialog): the vision LLM reads the picture (a PDF's first page drawn first,
+ *   pdf.js) -> lib/receiptRead.js checks it -> the dialog filled to check + Save; ⤓ CSV on every list / report; 🖨 the BAS worksheet.
  * Pure (Node: scripts/test-877.js): dollars, filterDocs, FILTERS, TABS.
  */
 (function (root) {
@@ -111,7 +112,33 @@
     } catch (e) { P.innerHTML = `<div class="acnote">${esc(e.message)}</div>`; msg("✗ " + e.message, true); }
   }
   const refresh = () => loadBooks().then(() => show()).catch((e) => msg("✗ " + e.message, true));
-  const head = (title, sub) => `<h3>${esc(title)}</h3><div class="acsub">${esc(sub || "")}</div>`;
+  // 2.880.0: ⤓ CSV of the list / report in front (and 🖨 the BAS worksheet)
+  const CSV_OF = { docs: "docs", journals: "journal", ledger: "ledger", tb: "tb", pl: "pl", bs: "bs", bas: "bas", jobs: "jobs" };
+  const head = (title, sub) => `<h3>${esc(title)}${CSV_OF[S.tab] ? `<span style="float:right;font:12px system-ui,sans-serif">${S.tab === "bas" ? `<button type="button" class="ghost" data-basprint title="The BAS worksheet as a page to print or save as PDF">🖨 Print</button> ` : ""}<button type="button" class="ghost" data-csv="${CSV_OF[S.tab]}" title="This list as a CSV file (opens in any spreadsheet)">⤓ CSV</button></span>` : ""}</h3><div class="acsub">${esc(sub || "")}</div>`;
+  const reportQ = (kind) => qs(Object.assign({ biz: S.biz, kind, journal: S.journal, account: S.account, basis: S.basis || (S.books && S.books.settings.basis) }, perQ()));
+  /* ---- 2.880.0: ✨ a receipt / bill read by the vision LLM -> the dialog filled (nothing saved until Save) */
+  const fileAsDataUrl = (f) => new Promise((ok, no) => { const fr = new root.FileReader(); fr.onload = () => ok(String(fr.result)); fr.onerror = () => no(new Error("the file could not be read")); fr.readAsDataURL(f); });
+  const loadScript = (src, test) => new Promise((ok, no) => { if (test()) return ok(test()); const sc = doc.createElement("script"); sc.src = src; sc.onload = () => ok(test()); sc.onerror = () => no(new Error("could not load " + src)); doc.head.appendChild(sc); });
+  /** a PDF's first page drawn to a PNG (the vision model takes pictures), else the picture itself */
+  async function asPicture(dataUrl) {
+    if (!/^data:application\/pdf/.test(dataUrl)) return dataUrl;
+    const L = await loadScript("/static/vendor/pdf.min.js", () => root.pdfjsLib);
+    if (L.GlobalWorkerOptions && !L.GlobalWorkerOptions.workerSrc) L.GlobalWorkerOptions.workerSrc = "/static/vendor/pdf.worker.min.js";
+    const bin = root.atob(dataUrl.split(",")[1]), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const pdf = await L.getDocument({ data: bytes }).promise, page = await pdf.getPage(1), v0 = page.getViewport({ scale: 1 }), k = Math.min(3, 1800 / Math.max(v0.width, v0.height)), v = page.getViewport({ scale: k });
+    const c = doc.createElement("canvas"); c.width = Math.round(v.width); c.height = Math.round(v.height); const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: g, viewport: v }).promise; return c.toDataURL("image/png");
+  }
+  /** read a file -> the receipt / bill dialog filled with what was read (the file kept with it) */
+  async function readReceipt(fileData, name, keep) {
+    msg("✨ the vision model is reading " + (name || "the receipt") + "…");
+    const r = await api("/api/accounts/read", { file: await asPicture(fileData), name, today: todayStr() });
+    if (!r.draft) { msg("✨ " + (r.checks || []).join("; "), true); if (!keep) docForm("receipt", null, { file: fileData, fileName: name, checks: r.checks }); return r; }
+    const d = Object.assign({}, r.draft, { lines: r.draft.lines.map((l) => Object.assign({}, l, { amount: Math.round(parseFloat(l.amount) * 100) })) }, keep || {});
+    docForm(d.kind, d, { file: fileData, fileName: name, checks: ["✨ read by the vision model - check it before you save"].concat(r.checks || []) });
+    msg(`✨ read: ${r.draft.party || "?"} $${(r.draft.lines.reduce((t, l) => t + parseFloat(l.amount), 0)).toFixed(2)} - check it, then Save`);
+    return r;
+  }
 
   /* ---------------- the views ---------------- */
   const VIEWS = {
@@ -233,7 +260,8 @@
   const jobOpts = (sel) => `<option value="">— no job —</option>` + S.books.jobs.filter((j) => j.status === "open" || j.code === sel).map((j) => `<option value="${esc(j.code)}"${j.code === sel ? " selected" : ""}>${esc(j.code)} ${esc(j.name)}</option>`).join("");
   const todayStr = () => new Date().toISOString().slice(0, 10);
   const toDollars = (c) => (c == null || c === "" ? "" : (Number(c) / 100).toFixed(2));
-  function docForm(kind0, d0) {
+  function docForm(kind0, d0, pre) {
+    const P0 = pre || {};
     const d = d0 || { kind: kind0, date: todayStr(), lines: [{}] }, kind = d.kind, sale = kind === "invoice" || kind === "quote";
     const lineFilter = sale ? (a) => a.type === "income" : (a) => ["expense", "cos", "asset"].includes(a.type) && !a.system && !a.bank;
     const defAcc = sale ? "4200" : "6900";
@@ -254,8 +282,10 @@
       + `<div class="acrow"><button type="button" class="ghost" id="acfAdd">＋ Line</button><span style="flex:1"></span><span id="acfTot" class="acnum"></span></div><div id="acfWarn" class="acnote" style="color:#b1302a"></div>`
       + `<label class="f" style="display:flex">Notes<textarea id="acfNotes" rows="2" style="width:100%">${esc(d.notes || "")}</textarea></label>`
       + `<div class="acrow"><button type="button" class="ghost" id="acfFileBtn">📎 Attach ${sale ? "a copy" : "the " + (kind === "bill" ? "bill" : "receipt")} (picture or PDF)…</button><span id="acfFileName" style="font-style:italic">${d.file ? "kept: " + esc(d.file) : ""}</span>`
-      + `<input type="file" id="acfFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none"></div>`;
-    let fileData = "";
+      + `<input type="file" id="acfFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none">`
+      + (sale ? "" : `<button type="button" class="ghost" id="acfRead" title="The vision model reads the attached receipt / bill and fills this in"${P0.file ? "" : " disabled"}>✨ Read it</button>`) + `</div>`
+      + (P0.checks && P0.checks.length ? `<div class="acnote" style="color:#8a5a00">${P0.checks.map(esc).join("<br>")}</div>` : "");
+    let fileData = P0.file || "", fileName = P0.fileName || "";
     const title = (d.id ? "Change " : "New ") + ({ receipt: "receipt (paid)", bill: "bill to pay", invoice: "invoice we sent", quote: "quote" })[kind];
     dialog(title, html, async () => {
       const lines = [...$("acfLines").querySelectorAll("tr")].slice(1).map((tr) => { const o = {}; tr.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.value; }); return o; }).filter((l) => l.amount !== "" || l.desc);
@@ -285,7 +315,9 @@
       b.addEventListener("click", (e) => { if (e.target.closest("[data-rmline]")) { const tr = e.target.closest("tr"); if ($("acfLines").querySelectorAll("tr").length > 2) tr.remove(); tot(); } });
       $("acfAdd").onclick = () => { const tb = $("acfLines").tBodies[0]; tb.insertAdjacentHTML("beforeend", line({})); setTax(tb.lastElementChild); tot(); };
       $("acfFileBtn").onclick = () => { $("acfFile").value = ""; $("acfFile").click(); };
-      $("acfFile").onchange = () => { const f = $("acfFile").files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { $("acDlgE").textContent = "the file is over 25 MB"; return; } const fr = new root.FileReader(); fr.onload = () => { fileData = String(fr.result); $("acfFileName").textContent = "📎 " + f.name; }; fr.readAsDataURL(f); };
+      $("acfFile").onchange = () => { const f = $("acfFile").files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { $("acDlgE").textContent = "the file is over 25 MB"; return; } const fr = new root.FileReader(); fr.onload = () => { fileData = String(fr.result); fileName = f.name; $("acfFileName").textContent = "📎 " + f.name; if ($("acfRead")) $("acfRead").disabled = false; }; fr.readAsDataURL(f); };
+      if (fileName) $("acfFileName").textContent = "📎 " + fileName;
+      if ($("acfRead")) $("acfRead").onclick = () => { $("acfRead").disabled = true; readReceipt(fileData, fileName, d.id ? { id: d.id } : null).catch((e) => { $("acDlgE").textContent = e.message; $("acfRead").disabled = false; }); };
       if (!d.id) $("acfLines").querySelectorAll("tr").forEach((tr, i) => { if (i) { const tx = tr.querySelector('[data-k="tax"]'); if (tx && !d.lines[i - 1].tax) setTax(tr); } });
       tot(); setTimeout(() => $("acfParty").focus(), 0);
     });
@@ -342,6 +374,12 @@
     on("acNewBill", "click", () => loadBooks().then(() => docForm("bill")));
     on("acNewInvoice", "click", () => loadBooks().then(() => docForm("invoice")));
     on("acNewQuote", "click", () => loadBooks().then(() => docForm("quote")));
+    on("acRead", "click", () => { $("acReadFile").value = ""; $("acReadFile").click(); });
+    on("acReadFile", "change", async () => {
+      const f = $("acReadFile").files[0]; if (!f) return;
+      if (f.size > 25 * 1024 * 1024) return msg("✗ the file is over 25 MB", true);
+      try { await loadBooks(); await readReceipt(await fileAsDataUrl(f), f.name); } catch (e) { msg("✗ " + e.message, true); }
+    });
     on("acNewJournal", "click", () => loadBooks().then(journalForm));
     on("acTabs", "click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
     on("acDlgCancel", "click", () => $("acDlg").close());
@@ -366,6 +404,8 @@
         let x;
         if ((x = one("[data-filter]"))) { S.filter = x.dataset.filter; return show(); }
         if ((x = one("[data-file]"))) { e.stopPropagation(); return root.open("/api/accounts/file/" + encodeURIComponent(x.dataset.file) + "?biz=" + encodeURIComponent(S.biz), "_blank"); }
+        if ((x = one("[data-csv]"))) { e.stopPropagation(); return root.open("/api/accounts/csv?" + reportQ(x.dataset.csv), "_blank"); }
+        if ((x = one("[data-basprint]"))) { e.stopPropagation(); return root.open("/api/accounts/bas-print?" + reportQ("bas"), "_blank"); }
         if ((x = one("[data-print]"))) { e.stopPropagation(); return printDoc(x.dataset.print, false); }
         if (t.id === "acDesign") return designLayout();
         if ((x = one("[data-q2i]"))) { e.stopPropagation(); const q = B.docs.find((y) => y.id === x.dataset.q2i); if (await yes(`Make quote ${q.number} (${q.party}, $${dollars(q.total)}) an invoice dated today?`, "Make invoice")) { const inv = await api("/api/accounts/quote/" + q.id + "/invoice", { date: todayStr() }); await refresh(); msg(`✔ quote ${q.number} is invoice ${inv.number} - 🖨 to print it`); } return; }
@@ -387,5 +427,5 @@
     setTimeout(look, 500);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, state: () => S }, pure);
+  root.H3Accounts = Object.assign({ show, refresh, docForm, payForm, journalForm, printDoc, designLayout, readReceipt, asPicture, state: () => S }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

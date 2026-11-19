@@ -6185,6 +6185,15 @@ BAS の数字はワークシートです。提出は ATO または税理士を�
 - Accounts ▸ Accounts の **Invoice layout ▾** または **Quote layout ▾** でそれを選びます（帳簿形式のページが組み込みのもの）。**🎨 Design a layout in the image editor…** でフィールド一覧付きの新しい A4 ページが開きます。
 - 請求書または見積書の **🖨** で、その書類の数字で埋めたレイアウトが画像エディターに開きます - 各フィールドは置いた場所に入ります。印刷（File ▸ 🔍 Print Preview / 🖨 Print）するか、File ▸ Export ▸ Document で PDF にします。
 
+## ✨ AI による領収書の読み取り、CSV、BAS の印刷 (2.880.0)
+<!-- en: receipts-read-by-the-ai-csv-and-the-bas-to-print-2-880-0 fbf76c7a0e92 -->
+
+- 📒 Accounts ドッカーの **＋ ✨ Read a receipt…**：領収書または請求書を選びます - 写真、スキャン、PDF（最初のページを画像にします）。すでに使っているビジョンモデル（Basic Settings / ☁ Runs on ▸ Vision LLM - このコンピューター、ポッド、OpenRouter）が仕入先、ABN、番号、日付、期日、明細、合計、GST を読み取り、ファイルを添付した状態で領収書または請求書のダイアログが開きます。**確認して Save するまで何も記帳されません。**
+- bitGen は読み取った内容を確認します：オーストラリア式の日付（日が先）、明細の合計は総額と一致すること（一致しなければ総額の 1 行に）、GST は課税明細のおよそ 1/11 であること（違えば知らせます）、GST 非課税と書かれた明細はそのまま、期日があれば支払う請求書、仕入先の ABN は正しいこと、勘定科目は仕入先と内容から選ばれます（燃料 -> Motor Vehicle Expenses、Telstra -> Telephone and Internet、Bunnings -> Purchases and Materials など）。
+- 領収書または請求書のダイアログの **✨ Read it** は、そこに添付したファイルに同じことをします。
+- Documents、Journals、Ledger、Trial Balance、Profit & Loss、Balance Sheet、BAS、Jobs の上部の **⤓ CSV** で、その一覧を .csv ファイルに保存します。どの表計算ソフト（▦ Spreadsheet ドッカーも）でも、会計士にも渡せます。
+- BAS タブの **🖨 Print**：GST ワークシートをページに - 事業名と ABN、期間と基準、G1、G2、G3、G10、G11、1A、1B、納付額または還付額 - 記録用と税理士用に印刷または PDF 保存できます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
