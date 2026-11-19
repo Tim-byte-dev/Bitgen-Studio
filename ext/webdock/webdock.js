@@ -176,6 +176,7 @@
     c.style.display = isP ? "none" : ""; pic.style.display = isP ? "block" : "none";
     if (isP) { pic.innerHTML = `<img src="/web-preview/${St.path.split("/").map(encodeURIComponent).join("/")}?v=${Date.now()}" alt="">`; return; }
     if (c.value !== St.text) c.value = St.text;
+    if (root.WbCode) root.WbCode.refresh();   // 2.864.0 the colours + line numbers (wbcode.js)
   }
   /* 👁 Preview */
   function paintPrev() {

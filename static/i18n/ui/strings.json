@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6792,
+ "count": 6819,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62966,6 +62966,276 @@
    ],
    "where": [
     "🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments (2.863.0)"
+   ]
+  },
+  {
+   "s": "a closing tag with no opening one",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "not closed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "HTML lets these stay open",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "A block comment round the selection (HTML or CSS / JS)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "A line comment (// in JS / PHP)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "A TODO comment",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "Comment / uncomment the selected lines (Ctrl+/)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a paragraph",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a main heading",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a heading",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a smaller heading",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a div",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a section",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a link",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a picture",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "bold",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "italic",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a span",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a list",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a numbered list",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a line break",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a button",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a form",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "an input box",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a table",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a script",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
+   ]
+  },
+  {
+   "s": "a style sheet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ </> Code (2.864.0)"
    ]
   }
  ]

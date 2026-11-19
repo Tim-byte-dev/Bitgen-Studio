@@ -14511,6 +14511,13 @@ node scripts/test-863-live.js > /tmp/t863l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui863-ui.js > /tmp/ui863.log 2>&1 \
   && ok "2.863.0 browser test: 💳 keys typed (pk_ refused), kept encrypted, sent into the host's inc/config.php only" \
   || { bad "2.863.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui863.log | head -12; }
+# ---- 2.864.0 (</> the web builder's code editor)
+node scripts/test-864.js > /tmp/t864.log 2>&1 \
+  && ok "2.864.0 code editor units: tags past comments / PHP / script, not closed + stray (soft), colours escaped, quick tags, comments, ⌗ toggle" \
+  || { bad "2.864.0 units"; grep -a "^FAIL" -A1 /tmp/t864.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui864-ui.js > /tmp/ui864.log 2>&1 \
+  && ok "2.864.0 browser test: line numbers, colours lined up, <section> not closed marked + listed + jumped to, B wraps, Ctrl+/ + Ctrl+Z" \
+  || { bad "2.864.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui864.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

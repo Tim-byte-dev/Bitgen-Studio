@@ -4,6 +4,7 @@
   "order": 98,
   "html": "dock.html",
   "scripts": [
-    "webdock.js"
+    "webdock.js",
+    "wbcode.js"
   ]
 }

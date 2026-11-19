@@ -9657,6 +9657,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🌐 Web editor ▸ 📤 Host ▸ 💳 Card payments**: the Stripe **secret key** (sk_test_… to try, sk_live_… for real - Stripe ▸ Developers ▸ API keys), the **webhook signing secret** (whsec_…) and the **currency** (aud, nzd, usd …). They are kept encrypted on this computer; tick **with the card payment keys** and 📤 Send to host puts them into the host's inc/config.php only - never into the project.
 - In Stripe ▸ Developers ▸ Webhooks add the endpoint https://your-site/stripe-webhook.php with the event checkout.session.completed. Try it with the test keys and Stripe's test card 4242 4242 4242 4242 first. Without the keys checkout works as before (bank transfer / pay on pick-up).
 
+## </> The web builder's code editor (2.864.0)
+
+- **🌐 Web editor ▸ </> Code** shows **line numbers** and **colours**: tag names, attributes, values, comments, the doctype and PHP in HTML; comments, strings, numbers and keywords in CSS, JS and PHP files.
+- A tag **not closed** is marked red (orange for those HTML lets stay open - <p>, <li>, <td> …), and so is a closing tag with no opening one. The line under the editor lists them with their line numbers - a click puts the cursor on the tag.
+- The **◧ toolbar** on the left: quick tags (¶ paragraph, H1-H3, div, section, link, picture, bold, italic, span, lists, line break, button, form, input, table, script, style sheet) wrap the selection; quick comments (<!-- --> or /* */, //, ✎ TODO) and **⌗** (Ctrl+/) comments or uncomments the selected lines. Ctrl+Z undoes them.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

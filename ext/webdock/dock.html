@@ -31,6 +31,24 @@
           #wbAskRow { display: none; gap: 3px; }
           #wbAskRow.on { display: flex; }
           #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          /* 2.864.0 the code editor (wbcode.js): line numbers + colours under the textarea, the quick-tag toolbar on the left */
+          #wbCodeEd { flex: 1; display: flex; gap: 4px; min-height: 120px; }
+          #wbCodeTools { display: flex; flex-direction: column; gap: 2px; width: 34px; overflow-y: auto; flex: none; }
+          #wbCodeTools button { padding: 2px 0; min-width: 0; font-size: 11px; line-height: 1.3; }
+          #wbCodeTools .sep { height: 1px; background: var(--line); margin: 3px 2px; }
+          #wbCodeBox { flex: 1; display: flex; min-width: 0; border: 1px solid var(--line); background: var(--ink); overflow: hidden; }
+          #wbCodeNo, #wbCodeHl, #wbCodeIn #wbCode { font: 12.5px/1.5 Consolas, "Courier New", monospace; tab-size: 2; }
+          #wbCodeNo { margin: 0; padding: 6px 6px 6px 4px; min-width: 2.6em; text-align: right; color: var(--dim); opacity: .75; overflow: hidden; user-select: none; border-right: 1px solid var(--line); flex: none; }
+          #wbCodeIn { position: relative; flex: 1; min-width: 0; }
+          #wbCodeHl { position: absolute; inset: 0; margin: 0; padding: 6px; overflow: hidden; white-space: pre; color: var(--text); pointer-events: none; }
+          #wbCodeIn #wbCode { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; border: 0; background: transparent; color: transparent; caret-color: var(--text); padding: 6px; }
+          #wbCodeIn #wbCode::selection { background: rgba(80, 140, 255, .35); color: transparent; }
+          #wbCodeHl .ht { color: #569cd6; } #wbCodeHl .hn { color: #9cdcfe; } #wbCodeHl .hv { color: #ce9178; } #wbCodeHl .hc { color: #6a9955; }
+          #wbCodeHl .hd, #wbCodeHl .hp { color: #8a8f98; } #wbCodeHl .hk { color: #c586c0; } #wbCodeHl .hm { color: #b5cea8; } #wbCodeHl .hphp { background: rgba(197, 134, 192, .08); }
+          #wbCodeHl .hbad { background: rgba(229, 57, 53, .3); text-decoration: underline wavy #e53935; }
+          #wbCodeHl .hwarn { text-decoration: underline wavy #f39c12; }
+          #wbCodeIssues { font-size: 11px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+          #wbCodeIssues a.b { color: #e53935; } #wbCodeIssues a.w { color: #f39c12; } #wbCodeIssues .hbadtxt { color: #e53935; font-weight: 600; }
           #wbCode { flex: 1; min-height: 120px; font: 12.5px/1.5 Consolas, "Courier New", monospace; tab-size: 2; white-space: pre; resize: none; background: var(--ink); color: var(--text); border: 1px solid var(--line); padding: 6px; }
           #wbPic { display: none; flex: 1; overflow: auto; text-align: center; background: var(--ink); border: 1px solid var(--line); }
           #wbPic img { max-width: 100%; margin: 8px auto; }

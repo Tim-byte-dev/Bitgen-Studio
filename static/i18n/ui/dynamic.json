@@ -26183,6 +26183,34 @@
    "src": "ext/videodock/storyboard.js:92"
   },
   {
+   "s": "a closing tag with no opening one",
+   "src": "ext/webdock/wbcode.js:94"
+  },
+  {
+   "s": "not closed",
+   "src": "ext/webdock/wbcode.js:94"
+  },
+  {
+   "s": "HTML lets these stay open",
+   "src": "ext/webdock/wbcode.js:153"
+  },
+  {
+   "s": "A block comment round the selection (HTML or CSS / JS)",
+   "src": "ext/webdock/wbcode.js:170"
+  },
+  {
+   "s": "A line comment (// in JS / PHP)",
+   "src": "ext/webdock/wbcode.js:170"
+  },
+  {
+   "s": "A TODO comment",
+   "src": "ext/webdock/wbcode.js:170"
+  },
+  {
+   "s": "Comment / uncomment the selected lines (Ctrl+/)",
+   "src": "ext/webdock/wbcode.js:170"
+  },
+  {
    "s": "Title (the browser tab + search results)",
    "src": "ext/webdock/webdock.js:59"
   },
@@ -26248,111 +26276,111 @@
   },
   {
    "s": "showing your unsaved changes - 💾 Save to keep them",
-   "src": "ext/webdock/webdock.js:184"
+   "src": "ext/webdock/webdock.js:185"
   },
   {
    "s": "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page",
-   "src": "ext/webdock/webdock.js:194"
+   "src": "ext/webdock/webdock.js:195"
   },
   {
    "s": "Kept in www/data/content.json - the site reads it (public)",
-   "src": "ext/webdock/webdock.js:194"
+   "src": "ext/webdock/webdock.js:195"
   },
   {
    "s": "Kept in the project's web/crm.json - private, never put on the site",
-   "src": "ext/webdock/webdock.js:194"
+   "src": "ext/webdock/webdock.js:195"
   },
   {
    "s": "no pages",
-   "src": "ext/webdock/webdock.js:203"
+   "src": "ext/webdock/webdock.js:204"
   },
   {
    "s": "none yet - ＋ New",
-   "src": "ext/webdock/webdock.js:203"
+   "src": "ext/webdock/webdock.js:204"
   },
   {
    "s": "Open the page",
-   "src": "ext/webdock/webdock.js:208"
+   "src": "ext/webdock/webdock.js:209"
   },
   {
    "s": "your server",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "s": "Keep the records in the project again (the database stays as it is)",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "s": "this computer",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "s": "Kept in the project (not live)",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "s": "Create the site's database",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "s": "MariaDB is needed - the 🗄 Database docker asks to download it",
-   "src": "ext/webdock/webdock.js:249"
+   "src": "ext/webdock/webdock.js:250"
   },
   {
    "s": "making the database",
-   "src": "ext/webdock/webdock.js:251"
+   "src": "ext/webdock/webdock.js:252"
   },
   {
    "s": "needs PHP on the host",
-   "src": "ext/webdock/webdock.js:273"
+   "src": "ext/webdock/webdock.js:274"
   },
   {
    "s": "Add to the page",
-   "src": "ext/webdock/webdock.js:273"
+   "src": "ext/webdock/webdock.js:274"
   },
   {
    "s": "Use it for ✨",
-   "src": "ext/webdock/webdock.js:273"
+   "src": "ext/webdock/webdock.js:274"
   },
   {
    "s": "say what the section should be",
-   "src": "ext/webdock/webdock.js:292"
+   "src": "ext/webdock/webdock.js:293"
   },
   {
    "s": "the LLM is writing the section",
-   "src": "ext/webdock/webdock.js:294"
+   "src": "ext/webdock/webdock.js:295"
   },
   {
    "s": "the FTP account's password",
-   "src": "ext/webdock/webdock.js:332"
+   "src": "ext/webdock/webdock.js:333"
   },
   {
    "s": "the CRM is not linked to your server's database (🗂 CRM ▸ 🗄)",
-   "src": "ext/webdock/webdock.js:334"
+   "src": "ext/webdock/webdock.js:335"
   },
   {
    "s": "sk_test_… to try, sk_live_… for real (Stripe ▸ Developers ▸ API keys)",
-   "src": "ext/webdock/webdock.js:337"
+   "src": "ext/webdock/webdock.js:338"
   },
   {
    "s": "kept (encrypted) - type a new one to change it",
-   "src": "ext/webdock/webdock.js:338"
+   "src": "ext/webdock/webdock.js:339"
   },
   {
    "s": "whsec_… (Stripe ▸ Developers ▸ Webhooks ▸ your endpoint)",
-   "src": "ext/webdock/webdock.js:338"
+   "src": "ext/webdock/webdock.js:339"
   },
   {
    "s": "logging in",
-   "src": "ext/webdock/webdock.js:344"
+   "src": "ext/webdock/webdock.js:345"
   },
   {
    "s": "the password is forgotten",
-   "src": "ext/webdock/webdock.js:385"
+   "src": "ext/webdock/webdock.js:386"
   },
   {
    "s": "the card payment keys are forgotten",
-   "src": "ext/webdock/webdock.js:386"
+   "src": "ext/webdock/webdock.js:387"
   }
  ],
  "patterns": [
@@ -31553,6 +31581,18 @@
    "src": "ext/videodock/storyboard.js:168"
   },
   {
+   "p": "{0} not closed / stray",
+   "src": "ext/webdock/wbcode.js:153"
+  },
+  {
+   "p": "line {0}",
+   "src": "ext/webdock/wbcode.js:154"
+  },
+  {
+   "p": "{0} - wraps the selection",
+   "src": "ext/webdock/wbcode.js:170"
+  },
+  {
    "p": "{0} MB",
    "src": "ext/webdock/webdock.js:107"
   },
@@ -31562,79 +31602,79 @@
   },
   {
    "p": "Live from the database {0} (your server) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:194"
+   "src": "ext/webdock/webdock.js:195"
   },
   {
    "p": "Live from the database {0} (this computer) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:194"
+   "src": "ext/webdock/webdock.js:195"
   },
   {
    "p": "Live: {0}",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "p": "your server - ✗ {0}",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "p": "this computer - ✗ {0}",
-   "src": "ext/webdock/webdock.js:237"
+   "src": "ext/webdock/webdock.js:238"
   },
   {
    "p": "with {0} - {1}",
-   "src": "ext/webdock/webdock.js:299"
+   "src": "ext/webdock/webdock.js:300"
   },
   {
    "p": "kept ({0} key, encrypted) - type a new one to change it",
-   "src": "ext/webdock/webdock.js:337"
+   "src": "ext/webdock/webdock.js:338"
   },
   {
    "p": "Last sent {0} to {1}/{2}: {3} file(s)",
-   "src": "ext/webdock/webdock.js:340"
+   "src": "ext/webdock/webdock.js:341"
   },
   {
    "p": "logged in (encrypted) - {0}: {1} item(s), a home page already there, inc/config.php there (kept)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in (encrypted) - {0}: {1} item(s), a home page already there",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in (encrypted) - {0}: {1} item(s), inc/config.php there (kept)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in (encrypted) - {0}: {1} item(s)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in - NOT encrypted - {0}: {1} item(s), a home page already there, inc/config.php there (kept)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in - NOT encrypted - {0}: {1} item(s), a home page already there",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in - NOT encrypted - {0}: {1} item(s), inc/config.php there (kept)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "logged in - NOT encrypted - {0}: {1} item(s)",
-   "src": "ext/webdock/webdock.js:348"
+   "src": "ext/webdock/webdock.js:349"
   },
   {
    "p": "nothing changed since the last send ({0} the same)",
-   "src": "ext/webdock/webdock.js:365"
+   "src": "ext/webdock/webdock.js:366"
   },
   {
    "p": "{0} file(s) sent, {1} the same, {2} taken off - inc/config.php {3} · {4}/{5}",
-   "src": "ext/webdock/webdock.js:365"
+   "src": "ext/webdock/webdock.js:366"
   },
   {
    "p": "{0} file(s) sent, {1} the same - inc/config.php {2} · {3}/{4}",
-   "src": "ext/webdock/webdock.js:365"
+   "src": "ext/webdock/webdock.js:366"
   }
  ]
 }
