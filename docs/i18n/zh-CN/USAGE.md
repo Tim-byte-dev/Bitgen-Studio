@@ -2916,27 +2916,13 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
 **安装。** 仅支持 NVIDIA RTX 显卡。在 Settings → ComfyUI → Video accelerators 中，按 **Install RH DLSS 5**。然后自行将 NVIDIA 的 DLL 复制到 ComfyUI/models/dlss5/；节点包的 README 列出了这些文件名，节点包从不下载这些文件。重启 ComfyUI。帧生成还需要在 models/dlss5/dlssg/ 中放置其专用的 worker 文件（README 中也有说明）。
 
 ## 长视频：MiniMax H3 单次运行最长 30 秒（2.503.0）
-<!-- en: long-video-one-minimax-h3-run-up-to-30-seconds-2-503-0 7f140d0ebd20 -->
+<!-- en: long-video-one-minimax-h3-run-up-to-30-seconds-2-503-0 1cfd8418d719 -->
 
-以前，一个 MiniMax H3 片段是一次最长 15 秒的生成；更长的内容会以 15 秒为一段渲染后再拼接。**Long video**（长视频）可以**一次生成最长 30 秒**。单次运行能让角色、动作和声音保持连贯，没有拼接点。其设置与 Tim 的 “secret sauce” 工作流相同：在采样器前加入三个模型补丁。
+已在 2.872.0 中停用。30 秒的单次运行在 15 秒之后会改变人物面孔和画面流程，因此由 **H3 Long Video** 取而代之（见下方单独的章节）：片段由 15 秒的镜头组成，每个镜头都从上一个镜头的最后一帧开始。**MiniMax H3 Long (30 s)** 风格不再列出，仍开着 Long video 的旧风格会正常渲染。StoryBoard ⚙ 中的 **Long video** 现在会把超过 15 秒、没有歌曲的场景交给 H3 Long Video。
 
-- **MiniMax low-VRAM attention**：注意力头分组运行（4 个一组），缓冲区用完立即释放。
-- **Chunked feed-forward**：前馈步骤沿帧方向分块运行（序列超过 4096 个 token 后分为 2 块）。结果相同，内存峰值更低。
-- **Comfy kitchen attention**（可选）：在前面加入 ComfyUI 的 comfy-kitchen 注意力后端。
+**安装。** Settings → ComfyUI → Video accelerators 中有 **Install / update KJNodes** 按钮（KJNodes 的 Sage 注意力补丁）。
 
-**启用方法。**
-
-- **场景板：** 在 StoryBoard 的 ⚙ 中勾选 **Long video**。之后场景一次即可渲染最长 30 秒。如果同时勾选了 **Comfy Kitchen**，还会加入 kitchen 注意力。
-- **提示词面板的 Generate：** 选择 **MiniMax H3 Long (30 s)** 视频风格，或在任意 MiniMax H3 风格中开启 Long video（Settings → Video styles → Long video: On，或 On + comfy kitchen attention）。之后 Seconds 下方的计划行会将 25 秒的片段显示为一次 600 帧的运行。
-- 超过 30 秒的片段仍会被拆分后拼接，每段 30 秒。
-- 开启 Long video 时会跳过 Sage attention，因为 Long video 自带注意力补丁。Spectrum 仍可与之配合使用。
-- 它仅适用于 MiniMax H3；LTX 和 Wan 风格会忽略它。
-
-**安装。** Long video 需要较新的 ComfyUI-KJNodes。Settings → ComfyUI → Video accelerators 中有一个 **Install / update KJNodes** 按钮。kitchen 注意力需要 ComfyUI 0.32 或更高版本，并安装 comfy-kitchen（见其上方的 Comfy Kitchen 部分）。如果这台机器已经因某次显存不足的运行而记下了较低的显存上限，该上限仍然有效。
-
-同一窗格还可以安装 **Yusu H3 Unified**（MiniMax H3 的单节点前端，供使用它的导入工作流使用）和 **RH DLSS 5**（NVIDIA RTX 增强 / 放大 / 帧生成）。对于 DLSS 5，需要你自行将 NVIDIA 的 DLL 放入 ComfyUI/models/dlss5/；节点包从不下载它们。
-
-该导出的工作流还以 8 步运行其 turbo LoRA。添加一个 turbo LoRA 并在 Basic Settings 中设置 Steps，即可获得相同的速度。
+同一面板还可以安装 **Yusu H3 Unified**（MiniMax H3 的单节点前端，供使用它的导入工作流使用）和 **RH DLSS 5**（NVIDIA RTX 增强／放大／帧生成）。使用 DLSS 5 时，NVIDIA 的 DLL 需要你自己放入 ComfyUI/models/dlss5/；节点包不会下载它们。
 
 ## FLUX 3 Image Klein，以及编辑图像模式只列出编辑风格（2.502.0）
 <!-- en: flux-3-image-klein-and-edit-image-mode-lists-only-edit-styles-2-502-0 950e6d848f28 -->
@@ -6331,6 +6317,37 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 6. **Part pictures**：最多再加三张图片，每张注明用途——脸部、头部和头发、服装（正面 / 背面）、手、鞋，或同一角色的更多图片。**✏ Part notes** 为某个部位加上文字（例如左眼上方的一道疤）；**✏ View instructions** 编辑某个视图自己的指令（**↺ Default** 恢复原样）。
 7. ComfyUI 运行时，**Layout** 会画出设定表的各个分格，并显示像素和百万像素尺寸。
 8. **▶ Generate sheet**——每按一次就是一次使用新种子的生成；**🧵 Stitch**、**↻ Regenerate** 和 **✔ Keep** 和以前一样。你的选择会被记住（部位图片不会）。
+
+## 🎞 H3 Long Video：40 秒及更长（2.872.0）
+<!-- en: h3-long-video-40-seconds-and-longer-2-872-0 bea8fb33db92 -->
+
+**H3 Long Video** 用一个提示词制作一段长的 MiniMax H3 视频。它把片段渲染为**最长 15 秒的镜头**，每个镜头都从**上一个镜头的最后一帧**开始，因此即使 40 秒或更长（最长 120 秒），人物面孔和画面流程也能保持一致。它取代了 30 秒的单次运行。
+
+**提示词。** 段落之间留一个空行。
+
+- **第一段**是场景和风格，会在每个镜头中重复。
+- **之后的每一段是一个镜头**：发生什么、说什么（放在“引号”中）。
+- 没有空行的一整段文字会自动分配：第一句成为场景，其余部分按每 15 秒一个镜头拆分。
+- 以 **Characters:** 开头的段落是角色记忆，每行一个角色，例如 `Ann: <Picture 1>, she, 26, long red hair`。它让每个镜头中的面孔保持一致。
+
+**从提示词停靠栏。** 选择 **H3 Long Video (40 s)** 视频风格，然后按 Generate。
+
+- **Seconds** 是整个视频的长度。
+- Basic Settings 的宽度和高度决定画面比例（16:9、9:16、1:1 …）和尺寸。
+- 类型为 **First frame** 的图片（或第一张图片）作为 `<Picture 1>` 开始第一个镜头。最多再加 4 张图片作为参考图 `<Picture 2>` 到 `<Picture 5>`。
+- 视频风格旁边的 **2K** 勾选框还会保存一份 2K 副本（NVIDIA RTX Video Super Resolution x2，需要 RTX 显卡）；该副本就是任务的视频。
+
+**在 StoryBoard 上。** 在 ⚙ 中勾选 **Long video**。**没有歌曲**且**超过 15 秒**的场景会通过 H3 Long Video 渲染。场景图片（Cont / First）作为第一帧，演员的角色表作为参考图，并在角色记忆中按名字列出。有歌曲的场景仍以 15 秒的运行拼接渲染，因为 H3 Long Video 会生成自己的声音，无法跟随歌曲的口型。
+
+**安装。** Settings ▸ Add-ons ▸ **H3 Long Video** 会下载：
+
+- **H3-LongVideos** 节点包，来自它自己的页面（其许可证不允许转发，因此 bitGen Studio 从不附带它）；
+- **PlagueKind 的节点**（H3 SLA 稀疏注意力：更快、显存更少）和 **NVIDIA 的 VFX 节点**（2K 处理）；
+- **ComfyUI-Easy-Use**（在加载模型之间释放 GPU）；
+- MATLOWAI 的 **fused turbo MiniMax H3** 模型（21 GB，8 步）；
+- MiniMax H3 的文本编码器和 VAE（如果还没有）。
+
+安装新的节点包后，请重启一次 ComfyUI。按下 Generate 时如果缺少某个部分，会弹出 Download / Cancel 对话框。图是根据你的 ComfyUI 对每个节点给出的输入来构建的，因此较新版本的节点包也能运行。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

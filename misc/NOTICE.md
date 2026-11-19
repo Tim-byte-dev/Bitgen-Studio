@@ -108,6 +108,10 @@ Blender tools (LODs, UV packing, baking, export, toon, time of day, weather, tur
 | CadQuery | runs the part code for ✨ Generate in SolidCraft (Settings ▸ Add-ons ▸ CAD generate, its own venv) | https://github.com/CadQuery/cadquery |
 | cadrille | writes that part code from a description or a picture (optional; CAD generate's ticked item) | https://github.com/col14m/cadrille |
 | H3 Character Sheet Designer (ukr8b3g-cmyk) | lays out and writes the Character creator's character sheet (2.870.0 - Settings ▸ Add-ons ▸ H3 Character Sheet Designer clones it into ComfyUI's custom_nodes). Its code is MIT; its mannequin artwork and pictures are outside that licence and are not used or copied by bitGen Studio | https://github.com/ukr8b3g-cmyk/H3-Character-Sheet-Designer |
+| H3-LongVideos (Smite79) | chains MiniMax H3 shots for H3 Long Video (2.872.0 - Settings ▸ Add-ons ▸ H3 Long Video clones it from its own page into ComfyUI's custom_nodes). Its licence (h3-longvideos-no-redistribution) does not allow passing it on, so bitGen Studio never ships or copies it; bitGen only builds a graph that names its node | https://huggingface.co/Smite79/MiniMax-H3-Longvideos |
+| ComfyUI-PlagueKind-Nodes (PlagueKind, MIT) | H3 SLA sparse attention for H3 Long Video (2.872.0, downloaded by the add-on) | https://github.com/PlagueKind/ComfyUI-PlagueKind-Nodes |
+| ComfyUI_Nvidia_VFX_Nodes (Comfy-Org, Apache-2.0) | RTX Video Super Resolution - H3 Long Video's optional 2K pass (2.872.0, downloaded by the add-on; NVIDIA's nvidia-vfx package keeps its own licence) | https://github.com/Comfy-Org/ComfyUI_Nvidia_VFX_Nodes |
+| MiniMax H3 fused turbo int8 ConvRot (MATLOWAI) | H3 Long Video's model (2.872.0, downloaded by you through the add-on; the MiniMax H3 model licence applies) | https://huggingface.co/MATLOWAI/minimax-h3-fused-turbo-int8-convrot |
 
 ComfyUI is **GPL-3.0**; llama.cpp, stable-diffusion.cpp, faster-whisper and
 Electron are **MIT**. The remaining projects — and every custom node pack you

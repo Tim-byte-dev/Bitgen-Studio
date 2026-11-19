@@ -323,7 +323,9 @@ def long_on(vstyle) -> bool:
         return False
     if s.get("arch") not in (None, "", "minimax-h3"):
         return False
-    return str((s.get("accel") or {}).get("long") or "off") == "on"
+    # 2.872.0 RETIRED (Tim: "the 30sec one changes faces and flow after 15secs"): H3 Long Video (chained shots,
+    # lib/h3LongVideo.js) replaces it - an old style that still says long "on" renders normally
+    return False
 
 
 def plan_chunks(target: int, max_chunk: int = MAX_SINGLE_RUN, grid: str = "4n1",
@@ -1211,7 +1213,7 @@ def apply_video_accel(g, accel, prompt=""):
     ac = accel if isinstance(accel, dict) else {}
     sage = str(ac.get("sage") or "off").strip()
     spectrum = str(ac.get("spectrum") or "off").strip()
-    long = str(ac.get("long") or "off").strip() == "on"          # 2.503.0
+    long = False                       # 2.503.0 long single runs - RETIRED 2.872.0 (H3 Long Video replaces them)
     kitchen_attn = long and bool(ac.get("kitchen_attn"))
     veda = str(ac.get("veda") or "off").strip()                 # 2.536.0
     veda = veda if veda in VEDA_PRESETS else "off"

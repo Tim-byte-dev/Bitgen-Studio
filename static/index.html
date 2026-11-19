@@ -2377,7 +2377,7 @@
     </div>
     <!-- 2.503.0: the packs Tim's "secret sauce" H3 workflow uses (Long video = KJNodes' MiniMax nodes) -->
     <div class="rowbtns" style="margin-top:6px;align-items:center">
-      <button class="ghost" id="s_vapack_kjnodes" type="button" data-pack="kjnodes" title="Long video needs KJNodes' MiniMax low-VRAM attention + chunked feed-forward nodes - git pull updates an old copy">⬇ Install / update KJNodes</button>
+      <button class="ghost" id="s_vapack_kjnodes" type="button" data-pack="kjnodes" title="KJNodes' MiniMax nodes (Sage attention patches) - git pull updates an old copy">⬇ Install / update KJNodes</button>
       <span id="s_vapacklbl_kjnodes" class="hint">not checked</span>
     </div>
     <div class="rowbtns" style="margin-top:6px;align-items:center">
@@ -3542,7 +3542,9 @@
 <script src="/static/modelsfound.js"></script>
 <script src="/static/podfails.js"></script>  <!-- 2.778.0: a file that did not get onto a pod - ↻ Try again? (lib/podFails.js) -->
 <script src="/static/poderr.js"></script>  <!-- 2.779.0: a pod that could not be created - the real error in a dialog (lib/podCreateErr.js) -->
-<script src="/static/needinstall.js"></script>  <!-- 2.740.0: a part not installed (demucs, Whisper) - ⬇ Download / Cancel, installed in place (H3NeedInstall) -->  <!-- 2.719.0: models not found before a render - ⬇ Download / Cancel (H3ModelsFound - lib/modelsFound.js, misc/models_found.json) -->
+<script src="/static/needinstall.js"></script>
+<script src="/static/h3longgen.js"></script>  <!-- 2.872.0: an H3 Long Video style -> POST /api/h3long (chained MiniMax H3 shots) -->
+  <!-- 2.740.0: a part not installed (demucs, Whisper) - ⬇ Download / Cancel, installed in place (H3NeedInstall) -->  <!-- 2.719.0: models not found before a render - ⬇ Download / Cancel (H3ModelsFound - lib/modelsFound.js, misc/models_found.json) -->
 <script src="/static/mmsrc.js"></script>  <!-- 2.790.0: 🧩 Model manager ☐ Local ☐ RunPod ☐ OpenRouter ☐ All + 🗑 by place (H3MmSrc - routes/mmSources.js) -->
 <script src="/static/mmor.js"></script>  <!-- 2.790.0: 🧩 Model manager ▸ ☁ OpenRouter tab, ＋ with its endpoint (H3MmOr) -->
 <script src="/static/modelmgr.js"></script>  <!-- 2.518.0: 🧩 the Model + LoRA manager docker, Civitai downloads (H3ModelMgr - lib/modelCards.js, lib/civitai.js) -->
@@ -4106,8 +4108,10 @@ function vramCeiling() {   // the learned single-run ceiling (0 = model max), co
   // 107f floor (2.99.4): a smaller saved value is a bug, not a memory limit.
   return comfyEngine() && v >= 107 ? Math.max(5, Math.min(362, snapDown(v))) : 0;
 }
-/* 2.503.0: the picked video style runs MiniMax H3 Long video (lib/h3Long) - one run up to 719 frames (30 s) */
+/* 2.503.0: the picked video style runs MiniMax H3 Long video (lib/h3Long) - one run up to 719 frames (30 s).
+   2.872.0: RETIRED (H3 Long Video chains shots instead) - never on */
 function longStyleOn() {
+  if (true) return false;
   if (!comfyEngine() || !$("videoStyleSel")) return false;
   let list = [];
   try { list = Array.isArray(videoStyles) ? videoStyles : []; } catch (e) { list = []; }   // declared further down (TDZ)
@@ -4314,7 +4318,7 @@ $("s_vasage") && ($("s_vasage").onclick = (e) =>
     + "Undo with: pip uninstall sageattention", e.currentTarget));
 for (const k of ["kjnodes", "yusu", "veda", "dlss5", "deno", "h3latentup"])   // 2.503.0 (+ veda 2.536.0, deno + h3latentup 2.708.0)
   $("s_vapack_" + k) && ($("s_vapack_" + k).onclick = (e) => vaInstall(k, {
-    kjnodes: "git clone / update ComfyUI-KJNodes into custom_nodes?\nLong video needs its MiniMax low-VRAM attention + chunked feed-forward nodes.",
+    kjnodes: "git clone / update ComfyUI-KJNodes into custom_nodes?\nIts MiniMax nodes patch the H3 attention (Sage).",
     yusu: "git clone / update ComfyUI-Yusu-MiniMaxH3-Unified into custom_nodes?\nFor imported workflows that use its one-node H3 front end.",
     veda: "git clone / update Veda-on-ComfyUI into custom_nodes, then pip install its requirements into ComfyUI's python (triton-windows on Windows)?\nVeda sparse attention for MiniMax H3 - needs ComfyUI 0.38 or newer. Then download its predictor: Settings -> Models -> Model catalog -> Veda predictor (MiniMax H3).",
     h3latentup: "git clone / update the H3 latent upscaler nodes (LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler) into custom_nodes?\n16 GB mode's latent upscale pass needs them. Restart ComfyUI after.",
@@ -6100,6 +6104,7 @@ async function generateOne(gm, text, item) {
            // 2.324.0: Basic Settings' Swap mode (no <Picture n> mapping)
            : mode === "swap" ? await submitSwap(text)
            : curLtxStyle() ? await submitLtx(text)          // 2.338.0: an LTX 2.5 style
+           : window.H3LongGen && H3LongGen.style() ? await H3LongGen.submit(text)   // 2.872.0: H3 Long Video (static/h3longgen.js)
            : await submitJob(finalPrompt(text));
   if (!id) return "failed";
   if (item) { item.jobId = id; paintQueue(); }
@@ -13522,6 +13527,7 @@ async function refreshVideoStyles(selectId) {
     videoStyles = vj.styles || [];
     // 2.328.0: character-swap styles (mmh3_chr_swap) - picking one = Swap mode
     videoStyles.forEach((st) => { st.swap = !!((vj.swap_styles || {})[st.id]); st.ltx = /^ltx-2\.[35]$/.test(String(st.arch || "")); st.ltx23 = st.arch === "ltx-2.3"; });   // 2.338.0: + LTX; 2.402.0: + LTX 2.3
+    if (window.H3LongGen) H3LongGen.paint();   // 2.872.0: the 2K tick beside the select, for an H3 Long Video style
     ltxModePaint();
   } catch { videoStyles = []; }
   const list = $("s_vslist");

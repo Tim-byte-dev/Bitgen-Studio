@@ -158,7 +158,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 
 - **三种渲染方式** — 参考图片（最多九张）、首帧 / 尾帧，或仅用文本，均带原生声音。 *Where:* Basic Settings 的模式
 - **长片段无缝拼接** — 超过单次运行长度的片段会被拆分后再拼接起来。 *Where:* Seconds
-- **长视频：单次运行最长 30 秒** — 低显存注意力和分块前馈让最长 30 秒的 MiniMax H3 片段可以在一次生成中渲染完成，而不必拼接多个 15 秒的片段。 *Where:* StoryBoard 的 ⚙（Long video），或 MiniMax H3 Long (30 s) 视频风格。 *Since:* 2.503.0
+- **长视频：串联镜头（H3 Long Video）** — 30 秒的单次运行已停用（15 秒后会改变面孔）；超过 15 秒、没有歌曲的场景会渲染为一组镜头，每个镜头都从上一个镜头的最后一帧开始。 *Where:* StoryBoard 的 ⚙（Long video），或 H3 Long Video (40 s) 视频风格。 *Since:* 2.503.0 (2.872.0)
 - **一键获取更多 ComfyUI 节点包** — 安装或更新 KJNodes、Yusu H3 Unified 和 RH DLSS 5。 *Where:* Settings > ComfyUI > Video accelerators。 *Since:* 2.503.0
 - **Veda 稀疏注意力** — 视频风格中可选的 MiniMax H3 加速器（On / Quality）：在其训练尺寸下比标准注意力快约 2-3 倍，可一键安装，其预测器在模型目录中。 *Where:* Settings > Video styles；Settings > ComfyUI > Video accelerators。 *Since:* 2.536.0
 - **根据盲测调整的 Veda 与 Spectrum** — Veda 会跳过提示词描述打斗、变形、爆炸或追逐的镜头（这类镜头省时不多，画面还会变软；☑ 动作镜头也使用 Veda 可保留），并取代 Long video 的低显存注意力，而不再被跳过；Spectrum 在 12 步以上的运行中让前 2 步和最后 3 步真实计算，使脸部保持清晰。 *Where:* 设置 ▸ 视频样式 ▸ Veda 稀疏注意力 / Spectrum。 *Since:* 2.717.0
@@ -1321,6 +1321,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🗄 网页构建器的数据库管理** — 在标签页中管理网站的数据库：表 + 视图、每次 50 行、双击修改单元格、＋ 行、🗑、⌨ SQL（危险语句先询问）、⤓ CSV / SQL / 整个数据库、⤒ .sql
 - **🕺 时间线动作捕捉（RGB MoCap）** — 设置 ▸ 附加组件 安装 RGB MoCap（Windows）；时间线的 🕺 动捕 为它准备片段、打开它，并把它的 FBX / BVH 作为播放动画的 🕺 3D 图层带回来
 - **✨ 在设定表标签里生成角色图片** — 描述角色、选一个图像风格并点 ✨ Generate：图片会在设定表的画布中打开，可直接拖框并生成设定表；勾选 Override style 时用这个风格自己的 Basic Settings 渲染。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet，在 📂 Load picture 下面。*Since:* 2.871.0
+- **🎞 H3 Long Video（40 秒及更长）** — 一个提示词生成一段长的 MiniMax H3 视频：第一段是场景 + 风格，之后每段一个镜头，每个镜头从上一个镜头的最后一帧开始，因此面孔和画面流程保持一致；Characters: 段落保持每张面孔；可选 2K 处理。 *Where:* H3 Long Video (40 s) 视频风格、StoryBoard 的 ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0

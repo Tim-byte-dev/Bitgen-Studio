@@ -5,7 +5,8 @@
  * needs to be installed show the download/cancel msgbox and download the model instead of asking user to find install"
  *
  *   ensure(which, why) -> Promise<true = installed (now), false = not>   which = demucs | whisper (POST /api/audio/install
- *                 knows them) | h3sheet (2.870.0 - a Settings ▸ Add-ons add-on: /api/addons/h3sheet/install + /api/addons/job);
+ *                 knows them) | h3sheet (2.870.0 - a Settings ▸ Add-ons add-on: /api/addons/h3sheet/install + /api/addons/job)
+ *                 | h3long (2.872.0 - the same way);
  *                 why = what it is needed for, said in the box. Installed already (GET its status) = true at
  *                 once - the box is never shown for nothing.
  *   THE MESSAGE BOX  the same as the models-not-found one (static/modelsfound.js): what is missing, what it does, its
@@ -28,6 +29,10 @@
     h3sheet: { name: "H3 Character Sheet Designer", desc: "Makes the character sheet: the designer's node pack in ComfyUI and the MiniMax H3 Image model that draws it.",
       hint: "about 28 GB: the node pack (under 1 MB) and MiniMax H3 Image (transformer + VAE) into ComfyUI's models, plus the MiniMax H3 text encoder if the video has not brought it yet; ComfyUI 0.45 or newer, restarted once afterwards",
       status: "/api/charsheet/h3", addon: "h3sheet" },
+    // 2.872.0: H3 Long Video (Settings ▸ Add-ons ▸ H3 Long Video)
+    h3long: { name: "H3 Long Video", desc: "Chains MiniMax H3 shots into one long video - each shot starts from the last frame of the one before.",
+      hint: "about 21 GB: the H3-LongVideos node pack (from its own page), PlagueKind's and NVIDIA's VFX node packs, and MATLOWAI's fused turbo MiniMax H3 model, plus the MiniMax H3 text encoder and VAEs if you do not have them; ComfyUI restarted once afterwards",
+      status: "/api/h3long", addon: "h3long" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }

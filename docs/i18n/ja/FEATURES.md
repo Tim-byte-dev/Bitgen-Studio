@@ -158,7 +158,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 
 - **3 つのレンダリング方法** — 参照画像（最大 9 枚）、最初 / 最後のフレーム、テキストのみの 3 通りで、いずれもネイティブのサウンド付きです。 *Where:* Basic Settings のモード
 - **長いクリップをシームレスに結合** — 1 回の実行より長いクリップは分割してから結合されます。 *Where:* Seconds
-- **長尺動画：1 回の実行で最大 30 秒** — 低 VRAM 向けのアテンションとチャンク分割したフィードフォワードにより、MiniMax H3 のクリップを 15 秒ずつ結合するのではなく、最大 30 秒まで 1 回の生成でレンダリングできます。 *Where:* StoryBoard の ⚙（Long video）、または MiniMax H3 Long (30 s) 動画スタイル。 *Since:* 2.503.0
+- **長尺動画：ショットをつなげる（H3 Long Video）** — 30 秒の 1 回の実行は廃止されました（15 秒を過ぎると顔が変わっていました）。15 秒より長い曲のないシーンは、各ショットが前のショットの最後のフレームから始まるショットとしてレンダリングされます。 *Where:* StoryBoard の ⚙（Long video）、または H3 Long Video (40 s) 動画スタイル。 *Since:* 2.503.0 (2.872.0)
 - **さらに多くの ComfyUI パックをワンクリックで** — KJNodes、Yusu H3 Unified、RH DLSS 5 をインストールまたは更新します。 *Where:* Settings > ComfyUI > Video accelerators。 *Since:* 2.503.0
 - **Veda スパースアテンション** — 動画スタイルで使える MiniMax H3 用のオプションのアクセラレーター（On / Quality）。学習済みのサイズでは標準のアテンションより約 2-3 倍高速です。ワンクリックでインストールでき、予測器はモデルカタログにあります。 *Where:* Settings > Video styles、Settings > ComfyUI > Video accelerators。 *Since:* 2.536.0
 - **ブラインドテストで調整した Veda と Spectrum** — Veda は、プロンプトが格闘、変身、爆発、追跡を描くショットをスキップし（効果が小さく画も柔らかくなるため。☑ アクションショットでも Veda を使う で維持）、Long video では省 VRAM アテンションの代わりに使われます。Spectrum は 12 ステップ以上の実行で最初の 2 ステップと最後の 3 ステップを実計算し、顔をくっきり保ちます。 *Where:* 設定 ▸ 動画スタイル ▸ Veda スパースアテンション / Spectrum。 *Since:* 2.717.0
@@ -1321,6 +1321,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **🗄 Web ビルダーの DB マネージャー** — サイトのデータベースをタブで：テーブル + ビュー、50 行ずつ、ダブルクリックでセルを変更、＋ 行、🗑、⌨ SQL（危険な文は先に確認）、⤓ CSV / SQL / データベース全体、⤒ .sql
 - **🕺 タイムラインでモーションキャプチャ（RGB MoCap）** — 設定 ▸ アドオンで RGB MoCap（Windows）をインストール。タイムラインの 🕺 モーキャプがクリップを準備して開き、その FBX / BVH をアニメーションを再生する 🕺 3D レイヤーとして取り込みます
 - **✨ シートのタブでキャラクター画像を作る** — キャラクターの説明を書き、画像スタイルを選んで ✨ Generate：画像はシートのキャンバスに開き、枠とシートにそのまま使えます。Override style にチェックがあると、そのスタイル自身の Basic Settings で描きます。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet、📂 Load picture の下。*Since:* 2.871.0
+- **🎞 H3 Long Video（40 秒以上）** — 1 つのプロンプトから 1 本の長い MiniMax H3 動画を作ります。最初の段落がシーン + スタイル、それ以降の段落がそれぞれ 1 ショットで、各ショットは前のショットの最後のフレームから始まるため、顔と流れが保たれます。Characters: の段落で顔を保ち、2K パスも選べます。 *Where:* H3 Long Video (40 s) 動画スタイル、StoryBoard の ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
 - **バージョン情報とクレジット** — Settings ▸ About：バージョン、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5、そしてコード、モデル、ツール、アイデアを使わせてもらっているすべてのプロジェクトへのクレジット（リンクはブラウザーで開きます）。同じクレジットがガイドの最後にも載っています。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **カメラ自身のビューから移動・回転** — 選択したカメラから覗いているとき、✥ Move / ⟳ Rotate でビューの手前に矢印やリングが表示され、カメラとビューが一緒に移動 / 回転します。Esc で選択を解除します。 *Where:* Sketcher ▸ カメラのパネル、👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：プロンプトドッカーを最前面に** — アプリのどこでも、ボックスに入力中でも使えます。プロンプトドッカーが開いて展開され、閉じた ▣ ドッカーから出て、フローティングウィンドウや最大化したドッカーの上に表示され、プロンプトボックスにフォーカスが移ります。 *Where:* どこでも、🎨 Full Screen でも（2.646.0）。 *Since:* 2.645.0

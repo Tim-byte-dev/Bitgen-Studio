@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7044,
+ "count": 7045,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -19747,22 +19747,24 @@
    ]
   },
   {
-   "s": "Long video (2.503.0): KJNodes' MiniMax low-VRAM attention + chunked feed-forward (the secret-sauce workflow's patches) - one scene renders up to 30 s in ONE generation instead of joined 15 s chunks. MiniMax H3 only; needs the latest KJNodes (Settings → ComfyUI → Video accelerators). With Comfy Kitchen ticked its attention backend goes in front",
+   "s": "Long video (2.872.0): a scene with no song that runs longer than 15 s renders through H3 Long Video - chained 15 s shots, each one starting from the last frame of the one before, so faces and the flow hold. Needs Settings ▸ Add-ons ▸ H3 Long Video",
    "kinds": [
     "title"
    ],
    "where": [
-    "label in #vdSetPanel"
+    "label in #vdSetPanel",
+    "🎬 StoryBoard ▸ ⚙ (2.872.0)"
    ]
   },
   {
-   "s": "Long video (one run up to 30 s)",
+   "s": "Long video (H3 Long Video, no-song scenes over 15 s)",
    "kinds": [
     "text"
    ],
    "where": [
     "label.f in #s_vslongbox",
-    "label in #vdSetPanel"
+    "label in #vdSetPanel",
+    "🎬 StoryBoard ▸ ⚙ (2.872.0)"
    ]
   },
   {
@@ -65486,6 +65488,15 @@
    ],
    "where": [
     "🎬 StoryBoard ▸ Character creator ▸ 🪪 Character sheet ▸ ✨ Generate (2.871.0)"
+   ]
+  },
+  {
+   "s": "KJNodes' MiniMax nodes (Sage attention patches) - git pull updates an old copy",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Settings ▸ ComfyUI ▸ Video accelerators (2.872.0)"
    ]
   }
  ]

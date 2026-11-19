@@ -35,7 +35,7 @@ const sum = (a) => Math.round(a.reduce((s, x) => s + x, 0) * 1000) / 1000;
     /id="vdSegCut"[^>]*min="2" max="60" step="0.1"/.test(H) && /<option value="29\.9">/.test(H) && H.indexOf('id="vdSegCut"') < H.indexOf('id="vdSegGap"'));
   check("audioseg.js: a change re-cuts the open song (SegMap.regrid), the value is remembered; a song with no .seg auto-cuts on it",
     /el\("vdSegCut"\)\.addEventListener\("change", recut\)/.test(A) && /localStorage\.setItem\(CUT_KEY/.test(A) && /!res\[1\]\.file && Math\.abs\(per - 15\) > 1e-6\) S = window\.SegMap\.regrid\(S, per\)/.test(A)
-    && /719 frames/.test(A));
+    && /H3 Long Video/.test(A));   // 2.872.0: the note names H3 Long Video (the 719-frame single run is retired)
 
   /* 2 ⤓ Update ComfyUI */
   const CU = require(path.join(ROOT, "lib", "comfyUpdate.js"));

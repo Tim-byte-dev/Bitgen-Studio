@@ -233,8 +233,8 @@
   }
   function cutSecs() { return clampCut(el("vdSegCut") ? el("vdSegCut").value : 15); }
   function cutNote(per) {
-    return per > 29.95 ? " - a scene over 29.9 s is more than one Long video run (719 frames), so it renders as joined runs"
-         : per > 15.05 ? " - scenes over 15 s need ⚙ Long video (MiniMax H3) to render as one run" : "";
+    // 2.872.0: the ⚙ Long video is H3 Long Video now - chained shots for a scene with no song (a song scene joins 15 s runs)
+    return per > 15.05 ? " - with a song, a scene over 15 s renders as joined 15 s runs; without one, ⚙ Long video chains its shots (H3 Long Video)" : "";
   }
   function recut() {
     var per = cutSecs();

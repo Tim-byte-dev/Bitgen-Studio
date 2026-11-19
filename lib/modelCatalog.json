@@ -42,6 +42,10 @@
       "label": "Images - MiniMax H3 Image (the Character creator's 🪪 Character sheet; Settings ▸ Add-ons ▸ H3 Character Sheet Designer)"
     },
     {
+      "id": "h3long",
+      "label": "Video - H3 Long Video (MATLOWAI's fused turbo MiniMax H3; Settings ▸ Add-ons ▸ H3 Long Video)"
+    },
+    {
       "id": "fibo",
       "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
     },
@@ -1531,6 +1535,16 @@
       "dest": "comfy/vae",
       "size": 5600000000,
       "for": "the Character creator's 🪪 Character sheet - size approximate until the first download"
+    },
+    {
+      "id": "h3long_dit",
+      "group": "h3long",
+      "label": "MiniMax H3 fused turbo (int8 ConvRot, 8 steps)",
+      "repo": "MATLOWAI/minimax-h3-fused-turbo-int8-convrot",
+      "file": "diffusion_models/minimax_h3_fused_refdelta_r1024_turbo8_mystic07_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 20980178976,
+      "for": "H3 Long Video (the chained 40 s+ MiniMax H3 shots)"
     },
     {
       "id": "fibo_edit_w4a8",

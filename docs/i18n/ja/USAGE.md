@@ -2816,27 +2816,13 @@ Install ボタンにはパッケージ名とダウンロードサイズが表示
 **セットアップ。** NVIDIA RTX カードのみ対応です。Settings → ComfyUI → Video accelerators で **Install RH DLSS 5** を押します。次に、NVIDIA の DLL を自分で ComfyUI/models/dlss5/ にコピーします。必要なファイル名はパックの README に記載されており、パックがそれらをダウンロードすることはありません。ComfyUI を再起動します。フレーム生成には、models/dlss5/dlssg/ に専用のワーカーファイルが必要です（これも README に記載されています）。
 
 ## Long video：MiniMax H3 の 1 回の実行で最大 30 秒（2.503.0）
-<!-- en: long-video-one-minimax-h3-run-up-to-30-seconds-2-503-0 7f140d0ebd20 -->
+<!-- en: long-video-one-minimax-h3-run-up-to-30-seconds-2-503-0 1cfd8418d719 -->
 
-これまで MiniMax H3 のクリップは、1 回の生成で最大 15 秒でした。それより長いものは 15 秒ずつレンダリングしてつなげていました。**Long video** では、**最大 30 秒を 1 回の生成で**レンダリングします。1 回の実行なので、キャラクター、動き、音声が途切れずに続き、つなぎ目もありません。設定は Tim の「secret sauce」ワークフローと同じで、サンプラーの前に 3 つのモデルパッチを入れます。
+2.872.0 で廃止されました。30 秒の 1 回の実行では 15 秒を過ぎると顔や流れが変わってしまうため、**H3 Long Video** がその代わりになります（下にある専用のセクションを参照）。クリップは 15 秒のショットで作られ、各ショットは前のショットの最後のフレームから始まります。**MiniMax H3 Long (30 s)** スタイルは一覧に表示されなくなり、Long video がオンのままの古いスタイルは通常どおりレンダリングされます。StoryBoard の ⚙ の **Long video** は、15 秒より長い曲のないシーンを H3 Long Video に送るようになりました。
 
-- **MiniMax low-VRAM attention**：アテンションヘッドをグループ（4）で実行し、バッファーは使い終わるとすぐに解放します。
-- **Chunked feed-forward**：フィードフォワード処理をフレーム方向に分割して実行します（シーケンスが 4096 トークンを超えると 2 分割）。結果は同じで、メモリのピークが下がります。
-- **Comfy kitchen attention**（オプション）：前段に ComfyUI の comfy-kitchen アテンションバックエンドを入れます。
-
-**オンにする方法。**
-
-- **シーンボード：** StoryBoard の ⚙ で **Long video** にチェックを入れます。シーンが最大 30 秒を一度にレンダリングするようになります。**Comfy Kitchen** にもチェックを入れると、kitchen アテンションも入ります。
-- **プロンプトドッカーの Generate：** **MiniMax H3 Long (30 s)** 動画スタイルを選ぶか、任意の MiniMax H3 スタイルで Long video をオンにします（Settings → Video styles → Long video：On、または On + comfy kitchen attention）。すると、Seconds の下の計画行に、25 秒のクリップが 600 フレームの 1 回の実行として表示されます。
-- 30 秒より長いクリップは、引き続き分割してつなげられます。分割は 30 秒単位です。
-- Long video は独自のアテンションパッチを持つため、Long video がオンの間は Sage attention はスキップされます。Spectrum は併用できます。
-- MiniMax H3 専用です。LTX と Wan のスタイルでは無視されます。
-
-**インストール。** Long video には最新の ComfyUI-KJNodes が必要です。Settings → ComfyUI → Video accelerators に **Install / update KJNodes** ボタンがあります。kitchen アテンションには、comfy-kitchen がインストールされた ComfyUI 0.32 以降が必要です（上にある Comfy Kitchen セクションを参照）。このマシンが、メモリ不足になった実行からすでに低い VRAM 上限を学習している場合、その上限は引き続き適用されます。
+**インストール。** Settings → ComfyUI → Video accelerators に **Install / update KJNodes** ボタンがあります（KJNodes の Sage アテンションパッチ）。
 
 同じパネルから、**Yusu H3 Unified**（MiniMax H3 用の 1 ノードのフロントエンド。これを使うインポートしたワークフロー向け）と **RH DLSS 5**（NVIDIA RTX のエンハンス／アップスケール／フレーム生成）もインストールできます。DLSS 5 の場合、NVIDIA の DLL は自分で ComfyUI/models/dlss5/ に入れてください。パックがそれらをダウンロードすることはありません。
-
-書き出し元のワークフローでは、turbo LoRA を 8 ステップで実行していました。同じ速度にするには、turbo LoRA を追加し、Basic Settings で Steps を設定してください。
 
 ## FLUX 3 Image Klein、画像編集モードでは編集用スタイルのみ表示（2.502.0）
 <!-- en: flux-3-image-klein-and-edit-image-mode-lists-only-edit-styles-2-502-0 950e6d848f28 -->
@@ -6097,6 +6083,37 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 6. **Part pictures**：最大 3 枚の追加画像を、それぞれ用途（顔、頭と髪、服（正面 / 背面）、手、履物、同じキャラクターの別の画像）付きで渡せます。**✏ Part notes** は 1 つのパーツにメモを加えます（左目の上の傷など）。**✏ View instructions** は 1 つのビューの指示を編集します（**↺ Default** で元に戻します）。
 7. **Layout** は ComfyUI が動いている間、シートのパネルを描き、サイズをピクセルとメガピクセルで示します。
 8. **▶ Generate sheet** - 押すたびに新しいシードのテイクになります。**🧵 Stitch**、**↻ Regenerate**、**✔ Keep** はこれまでどおりです。選んだ設定は記憶されます（パーツ画像は記憶されません）。
+
+## 🎞 H3 Long Video：40 秒以上（2.872.0）
+<!-- en: h3-long-video-40-seconds-and-longer-2-872-0 bea8fb33db92 -->
+
+**H3 Long Video** は、1 つのプロンプトから 1 本の長い MiniMax H3 動画を作ります。クリップは**最大 15 秒のショット**としてレンダリングされ、各ショットは**前のショットの最後のフレーム**から始まります。そのため、40 秒以上（最大 120 秒）でも顔や流れが保たれます。30 秒の 1 回の実行に代わるものです。
+
+**プロンプト。** 段落の間は空行にします。
+
+- **最初の段落**はシーンとスタイルです。すべてのショットで繰り返されます。
+- **それ以降の段落が 1 つのショット**です：何が起きるか、何を話すか（「"」で囲みます）。
+- 空行のない 1 つのテキストは自動で振り分けられます：最初の文がシーンになり、残りは 15 秒ごとに 1 ショットへ分けられます。
+- **Characters:** で始まる段落はキャラクターメモリーで、1 行に 1 人です。例：`Ann: <Picture 1>, she, 26, long red hair`。どのショットでも顔が同じに保たれます。
+
+**プロンプトドッカーから。** **H3 Long Video (40 s)** 動画スタイルを選んで Generate を押します。
+
+- **Seconds** は動画全体の長さです。
+- Basic Settings の幅と高さで、アスペクト比（16:9、9:16、1:1 …）とサイズが決まります。
+- **First frame** タイプの画像（なければ最初の画像）が `<Picture 1>` として最初のショットを始めます。さらに最大 4 枚の画像が参照画像 `<Picture 2>`〜`<Picture 5>` になります。
+- 動画スタイルの横の **2K** にチェックを入れると、2K のコピーも保存されます（NVIDIA RTX Video Super Resolution x2、RTX カードが必要）。そのコピーがジョブの動画になります。
+
+**StoryBoard で。** ⚙ で **Long video** にチェックを入れます。**曲のない**シーンで **15 秒より長い**ものが H3 Long Video でレンダリングされます。シーンの画像（Cont / First）が最初のフレームになり、キャストのシートが参照画像としてキャラクターメモリーに名前付きで入ります。曲のあるシーンは引き続き 15 秒の実行をつなげてレンダリングされます。H3 Long Video は独自の音を作るため、曲の口の動きに合わせられないからです。
+
+**インストール。** Settings ▸ Add-ons ▸ **H3 Long Video** で次のものをダウンロードします。
+
+- **H3-LongVideos** ノードパック（本来のページから。ライセンスで再配布が認められていないため、bitGen Studio には同梱しません）
+- **PlagueKind のノード**（H3 SLA スパースアテンション：高速で VRAM が少なくて済みます）と **NVIDIA の VFX ノード**（2K パス）
+- **ComfyUI-Easy-Use**（モデルの読み込みの間に GPU を解放します）
+- MATLOWAI の **fused turbo MiniMax H3** モデル（21 GB、8 ステップ）
+- MiniMax H3 のテキストエンコーダーと VAE（まだない場合）
+
+新しいノードパックを入れたら、ComfyUI を一度再起動してください。Generate を押したときに足りない部分があれば、Download / Cancel の確認ボックスが表示されます。グラフは ComfyUI が各ノードについて返す情報から組み立てられるので、新しいバージョンのパックでも動きます。
 
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->

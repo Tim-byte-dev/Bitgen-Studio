@@ -1,6 +1,6 @@
 {
  "version": 1,
- "_comment": "VIDEO STYLE ARCHITECTURES (2.110.0, by instruction). A video style is a ComfyUI Export (API) workflow per generation mode plus overrides the patcher writes into it: PHASES (checkpoint + steps + cfg, one per sampler/loader pair in graph order — Wan 2.2 high/low is two), a text encoder, a VAE, LoRAs. MiniMax H3 ships now; Tim will upload Wan and other templates later — add an arch here and the style editor picks it up. 2.338.0: ltx-2.5 (Tim's LTX 2.5 all-in-one canvas; mode 'ltx' -> ltx_worker.py). 2.368.0: wan21 + wan22 render through wan_worker.py (lib/wan.js) - built graphs, files picked per mode.",
+ "_comment": "VIDEO STYLE ARCHITECTURES (2.110.0, by instruction). A video style is a ComfyUI Export (API) workflow per generation mode plus overrides the patcher writes into it: PHASES (checkpoint + steps + cfg, one per sampler/loader pair in graph order — Wan 2.2 high/low is two), a text encoder, a VAE, LoRAs. MiniMax H3 ships now; Tim will upload Wan and other templates later — add an arch here and the style editor picks it up. 2.338.0: ltx-2.5 (Tim's LTX 2.5 all-in-one canvas; mode 'ltx' -> ltx_worker.py). 2.368.0: wan21 + wan22 render through wan_worker.py (lib/wan.js) - built graphs, files picked per mode. 2.872.0: h3-long (H3 Long Video - lib/h3LongVideo.js builds the graph; the 30 s single run is retired).",
  "archs": [
   {
    "id": "minimax-h3",
@@ -37,9 +37,41 @@
     "sage": true,
     "memeff": true,
     "spectrum": true,
-    "long": true,
+    "long": false,
     "veda": true,
-    "note": "Veda (2.536.0) = learned sparse attention, about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768); it replaces attention, so Sage is skipped while it is on. Long video (2.503.0) = KJNodes' MiniMax low-VRAM attention + chunked feed-forward (+ comfy kitchen attention): one run up to 30 s. Sage = KJNodes attention patch (needs the sageattention wheel in ComfyUI's python). Spectrum = xmarre's H3 feature-forecast node (~30% fewer transformer steps, APPROXIMATE - motion can drift). Settings -> ComfyUI -> Video accelerators installs both."
+    "note": "Veda (2.536.0) = learned sparse attention, about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768); it replaces attention, so Sage is skipped while it is on. Long video: retired 2.872.0 - the H3 Long Video style chains shots instead. Sage = KJNodes attention patch (needs the sageattention wheel in ComfyUI's python). Spectrum = xmarre's H3 feature-forecast node (~30% fewer transformer steps, APPROXIMATE - motion can drift). Settings -> ComfyUI -> Video accelerators installs both."
+   }
+  },
+  {
+   "id": "h3-long",
+   "label": "H3 Long Video (MiniMax H3 shots chained - 40 s and longer)",
+   "modes": [
+    "h3long"
+   ],
+   "workflow_hints": {},
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "(the graph picks qwen3vl_32b_minimax_h3_nvfp4_awq)",
+     "hint": ""
+    }
+   ],
+   "vae": {
+    "label": "(the graph picks the MiniMax H3 video + audio VAEs)",
+    "hint": ""
+   },
+   "defaults": {
+    "steps": 0,
+    "cfg": 1.0,
+    "width": 960,
+    "height": 544
+   },
+   "note": "2.872.0: the H3-LongVideos node (lib/h3LongVideo.js) - the prompt's first paragraph is the scene + style (repeated on every shot), every later paragraph one shot; each shot starts from the last frame of the one before. MATLOWAI's fused turbo int8 model at 8 steps, PlagueKind's H3 SLA attention, optional 2K pass (RTX Video Super Resolution). Settings ▸ Add-ons ▸ H3 Long Video installs it. Seconds = the whole video (up to 120); Basic Settings' width x height pick the aspect and megapixels.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "H3 Long Video carries its own attention (H3 SLA + comfy kitchen); the H3 accelerators do not apply."
    }
   },
   {

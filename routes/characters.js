@@ -1032,6 +1032,36 @@ function queueScene(project, n, opts) {
     renderSettings.read(core.projDir(project || core.getProject())), rs.width, rs.height);
   if (tailSpec) notes.push(`tail PNGs: the last ${tailFrames.SECONDS}s at ${tailSpec.width}x${tailSpec.height} `
     + `(${tailSpec.upscaler || "lanczos"}) -> ${path.basename(path.dirname(tailSpec.dir))}/${path.basename(tailSpec.dir)}/`);
+  /* 2.872.0 (Tim: "this workflow is for 40 second h3 video. can we add this one and remove the 30sec one - the 30sec one
+     changes faces and flow after 15secs" + "StoryBoard scenes over 15 s"): a scene with no song that runs longer than one
+     15 s shot, with the ⚙ Long video ticked - or any scene of an H3 Long Video board style - renders through H3 Long
+     Video (lib/h3LongVideo.js): chained shots, each from the last frame of the one before. Its first frame is the scene's
+     start picture (Cont / First), the cast's sheets are the reference pictures named in the character memory. */
+  {
+    const H3L = require("../lib/h3LongVideo");
+    const sh3 = ((st.plan || {}).shots || []).find((x) => x && x.id === r.id) || {};
+    const secs3 = [Number(r.audio_dur), Number(sh3.seconds), audioWin && Number(audioWin.dur)].find((x) => Number.isFinite(x) && x > 0) || 0;
+    const rsAll = renderSettings.read(core.projDir(project || core.getProject()));
+    if (!upscale && !bridgeAi && H3L.wants({ style: styled, longRun: !!rsAll.long_run, noSong: !songPath, seconds: secs3 })) {
+      const first = contFrame && contFrame.file ? contFrame.file : "";
+      const sheets = imgMeta.filter((m) => m && m.kind === "sheet" && m.file && fs.existsSync(m.file)).slice(0, 4);
+      const others = imgMeta.filter((m) => m && m.kind !== "sheet" && m.kind !== "frame" && m.file && fs.existsSync(m.file));
+      const refs = sheets.concat(others).slice(0, 4);
+      const memory = H3L.memory(sheets.map((m) => ({ name: m.label || m.tag || "" })), !!first);
+      const p3 = H3L.params({ prompt: jobPrompt, seconds: secs3 || frames / 24, width: rs.width, height: rs.height,
+        seed: upExport && Number.isFinite(shotSeed) ? shotSeed : null, steps: 0, first, refs: refs.map((m) => m.file), memory,
+        shotLength: "fixed", upscale2k: false, prefix: `scene_${r.n}`, name: `StoryBoard scene ${r.n} (H3 Long Video)` });
+      if (p3.error) return { status: p3.needs ? 409 : 503, error: p3.error, notes: notes.concat(missing) };
+      if (songPath) notes.push("H3 Long Video: the scene's song is not lip-synced (the node makes its own sound)");
+      const job3 = core.makeJob(Object.assign({}, p3.params, {
+        video_style: rs.video_style, video_style_id: style.id || null, video_style_name: style.name,
+        ...(shot.seed !== undefined && shot.seed !== "" ? { plan_seed: String(shot.seed) } : {}),
+        scene: { n: r.n, chapter: r.chapter, upscale: false, h3long: true } }));
+      job3.chunk = { i: 0, n: 1 };
+      scenes.save(scenes.starting(st, n, job3.id).state, project);
+      return { job: job3, notes: notes.concat(p3.notes, missing) };
+    }
+  }
   const job = core.makeJob({
     mode: queueMode,
     // 2.302.0: the worker drops this many frames from the head (0 = none)
@@ -3432,7 +3462,12 @@ function mount(app) {
     return rows.length > 0 && rows.every((r) => r.bridge && r.bridge.type !== sceneBridge.AI);
   }
   async function ensureComfyUp(res) {
-    try { await comfy.ensure({ force: true }); return true; }
+    try {
+      await comfy.ensure({ force: true });
+      // 2.872.0: ComfyUI's node list for H3 Long Video scenes (queueScene is synchronous - lib/h3LongVideo keeps it 5 min)
+      try { await require("../lib/h3LongVideo").prime(); } catch (e) { /* only H3 Long Video scenes need it - they say so */ }
+      return true;
+    }
     catch (e) {
       res.status(502).json({ error: "ComfyUI is not up and could not be "
         + "started: " + String(e.message || e) });

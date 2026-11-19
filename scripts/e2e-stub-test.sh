@@ -11617,13 +11617,7 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ieeditonly-ui.js > /tmp/ieediton
   && ok "2.502.0 edit image mode browser test: only edit styles while the editor is open, a reload keeps it, closing restores the pick - or SKIP without playwright" \
   || { bad "2.502.0 edit image mode browser test"; grep -a "FAIL\|Error" -A2 /tmp/ieeditonly5020.log | head -14; }
 
-# ---- 2.503.0 (MiniMax H3 Long video - lib/h3Long.js, worker.apply_video_accel long)
-node scripts/test-h3long.js > /tmp/h3long5030.log 2>&1 \
-  && ok "Long video units (2.503.0 h3Long ceilings, both planners, the three model patches in the export's order, the switches, the board, the installers)" \
-  || { bad "2.503.0 Long video units"; grep -a "^FAIL" -A2 /tmp/h3long5030.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-h3long-ui.js > /tmp/h3longui5030.log 2>&1 \
-  && ok "2.503.0 Long video browser test: the ⚙ checkbox, the style editor, 25 s = one 600f run in the plan, the install buttons - or SKIP without playwright" \
-  || { bad "2.503.0 Long video browser test"; grep -a "FAIL\|Error" -A2 /tmp/h3longui5030.log | head -14; }
+# ---- 2.503.0 (MiniMax H3 Long video) - RETIRED 2.872.0 (H3 Long Video replaces it - scripts/test-872.js)
 
 # ---- 2.504.0 (DLSS 5 on videos - lib/dlss5.js, scripts/dlss5_graph.py, dlss5_worker.py, static/dlss5panel.js)
 node scripts/test-dlss5.js > /tmp/dlss55040.log 2>&1 \
@@ -14485,6 +14479,16 @@ node scripts/test-871.js > /tmp/t871.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui871-ui.js > /tmp/ui871.log 2>&1 \
   && ok "2.871.0 browser test: prompt + image styles + ✨ Generate in the sheet tab, the Override line, the style's saved settings sent, the picture in the canvas, kept" \
   || { bad "2.871.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui871.log | head -12; }
+# ---- 2.872.0 (H3 Long Video replaces the 30 s single run - lib/h3LongVideo.js, lib/h3LongAddon.js, routes/h3LongVideo.js)
+node scripts/test-872.js > /tmp/t872.log 2>&1 \
+  && ok "2.872.0 units: readiness by name, the graph built from ComfyUI's own inputs (SLA, kitchen backend, clean-ups, RTX 2K last), anchor + shots, memory, wants, the 30 s run retired, the add-on" \
+  || { bad "2.872.0 units"; grep -a "Error\|assert" -A3 /tmp/t872.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-872-live.js > /tmp/t872l.log 2>&1 \
+  && ok "2.872.0 live (a stand-in ComfyUI): GET /api/h3long, a 40 s render as a graph job (3 shots, first frame + refs, memory, 2K last), 409 / 400 / 503 in words, the styles" \
+  || { bad "2.872.0 live"; grep -a "^FAIL" -A1 /tmp/t872l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui872-ui.js > /tmp/ui872.log 2>&1 \
+  && ok "2.872.0 browser test: the 2K tick for H3 Long Video only, Generate -> /api/h3long with the prompt / memory / size / pictures, the Download / Cancel box" \
+  || { bad "2.872.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui872.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

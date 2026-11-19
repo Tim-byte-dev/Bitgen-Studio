@@ -4619,39 +4619,18 @@ https://tigerart.com.au/bitgen-community/api.php.
 
 ## Long video: one MiniMax H3 run up to 30 seconds (2.503.0)
 
-A MiniMax H3 clip used to be one generation of up to 15 seconds; anything longer was rendered in 15-second pieces and
-joined. **Long video** renders up to **30 seconds in one generation**. One run keeps the characters, the motion and
-the sound continuous, with no joins. The settings are the ones Tim's "secret sauce" workflow uses: three model patches
-in front of the sampler.
+Retired in 2.872.0. A 30-second single run changed faces and the flow after 15 seconds, so **H3 Long Video** takes its
+place (its own section below): the clip is made of 15-second shots, each one starting from the last frame of the one
+before. The **MiniMax H3 Long (30 s)** style is no longer listed, and an old style that still has Long video on renders
+normally. The StoryBoard's ⚙ **Long video** now sends a scene with no song that runs longer than 15 seconds through
+H3 Long Video.
 
-- **MiniMax low-VRAM attention**: the attention heads run in groups (4), and buffers are freed as soon as they are
-  used.
-- **Chunked feed-forward**: the feed-forward step runs in pieces along the frames (2 pieces once the sequence passes
-  4096 tokens). The result is the same; the memory peak is lower.
-- **Comfy kitchen attention** (optional): ComfyUI's comfy-kitchen attention backend in front.
-
-**Turning it on.**
-
-- **The scene board:** tick **Long video** in the StoryBoard's ⚙. A scene then renders up to 30 seconds in one go.
-  With **Comfy Kitchen** also ticked, the kitchen attention goes in too.
-- **The prompt docker's Generate:** pick the **MiniMax H3 Long (30 s)** video style, or turn Long video on in any
-  MiniMax H3 style (Settings → Video styles → Long video: On, or On + comfy kitchen attention). The plan line under
-  Seconds then shows a 25-second clip as one 600-frame run.
-- Clips longer than 30 seconds are still split and joined, in 30-second pieces.
-- Sage attention is skipped while Long video is on, because Long video brings its own attention patch. Spectrum still
-  works with it.
-- It is for MiniMax H3 only; LTX and Wan styles ignore it.
-
-**Install.** Long video needs a recent ComfyUI-KJNodes. Settings → ComfyUI → Video accelerators has an **Install /
-update KJNodes** button. The kitchen attention needs ComfyUI 0.32 or later with comfy-kitchen installed (the Comfy
-Kitchen section above it). If this machine has already learned a lower VRAM ceiling from a run that ran out of memory,
-that ceiling still applies.
+**Install.** Settings → ComfyUI → Video accelerators has an **Install / update KJNodes** button (KJNodes' Sage
+attention patches).
 
 The same panel can also install **Yusu H3 Unified** (a one-node front end for MiniMax H3, for imported workflows that
 use it) and **RH DLSS 5** (NVIDIA RTX enhance / upscale / frame generation). For DLSS 5, NVIDIA's DLLs go into
 ComfyUI/models/dlss5/ yourself; the pack never downloads them.
-
-The export also ran its turbo LoRA at 8 steps. Add a turbo LoRA and set Steps in Basic Settings for the same speed.
 
 ## FLUX 3 Image Klein, and edit image mode lists only edit styles (2.502.0)
 
@@ -9723,6 +9702,47 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
 7. **Layout** draws the sheet's panels and says its size in pixels and megapixels while ComfyUI runs.
 8. **▶ Generate sheet** - every press is a take with a fresh seed; **🧵 Stitch**, **↻ Regenerate** and **✔ Keep** work
    as before. Your choices are remembered (the part pictures are not).
+
+## 🎞 H3 Long Video: 40 seconds and longer (2.872.0)
+
+**H3 Long Video** makes one long MiniMax H3 video from one prompt. It renders the clip as **shots of up to 15
+seconds**, and each shot starts from the **last frame of the shot before**, so faces and the flow hold for 40 seconds
+and longer (up to 120). It replaces the 30-second single run.
+
+**The prompt.** Leave a blank line between paragraphs.
+
+- The **first paragraph** is the scene and the style. It is repeated on every shot.
+- **Every later paragraph is one shot**: what happens, what is said (in "quotes").
+- One block of text with no blank lines is shared out for you: the first sentence becomes the scene, the rest is
+  split over one shot per 15 seconds.
+- A paragraph that starts with **Characters:** is the character memory, one character per line, for example
+  `Ann: <Picture 1>, she, 26, long red hair`. It keeps each face the same in every shot.
+
+**From the prompt docker.** Pick the **H3 Long Video (40 s)** video style and press Generate.
+
+- **Seconds** is the length of the whole video.
+- Basic Settings' width and height pick the aspect (16:9, 9:16, 1:1 …) and the size.
+- The picture typed **First frame** (or the first picture) starts the first shot as `<Picture 1>`. Up to four more
+  pictures are references, `<Picture 2>` to `<Picture 5>`.
+- The **2K** tick beside the video style also saves a 2K copy (NVIDIA RTX Video Super Resolution x2 - an RTX card);
+  that copy is the job's video.
+
+**On the StoryBoard.** Tick **Long video** in the ⚙. A scene **with no song** that runs **longer than 15 seconds** then
+renders through H3 Long Video. Its scene picture (Cont / First) is the first frame, and the cast's sheets are the
+references, named in the character memory. A scene with a song still renders as 15-second runs joined, because H3
+Long Video makes its own sound and cannot follow the song's lips.
+
+**Install.** Settings ▸ Add-ons ▸ **H3 Long Video** downloads:
+
+- the **H3-LongVideos** node pack, from its own page (its licence does not allow passing it on, so bitGen Studio
+  never ships it);
+- **PlagueKind's nodes** (H3 SLA sparse attention: faster, less VRAM) and **NVIDIA's VFX nodes** (the 2K pass);
+- **ComfyUI-Easy-Use** (frees the GPU between the model loads);
+- MATLOWAI's **fused turbo MiniMax H3** model (21 GB, 8 steps);
+- the MiniMax H3 text encoder and VAEs, if you do not have them yet.
+
+Restart ComfyUI once after a new node pack. If a part is missing when you press Generate, the Download / Cancel box
+offers it. The graph is built from what your ComfyUI says each node takes, so a newer version of the pack still runs.
 
 ## Tips
 
