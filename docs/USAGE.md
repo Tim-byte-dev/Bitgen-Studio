@@ -9675,6 +9675,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **📱 Phone + tablet** on the top bar makes the open page fit small screens: the viewport line and a phone / tablet style (two columns on tablets, one on phones, pictures and tables fit, fixed widths and positions let go). Pressed again it is written anew. **🖥 ▭ 📱** on the WYSIWYG bar show the page at those widths.
 - **⇡ Auto-hide** on the top bar folds it to a thin strip until the pointer is on it.
 
+## 🎛 Element properties (2.867.0)
+
+- On the **✎ WYSIWYG** tab a click on anything on the page picks it (a dashed outline that is never saved) and the **🎛 Properties** docker beside the page shows its values: the id and classes, **Size** (width, height, max width, display), **Spacing** (margin, padding), **Corners** - each corner its own radius, or 🔗 all four together, **Border** (width, style, colour), **Background** (colour and how see-through, a picture, a **gradient** - linear or radial, its angle, two colours and where each stops), **Shadow** (across, down, blur, spread, colour, see-through, inset, and a text shadow), **Opacity** and **Text** (colour, size, weight, line height, letter spacing, align, font).
+- Every change goes into that element's own style at once - the page is marked changed and 💾 Save keeps it. **⬆** picks the parent, **✕ Clear styles** takes the element's own styles off, Esc lets go; ▸ folds the docker.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

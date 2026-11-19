@@ -31,6 +31,21 @@
           #wbAskRow { display: none; gap: 3px; }
           #wbAskRow.on { display: flex; }
           #wbAskRow input { flex: 1; min-width: 0; font-size: 12px; }
+          /* 2.867.0 🎛 the element properties docker (wbprops.js) */
+          #wbProps { width: 250px; flex: none; display: flex; flex-direction: column; border-left: 1px solid var(--line); padding: 0 4px; min-height: 0; overflow-y: auto; font-size: 12px; }
+          #wbProps.shut { width: 30px; overflow: hidden; }
+          #wbProps.shut #wbPropsHead > :not(#wbPropsFold), #wbProps.shut #wbPropsWhat, #wbProps.shut #wbPropsBody { display: none; }
+          #wbPropsHead { flex-wrap: wrap; }
+          #wbPropsWhat { font: 11px Consolas, monospace; color: var(--dim); padding: 3px 0; word-break: break-all; }
+          #wbPropsWhat.changed::after { content: " ●"; color: var(--tiger); }
+          #wbPropsBody.off { opacity: .4; pointer-events: none; }
+          #wbProps details { border-top: 1px solid var(--line); padding: 3px 0; }
+          #wbProps summary { cursor: pointer; font-weight: 600; }
+          #wbProps .wbpg { display: flex; flex-direction: column; gap: 3px; padding: 3px 0 2px; }
+          #wbProps label { display: flex; align-items: center; gap: 5px; }
+          #wbProps label > span { width: 86px; flex: none; color: var(--dim); }
+          #wbProps input:not([type=checkbox]), #wbProps select { flex: 1; min-width: 0; font-size: 12px; }
+          #wbProps input[type=color] { height: 22px; padding: 0 2px; }
           /* 2.866.0 the WYSIWYG's ◧ block toolbar, the widths, ⇡ auto-hide (wbwys.js) */
           #wbWysRow { flex: 1; display: flex; gap: 4px; min-height: 0; justify-content: flex-start; }
           #wbWysRow > iframe { flex: 1; min-width: 0; transition: width .2s; }

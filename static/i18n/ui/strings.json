@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6865,
+ "count": 6895,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -63696,6 +63696,306 @@
    ],
    "where": [
     "🌐 Web editor ▸ ✎ WYSIWYG blocks (2.866.0)"
+   ]
+  },
+  {
+   "s": "Clear styles",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Click something on the ✎ WYSIWYG page to style it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Pick the parent element",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Fold the properties",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "All four",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Inset",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Text shadow",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Element",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Classes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Max width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Display",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Spacing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Margin",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Padding",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Corners",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Top left",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Top right",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Bottom right",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Bottom left",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Border",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "See-through",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Angle",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "From at %",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "To at %",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Shadow",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Across",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Spread",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Line height",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Letter spacing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
+   ]
+  },
+  {
+   "s": "Font",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🎛 Properties (2.867.0)"
    ]
   }
  ]

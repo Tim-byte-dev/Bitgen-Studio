@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.867.0** — 🎛 Element Properties: Pick Anything on the ✎ WYSIWYG Page and Style It in a Docker Beside It - Size, Spacing, Each Corner's Radius (or 🔗 All Four), Border, Background Colour / Picture / Linear or Radial Gradient, Shadow + Text Shadow, Opacity, Text; Into the Element's Own Style at Once, ⬆ the Parent, ✕ Clear Styles
 - **2.866.0** — ◧ WYSIWYG Blocks: an Icon Toolbar Left of the Page - 🖼 Gallery ▸ Picture / Video / Audio / 3D, 📅 Calendar, 📋 Booking Sheet (Into ✉ Messages), 🛍 Product Pictures, 🗂 Category ▸ (Your Shop's), 🦸 Hero Banner, ⎺ Header, ⎽ Footer - Their Files Into www, Dashed Boxes for What the Site Fills; 📱 Phone + Tablet Makes the Page Fit Small Screens, 🖥 ▭ 📱 Widths; ⇡ Auto-Hide for the Top Bar
 - **2.865.0** — ✨ Edit the Website With the AI, Typed or Spoken: a Prompt Panel at the Foot of the 🌐 Web Editor - Say What to Change (Enter) or 🎙 Speak It (This Computer's Speech to Text), the LLM Changes the Open Page or Only the Selected Part, as One Change (+n −m Lines) With ↶ Undo; Nothing Saved Until 💾 Save; ⌚ the Last Asks
 - **2.864.0** — </> The Web Builder's Code Editor: Line Numbers and Colours (Tags, Attributes, Values, Comments, PHP; CSS / JS / PHP Files), a Tag Not Closed Marked Red (Orange for Those HTML Lets Stay Open) and Listed Under the Editor - a Click Goes to It, a Left Toolbar of Quick Tags That Wrap the Selection and Quick Comments, Ctrl+/ Comments the Lines, Ctrl+Z Undoes

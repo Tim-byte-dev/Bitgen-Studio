@@ -166,6 +166,7 @@
     if (!St.wysDirty) return; St.wysDirty = false;
     const d = $("wbWys").contentDocument; if (!d || !d.body) return;
     const b = d.body.cloneNode(true);
+    b.querySelectorAll("[data-bg-picked]").forEach((x) => x.removeAttribute("data-bg-picked"));   // 2.867.0 the properties docker's pick mark
     St.text = putBody(St.text, b.innerHTML);
   }
   function wysDoc() { const d = $("wbWys").contentDocument; return d && d.designMode === "on" ? d : null; }
@@ -451,5 +452,7 @@
   /** 2.865.0: the open file's text replaced (the ✨ AI docker) - marked changed, the tab drawn again; WYSIWYG edits taken in first */
   function setText(t) { syncWys(); St.text = String(t); changed(); paintTab(); }
   function currentText() { syncWys(); if (St.tab === "code") St.text = $("wbCode").value; return St.text; }
-  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, dbStatus, setText, currentText, state: () => St }, pure);
+  /** 2.867.0: the WYSIWYG page was changed by a script (the properties docker) - taken in at the next save / tab change */
+  function markWys() { St.wysDirty = true; changed(); }
+  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, dbStatus, setText, currentText, markWys, state: () => St }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -7,6 +7,7 @@
     "webdock.js",
     "wbcode.js",
     "wbai.js",
-    "wbwys.js"
+    "wbwys.js",
+    "wbprops.js"
   ]
 }

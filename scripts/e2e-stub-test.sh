@@ -14532,6 +14532,13 @@ node scripts/test-866.js > /tmp/t866.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui866-ui.js > /tmp/ui866.log 2>&1 \
   && ok "2.866.0 browser test: ◧ icons, header top / footer end, gallery ▸ at the cursor, category ▸ from the CRM, dashed boxes, 📱, widths, ⇡" \
   || { bad "2.866.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui866.log | head -12; }
+# ---- 2.867.0 (🎛 the element properties docker)
+node scripts/test-867.js > /tmp/t867.log 2>&1 \
+  && ok "2.867.0 units: colours, shadows, gradients both ways, every corner, the pick mark never saved" \
+  || { bad "2.867.0 units"; grep -a "^FAIL" -A1 /tmp/t867.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui867-ui.js > /tmp/ui867.log 2>&1 \
+  && ok "2.867.0 browser test: pick on the WYSIWYG page, corners one by one / all four, shadow, opacity, gradient, text, saved without the mark, ⬆, ✕" \
+  || { bad "2.867.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui867.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
