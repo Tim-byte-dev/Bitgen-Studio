@@ -23,6 +23,10 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **空格鍵隨處暫停** — 只要不是在輸入文字，Space 即可暫停畫布、即時預覽或 Preview 面板中的影片。 *Where:* 任意位置。 *Since:* 2.410.0
 - **媒體檢視器** — 點選任意縮圖即可全視窗開啟：在清單中滑動切換、以指標為中心縮放、平移、播放影片和聲音、開啟原檔案。 *Where:* Gallery、Assets 和 References。 *Since:* 2.80.0
 - **檢視器中的渲染詳情** — 預覽對話方塊顯示圖片或片段的種子、CFG、步數、取樣器、模型、LoRA、尺寸、渲染時間和提示詞。 *Where:* 預覽對話方塊
+- **🔍 查詢任何內容（Ctrl+K）** — 命令面板，覆蓋所有面板、浮動視窗、選單 / 狀態列按鈕、Settings 欄位、工作區、Generate 模式、風格、指南章節和快捷鍵；按 Enter 即顯示 / 開啟 / 執行，指南會在 📖 Help 視窗中開啟。 *Where:* Ctrl+K 或選單列中的 🔍. *Since:* 2.530.0
+- **用你自己的 AI 處理郵件** — 通過 IMAP / SMTP 連線你自己的郵箱（無需註冊；密碼加密儲存在本機）：資料夾、清單、閱讀窗格（不執行腳本，網際網路圖片按需顯示）、附件；LLM 給每封郵件標記緊急 / 重要 / 普通 / 低並說明理由（新郵件 ✨ 自動標記，“對我重要的事”），總結郵件，起草回覆；寫信視窗的 ✨ 幫我寫 和 ✨ 改寫；傳送、草稿、帶附件轉發。*Where:* 頂端列上的 ✉。*Since:* 2.818.0
+- **攝影機移動和旋轉控制項** — 選取的攝影機會高亮顯示（無邊框），並顯示 X / Y / Z 移動箭頭：拖曳攝影機可在其目前高度上移動，拖曳箭頭可沿單軸移動（步長 1 cm）；雙擊可切換到旋轉環，再雙擊切回；點選其他物件則選取該物件。 *Where:* Sketcher ▸ Select，攝影機。 *Since:* 2.641.0
+- **最後使用的浮動面板在最上面** — 💬 Community、Basic Settings、LLM tokens、▣ 面板、你自己命名的面板、浮動的主面板、舞台面板和語音聊天，在應用程式其餘部分之上共用一個順序：點擊或打開其中一個，它就會到最上面（命名面板不會再遮住 Community）。 *Where:* 每個浮動面板。 *Since:* 2.724.0
 
 ### 面板與佈局
 
@@ -41,6 +45,20 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **對話方塊置中顯示** — 對話方塊和訊息框在螢幕中央開啟，或在你上次移動到的位置開啟。 *Where:* dialog_layout.cfg。 *Since:* 2.438.0
 - **面板佈局檔案** — 每個浮動面板的位置、尺寸、名稱和分頁都儲存在 panel_layout.cfg 中。 *Where:* 安裝資料夾。 *Since:* 2.438.0
 - **StoryBoard 可以浮動** — StoryBoard 面板可以成為獨立視窗，作為分頁停靠到命名面板中，或回到時間軸下方。 *Where:* StoryBoard 標題欄。 *Since:* 2.456.0
+- **在側邊面板旁最大化** — ⛶ 填滿已開啟的 Gallery / Queue / References / Assets / 左側面板之間的空間。 *Since:* 2.538.0
+- **工作區** — 選單列中的 Workspace 下拉式清單：Basic、Image editing、Video editing、Music video、Expert。每個工作區顯示該類工作所需的面板，隱藏用不到的按鈕（不會停用任何功能），並記住你自己的改動；↺ 可重設某個工作區。 *Where:* 選單列. *Since:* 2.526.0
+- **▁ ⛶ ✕ 面板標題欄** — 將浮動面板最小化為標題欄、最大化到整個視窗並可還原，或將其關閉。 *Where:* 每個浮動面板. *Since:* 2.532.0
+- **把停靠窗停靠到另一個停靠窗的上方或下方** — 把浮動停靠窗拖到你的停靠窗（浮動的，或停靠在主列中的 ▣ 停靠窗）裡某個停靠窗的上邊緣或下邊緣附近，兩者就會在那裡上下堆疊；拖到堆疊上時會放到其中停靠窗之間；拖到側邊或中間則像以前一樣並排或作為標籤新增；浮動停靠窗總是顯示在停靠於停靠窗內的停靠窗前面。 *Where:* 你的任何停靠窗（⊞ Docker configs ▸ ▣ New docker…、▣ 停靠窗）。 *Since:* 2.764.5
+- **摺疊面板** — 側邊面板可摺疊為細長的標題列；影像編輯器的面板組可摺疊為其分頁，並可用 ✕ 關閉；View ▸ Dockers 可顯示或隱藏每個面板。 *Where:* 面板標題欄中的 ▾；影像編輯器的 View 選單. *Since:* 2.514.0
+- **面板欄可放入任意浮動面板** — 按住標題將浮動面板（用 ⇱ 浮動出來的主面板、▣ 面板、Basic Settings、LLM tokens、提示詞面板、⏳ Pending）拖到影像編輯器的面板欄上，即可停靠在此——可從其標題欄摺疊、移動、調整大小或再次浮動；下次啟動時保留，並隨編輯器一起顯示 / 隱藏。 *Where:* 影像編輯器的面板欄（Layers 所在處）。 *Since:* 2.609.0
+- **▣ 面板可容納任意麵板** — 與其他浮動面板位於同一浮動層（而非置於所有內容之上），拖曳面板時會顯示輪廓；Settings、References、Assets、Queue、Gallery 和 StoryBoard 可按住標題欄拖入。 *Where:* 狀態列的 ▣ Docker（Ctrl+Alt+D）。 *Since:* 2.558.0
+- **▣ 面板可停靠，任何面板都能放入** — 按住標題欄拖曳浮動的 ▣ 面板，可將其停靠到某個面板的上方 / 下方 / 旁邊，或停靠到側邊面板中（藍色放置區域）；Basic Settings、LLM tokens 和提示詞面板可放入 ▣ 面板，也可再浮動出來。 *Where:* 狀態列的 ▣ Docker（Ctrl+Alt+D）。 *Since:* 2.560.0
+- **將 ▣ 面板作為獨立的一欄** — 放到兩欄之間的接縫處（或視窗邊緣）時，它會變成一個全高的欄，並帶有自己的分隔條；重新啟動後保留。 *Where:* 按住標題欄拖曳 ▣ 面板。 *Since:* 2.561.0
+- **面板按離開時的佈局恢復** — ▣ 面板的成員、標籤順序、目前顯示的分頁、隱藏 / 摺疊狀態、最小化的浮動面板、擴充功能面板——重新啟動後都會保留。 *Since:* 2.575.0
+- **設定 ▸ 面板** — 列出每個面板和浮動視窗（包括擴充功能的），顯示其所在位置，↺ Reset 可將其恢復到預設位置和大小；↺ Reset all 全部重設。 *Where:* Settings ▸ Dockers。 *Since:* 2.579.0
+- **面板開關 + 佈局** — 👁 關閉某個面板及其狀態列按鈕；🗂 Layouts 可儲存 / 應用 / 匯出 / 匯入整個面板佈局及主題（layouts/<name>.json）；★ Save as the default = layouts/default.json + themes/default.json，用於全新安裝。 *Where:* Settings ▸ Dockers。 *Since:* 2.587.0
+- **🧯 視窗會自行恢復** — 桌面視窗崩潰或卡住時，會詢問 重新載入 / 重設面板和快取後重新啟動 / 退出；新版本或沒能啟動起來的一次啟動會清除快取，連續兩次還會重設面板 - 儲存在 backups\layout-auto-… 中，記錄在 logs\electron-crash.log；手動：設定 ▸ 面板 ▸ 🧯 重設面板和快取…；在瀏覽器中用 ?safe-layout=1。 *Where:* 桌面應用；設定 ▸ 面板。 *Since:* 2.891.0
+- **🏦 銀行附加功能：拆分、轉帳、規則** — ✚ Make… ▸ Split over several accounts 把對帳單上的一行記為每部分一行的收據或銷售（每行各自的 GST，顯示還需拆分的金額），勾選後則為無 GST 的日記帳，並按比例記住供下一行使用；你自己兩個帳戶之間的轉帳會根據另一份對帳單給出建議（↔），只建立一次並在兩份對帳單上都匹配——另一份對帳單稍後匯入時也會匹配；⚙ Rules… 列出記住的文字 → 帳戶 / 稅碼 / 拆分及待處理的行，✎ 更改（縮短為“officeworks”即可識別所有門店），🗑 刪除。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.892.0
 
 ### 主題與外觀
 
@@ -52,6 +70,15 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **主題編輯模式** — 點選螢幕上的任意元素即可選取它，並更改其字型、大小、顏色、陰影、圓角半徑或圖示，可作用於此元素、所有同類元素或其整個類別。 *Where:* 頂端列中的畫筆按鈕。 *Since:* 2.443.0
 - **主題編輯模式下對話方塊照常可用** — 該模式開啟時，對話方塊和彈出選單照常響應點選和按鍵。 *Where:* 主題編輯模式。 *Since:* 2.455.0
 - **編輯器主題** — 影像編輯器跟隨應用主題，或使用自己的 Pro、Studio 或 Classic 外觀。 *Where:* 影像編輯器的 Window > Theme。 *Since:* 2.393.0
+- **bitGen Default 主題 + Ctrl+Alt+S** — Ctrl+Alt+S 可在任意位置開啟 Settings；Ctrl+Alt+Shift+T、⟲ bitGen Default 或 ?theme=default 會恢復內建預設主題（Dark，無元素樣式，介面大小 100 %），↶ The theme before 可復原此操作；內建主題不能被覆蓋或刪除。 *Where:* 任意位置；Settings ▸ Themes。 *Since:* 2.636.0
+- **主題編輯模式：調整大小、移動、隱藏、重新命名** — 拖曳手柄調整元素大小，拖曳元素移動位置，隱藏元素或修改其文字；每次修改都會儲存在 themes/<name>.tmp 中，退出編輯模式時可選擇 Save theme、Save theme as…、Reset theme、Not now 或 Cancel。 *Where:* 頂部欄中的 🖌. *Since:* 2.514.0
+- **主題編輯模式：每個按鈕及其文字** — 雙擊任意文字（按鈕、面板標題、分頁、標籤、標題、提示）即可就地修改；可重新命名下拉式清單的選項；可修改佔位文字和工具提示；浮動工具面板的編輯方式與面板相同；Shift+點選（2.682.0）或 Alt+點選可執行按鈕的操作，並在不退出該模式的情況下開啟分割槽 / 分頁 / 選單。 *Where:* 頂部欄中的 🖌. *Since:* 2.623.0
+- **僅在 Expert 模式下隱藏** — 主題可以只在開啟 Expert 模式時隱藏某個元素；Basic 模式下仍會顯示。 *Where:* 主題編輯模式 > Style 面板 > Hide. *Since:* 2.544.0
+- **對話方塊的主題編輯模式** — Ctrl+Shift+Alt+E 也可為開啟的對話方塊（Settings 等）設定樣式；Ctrl+S 儲存主題並退出。 *Where:* 任意位置. *Since:* 2.515.0
+- **主題編輯器：對齊、內邊距、外邊距、圓角** — Style 面板可對齊文字（左 / 置中 / 右 / 兩端對齊，上 / 中 / 下——適用於按鈕、彈性行 / 列、網格和文字塊），為元素及其文字設定內邊距和外邊距（每一邊單獨設定，= 同時設定四邊），並可單獨設定每個角的圓角。 *Where:* 🖌 Edit theme 模式 ▸ 點選某個元素 ▸ Text / Box。 *Since:* 2.567.0
+- **在主題編輯模式中重新命名面板標題和任意文字** — 面板的標題欄，以及按鈕 / 框旁帶文字的任意元素，都可改用新文字（保留下拉箭頭和按鈕，摺疊後依然保留新文字）。 *Where:* 🖌 主題編輯模式 ▸ 選取 ▸ Layout ▸ Text。 *Since:* 2.574.0
+- **主題編輯 ▸ Apply to: This element only（預設）** — 每次選取都只作用於該元素本身；新文字絕不會擴散到其他面板或元素。 *Where:* 🖌 主題編輯模式 ▸ Apply to。 *Since:* 2.574.1
+- **Neural blue 主題和 bitGen 大腦圖片** — 午夜海軍藍配電光藍強調色的主題；啟動畫面是大腦影片，左上角顯示標誌（自 2.752.0 起；此前隨機顯示片頭影片或大腦）；新安裝的第一個專案會在 Assets ▸ Images 中自帶這張圖片。 *Where:* Settings ▸ Themes、啟動畫面、Assets ▸ Images。 *Since:* 2.726.0
 
 ### 專案與儲存
 
@@ -63,14 +90,12 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **重設專案** — 清空專案並以相同名稱重新建立，同時停止其渲染並清除其已完成的任務。 *Where:* 選單列。 *Since:* 2.374.0
 - **整個專案檔案（.bgp）** — 整個專案儲存為一個 XML 檔案，可以自包含全部媒體，也可以是一個小清單；採用流式讀寫，因此數 GB 也沒問題；開啟它會建立一個新專案。 *Where:* 選單列中的打包按鈕。 *Since:* 2.436.0
 - **電影包** — 在 StoryBoard 上新建、儲存和載入整部電影（演員陣容、章節、場景和渲染）。 *Where:* StoryBoard 的選單列。 *Since:* 2.151.0
+- **專案重設鎖定螢幕** — 專案重設期間，整個視窗會被遮罩覆蓋，顯示 "Resetting Project..."，帶有旋轉圓環、跳動的圓點、目前正在進行的操作和已用秒數；遮罩後面的任何內容都無法點選，並且會一直保持到重新載入完成、空專案開啟為止（"✓ Project reset"）。 *Where:* ↺ Reset project. *Since:* 2.599.0
 
 ### 素材、參考圖、相簿與佇列
 
 - **素材面板** — 專案中的影像、影片和聲音；把檔案拖放到上面即可匯入。 *Where:* Assets 面板
 - **素材分組** — （2.635.0：一個分組就是 Assets 資料夾中的一個資料夾）把檔案歸入分組；Send 把檔案移入該資料夾，Add 則同時在那裡建立連結。 *Where:* Assets 面板
-- **SolidCraft 全視窗** — SolidCraft 面板上的 ⛶ 會填滿整個視窗（標題欄和狀態列保留）並關閉其他面板；🗗 / Esc 將佈局恢復原樣。 *Where:* 📐 SolidCraft 面板。 *Since:* 2.638.0
-- **Shift+右鍵點選退出 全螢幕模式** — 在影像編輯器僅顯示畫布的 全螢幕模式中，在任意位置 Shift+右鍵點選即可退出（不彈出右鍵選單）；Ctrl+Esc / Ctrl+Shift+F 仍然有效。 *Where:* 影像編輯器 ▸ 🎨 Full Screen。 *Since:* 2.637.0
-- **bitGen Default 主題 + Ctrl+Alt+S** — Ctrl+Alt+S 可在任意位置開啟 Settings；Ctrl+Alt+Shift+T、⟲ bitGen Default 或 ?theme=default 會恢復內建預設主題（Dark，無元素樣式，介面大小 100 %），↶ The theme before 可復原此操作；內建主題不能被覆蓋或刪除。 *Where:* 任意位置；Settings ▸ Themes。 *Since:* 2.636.0
 - **全域素材與專案素材** — Assets 面板中的 📁 Project | 🌐 Global | All；專案素材位於 projects/<name>/Assets，全域素材（所有專案可用）位於 projects/Assets；上傳的檔案進入 Assets；右鍵點選可選擇 🌐 Move to Global / 📁 Move to Project。 *Where:* Assets 面板。 *Since:* 2.635.0
 - **選擇並刪除素材** — 勾選、Ctrl+點選或 Shift+點選圖塊；刪除會把它們移入回收站，絕不會直接永久刪除。 *Where:* Assets 面板
 - **新增圖塊** — 虛線框的新增圖塊會開啟檔案對話方塊，用於新增圖片、影片或聲音，一次可新增多個。 *Where:* References 和 Assets。 *Since:* 2.394.0
@@ -83,6 +108,17 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **中止對話方塊** — 停止目前渲染、將其放到佇列最前面重試，或停止全部任務。 *Where:* Abort 按鈕
 - **可重用的種子** — 每個已完成任務的詳細資訊，帶有一個按鈕，可把它的種子填回 Basic Settings。 *Where:* Queue 的資訊按鈕。 *Since:* 2.384.0
 - **即時 ComfyUI 進度** — 每個影片任務都會顯示正在執行哪個節點以及 "step n of total"。 *Where:* Queue、場景卡片和 Generate 按鈕
+- **佇列預設** — Normal / Quiet（夜間）/ Eco / Cool-down / Max performance / Custom：設定 GPU 功耗上限、任務之間的休息時間、顯示卡過熱時等待，以及降頻警告。 *Where:* 選單列的 ⏱. *Since:* 2.518.0
+- **新渲染加入已開啟的預覽** — 預覽開啟期間完成的圖片會加入其縮圖條；✨ N new 可跳轉到新圖片。 *Where:* 圖片 / 影片預覽. *Since:* 2.534.0
+- **Queue 的 Pending 標籤只顯示尚未完成的** — 排隊中和執行中的生成在 Pending;已完成、失敗和取消的在 Done(可用 ↻ 重新生成);Pending 的數量包括排隊中的。 *Where:* Queue。 *Since:* 2.784.1
+- **資料夾篩選會記住所選資料夾；Basic Settings 儲存在 basic.cfg 中** — 每個資料夾篩選下拉框都會保留你選擇的資料夾（folder_filters.cfg）；Basic Settings 在更改時儲存到 basic.cfg，並在啟動時讀回。 *Where:* 任意模型下拉框的資料夾篩選、📁 瀏覽器、Model manager；Basic Settings。 *Since:* 2.559.0
+- **恢復的任務回到所屬場景；不再自動播放** — 因重新啟動而中斷的 StoryBoard 場景，在 Queue 面板的 Pending 分頁中按下 ▶ Resume 後會取回其任務（執行狀態及其進度列）；影片和歌曲載入後處於暫停狀態，按 ▶ / Space 才開始播放。 *Where:* Queue 面板的 Pending 分頁；StoryBoard；播放器。 *Since:* 2.562.0
+- **多選並拖曳多個片段；⛓ 順序排列** — 在 Gallery、Assets 或 References 中按住 Ctrl / Shift 點選多個片段，一起拖到時間軸上（最早的放在最上層，依次首尾相接）；⛓ Sequential 讓時間軸上的片段沿各圖層依次連續播放，刪除、新建圖層和修剪後都不會留下空隙。 *Where:* Gallery / Assets / References（Ctrl / Shift+點選、拖曳）；時間軸工具列 ▸ ⛓ Sequential。 *Since:* 2.571.0
+- **隨處顯示目前步數 / 總步數** — 圖片（ComfyUI 和 sd-cli）、音樂和影片會即時報告取樣器步數，所有顯示正在執行的生成任務的面板、對話方塊和卡片都會顯示“第 n 步 / 共 total 步”。 *Since:* 2.574.0
+- **✎→ 從任意檔案傳送到提示詞** — 將檔案的提示詞及其種子、cfg 和步數傳送到提示詞框 + Basic Settings。 *Where:* 相簿、Assets、References 的縮圖塊；檢視器的 ⓘ 詳情。 *Since:* 2.575.0
+- **🧩 傳送到模型… / Ctrl+↓ 設為縮圖** — 檢視器可將圖片 / 影片 / 歌曲連同其後設資料傳送到某個模型的檔案中；Ctrl+↓ 將圖片設為該模型的縮圖。 *Where:* 檢視器；🧩 Model manager ▸ ⓘ。 *Since:* 2.576.0
+- **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
+- **預覽中的歌曲：視覺化效果，Next 播放下一首** — 在預覽中對歌曲或聲音按 ▶，會開始一個隨機選擇的視覺化效果（條形、鏡像、波形、圓環、星空、漣漪；🎲 換一個）；Next / Prev 跳到所點擊面板中的下一首 / 上一首並播放。 *Where:* 預覽（在 Gallery、Assets 或 References 中點擊歌曲）。 *Since:* 2.725.0
 
 ### 檔案對話方塊與另存新檔
 
@@ -113,6 +149,44 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **工作流轉換** — 把 UI 工作流轉換為 API 提示（展開子圖以及 Set / Get 節點），現在使用 ComfyUI 自己的前端完成。 *Where:* Settings > ComfyUI > Graphs。 *Since:* 2.402.1
 - **模型檔案匹配** — 工作流中指定的模型檔案會與你的 ComfyUI 中已有的檔案進行匹配，任務日誌會註明匹配結果。 *Where:* 每個任務。 *Since:* 2.345.0
 - **3D 設定** — 參數化 3D 人體的引擎以及 Unreal Engine 橋接設定。 *Where:* Settings > 3D。 *Since:* 2.471.0
+- **附加元件** — Settings ▸ Add-ons 列出可選引擎（YuE2 音樂、Viggle native）：每個引擎的用途、需求和大小，以及是否已安裝；可執行 ⤓ Install / ⟳ Reinstall / 🗑 Remove，日誌顯示在該分頁中。 *Where:* Settings ▸ Add-ons。 *Since:* 2.540.4
+- **⟳ 重新安裝與安裝狀態** — 任何已安裝的內容都會顯示 ⟳ Reinstall（已下載的模型顯示 ⟳ Download again），點選會重新取得全部內容；安裝或下載進行時，其按鈕被停用，旁邊的狀態顯示目前步驟、百分比和秒數，結束後顯示 ✓ 或 ✗ 及原因。 *Where:* Settings（Add-ons、Audio、ComfyUI、Models、Extensions）、模型目錄、Civitai、LoRA 訓練器以及各面板的安裝按鈕。 *Since:* 2.601.0
+- **從 GitHub 更新** — Settings ▸ General ▸ ⟳ Updates：檢查 GitHub 上是否有更新的版本（列出新的提交），⤓ Update now（git 複製的安裝會切換到 GitHub 的分支，並備份你修改過的檔案；zip 安裝則取得有變化的檔案），依賴清單有變化時執行 npm / pip，⟳ Restart now；啟動後會靜默檢查一次。 *Where:* Settings ▸ General。 *Since:* 2.540.5
+- **整潔的應用資料夾** — 應用資料夾中只有 start.bat（+ package.json、README、LICENSE）；伺服器、工作程序、預設設定、安裝腳本和說明都位於 misc\ 中；從 zip 更新的安裝會在首次啟動時清理掉舊的副本（快捷提示詞會保留）。 *Where:* 應用資料夾。 *Since:* 2.591.0
+- **安裝程式詢問你的硬體** — 安裝程式偵測不到時，會詢問顯示卡（從清單中選擇）、記憶體和 CPU；“Not right?” 可修改。 *Where:* 安裝程式的第一頁. *Since:* 2.519.0
+- **安裝包** — Editor（無 AI）/ + small AI / + mid-size AI / Everything，按你的顯示卡推薦；安裝前即可看到你能使用哪些功能（✓ ~ ✗，可以以後再新增）以及下載量。 *Where:* 安裝程式的 Your package 頁面；setup-cli --packages. *Since:* 2.519.0
+- **本機與安裝包** — 你的硬體、已安裝的安裝包、每種安裝包可使用的功能；✎ Not right?；⬆ 無需重新安裝即可升級到更大的安裝包。 *Where:* Settings ▸ Models. *Since:* 2.520.0
+- **分組下載** — 每個模型組一個核取方塊，並顯示其檔案數量和大小。 *Where:* 安裝程式的模型頁面；Settings ▸ Models ▸ Model downloads. *Since:* 2.520.0
+- **載入器跟隨模型檔案** — 風格的 .safetensors 或 .gguf 模型會自動使用匹配的 ComfyUI 載入器（Load Diffusion Model / GGUF 載入器）——GGUF 風格也能渲染 .safetensors 微調模型，反之亦然。 *Where:* 每個影像風格. *Since:* 2.523.0
+- **無論模型在哪個 ComfyUI 資料夾中都能找到** — 風格的擴散模型如果放在 models/checkpoints（或其他子資料夾）中，會通過 Load Checkpoint / ComfyUI 列出的名稱載入，而不會報錯 "Value not in list"；不在任何資料夾中的模型會給出提示，說明應放在哪裡。 *Where:* 每個影像、影片和音樂任務. *Since:* 2.525.0
+- **每個模型檔案都能在 ComfyUI 列出的位置找到** — 位於其他子資料夾中的文字編碼器、VAE、LoRA 和 ControlNet 會以 ComfyUI 中的名稱使用；完全不在任何資料夾中的檔案，會給出可下載它的模型目錄條目名稱。 *Where:* 每個任務；🩺 Style doctor. *Since:* 2.531.0
+- **工作室中的附加元件** — 在 Settings ▸ General 中開啟或關閉 Face fix 和 ControlNet：關閉 = 隱藏且從不使用；開啟 = 顯示，且缺少的內容（節點包、模型）會自動下載到對應的 ComfyUI 資料夾——每次啟動時也會檢查；它們的 Add-ons 卡片列出了所有下載連結。 *Where:* Settings ▸ General / Settings ▸ Add-ons. *Since:* 2.593.0
+- **🔑 API 金鑰加密儲存，更新後仍在** — Hugging Face、Civitai 和 RunPod 金鑰、遠端存取金鑰以及社群登入儲存在 settings/keys.json 中，每個單獨加密（AES-256-GCM，由 settings/keys.master 開啟）；更新和恢復預設值都不會動它們；custom.settings 不儲存任何金鑰。 *Where:* bitGen 資料夾中的 settings/（設定 ▸ 一般 中顯示）。 *Since:* 2.748.0
+- **模型管理器能找到 ComfyUI 已有的內容** — 它會詢問正在執行的 ComfyUI 其模型資料夾在哪裡、下拉式清單裡有哪些內容，因此即使模型和 LoRA 不在 Settings 中設定的 ComfyUI 資料夾下（例如桌面版自己的資料夾，或 ComfyUI 命令列指定的 yaml），也能顯示出來。 *Where:* 🧩 Models. *Since:* 2.598.0
+- **按鈕顯示正在進行的操作** — Install、Update、Start（隨後是 Loading the model）、Stop、Rescan、Scan folder 和 Save 會變成旋轉的 "…ing" 並顯示秒數，然後顯示 ✓ 或 ✗ 及原因。 *Where:* Settings > LLM 和 Save. *Since:* 2.596.0
+- **彩色安裝過程，絕不看起來卡住** — 在安裝視窗的步驟、日誌和下載中，以及安裝腳本中，已完成顯示為綠色，正在安裝顯示為淺綠色（帶用時），警告為橙色，錯誤為紅色；長時間無輸出的步驟會說明它仍在執行、為何可能耗時較長，以及它並沒有卡住。 *Where:* 安裝視窗，install_all，start.bat. *Since:* 2.634.0
+- **一個檔案完成安裝** — install_all.bat / install_all.sh / install_all.command：缺少 Git 和 Node.js 時自動安裝（Windows：還有 Python），將倉庫複製到該檔案旁邊，然後啟動工作室（首次啟動時安裝其餘部分）。 *Where:* 倉庫根目錄——只需下載該檔案. *Since:* 2.616.0
+- **⤓ 更新 ComfyUI；啟動時檢查更新** — 就地更新 ComfyUI（使用便攜版自帶的更新程式，或 git + pip），可選 Newest 或 Stable 通道，由本應用啟動的 ComfyUI 會隨之重新啟動；啟動後在 GitHub 上檢查 bitGen Studio 和 ComfyUI，任一有新版本時狀態列顯示 ⬆。 *Where:* Settings ▸ ComfyUI ▸ ⟳ ComfyUI updates；Settings ▸ General ▸ ⟳ Updates ▸ Check for updates on startup。 *Since:* 2.573.0
+- **無需設定即可使用已安裝 ComfyUI 的模型** — Settings 中未指定 ComfyUI 資料夾時，會自動查詢本機上的 ComfyUI（環境變數、應用旁邊、主目錄、Pinokio、Stability Matrix、各驅動器根目錄、ComfyUI Desktop），並在 Model manager 和 Basic Settings 中列出其檢查點和擴散模型；點選 Use this folder 即可將其設定下來。 *Where:* 🧩 Model manager；Basic Settings ▸ Model / checkpoint；Settings ▸ ComfyUI ▸ Folder。 *Since:* 2.622.0
+- **模型路徑（extra_model_paths.yaml）** — 管理 ComfyUI 額外模型路徑的每個組：➕ 新建組（other_ui1、other_ui2 …，根據其 base 下的資料夾自動填充），更改 / 新增 / 刪除路徑（用 📁 選擇），重新命名，is_default，🗑 刪除組；檔案的其餘內容保持不變，並保留上一版的 .bak 備份；⟳ Restart ComfyUI。 *Where:* 🧩 Model manager ▸ 📁 Model paths。 *Since:* 2.580.0
+- **⤒ 匯入並檢查 ComfyUI 工作流** — 任意儲存版 / API 版工作流：統計其圖片 / 影片 / 聲音輸入，將預覽節點改為儲存節點，報告缺失的節點和模型檔案，連線 Prompt / Negative / Seed / Steps / CFG / 尺寸 / 時長控制項，並繪製工作流圖；▶ Test run 使用測試輸入試執行——成功時儲存到 comfy_workflows/ 並附帶工作流圖，失敗時顯示 ComfyUI 的錯誤。 *Where:* Settings ▸ ComfyUI ▸ Graphs。 *Since:* 2.587.0
+- **帶伺服器元件的可選擴充功能** — 擴充功能（ext/<id>/）可自帶伺服器程式碼（ext.json 中的 "server"），在啟動時掛載，且僅在其執行時顯示；Settings ▸ Add-ons 可從擴充功能的 zip 安裝（📦）和移除擴充功能。Team render farm 就是這樣一個擴充功能——因可能觸發防毒軟體而未包含在安裝 zip 中。 *Where:* Settings ▸ Add-ons ▸ Team render farm。 *Since:* 2.589.0
+- **屋簷、封簷板和簷溝** — 每個屋頂的簷口可設為 Simple、Open（外露椽尾）、Boxed（平底簷口板）或 Closed（沿坡面襯板），配封簷板 + 山牆封簷板，帶落水管的方形或半圓形簷溝，各有自己的顏色。 *Where:* Sketcher ▸ △ Roof / 選取的屋頂。 *Since:* 2.668.0
+- **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
+- **渲染前檢查缺失的模型** — 渲染要載入的每個模型檔案（工作流的、樣式的，以及 Basic Settings 的）都會與 ComfyUI 模型路徑中已找到的模型檔案清單比對（misc/models_found.json，缺少某個名稱時重新生成）；對話方塊列出缺少的檔案及各自應放入的資料夾，⬇ Download 下載模型目錄中有的檔案後渲染自動開始，Cancel 則停止渲染；仍因缺少模型而停止的渲染會詢問是否下載（2.720.0）。 *Where:* 生成（圖片、影片、音樂）；🧩 Models ▸ ⟳ 重新生成清單。 *Since:* 2.719.0
+- **僅在模型改變時釋放顯示記憶體** — 連續使用同一模型的渲染會把它留在顯示卡上（不解除安裝、不重新載入）；換用其他模型或發生顯示記憶體不足的錯誤時，會先釋放顯示卡；也可以像以前一樣每次生成前釋放。 *Where:* 設定 ▸ ComfyUI ▸ Free VRAM before a generation ▸ Free it。 *Since:* 2.722.0
+
+### 社群、幫助和錯誤報告
+
+- **💬 bitGen 社群** — 類似 Facebook 的小型聊天面板：用使用者 ID 加入，在共享的 Help 聊天室中提問，新增好友（需對方先接受），私聊，舉報 / 封鎖，管理員可以刪除訊息和封停用戶；伺服器為 PHP + MariaDB（倉庫中的 community/）。它是一個獨立的浮動面板（可浮動 / 停靠 / 作為分頁放入其他面板，位置會被記住 - 2.711.0）。 *Where:* 狀態列的 💬 Community。 *Since:* 2.710.0
+- **社群：姓名 + 已驗證的郵箱** — 加入時需要填寫名字、姓氏和電子郵件地址（只有管理員能看到）；系統會向該地址傳送一個 6 位驗證碼，確認之後才會開放 Help 聊天室（可以 Send a new code，或更改地址）；封禁也會同時封禁該郵箱地址，因此被封禁的成員無法以新的使用者 ID 重新加入；老成員會在下次登入時被要求補充這些資訊。 *Where:* 💬 Community ▸ Join，⋯ ▸ Your details。 *Since:* 2.713.0
+- **討論區** — tigerart.com.au 上的論壇，與 💬 Community 使用同一個帳戶：Help / Show your work / Ideas / General；成員發帖立即顯示，訪客可以閱讀和發帖（訪客的帖子需先經管理員批准）；管理員可以批准、拒絕、刪除和封禁，並能看到真實姓名。 *Where:* 💬 Community ▸ ⋯ ▸ Discussions，或 tigerart.com.au/discussions.php。 *Since:* 2.713.0
+- **測試面板** — 某個版本需要做的測試，完成後逐項勾選（很多會自動勾選），可寫備註，💾 儲存日誌以便上傳。 *Where:* Settings ▸ General ▸ 🧪 Testing. *Since:* 2.518.0
+- **錯誤報告** — Ctrl+Alt+Shift+B：視窗截圖（可用 ✏ / ▭ 標註）、標題、嚴重程度、出現位置、發生了什麼 / 預期結果、操作步驟（⤵ 錄製的點選和按鍵——絕不記錄輸入的文字），並附帶日誌、系統 + 設定（隱藏金鑰）、頁面錯誤和失敗的請求；💾 儲存為一個 .zip 以便傳送；以前的報告可 ⤓ / 🗑。 *Where:* 任意位置（Ctrl+Alt+Shift+B）；Settings ▸ General ▸ 🐞 Report a bug…. *Since:* 2.522.0
+- **向社群傳送錯誤報告** — 📤 Save and send 將報告發布到網站的 Discussions ▸ Bug reports 下：已登入 💬 Community 時以你的身份釋出（立即顯示），未登入或勾選 ☑ Send anonymously 時匿名釋出（需管理員先稽核）；公眾可見標題和你寫的內容，日誌、設定、系統資訊和截圖僅管理員可見；管理員可設定其狀態，並將所有錯誤下載為一份清單。 *Where:* 🐞 Bug report ▸ 📤 Save and send；Earlier reports ▸ 📤. *Since:* 2.714.0
+- **自動勾選的測試** — 🧪 測試清單中凡是應用偵測到已正常工作的專案都會被勾選並保留（auto ✓），重新啟動後依然有效。 *Where:* Settings -> General -> 🧪 Testing. *Since:* 2.532.0
+- **🧪 測試模式** — 根據你目前所在位置推薦下一項測試（影像編輯器：模糊、畫筆、橡皮擦……），應用偵測到某項測試正常工作時詢問 'Did it work?' 並提供建議框，將你的回答和建議記錄在日誌中；關閉後不會自動勾選也不會彈出任何內容。 *Where:* Settings -> General；🧪 Testing 面板. *Since:* 2.534.0
+- **加入社群時說明為什麼要郵箱驗證碼** — 加入表單（💬 Community 和網站）說明使用或下載 bitGen Studio 不需要成為會員 - 只有在社群裡交流才需要 - 並說明新會員用 6 位驗證碼確認郵箱，是為了防止垃圾註冊並確認加入的是真實的人。 *Where:* 💬 Community ▸ Join；tigerart.com.au ▸ Account。 *Since:* 2.764.4
 
 ## 生成影片
 
@@ -133,6 +207,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **生成進度** — 按鈕上方顯示執行中任務的步數，下方顯示進度列。 *Where:* Generate 按鈕
 - **清空提示詞** — 只清空提示詞框。 *Where:* 提示詞面板的標題欄。 *Since:* 2.117.0
 - **語音輸入** — Speak 通過麥克風錄音，並把識別出的文字新增到提示詞中。 *Where:* 提示詞面板。 *Since:* 2.87.0
+- **P-H3 Image** — PrunaAI 基於 MiniMax H3 的影像模型：*P-H3 Image* 風格（文生圖，4-8 MP）和 *P-H3 Image Edit*（最多借助 7 張參考圖編輯圖片，被編輯的是 `<image1>`）；它自帶的提示詞擴寫器會把簡短的請求擴寫成完整的提示詞。Settings ▸ Add-ons ▸ P-H3 Image 會下載其 LoRA、文字編碼器、VAE 和擴寫器（約 17 GB），配合影片已在使用的 MiniMax H3 FL2VA transformer。需要帶 P-H3 節點的 ComfyUI（master / nightly，0.44）；MiniMax H3 Community License。 *Where:* Settings ▸ Image ▸ P-H3 Image / P-H3 Image Edit。 *Since:* 2.678.0
 
 ### 提示詞對話與本地 LLM
 
@@ -144,6 +219,17 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **朗讀回覆** — 用所選聲音朗讀每條回答。 *Where:* Prompt chat。 *Since:* 2.87.0
 - **長篇鏡頭清單** — 當要求的內容比一個片段更長時，LLM 會編寫一份可依次銜接的編號鏡頭清單。 *Where:* Prompt chat。 *Since:* 2.126.0
 - **360 度與立體 VR 提示詞** — 當你提出要求時，LLM 會學習等距柱狀投影和左右並排立體的提示詞規則。 *Where:* Prompt chat。 *Since:* 2.118.0
+- **WeVisOne-VL 視覺模型** — 騰訊的 WeVisOne-VL（基於 Qwen3-VL）作為提示詞面板的視覺模型：它能讀取圖片中的文字、計數和查詢物體，併為 LLM 描述圖片內容。可在下拉式清單中選擇 4B 或 2B；模型會下載到你的視覺模型資料夾。 *Where:* Settings > Add-ons > WeVisOne-VL. *Since:* 2.595.0
+- **⟳ 更新 llama.cpp** — 檢視已安裝的 llama.cpp 版本以及是否有更新版本，並就地更新（LLM 和視覺伺服器會先停止；模型和設定保持不變）；進度直接顯示在原處。 *Where:* Settings > LLM. *Since:* 2.596.0
+- **🎙 語音對話** — 像即時聊天一樣免手動與應用交談：它能聽懂你說的話（faster-whisper，本地執行，常駐載入），本地 LLM 會出聲回答並執行你的要求——提示詞、風格、Basic Settings、Generate、StoryBoard 場景、面板。 *Where:* 狀態列的 🎙 Voice（Ctrl+Alt+V）。 *Since:* 2.564.0
+- **LLM 提示詞中的 LoRA 關鍵詞** — ✨ Enhance 和提示詞聊天會將所選 LoRA 的關鍵詞（觸發詞）寫入提示詞；LLM 遺漏的關鍵詞由 Enhance 補上。 *Where:* Prompt 面板 ▸ ✨ Enhance / 提示詞聊天。 *Since:* 2.581.0
+- **🔁 比較 LLM** — 同一個提示詞依次由每個勾選的 LLM 回答，每條回覆顯示在聊天中各自的名稱下；✓ Use this one 將其設為答案，每一輪（請求、每條回覆、所做的選擇、耗時）都會被記錄，🏆 顯示每類工作（劇本、音樂影片、歌曲、圖片 / 影片提示詞、聊天）的最佳 LLM，附帶勝率、平均耗時及 CSV 匯出。 *Where:* 提示詞面板的選單列（🔁 ▾ 🏆）。 *Since:* 2.584.0
+- **附加元件 ▸ LLM** — 聊天 / 寫作用的 LLM 集中在一個下拉框中（★ Qwen3.8 27B——用作你自己檢查點的基礎模型、Gemma 4 31B / 12B、Qwen3.5 9B、Qwen3 4B / 8B / 14B），下載到 LLM 資料夾；訓練器的 Qwen3.8 27B 基礎模型可在 32 GB 顯示記憶體的顯示卡上以 4-bit QLoRA 方式訓練。 *Where:* Settings ▸ Add-ons ▸ LLM；🎓 LoRA trainer ▸ Base model。 *Since:* 2.586.0
+- **使用中 LoRA 的關鍵詞** — ✨ Enhance 和提示詞聊天只寫入 Basic Settings 臨時 LoRA 的關鍵詞（Override style 開啟時），或所選風格的 LoRA 的關鍵詞（關閉時）。 *Where:* Basic Settings ▸ Override style；該風格的 LoRA。 *Since:* 2.585.0
+- **🔎 SearXNG 與 ⬇ 下載** — 設定 ▸ 常規中一鍵在本機安裝 SearXNG（免費，無需金鑰，Windows 也可以），聊天搜尋覆蓋整個網路；讓聊天下載圖片、影片或聲音時儲存到 <專案>/web/downloads/ 並顯示在相簿中——只在你要求時、只下載媒體（按型別和開頭位元組檢查），絕不執行。 *Where:* 設定 ▸ 常規 ▸ 🌐；提示詞停靠窗 ▸ 🌐；相簿。 *Since:* 2.886.0
+- **🧰 LLM 的檔案和命令** — 按下提示詞停靠窗的 🧰，聊天的 LLM 就在你選擇的一個資料夾中工作：自己列出、讀取和搜尋檔案，只有在你看過（更改顯示為紅 / 綠行，命令顯示其資料夾和時間限制）並點“是”之後才會更改檔案或執行命令；每個被更改的檔案都有備份，每次更改和命令都記錄在帶 ↶ 的日誌中；一次回答只能用網路或資料夾之一，所以網頁永遠無法更改你的檔案。 *Where:* 提示詞停靠窗 ▸ 🧰；設定 ▸ 常規 ▸ 🧰。 *Since:* 2.887.0
+- **🎛 LLM 的應用操作和技能** — 按下提示詞停靠窗的 🎛，聊天的 LLM 就會替你操作應用：寫提示詞，選擇風格或基本設定的值，按下生成，新增或渲染故事板場景，顯示停靠窗（語音聊天的操作，在螢幕上完成）；技能 - 某類工作的指示（內建四個：影片提示詞、從故事到故事板、圖片、音樂影片）以及你在 設定 ▸ 常規 ▸ 🎛 技能 中自己建立的 - 在符合要求時載入；讀過網頁後從不使用。 *Where:* 提示詞停靠窗 ▸ 🎛；設定 ▸ 常規 ▸ 🎛 技能。 *Since:* 2.888.0
+- **🎬 PAN 2（MBZUAI 的世界模型）** — 一種影片風格：用平常的話寫下發生的事情（或在參考停靠窗中放一張首幀圖片），PAN 2 就會生成影片 - 24 fps，預設 10 秒，最長 20 秒，按 1248 × 704 訓練；LLM 用 PAN 2 自己的改寫方針把你的話寫成 PAN 2 專用的結構化描述（一行提示詞會變成雜訊），經過檢查，LLM 沒有回應時則簡單包裝；PAN 2 的固定負面提示詞，加上 ⊖ 中的詞；參考停靠窗的第一個聲音鋪在下面。在 ComfyUI 自帶的節點中執行（0.46.0 或更新）；設定 ▸ 附加元件 ▸ PAN 2 會下載 int8 模型（32 GB 顯示卡）或 bf16（80 GB 以上）、Qwen3.5 9B 文字編碼器和 Wan 2.2 VAE。 *Where:* 提示詞停靠窗中的 PAN 2 影片風格；設定 ▸ 附加元件 ▸ PAN 2。 *Since:* 2.890.0
 
 ### 基本設定與影片風格
 
@@ -153,6 +239,13 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **影片風格卡片** — 所選的影片風格，顯示其每個階段的模型、步數、CFG、編碼器、VAE、LoRA 和負面提示詞；在卡片上更換模型會儲存到該風格中。 *Where:* Basic Settings 頂部。 *Since:* 2.401.0
 - **覆蓋風格** — 由 Basic Settings 決定所有影片模型（MiniMax H3、Wan、LTX）的步數、CFG、種子、模型和額外 LoRA。 *Where:* Basic Settings。 *Since:* 2.409.0
 - **影片風格** — 每種模式儲存的一套模型和工作流，對分階段取樣的模型還包含各個階段；複製一個風格即可保留變體。 *Where:* Settings > Video。 *Since:* 2.110.0
+- **🗂 基本設定的每個分頁保留自己的設定** — Ref、F/L、Text 和 Swap 各自記住格式、尺寸、秒數、步數、CFG、種子和模型；離開分頁時儲存，回來時恢復（重新啟動後仍保留）；Character chain 保留未儲存的輸入。 *Where:* 基本設定。 *Since:* 2.742.0
+- **使用模型 / 使用臨時 LoRA** — 開啟“覆蓋風格”時，檢查點／影片模型上方和每個臨時 LoRA 列表上方各有一個勾選框：用風格自帶的模型傳送覆蓋設定，或在任一模型上加上或去掉你的 LoRA。 *Where:* 基本設定。 *Since:* 2.777.0
+- **Basic Settings 的清單跟隨所選風格** — 圖片的 Checkpoint 和 LoRA 清單顯示圖片風格的模型系列和類型（image / image edit），影片的 Model 和 LoRA 清單顯示影片風格的（MiniMax H3、LTX、Wan）；無法判斷系列的檔案留在末尾並加標記；有一行說明顯示的內容，並帶 Show all；已選但不符合的檔案保持選取並加以說明。*Where:* Basic Settings. *Since:* 2.788.0
+- **Basic Settings 的清單按位置篩選** — 圖片 Checkpoint、影片 Model 和每行臨時 LoRA 前面都有 All places / This computer / RunPod / OpenRouter（帶數量），在風格家族篩選之後；☐ Remote 和 Pod 行已移除（Pod 的檔案以 <pod>/<file> 選擇）；Model manager 的 Civitai info 和 Sync 在它的 Civitai 分頁中。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
+- **風格家族清單不再區分圖片 / 編輯** — Basic Settings 的清單顯示風格家族的所有模型，圖片模型和編輯模型都包括（Klein 既能生成也能編輯圖片）。*Where:* Basic Settings. *Since:* 2.798.0
+- **種子：🎲 隨機 / 📌 固定** — 種子旁的一個開關：Random = 每次渲染使用新種子，Fixed = 每次都使用旁邊的數字（輸入數字或用 ♻ 呼叫上次使用的種子會切換為 Fixed）。Basic Settings（影片和影像）以及每個風格（影像、影片、音樂）中都有——風格總能以自己的種子渲染。 *Where:* Basic Settings，Settings > Image / Video / Music styles. *Since:* 2.598.0
+- **每個風格獨立的 Basic Settings** — 每個風格都會保留你上次與它一起使用的 Basic Settings（misc/basic_settings.tmp）：切換風格時，先儲存所離開風格的設定，再恢復新風格的設定；應用啟動時會開啟上次使用的風格及其設定。影片風格儲存除影像設定組以外的所有設定；影像風格儲存影像設定組。 *Where:* 任意風格清單（提示詞面板、Basic Settings 的風格卡片）. *Since:* 2.615.0
 
 ### MiniMax H3
 
@@ -162,22 +255,16 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **一鍵取得更多 ComfyUI 節點包** — 安裝或更新 KJNodes、Yusu H3 Unified 和 RH DLSS 5。 *Where:* Settings > ComfyUI > Video accelerators。 *Since:* 2.503.0
 - **Veda 稀疏注意力** — 影片風格中可選的 MiniMax H3 加速器（On / Quality）：在其訓練尺寸下比標準注意力快約 2-3 倍，可一鍵安裝，其預測器在模型目錄中。 *Where:* Settings > Video styles；Settings > ComfyUI > Video accelerators。 *Since:* 2.536.0
 - **根據盲測調整的 Veda 與 Spectrum** — Veda 會跳過提示詞描述打鬥、變形、爆炸或追逐的鏡頭（這類鏡頭省時不多，畫面還會變軟；☑ 動作鏡頭也使用 Veda 可保留），並取代 Long video 的低顯示記憶體注意力，而不再被跳過；Spectrum 在 12 步以上的執行中讓前 2 步和最後 3 步真實計算，使臉部保持清晰。 *Where:* 設定 ▸ 影片樣式 ▸ Veda 稀疏注意力 / Spectrum。 *Since:* 2.717.0
-- **可管理數百個模型的模型管理器** — 適應面板大小的分頁、資料夾分頁（SDXL、Pony …）、📌 This project 分頁、可調整大小的卡片、每個模型的資訊頁（含範例圖片和提示詞），每個模型的 Civitai 詳情 + 縮圖 + 範例都儲存在一個共享的 model_info 資料夾中。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.537.0
-- **Civitai 下載到各類型的資料夾** — 任意 Civitai 卡片上的 ⤓ 會下載到你為該類型選定過一次的資料夾（SDXL LoRA、Pony 模型、Wan LoRA …）；Shift+點選可更改；📁 列出這些資料夾（model_folders.json）；🔄 Sync 為電腦上的每個模型取得 Civitai 詳情。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.538.0
-- **參考圖描述** — 每張參考圖片、每個參考影片和聲音下方都有一段簡短描述，隨專案和分組儲存，用於對映行、提示詞對話和 ✨ Enhance；另有牆 / 地板 / 家具 / 燈光等圖片類型。 *Where:* References 面板。 *Since:* 2.539.0
-- **影像編輯器中的參考圖** — 拖入的參考圖會變成一個圖層；✨ Edit 可以把參考圖用作 Picture 2。 *Where:* 🖼 Image editor。 *Since:* 2.539.0
 - **藉助參考圖讓渲染變為寫實** — 每個 Blender / Unreal 物件都會與一張參考圖片匹配，可按名稱匹配或手動指定。首幀由編輯模型藉助這些圖片變為寫實畫面，然後由 LTX 2.3 3DREAL 沿著渲染讓它動起來。 *Where:* 🟧 Timeline 的 Blender scene / UNREAL ▸ Render to Real，🖼 影像編輯器的 3D 和 Unreal 圖層。 *Since:* 2.540.0
-- **附加元件** — Settings ▸ Add-ons 列出可選引擎（YuE2 音樂、Viggle native）：每個引擎的用途、需求和大小，以及是否已安裝；可執行 ⤓ Install / ⟳ Reinstall / 🗑 Remove，日誌顯示在該分頁中。 *Where:* Settings ▸ Add-ons。 *Since:* 2.540.4
-- **⟳ 重新安裝與安裝狀態** — 任何已安裝的內容都會顯示 ⟳ Reinstall（已下載的模型顯示 ⟳ Download again），點選會重新取得全部內容；安裝或下載進行時，其按鈕被停用，旁邊的狀態顯示目前步驟、百分比和秒數，結束後顯示 ✓ 或 ✗ 及原因。 *Where:* Settings（Add-ons、Audio、ComfyUI、Models、Extensions）、模型目錄、Civitai、LoRA 訓練器以及各面板的安裝按鈕。 *Since:* 2.601.0
-- **從 GitHub 更新** — Settings ▸ General ▸ ⟳ Updates：檢查 GitHub 上是否有更新的版本（列出新的提交），⤓ Update now（git 複製的安裝會切換到 GitHub 的分支，並備份你修改過的檔案；zip 安裝則取得有變化的檔案），依賴清單有變化時執行 npm / pip，⟳ Restart now；啟動後會靜默檢查一次。 *Where:* Settings ▸ General。 *Since:* 2.540.5
-- **整潔的應用資料夾** — 應用資料夾中只有 start.bat（+ package.json、README、LICENSE）；伺服器、工作程序、預設設定、安裝腳本和說明都位於 misc\ 中；從 zip 更新的安裝會在首次啟動時清理掉舊的副本（快捷提示詞會保留）。 *Where:* 應用資料夾。 *Since:* 2.591.0
-- **在側邊面板旁最大化** — ⛶ 填滿已開啟的 Gallery / Queue / References / Assets / 左側面板之間的空間。 *Since:* 2.538.0
 - **圖片類型** — 把參考圖片標記為人物、面部、服裝、首幀或尾幀；標記首幀會把渲染切換為首幀 / 尾幀模式。 *Where:* References 面板。 *Since:* 2.340.0
 - **True CFG** — CFG 大於 1 時會增加一次負向計算，只強化你的提示詞所新增的內容。 *Where:* Basic Settings。 *Since:* 2.366.0
 - **H3 尺寸** — 選擇如何處理介於 H3 的 32 像素步長之間的尺寸：無條件捨去，或以更大尺寸渲染後再精確裁切回來。 *Where:* StoryBoard 設定。 *Since:* 2.380.0
 - **以角色的聲音說出帶情緒的臺詞** — 每句臺詞都帶有自己的情緒，並用角色的複製聲音說出；較長的聲音片段會被裁切為 8 秒的樣本。 *Where:* StoryBoard 和提示詞
 - **其他語言** — 在引號內加上語言標籤，這句臺詞就會用該語言說出。 *Where:* 提示詞
 - **H3_Viggle 風格** — 由一段動作影片驅動動作，由一張圖片指定表演者。 *Where:* 影片風格清單。 *Since:* 2.352.0
+- **MiniMax H3 的 16 GB 模式** — 在你的 H3 渲染中使用 DENO 的 R2V Turbo 8+2 方案：取樣前解除安裝文字編碼器，第一遍以你設定的尺寸執行 8 步，然後進行潛在空間放大（×1.0-2.0），再用稀疏注意力進行 2 步精修，並保留聲音；Auto 會為顯示記憶體 16 GB 或以下的顯示卡自動開啟，ComfyUI 缺少的部分會被省略並附上說明。 *Where:* Settings > ComfyUI > 16 GB mode；所需檔案位於 Settings > Add-ons > 16 GB mode。 *Since:* 2.708.0
+- **FastH3 Omni** — 以 8 步完成 MiniMax H3 的參考圖生影片（FastVideo）：一種影片風格、一個 StoryBoard Workflow、一個負責下載的附加元件，以及在任何載入它的 H3 工作流圖上應用的配方（shift 12/3、VSA、8 步）。 *Where:* Settings ▸ Add-ons ▸ FastH3 Omni；StoryBoard ▸ Workflow ▸ FastH3 Omni。 *Since:* 2.573.0
+- **🧍 用於角色設定表的 3D 人體模型** — bitGen Studio 自己的解剖學比例人體模型（男性 8 頭身 / 178 cm，女性 7.5 頭身 / 165 cm，自然的 A 字姿勢）作為設定表的起始圖片載入；Dress it（選用，預設關閉）用編輯風格穿上你描述的衣服。 *Where:* Character creator ▸ 🪪 Character sheet ▸ 🧍 Mannequin…。 *Since:* 2.873.0
 
 ### LTX 2.5 與 LTX 2.3
 
@@ -195,6 +282,11 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **自動建構節點圖** — bitGen 用 ComfyUI 自己的節點建構 Wan 節點圖，並按名稱選取正確的模型檔案。 *Where:* Wan 風格
 - **24 fps 輸出** — Wan 的 16 fps 通過運動插幀提升到 24 fps，以便與你的其他片段銜接；參考圖面板中的第一個聲音會鋪在畫面下方。 *Where:* Wan 渲染
 
+### PAN 2
+
+- **🧩 PAN 2 的提示詞用 JSON** — PAN 2 影片風格旁的 { } JSON 讓 LLM 根據你的話（和首幀圖片）把 PAN 2 的 JSON 描述寫進提示詞框，帶縮排，可閱讀或編輯；提示詞還不是 JSON 時，生成會自動這樣做，然後傳送 JSON。 *Where:* 選取 PAN 2 影片風格的提示詞面板。 *Since:* 2.891.0
+- **💾 面板佈局儲存每個面板** — ⊞ 面板佈局 ▸ 💾 儲存佈局 會顯示已儲存（✓ 已儲存），並儲存每個面板 - 主列中的、擴充功能的、浮動視窗和命名 ▣ 面板 - 的位置、大小和狀態（正常、最小化、最大化、隱藏）；載入會全部恢復。 *Where:* 選單列的 ⊞ 面板佈局。 *Since:* 2.891.0
+
 ### 參考圖
 
 - **參考影片與聲音** — 參考渲染可各附帶最多三個影片和聲音；需要時會自動在工作流中新增缺少的插槽。 *Where:* References > Video 和 Sound。 *Since:* 2.353.0
@@ -202,6 +294,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **向後追加 / 向前追加** — 渲染一段新的部分，從影片的最後一個影格開始（或在其第一幀結束），再與原影片拼接，始終以首幀 / 尾幀方式進行。 *Where:* 影片的 Use 下拉式清單。 *Since:* 2.388.0
 - **時間軸捕獲** — 任意圖層上播放頭所在的幀都可以成為首幀、尾幀或參考圖。 *Where:* 時間軸的捕獲按鈕。 *Since:* 2.117.0
 - **Qwen Image 2.1 讀取參考圖面板** — 圖片按順序傳送，並根據其類型在提示詞中命名。 *Where:* 影像生成。 *Since:* 2.340.0
+- **參考圖描述** — 每張參考圖片、每個參考影片和聲音下方都有一段簡短描述，隨專案和分組儲存，用於對映行、提示詞對話和 ✨ Enhance；另有牆 / 地板 / 家具 / 燈光等圖片類型。 *Where:* References 面板。 *Since:* 2.539.0
 
 ### 角色、地點與環境
 
@@ -210,6 +303,10 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **演員** — 選擇目前場景中有哪些角色出場。 *Where:* Actors 按鈕
 - **服裝與身份模型** — 服裝條目跟隨角色；每個角色都保留一個數據集資料夾，用於身份模型。 *Where:* 角色
 - **360 度環境** — 以全景圖形式呈現的地點，帶有攝影機和場景範圍，並投影為平面檢視以保持畫面連貫。 *Where:* StoryBoard > Environments。 *Since:* 2.142.0
+- **🪪 用 H3 Character Sheet Designer 製作角色設定表** — 一張圖片變成最多 13 個檢視（臉部、全身、服裝、手、腳）的參考設定表，可加部點陣圖片、部位備註和檢視指令，生成前先顯示佈局，由 ComfyUI 中的 MiniMax H3 Image 繪製；取代姿勢表。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet；設定 ▸ 附加元件 ▸ H3 Character Sheet Designer。*Since:* 2.870.0
+- **🎞 H3 Long Video（40 秒及更長）** — 一個提示詞產生一段長的 MiniMax H3 影片：第一段是場景 + 風格，之後每段一個鏡頭，每個鏡頭從上一個鏡頭的最後一格開始，因此面孔和畫面流程保持一致；Characters: 段落保持每張面孔；可選 2K 處理。 *Where:* H3 Long Video (40 s) 影片風格、StoryBoard 的 ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
+- **🪪 你自己的人體模型和設定表範本** — 加入你自己的人體模型圖片（🧍 Mannequin… ▸ Your mannequins），並上傳一張完成的角色設定表作為 Template：新的設定表遵循它的佈局——面板、檢視、姿勢、構圖——而角色來自你的圖片；所有專案都能用。 *Where:* Character creator ▸ 🪪 Character sheet。 *Since:* 2.874.0
+- **💳 用於名片、信紙、傳單和海報的業務資訊** — 圖像編輯器的 ✨ Create 會詢問公司、名字、職位、電話、電子郵件、網站、地址、服務、標誌、品牌顏色以及正面 / 背面的要求，並儲存（business/profiles.json）、原樣使用；新增 ✉ Letterhead（A4，附寫信用的 WP 框）和 🪧 Poster（A3）；標誌會放入。每個對話框右上角都有 ✕；選取圖形或文字會顯示 Properties。 *Where:* 圖像編輯器 ▸ ✨ Create With the AI。 *Since:* 2.875.0
 
 ### StoryBoard（場景板）與電影
 
@@ -230,6 +327,10 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **生成所有缺失的圖片** — 渲染每一張尚未生成的場景圖片。 *Where:* StoryBoard 工具列。 *Since:* 2.456.0
 - **資訊行** — StoryBoard 的最新訊息，滑鼠懸停時顯示全文。 *Where:* StoryBoard 底部。 *Since:* 2.391.0
 - **動作插槽** — 使用 H3_Viggle 時，每個場景可接收一段動作影片。 *Where:* 場景卡片。 *Since:* 2.352.0
+- **使用其他場景的圖片；以 🅰 Picture A 生成首幀** — 場景選擇器的 🎬 Scenes 分頁（每個場景自身的圖片）和 🎞 Clips（任意鏡次的幀）；✎ First frame 以選定的 Picture A 為起點（保留風格、構圖和姿勢），置於新的地點或全域提示詞設定的地點，指令由 LLM 編寫（🤖 Write）。 *Where:* StoryBoard 場景卡片。 *Since:* 2.563.0
+- **StoryBoard 網格；🎞 編寫故事板** — 場景以類似 Model manager 的卡片排列在網格中，用 ➜ 指向下一個場景，點選可開啟完整的場景卡片；LLM 編寫各個場景，每個場景都會以其故事板圖片作為起始（First）幀。 *Where:* StoryBoard（▦ / ☰、🎞 Write storyboard、☑ Start on it）。 *Since:* 2.565.0
+- **由 LLM 編寫的 StoryBoard 圖片** — 🖼 將場景發回給 LLM，為其開場幀編寫圖片提示詞，並以角色設定表和上一個場景的最後一個影格（若該場景已有鏡次）作為參考圖；📁 更換圖片（其他場景的圖片、某個鏡次的幀、專案圖片或檔案）；圖片在網格中鋪滿整張卡片。 *Where:* StoryBoard ▸ ▦ 網格 ▸ 卡片的 🖼 / 📁；工具列上的 ☑ LLM writes it / ☑ Previous last frame。 *Since:* 2.568.0
+- **更快的首幀（Auto）+ Qwen Image 2.1 Turbo8** — 場景卡片的 ✎ 首幀預設為 Auto：已安裝時用 Qwen Image Edit 2511 以 4 步生成（Apache 2.0——可以商用），超過三張圖片時用 Qwen Image 2.1 edit；新的 Qwen Image 2.1 edit Turbo8 樣式讓 Qwen 2.1 只需 8 步而非 25 步（Qwen Research License——非商業）。 *Where:* 場景卡片 ▸ ✎ 首幀 ▸ 樣式；設定 ▸ 模型 ▸ 模型目錄。 *Since:* 2.717.0
 
 ### 音樂影片與口型同步
 
@@ -239,6 +340,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **由轉錄文字決定** — 歌曲帶時間戳的轉錄文字決定哪些場景需要演唱，並把歌詞放入提示詞。 *Where:* 音樂影片故事板。 *Since:* 2.356.0
 - **場景對齊歌曲時間** — 每個鏡次都會放到時間軸上其對應歌曲部分開始的時間點。 *Where:* Timeline 設定
 - **橋接場景** — 歌曲分段之間的短過渡，可由模型渲染，也可繪製為標準轉場。 *Where:* 歌曲條的 Transition 選項
+- **✂ 歌曲剪下時長** — StoryBoard 歌曲條可按任意間隔自動剪下（2-60 s；29.9 = 每個場景一次 Long video 執行）；已鎖定的段落保持不變；設定會被記住。 *Where:* 歌曲條的選單列 ▸ ✂ [s]。 *Since:* 2.573.0
 
 ### 角色替換
 
@@ -265,11 +367,6 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **DLSS 5 增強、放大與幀生成** — 對影片進行 NVIDIA DLSS 5 神經渲染（default / natural / cinematic），放大到 1x DLAA、1.5x-3x 或 1K-8K，並可選用幀生成，最高可達原幀率的 6 倍；僅限 RTX 顯示卡。 *Where:* 預覽欄的 ⚡ DLSS 5，以及故事板上 StoryBoard 的 ⚙ Upscaler。 *Since:* 2.504.0
 - **RTX VFX 影片精修** — 對影片進行 NVIDIA RTX Video Super Resolution 處理，可選先進行一遍 Deblur，再進行一遍 High Bitrate（預設 A：VSR；預設 B：先 Deblur，再 High Bitrate；或自行選擇處理步驟），縮放 1x-4x，每次處理一批幀；適用於 Windows 上的 RTX 顯示卡，通過 DENO ComfyUI 節點實現。 *Where:* 預覽欄的 ✨ RTX VFX、StoryBoard 的 ⚙ Upscaler，以及用於安裝的 Settings > ComfyUI > Video accelerators。 *Since:* 2.708.0
 - **RelayVSR 放大** — 在 ComfyUI 內建節點中執行的一步影片放大器：x2（用 MiniMax H3 片段訓練）或 x4，auto 會選擇能達到所選尺寸的那一對；正好 1920 × 1080（先覆蓋再裁切）或任意尺寸，保留原來的聲音。 *Where:* 預覽欄的 🔁 RelayVSR、StoryBoard 的 ⚙ Upscaler，檔案在 Settings > Add-ons > RelayVSR。 *Since:* 2.728.0
-- **🕺 從影片取得動作（FlowHMR）** — 把影片中的人物捕捉為 3D 動作：帶動畫的骨架（.fbx）和 SMPL-H（.npz）存入專案的 models3d，可用於時間軸的 3D 圖層、Blender、Daz 和 Unreal；支援移動或固定鏡頭。僅限非商業用途（SMPL-H 人體模型以及 Meta 的 SAM 3D Body / VGGT-Omega 授權）。 *Where:* 預覽列的 🕺 動作，以及 Settings > Add-ons > FlowHMR 動作捕捉。 *Since:* 2.730.0
-- **MiniMax H3 的 16 GB 模式** — 在你的 H3 渲染中使用 DENO 的 R2V Turbo 8+2 方案：取樣前解除安裝文字編碼器，第一遍以你設定的尺寸執行 8 步，然後進行潛在空間放大（×1.0-2.0），再用稀疏注意力進行 2 步精修，並保留聲音；Auto 會為顯示記憶體 16 GB 或以下的顯示卡自動開啟，ComfyUI 缺少的部分會被省略並附上說明。 *Where:* Settings > ComfyUI > 16 GB mode；所需檔案位於 Settings > Add-ons > 16 GB mode。 *Since:* 2.708.0
-- **💬 bitGen 社群** — 類似 Facebook 的小型聊天面板：用使用者 ID 加入，在共享的 Help 聊天室中提問，新增好友（需對方先接受），私聊，舉報 / 封鎖，管理員可以刪除訊息和封停用戶；伺服器為 PHP + MariaDB（倉庫中的 community/）。它是一個獨立的浮動面板（可浮動 / 停靠 / 作為分頁放入其他面板，位置會被記住 - 2.711.0）。 *Where:* 狀態列的 💬 Community。 *Since:* 2.710.0
-- **社群：姓名 + 已驗證的郵箱** — 加入時需要填寫名字、姓氏和電子郵件地址（只有管理員能看到）；系統會向該地址傳送一個 6 位驗證碼，確認之後才會開放 Help 聊天室（可以 Send a new code，或更改地址）；封禁也會同時封禁該郵箱地址，因此被封禁的成員無法以新的使用者 ID 重新加入；老成員會在下次登入時被要求補充這些資訊。 *Where:* 💬 Community ▸ Join，⋯ ▸ Your details。 *Since:* 2.713.0
-- **討論區** — tigerart.com.au 上的論壇，與 💬 Community 使用同一個帳戶：Help / Show your work / Ideas / General；成員發帖立即顯示，訪客可以閱讀和發帖（訪客的帖子需先經管理員批准）；管理員可以批准、拒絕、刪除和封禁，並能看到真實姓名。 *Where:* 💬 Community ▸ ⋯ ▸ Discussions，或 tigerart.com.au/discussions.php。 *Since:* 2.713.0
 - **增強所選影片** — 為你最後點選的影片開啟放大器。 *Where:* 提示詞面板。 *Since:* 2.401.0
 - **在故事板上放大** — 把你滿意的鏡次送入 StoryBoard 的放大器，或以放大解析度使用 SeedVR2 處理；也可以選擇放大每一次渲染。 *Where:* StoryBoard 設定
 
@@ -277,12 +374,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 
 - **新增聲音和影片** — 音訊檔案以及影片檔案中的聲音，以 48 kHz WAV 格式儲存。 *Where:* SFX 面板
 - **剪輯聲音** — 在波形上選擇，設定固定時長框，保留或刪除所選部分（帶無爆音的淡入淡出），可復原。 *Where:* SFX 面板
-- **單個圖層上的範圍** — 把位置標記放在起點，在圖層上 Shift+點選終點：即得到該圖層上的範圍；✂ Cut 只從該圖層中刪除整個範圍，↶ / Ctrl+Z 可復原。 *Where:* 時間軸的圖層。 *Since:* 2.603.0
-- **時間軸復原 / 重做** — 對時間軸的每次編輯都是一個步驟：使用其選單列中的 ↶ / ↷，或在圖層上按 Ctrl+Z / Ctrl+Shift+Z。 *Where:* 時間軸。 *Since:* 2.603.0
 - **傳送到相簿和素材** — 每次剪輯的結果都會複製到相簿；也可以將其傳送到 Sound 素材。 *Where:* SFX 面板
-- **語音與對白** — 由 OmniVoice 或 Ming-3.0 TTS 朗讀輸入、貼上或由 LLM 編寫的文字，可以只用一個聲音，也可以是一組角色（按 "Name (emotion): line" 為每位說話者指定聲音和情緒），支援聲音標籤和停頓；儲存為 WAV 或 MP3，放入 Audio 素材。 *Where:* SFX 面板 ▸ 🗣 Speech & dialog。 *Since:* 2.621.0
-- **帶情緒的語音** — 中性、開心、悲傷、憤怒、恐懼、厭惡、驚訝：使用 Ming-3.0 TTS 的情緒任務（複製聲音同樣適用）；使用 OmniVoice 時，則通過語速、以該情緒錄製的聲音（"Name.happy"）和聲音標籤來表現。 *Where:* SFX 面板 ▸ 🗣 Speech & dialog。 *Since:* 2.621.0
-- **語音檔案中的後設資料** — 標題、日期和時間、描述、文字以及所用的聲音會寫入 WAV（INFO）或 MP3（ID3）。 *Where:* SFX 面板 ▸ 🗣 Read & save。 *Since:* 2.621.0
 
 ## 影像
 
@@ -299,52 +391,142 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **FLUX 3 Image Klein** — Black Forest Labs 的 5.6B 開放模型，提供三種風格：distilled（快速）、base（cfg 3.5）和 edit（最多 4 張參考圖）；參考圖面板中有圖片時，文生圖風格會自動切換到編輯圖。 *Where:* 影像風格下拉式清單；模型在 Settings > Setup 中取得. *Since:* 2.502.0
 - **Krea 2** — Krea 的 12B 開放影像模型，提供四種風格：Turbo（8 步）和 Raw（52 步，帶負面提示詞），各有 safetensors 和 GGUF 兩種格式。 *Where:* 影像風格. *Since:* 2.516.0
 - **Anima** — CircleStone Labs 的 2B 動漫 / 插畫模型，提供兩種風格（Aesthetic v1.1、Base v1.0；30 步，cfg 4）。 *Where:* 影像風格. *Since:* 2.517.0
-- **佇列預設** — Normal / Quiet（夜間）/ Eco / Cool-down / Max performance / Custom：設定 GPU 功耗上限、任務之間的休息時間、顯示卡過熱時等待，以及降頻警告。 *Where:* 選單列的 ⏱. *Since:* 2.518.0
-- **模型管理器** — 以卡片形式展示你的模型和 LoRA（縮圖、評分、釋出日期、類型、類別、關鍵詞；懸停時顯示說明卡片），選擇一個模型和若干 LoRA，用它們覆蓋風格，✚ 以某個模型新建風格，✎ 編輯卡片，🔍 在 Civitai 上查詢。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 狀態列中的 🧩 Models. *Since:* 2.518.0
-- **Civitai 下載** — 搜尋 civitai.red / civitai.com，並連同卡片直接下載到對應的 ComfyUI 資料夾。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* Model manager 的 Civitai 分頁；金鑰在 Settings ▸ General 中設定. *Since:* 2.518.0
-- **電費** — 每 kWh 的電價：每個任務的 ⚡ 卡片、其 [power] 行以及啟動以來的耗電量都會顯示費用。 *Where:* Settings ▸ General. *Since:* 2.518.0
-- **測試面板** — 某個版本需要做的測試，完成後逐項勾選（很多會自動勾選），可寫備註，💾 儲存日誌以便上傳。 *Where:* Settings ▸ General ▸ 🧪 Testing. *Since:* 2.518.0
-- **安裝程式詢問你的硬體** — 安裝程式偵測不到時，會詢問顯示卡（從清單中選擇）、記憶體和 CPU；“Not right?” 可修改。 *Where:* 安裝程式的第一頁. *Since:* 2.519.0
-- **安裝包** — Editor（無 AI）/ + small AI / + mid-size AI / Everything，按你的顯示卡推薦；安裝前即可看到你能使用哪些功能（✓ ~ ✗，可以以後再新增）以及下載量。 *Where:* 安裝程式的 Your package 頁面；setup-cli --packages. *Since:* 2.519.0
-- **每日供電費** — 電費帳單上的固定日費用：任務費用按其執行時長計入相應份額。 *Where:* Settings ▸ General ▸ Energy cost. *Since:* 2.519.0
-- **LoRA 訓練器** — 使用 ai-toolkit（Ostris）以你的圖片訓練 LoRA：九種基礎模型（Z-Image Turbo、FLUX、Qwen-Image、SDXL、SD 1.5、Chroma、Wan 2.1…）、觸發詞、rank、步數、帶描述文字的資料集（或由助手生成描述）、可編輯的 YAML、即時顯示步數 / loss / 樣圖；訓練好的 LoRA 連同卡片存入 ComfyUI 的 loras/trained；可將任務匯出為 zip。 *Where:* 狀態列的 🎓 LoRA. *Since:* 2.520.0
-- **峰谷電價** — 設定峰時電價和峰時時段（星期幾 + 時間，也可跨越午夜）；其餘時間均為谷時；任務分別統計峰時和谷時耗電量。 *Where:* Settings ▸ General ▸ Energy cost. *Since:* 2.520.0
-- **用量日誌** — 按天記錄每個任務的耗電量、峰時佔比、費用和所用遠端 GPU；可選時間範圍、顯示合計、匯出 CSV。 *Where:* Settings ▸ General ▸ 📊 Usage…，或點選狀態列中的 ⚡ 數值. *Since:* 2.520.0
-- **遠端 GPU** — 使用另一臺機器上的 ComfyUI、RunPod pod（列出 / 啟動 / 停止，以及其代理）或 SSH 隧道；✓ Test；Use it / Use this computer。 *Where:* Settings ▸ Remote generation. *Since:* 2.520.0
-- **本機與安裝包** — 你的硬體、已安裝的安裝包、每種安裝包可使用的功能；✎ Not right?；⬆ 無需重新安裝即可升級到更大的安裝包。 *Where:* Settings ▸ Models. *Since:* 2.520.0
-- **分組下載** — 每個模型組一個核取方塊，並顯示其檔案數量和大小。 *Where:* 安裝程式的模型頁面；Settings ▸ Models ▸ Model downloads. *Since:* 2.520.0
-- **檢查點微調** — 使用 ai-toolkit 訓練影像模型（Lumina 2、Flex.1、FLUX.2 klein、SDXL）的全部權重，通過參數交換降低顯示記憶體佔用；結果合併為 diffusion_models/trained 中的一個 .safetensors 檔案。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
-- **LLM 微調** — 使用 Unsloth 以你自己的對話訓練助手（Qwen3.5 0.8B-9B、Gemma 4、Qwen3.8 27B；LoRA / QLoRA / 全量）；範例可手動輸入或匯入（JSONL / JSON / CSV）；輸出為 LLM 資料夾中的 .gguf。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
-- **視覺模型微調** — 以圖片 + 回答訓練視覺模型（Qwen3.5 / Gemma 4 vision）；輸出 .gguf 和 mmproj 到視覺模型資料夾。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
-- **融合 LoRA** — 將訓練好的 LoRA 合併到其基礎模型中，生成新的檢查點（ComfyUI），任何顯示卡均可。 *Where:* 🎓 LoRA ▸ Run & samples. *Since:* 2.521.0
-- **FLUX.2 klein LoRA** — 可將 FLUX.2 klein base 4B 用作 LoRA 的基礎模型。 *Where:* 🎓 LoRA ▸ Base model. *Since:* 2.521.0
-- **錯誤報告** — Ctrl+Alt+Shift+B：視窗截圖（可用 ✏ / ▭ 標註）、標題、嚴重程度、出現位置、發生了什麼 / 預期結果、操作步驟（⤵ 錄製的點選和按鍵——絕不記錄輸入的文字），並附帶日誌、系統 + 設定（隱藏金鑰）、頁面錯誤和失敗的請求；💾 儲存為一個 .zip 以便傳送；以前的報告可 ⤓ / 🗑。 *Where:* 任意位置（Ctrl+Alt+Shift+B）；Settings ▸ General ▸ 🐞 Report a bug…. *Since:* 2.522.0
-- **向社群傳送錯誤報告** — 📤 Save and send 將報告發布到網站的 Discussions ▸ Bug reports 下：已登入 💬 Community 時以你的身份釋出（立即顯示），未登入或勾選 ☑ Send anonymously 時匿名釋出（需管理員先稽核）；公眾可見標題和你寫的內容，日誌、設定、系統資訊和截圖僅管理員可見；管理員可設定其狀態，並將所有錯誤下載為一份清單。 *Where:* 🐞 Bug report ▸ 📤 Save and send；Earlier reports ▸ 📤. *Since:* 2.714.0
-- **載入器跟隨模型檔案** — 風格的 .safetensors 或 .gguf 模型會自動使用匹配的 ComfyUI 載入器（Load Diffusion Model / GGUF 載入器）——GGUF 風格也能渲染 .safetensors 微調模型，反之亦然。 *Where:* 每個影像風格. *Since:* 2.523.0
-- **無論模型在哪個 ComfyUI 資料夾中都能找到** — 風格的擴散模型如果放在 models/checkpoints（或其他子資料夾）中，會通過 Load Checkpoint / ComfyUI 列出的名稱載入，而不會報錯 "Value not in list"；不在任何資料夾中的模型會給出提示，說明應放在哪裡。 *Where:* 每個影像、影片和音樂任務. *Since:* 2.525.0
-- **工作區** — 選單列中的 Workspace 下拉式清單：Basic、Image editing、Video editing、Music video、Expert。每個工作區顯示該類工作所需的面板，隱藏用不到的按鈕（不會停用任何功能），並記住你自己的改動；↺ 可重設某個工作區。 *Where:* 選單列. *Since:* 2.526.0
 - **🩺 風格診斷** — 一鍵用每種影像風格生成一張小測試圖（Quick：512 × 512，4 步；或 Real），並顯示通過 / 失敗表格：失敗的日誌行及處理方法（ComfyUI 未列出的模型及其應放入的資料夾、缺少的節點包、ComfyUI 未執行、顯示記憶體不足、檔案損壞、文字編碼器不匹配）。■ 停止，↻ 重測單項，⤓ 將報告匯出為 .md。 *Where:* 選單列中的 🩺. *Since:* 2.527.0
-- **🔍 查詢任何內容（Ctrl+K）** — 命令面板，覆蓋所有面板、浮動視窗、選單 / 狀態列按鈕、Settings 欄位、工作區、Generate 模式、風格、指南章節和快捷鍵；按 Enter 即顯示 / 開啟 / 執行，指南會在 📖 Help 視窗中開啟。 *Where:* Ctrl+K 或選單列中的 🔍. *Since:* 2.530.0
-- **每個模型檔案都能在 ComfyUI 列出的位置找到** — 位於其他子資料夾中的文字編碼器、VAE、LoRA 和 ControlNet 會以 ComfyUI 中的名稱使用；完全不在任何資料夾中的檔案，會給出可下載它的模型目錄條目名稱。 *Where:* 每個任務；🩺 Style doctor. *Since:* 2.531.0
-- **自動勾選的測試** — 🧪 測試清單中凡是應用偵測到已正常工作的專案都會被勾選並保留（auto ✓），重新啟動後依然有效。 *Where:* Settings -> General -> 🧪 Testing. *Since:* 2.532.0
-- **▁ ⛶ ✕ 面板標題欄** — 將浮動面板最小化為標題欄、最大化到整個視窗並可還原，或將其關閉。 *Where:* 每個浮動面板. *Since:* 2.532.0
-- **📷 讓相機在房屋中漫遊** — 在平面圖上拖曳相機，3D 檢視會透過它觀察；方向鍵使其轉向和俯仰，Shift / Alt 使其升高和降低。 *Where:* 🏠 House. *Since:* 2.532.0
-- **🧪 測試模式** — 根據你目前所在位置推薦下一項測試（影像編輯器：模糊、畫筆、橡皮擦……），應用偵測到某項測試正常工作時詢問 'Did it work?' 並提供建議框，將你的回答和建議記錄在日誌中；關閉後不會自動勾選也不會彈出任何內容。 *Where:* Settings -> General；🧪 Testing 面板. *Since:* 2.534.0
-- **新渲染加入已開啟的預覽** — 預覽開啟期間完成的圖片會加入其縮圖條；✨ N new 可跳轉到新圖片。 *Where:* 圖片 / 影片預覽. *Since:* 2.534.0
 - **編輯影像模式只顯示編輯風格** — 影像編輯器開啟時，影像風格下拉式清單只列出能夠編輯圖片的風格，關閉編輯器後恢復你原來的選擇。 *Where:* 提示詞面板. *Since:* 2.502.0
+- **用任意風格 + 它的基本設定 Change style** — 影像預覽中 🎨 Change style 旁邊：風格下拉式清單（提示詞的風格或任意影像風格）和 ☐ Basic Settings（該風格上次的步數、CFG、種子和檢查點）；只在顯示圖片時出現。*Where:* 影像預覽。*Since:* 2.805.0
+- **MOSS-Image** — OpenMOSS 的 5B 影像模型，提供兩種影像風格（SFT、Base）；Settings ▸ Add-ons ▸ MOSS-Image 會將你勾選的模型、文字編碼器和 VAE 下載到 ComfyUI 中，並檢查 ComfyUI 版本是否足夠新。 *Where:* Settings ▸ Add-ons；Settings ▸ Image（各風格）。 *Since:* 2.566.0
+- **NitroFusion2 圖像** — 把 Z-Image-Turbo 蒸餾到 1-2 步：一步就有清晰的文字和細節；三個風格（1 步、配合去蒸餾 LoRA 的 2 步、適合小顯示卡的 GGUF），cfg 1，無負面提示詞。 *Where:* Image 停駐欄的風格，檔案在 Settings > Add-ons > NitroFusion2。 *Since:* 2.729.0
+- **Fibo 2.0（編輯，低顯示記憶體）** — Bria 的 8B 模型，提供兩種影像風格：Edit Turbo（4 步指令編輯）和 Dev（文生圖 + 編輯）；最多 4 張圖片 <image_1>..；w4a8 或 GGUF Q4_0 檔案適用於約 8 GB 顯示記憶體的顯示卡；從 Settings ▸ Add-ons ▸ Fibo 2.0 下載（CC BY-NC 4.0）。 *Where:* image editor ▸ ✨ AI ▸ Edit；Settings ▸ Image。 *Since:* 2.582.0
+- **SolarRenderer** — 結構影片（+ 首幀、六段式提示詞）-> 在 MiniMax H3 上以 4 步生成片段：節點包 + LoRA 作為附加元件提供，其工作流通過 ⤒ Import & check 匯入。 *Where:* Settings ▸ Add-ons ▸ SolarRenderer；Settings ▸ ComfyUI ▸ Graphs ▸ ☀ SolarRenderer。 *Since:* 2.588.0
+- **恢復內建風格** — ↺ Built-in 列出缺失的內建影像或影片風格並將其恢復；Krea 2 風格會自動恢復一次。 *Where:* Settings > Image styles / Video styles。 *Since:* 2.547.0
+- **🎨 為圖片更換風格** — 影像預覽的外觀下拉選單 + 🎨 Change style（2.681.0：所選外觀會保持選取）會使用提示詞的影像風格，把目前顯示的圖片重新生成為 📷 Photoreal、🧸 Pixar、🧊 2.5D、🌸 Anime 或 🖍 Cartoon（編輯模型按指令修改並保留原圖；SDXL / FLUX 風格則對整張圖片進行精修）；開啟 Override style 時，Basic Settings 中的步數、CFG、種子、檢查點（checkpoint）和 LoRA 會一併使用；結果在預覽中開啟；圖片下方的進度列顯示各步驟（2.677.0）；⇆ Before / after 將原圖與結果並排顯示（2.679.0）。（2.685.0：SDXL / Pony / Illustrious 風格用其自己的工作流重新生成，因此 Override 對其生效；進度列會說明 Override 應用了哪些設定）（2.686.0：非編輯模型的風格會先繪製 ✏ 線稿，再通過其模型系列的線稿 ControlNet 從線稿渲染出該外觀） *Where:* 任意影像預覽 ▸ 外觀下拉選單 ▸ 🎨 Change style。 *Since:* 2.676.0
+- **🛤 道路工具** — 像 SimCity 一樣繪製道路：Dirt road、Street、Road、One-way、Avenue 和 Highway（車道、人行道、中央隔離帶、護欄、標線），貼合地面；坡度超過該類型的允許值時，⛏ 將地面開挖成均勻坡度，或 🚇 以隧道穿過（深谷上則架橋）；自動識別路口，並設定紅綠燈、停車 / 讓行標誌、停車線、人行橫道、路名牌和限速標誌；可選擇靠左或靠右行駛。 *Where:* Sketcher ▸ Ground ▸ 🛤 Road。 *Since:* 2.673.0
 
 ### ControlNet 與面部修復
 
 - **ControlNet** — 先渲染第一張圖片，將其轉換為控制圖（線稿、深度、姿態），再用第二個模型渲染最終圖片。 *Where:* Basic Settings
 - **ControlNet 鏈式風格** — 按名稱儲存的兩階段風格。 *Where:* Settings > ControlNet. *Since:* 2.97.0
 - **面部修復** — 重新繪製最終圖片中的每一張臉；自 2.593.0 起為附加元件（在 Settings ▸ General 中開啟，其模型會自動下載）。 *Where:* Basic Settings
-- **工作室中的附加元件** — 在 Settings ▸ General 中開啟或關閉 Face fix 和 ControlNet：關閉 = 隱藏且從不使用；開啟 = 顯示，且缺少的內容（節點包、模型）會自動下載到對應的 ComfyUI 資料夾——每次啟動時也會檢查；它們的 Add-ons 卡片列出了所有下載連結。 *Where:* Settings ▸ General / Settings ▸ Add-ons. *Since:* 2.593.0
 
 ### 將圖片送入影像編輯器
 
 - **生成的圖片直接放到畫布上** — 影像編輯器開啟時，Generate 生成的每張圖片都會作為新圖層放到最前面的文件中。 *Where:* 提示詞面板. *Since:* 2.431.0
 - **由圖片生成 3D 模型** — Gallery 和 Assets 中的每張圖片都可以變成 3D 模型（Hunyuan3D 2.1 或 TRELLIS.2）。 *Where:* 每張圖片上的 3D 按鈕. *Since:* 2.404.0
 - **🧊 轉換為 3D（右鍵）** — 右鍵點選 Gallery、Assets 或 References 中的圖片，或影像編輯器的畫布（整張圖片或所選圖層，也可用 Layer ▸ Convert Layer to 3D），選擇 Hunyuan3D 2.1 或 TRELLIS.2 以及模型的去向：影像編輯器（一個可環繞檢視、渲染並據此生成內容的 3D 圖層）、SolidCraft 面板，或僅放入專案的 3D 模型中。 *Where:* 右鍵點選圖片. *Since:* 2.594.0
+
+## 模型、遠端生成和 Pod
+
+所有模型集中在一處；在 RunPod Pod、OpenRouter 和其他線上服務上生成；每項任務使用指定的顯示卡；全部費用一目瞭然；還能訓練你自己的模型。
+
+### 模型和模型管理器
+
+- **可管理數百個模型的模型管理器** — 適應面板大小的分頁、資料夾分頁（SDXL、Pony …）、📌 This project 分頁、可調整大小的卡片、每個模型的資訊頁（含範例圖片和提示詞），每個模型的 Civitai 詳情 + 縮圖 + 範例都儲存在一個共享的 model_info 資料夾中。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.537.0
+- **Civitai 下載到各類型的資料夾** — 任意 Civitai 卡片上的 ⤓ 會下載到你為該類型選定過一次的資料夾（SDXL LoRA、Pony 模型、Wan LoRA …）；Shift+點選可更改；📁 列出這些資料夾（model_folders.json）；🔄 Sync 為電腦上的每個模型取得 Civitai 詳情。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.538.0
+- **模型管理器** — 以卡片形式展示你的模型和 LoRA（縮圖、評分、釋出日期、類型、類別、關鍵詞；懸停時顯示說明卡片），選擇一個模型和若干 LoRA，用它們覆蓋風格，✚ 以某個模型新建風格，✎ 編輯卡片，🔍 在 Civitai 上查詢。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 狀態列中的 🧩 Models. *Since:* 2.518.0
+- **Civitai 下載** — 搜尋 civitai.red / civitai.com，並連同卡片直接下載到對應的 ComfyUI 資料夾。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* Model manager 的 Civitai 分頁；金鑰在 Settings ▸ General 中設定. *Since:* 2.518.0
+- **Model manager 中的 Civitai 篩選** — 全部 / 檢查點 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（來自 Civitai 自己的清單，Krea、Flux、Qwen 等系列的全部基礎模型，或只選一個）、排序方式和時間段；更改後立即重新搜尋，篩選條件會被保留。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
+- **Model manager：Local、RunPod、OpenRouter + ☁ OpenRouter 分頁** — Models / LoRAs 分頁把本機檔案、pod 上的檔案和你的 OpenRouter 模型一起列出並加標籤；用 ☐ Local ☐ RunPod ☐ OpenRouter ☐ All 篩選；🗑 刪除本機檔案，或把 pod 檔案 / OpenRouter 模型從清單中移除；☁ OpenRouter 分頁按類型和系列列出 OpenRouter 的模型，帶 Free / Paid 和排序，＋ 把模型連同端點加入你的模型。*Where:* 🧩 Model manager. *Since:* 2.790.0
+- **你的 OpenRouter 模型顯示為綠、橙、紅** — OpenRouter 對話方塊已移除：🧩 Model manager ▸ ☁ OpenRouter 管理你的清單（🖥 GPU 的按鈕會開啟它）；你的模型在該分頁和 Models 分頁中以深綠（免費）、深橙（付費）或深紅（OpenRouter 已不再列出——保留到你 🗑 為止，不出現在下拉式清單中，渲染被拒絕）的邊框顯示。*Where:* 🧩 Model manager. *Since:* 2.792.0
+- **模型管理器的來源；GPU 停靠欄** — 🧩 Model manager ▸ ＋ Add source 可為任何模型 API 建一個分頁：⚙ Settings 中設定 URL、API 金鑰（加密儲存）和格式（OpenAI 相容、Ollama、Anthropic 風格或你自己的範本），✓ Test 列出它的模型並顯示 bitGen 填好的端點；＋ 把模型加入你的模型，你的 LLM / 視覺模型會以 <source>/<model> 出現在提示詞停靠欄的清單中，通過該來源聊天。☁ Remote generation 停靠欄現在叫 🖥 GPU。*Where:* 🧩 Model manager, the prompt docker, 🖥 GPU. *Since:* 2.795.0
+- **模型管理器的篩選改為下拉式清單** — 位置（All places / This computer / RunPod / OpenRouter，帶數量 - 之前什麼都篩不掉，已修復）、資料夾、Civitai 的類型、OpenRouter 的類型和價格都改成了下拉式清單；標籤欄的工具改為圖示。*Where:* 🧩 Model manager. *Since:* 2.796.0
+- **模型管理器：你的檔案、縮圖、後設資料** — 模型的圖片 / 影片 / 聲音及其提示詞 + 種子 / cfg / 步數（從檔案或渲染記錄中讀取），點選開啟檢視器，✎→ 傳送到提示詞，🖼 設為縮圖。 *Where:* 🧩 Model manager ▸ ⓘ ▸ Your pictures, videos and sounds；✎ Edit ▸ Thumbnail。 *Since:* 2.575.0
+- **模型管理器：半星評分、模型類型、NSFW** — 以半星為單位的五星評分編輯器、模型類型（檢查點（checkpoint）、LoRA …）以及 NSFW 標記；篩選欄可按這兩項篩選。 *Where:* 🧩 Model manager ▸ ✎ Edit；篩選欄。 *Since:* 2.575.0
+- **狀態列中的 Civitai 同步** — 同步時顯示 🔄 Civitai n/total，完成時顯示 ✓ synced 及各項計數。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Since:* 2.575.0
+- **按 SHA-256 進行 Civitai 同步** — 按名稱找不到的模型會按檔案內容查詢；狀態列顯示讀取進度 n%。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager ▸ 🔄 Sync。 *Since:* 2.576.0
+- **從磁碟刪除模型** — 刪除該檔案、其旁邊的相關檔案以及它的 model_info 頁面，刪除前會彈出確認，列出這些檔案及使用該模型的風格。 *Where:* 🧩 Model manager ▸ 卡片上的 🗑 / ⓘ ▸ 🗑 Delete。 *Since:* 2.579.0
+- **Civitai 影片和動態圖片** — 🔄 Sync / ⤓ Civitai info 也會儲存模型的影片和 GIF 範例；影片縮圖在卡片及其 ⓘ 頁面上播放，檢視器也可播放；影片可用作卡片的縮圖。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager。 *Since:* 2.581.0
+
+### 遠端生成和 OpenRouter
+
+- **遠端 GPU** — 使用另一臺機器上的 ComfyUI、RunPod pod（列出 / 啟動 / 停止，以及其代理）或 SSH 隧道；✓ Test；Use it / Use this computer。 *Where:* Settings ▸ Remote generation. *Since:* 2.520.0
+- **☁ RunPod Serverless 算圖** — 所有算圖都傳送到 RunPod Serverless 端點（RunPod 的 ComfyUI 工作器，模型在網路磁碟區上），只在工作器執行時計費；圖片、影片和歌曲都會傳回；✓ 測試顯示工作器和任務。 *Where:* 設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.743.0
+- **☁ RunPod Serverless 只顯示能算圖的風格** — 用 RunPod Serverless 端點算圖時，圖片、影片和音樂的風格清單會隱藏它無法算圖的風格（逐個節點對照端點映像檔裡的 ComfyUI）；可以設定更新的 ComfyUI 或額外的節點包。 *Where:* 風格清單；設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.744.0
+- **🖥 基本設定 ▸ GPU：遠端、本機或兩者** — 所有任務在遠端 GPU 上、全部在這裡，或「兩者」：勾選的 LLM、視覺 LLM、圖片和影片 + 歌曲傳送到遠端 GPU；LLM 在 RunPod vLLM 端點上執行（設定 ▸ 遠端 GPU ▸ LLM on RunPod）。 *Where:* 基本設定 ▸ GPU。 *Since:* 2.745.0
+- **🏷 遠端風格** — 每個圖片、影片和音樂風格在這台電腦或遠端 GPU 上執行（執行於，可選為風格指定自己的 RunPod 端點；遠端風格的名稱以 R_ 開頭）；基本設定 ▸ GPU 為本機時列出這台電腦的風格，遠端時列出 R_ 風格，兩者時列出全部 - 選兩者時由風格決定在哪裡算圖。 *Where:* 設定 ▸ 圖片 / 影片 / 音訊 ▸ 音樂風格 ▸ 執行於；基本設定 ▸ GPU。 *Since:* 2.746.0
+- **🖥 GPU 預設為本機；更新檢查很快** — 基本設定 ▸ GPU 從本機開始，位於基本設定第一項並收合（標題顯示選擇）；更新檢查只向 GitHub 詢問最新提交，任何網路都能幾秒完成，立即更新 在背景下載。 *Where:* 基本設定 ▸ GPU；設定 ▸ 一般 ▸ 更新。 *Since:* 2.747.0
+- **☁ 為 RunPod 準備的現成遠端風格** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium 和 R_Z-Image Turbo，各自對應 RunPod 的一個標準 worker-comfyui 映像（無需上傳）；工作室向 RunPod 詢問端點的鏡像並只列出適合的風格；記錄說明任務在哪裡算圖以及在那裡的大致費用。 *Where:* 基本設定 ▸ GPU 遠端 / 兩者；設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像。 *Since:* 2.749.0
+- **🧠 OpenRouter 上的 LLM（免費模型）+「遠端生成」** — 劇本寫作、提示詞輔助和圖片描述可以在 OpenRouter 上執行：一個 API 金鑰（加密儲存）、免費模型（或顯示每百萬 token 價格的付費模型）、用於圖片的視覺模型、✓ Test；不需要遠端 GPU - 圖片、影片和歌曲仍在這裡渲染。設定中的 Remote GPU 分頁現在叫 Remote generation（遠端生成）。 *Where:* Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter；Basic Settings ▸ GPU 選 Both 並勾選 LLM / Vision LLM。 *Since:* 2.753.0
+- **☁ 使用遠端生成 + 遠端生成停靠窗 + Pod 捷徑** — 一個核取方塊開啟或關閉遠端生成（關閉：一切在這裡執行，基本設定 ▸ GPU 隱藏）；從 基本設定 ▸ GPU（而不是狀態列）開啟的浮動停靠窗顯示任務在哪裡執行、你的 RunPod Pod（開始 / 停止 / 使用）以及 Pod 捷徑：用連結新增的 RunPod 範本，部署 ↗ 會開啟已選好該範本的 RunPod。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Settings ▸ Remote generation ▸ Use remote generation；Basic Settings ▸ GPU ▸ 🖥 GPU docker。 *Since:* 2.754.0
+- **🔑 設定 ▸ API：線上服務作為 API_ 風格 + LLM** — 新增 OpenRouter、fal.ai、Replicate、OpenAI、Google Gemini、Claude 或 RunningHub 的 API 金鑰（根據金鑰識別服務），起個名字並勾選「使用」：它的 API_ 風格（服務能生成的圖片、影片、歌曲）會出現在風格清單中，並在服務端生成，這臺電腦不需要顯示卡或 ComfyUI；每個風格的模型都可以修改（RunningHub 為工作流 ID），✓ Test 檢查金鑰，「用作 LLM」把提示詞 LLM、字幕和分鏡清單傳送到該服務（Claude 只用作 LLM）；金鑰加密儲存。 *Where:* Settings ▸ API；風格的 Runs on ▸ API。 *Since:* 2.757.0
+- **本地 / 遠端切換整個應用** — 在基本設定中選擇本地：清單和資料夾篩選顯示本機的模型資料夾，ComfyUI 未執行時會啟動；選擇遠端（Pod）：停止 bitGen 在本機啟動的 ComfyUI，列出遠端模型，資料夾篩選改為顯示它們的模型系列（Krea、Flux、Pony 等）以供篩選。 *Where:* 基本設定 ▸ GPU；模型下拉框；Model manager。 *Since:* 2.766.2
+- **遠端模式下的 LLM、Vision LLM 和影片風格** — LLM 和 Vision LLM 各自可在本地、OpenRouter（在基本設定中即可搜尋並選擇模型；推理開啟，每輪都會傳回 reasoning_details）或 RunPod（你的 Pod 用 llama.cpp 運行同一個 GGUF，首次傳送提示時完成設定）上執行；選擇遠端後，所選影片風格的模型會立即送到其 Pod。 *Where:* 基本設定 ▸ GPU；設定 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
+- **遠端選項移到專用停靠窗，提示停靠窗顯示遠端模型清單** — 基本設定 ▸ GPU 只保留本地 / 遠端 / 兩者；遠端選項（伺服器、Pods、LLM / Vision LLM 的選擇、💲 RunPod）移到 🖥 GPU 停靠窗。遠端模式下，提示停靠窗的 LLM 和 Vision 清單顯示 OpenRouter 的免費模型（預設）、你的 Pod 的 GGUF 或 vLLM 端點的模型；選擇後即儲存，不會在本機載入任何模型。 *Where:* 🖥 GPU 停靠窗；提示停靠窗 ▸ LLM / Vision。 *Since:* 2.768.0
+- **LLM 本地 / 遠端，帶搜尋和 ☰ All 的 OpenRouter 清單** — Remote generation 停靠窗的 LLM 和 Vision LLM 只有本地或遠端（遠端為設定中選擇的平臺，預設 OpenRouter）；設定 ▸ OpenRouter 中「顯示免費」「顯示付費」；提示停靠窗的清單每次顯示 10 個並可搜尋，☰ All 開啟所有 OpenRouter 模型，可篩選、排序並檢視詳情，按 Use 即設定。 *Where:* 🖥 GPU 停靠窗；設定 ▸ Remote generation ▸ 🧠 LLM；提示停靠窗。 *Since:* 2.770.0
+- **每種類型都可選本地或遠端，並分區顯示** — 遠端生成停靠窗按主題樣式分區：遠端伺服器；生成（影像、影片、音樂）；語言模型（LLM、視覺 LLM）；音訊（語音合成、語音辨識、歌曲分離）——每項在同一欄中選擇本地或遠端，並顯示去向。 *Where:* ☁ 遠端生成停靠窗。 *Since:* 2.776.0
+- **浮動停靠窗置前；每種類型 Local 或 Remote；RunPod 的選擇移到設定** — 變為浮動的停靠窗會立即置於其他停靠窗之前（包括 ▣ 停靠窗）；🖥 GPU 停靠窗中 Image / Video / Music 的 Local / Remote 決定該類型的模式（全部 Local = 本機模式；混合 = 保留本機的 ComfyUI 並列出兩種模型列表）；RunPod ▸ Pods / Serverless 移到 Settings ▸ Remote generation；Pod 的 ComfyUI 也把文字編碼器和 VAE 留在顯示卡上（--highvram）。 *Where:* 停靠窗、🖥 GPU、Settings ▸ Remote generation。 *Since:* 2.782.1
+- **System 停靠窗;狀態列上的 Remote 和 Pods;全部本地 / 全部遠端 / Both** — 左側停靠窗改名為 System;全部在 Pod 上執行時圖表顯示 Pod 的資料,一部分在本機、一部分在 Pod 上時本機的圖表保持不變,Pod 的資料在下方的 ☁ 框中;Basic Settings ▸ GPU 已移除 - 全部本地 / 全部遠端 / Both 位於 🖥 GPU 停靠窗最上方(某一行改回 Local 時全部遠端會切換為 Both);狀態列上的 Remote 開啟該停靠窗,Pods 開啟 PODS,且只在有工作遠端執行時顯示。 *Where:* System 停靠窗、狀態列、🖥 GPU。 *Since:* 2.783.0
+- **Runs on:每種類型一個下拉框** — 🖥 GPU 停靠窗最上方有 Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM 的下拉框:Local、RunPod(你的 Pod)、OpenRouter(目前僅 LLM)、LAN 和 Team(可用前顯示為灰色);全部設定可一次更改所有行;單選按鈕已移除;只有某行為 RunPod 時狀態列才顯示 Pods。 *Where:* 🖥 GPU、狀態列。 *Since:* 2.785.0
+- **OpenRouter models;在 OpenRouter 上產生圖片和影片** — 🖥 GPU ▸ OpenRouter models… 依系列列出 OpenRouter 的圖片、影片、LLM 和 Vision LLM 模型及價格(免費或付費);按兩下即可加入你的清單(🗑 移除);你的模型以 openrouter/<model> 出現在 Basic Settings 的 Model 清單和提示詞停靠窗的 LLM / Vision 清單中(其他項目保留);Use model + openrouter/ 模型,或 Runs on ▸ Image / Video = OpenRouter,會在顯示價格的對話框之後在 OpenRouter 上產生圖片或影片;💲 Costs 會統計它們;OpenRouter 不再列出的模型會離開你的清單。 *Where:* 🖥 GPU、Basic Settings、提示詞停靠窗。 *Since:* 2.786.0
+- **團隊 ▸ 渲染農場** — 基於 NAS 資料夾的團隊：負責人審批成員，其 bitGen 每天為每位成員簽發一個簽名金鑰；所有人開啟相同的專案；PC 的所有者可允許成員在該 PC 上渲染（不限時段或指定起止時間），且僅在該 PC 執行 bitGen 並開啟共享時有效；🖥 Render on: This PC / 某位成員的 PC / ⚡ Spread，並顯示團隊的渲染任務和進度。需處於同一網路或使用 Tailscale。2.589.0：改為可選的附加元件（單獨的 zip——可能會觸發防毒軟體）。 *Where:* Settings ▸ Add-ons ▸ Team render farm，然後 Settings ▸ Team；狀態列的 🖥 狀態標籤。 *Since:* 2.583.0
+
+### RunPod 的 Pod
+
+- **🖥 PODS 停靠窗 + RunPod 的 Serverless 或 Pod** — 基本設定 ▸ GPU 選擇遠端伺服器（RunPod 或 OpenRouter），RunPod 再選 Serverless 或 Pod；選擇 Pod 時，PODS 停靠窗列出 RunPod 的公開範本（官方 / 已驗證 / Community、僅 ComfyUI、搜尋），建立 Pod（帶 RunPod 即時價格的 GPU、Secure / Community 雲、磁碟大小、每小時估算），並可開始、停止、使用或終止你的 Pod（🅱 = bitGen 的）。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ Remote servers；Basic Settings ▸ GPU ▸ 🖥 PODS。 *Since:* 2.756.0
+- **🃏 每個 RunPod 範本都是一張卡片** — PODS 停靠窗一次列出 RunPod 的全部公開範本（全部 / 官方 / 已驗證 / 社群，各附數量），每個範本一張卡片（帶首字母的色塊、NVIDIA / AMD / CPU 和 ComfyUI 標記；名稱、映像、分組、磁碟、/workspace 和 Web 連接埠；建立 Pod… 和 ↗ 其頁面），邊輸入邊搜尋（每個詞：名稱、映像、連接埠、種類、分組）和種類篩選；「僅 ComfyUI」一開始是關閉的。*Where:* Basic Settings ▸ GPU ▸ 🖥 PODS。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Since:* 2.756.1
+- **🧩 P_ Pod 風格 + Pod 載入進度列** — 基本設定 ▸ GPU 為 RunPod ▸ Pods 時只顯示 P_ 風格；在已載入的 Pod 上按 🎨 Styles 會讀取它的 ComfyUI，從模型檔案（bitGen 為 Qwen Image、Z-Image、Krea 2、FLUX、SDXL 準備的工作流，填入 Pod 的檔案）和範本儲存的工作流建立 P_ 風格；Override style 為 P_ 風格提供步數、種子、CFG、尺寸和長寬比（從不提供檢查點或 LoRA）；啟動中的 Pod 用進度列顯示階段，以及相對上次載入時間的已用時間；你的 Pod 和 Pod 快捷方式（範本卡片上的 ☆、★ Shortcuts - 連結自動填入）在 PODS 停靠窗中。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ My pods ▸ 🎨 Styles；風格的 Runs on ▸ RunPod pod。 *Since:* 2.758.0
+- **⬇ 把模型下載到 Pod + 為風格選 Pod** — PODS 停靠窗的 For … 把適合某個 bitGen 風格的範本排在前面（✓ fits），這樣建立的 Pod 載入後會自動得到該風格的 P_ 風格；⬇ Models 把風格的檔案（或 bitGen 下載清單中的單個檔案）下載到 Pod 的 ComfyUI，每個檔案一條進度列，通過 Pod 的 Jupyter（bitGen 建立的 Pod 使用 bitGen 自己的密碼，或貼上密碼）或 ComfyUI-Manager（只限其清單）；也可以從連結（Civitai、Hugging Face、任何網址）或這臺電腦的磁碟放入單個檔案。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ For …；My pods ▸ ⬇ Models。 *Since:* 2.759.0
+- **🎵 Audio 停靠欄 + 以你的貨幣顯示價格 + 🖥 My pods** — Music、Stems 和 SFX 是同一個 Audio 停靠欄的分頁（狀態列上一個按鈕；螢幕上一次只有一個分頁，上次選的會回來）；設定 ▸ General ▸ Currency 把美元價格（RunPod 的 GPU 和 Pod、OpenRouter 的模型、遠端 GPU）以 AUD、EUR、GBP、CNY、JPY 等顯示，按當天的參考匯率（儲存以便離線使用）或你輸入的匯率，懸停可見美元；PODS 停靠欄的 🖥 My pods 只顯示 Pod，Create pod… 只顯示錶單，新建的 Pod 出現在 My pods 中。 *Where:* 狀態列 ▸ Audio；設定 ▸ General ▸ Currency；Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
+- **🖥 作為條目的 Pod + 它們的費用 + 重新建立 Pod** — My pods 中的每個 Pod 都是一個條目（點名字展開）：Video、LLM、vLLM、Image、Image edit 勾選項，💾 Save（有更改才可用）為勾選的類型建立 Pod 的 P_ 風格，並讓 LLM / 描述圖片的 LLM 使用 Pod 自己的 OpenAI 相容伺服器；在其 checkpoints / loras 中 📁 New folder，從這臺電腦 ➕ Checkpoint 和 ➕ LoRA；Basic Settings ▸ GPU 每分鐘顯示 Pod 的費用（目前執行、RunPod 今天和本月的帳單），📊 Usage 按天記錄；P_ 風格儲存其 Pod 的配方（範本、GPU、大小、檔案）——用它渲染時會啟動已停止的 Pod 或建立新 Pod 並把檔案放回（從這臺電腦，否則從連結）。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods；Basic Settings ▸ GPU（💲）。 *Since:* 2.761.0
+- **🧩 每個 Pod 一個檢查點——Pod 就成為這個風格** — Pod 的 Checkpoint 和 LoRAs 使用 Basic Settings 的 Override 下拉框（這臺電腦的 ComfyUI 模型）；💾 Save 用 bitGen 為該模型系列準備的工作流（Krea 用 Krea 工作流）建立 P_<Pod>，Pod 上已有就直接選用，否則在後臺傳送一次到相同的子資料夾；Override style 開啟且選取 P_ 風格時，Basic Settings 的檢查點會在渲染前傳送到 Pod 並在那裡使用。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ 某個 Pod；Basic Settings ▸ Override style ▸ Checkpoint。 *Since:* 2.762.0
+- **🧩 你的風格在你的 Pod 上** — 不再生成 P_ 副本：在 RunPod Pods 上顯示你自己的風格，每個都在一個 Pod 上渲染 - 先是風格自己的 Pod（Pod 的 Styles：Generate 模式風格的下拉式清單，或 All），再是為該類型勾選的 Pod（Image、Image edit、Video - 每種類型一個 Pod，或全部放在一個 Pod 上），再是正在使用的 Pod；💾 Save 在 Pod 上把它們準備好（目錄中的檔案由 Pod 自己下載，其餘從這臺電腦傳送，缺少的節點包通過它的 Jupyter 安裝並重新啟動 ComfyUI）；沒有 Pod 的風格在渲染前詢問：用 RunPod 的 ComfyUI CUDA 13 範本建立 Pod（Secure / Community、⭐ 顯示記憶體足夠的最便宜 GPU、每小時價格、磁碟），或使用你的某個 Pod - 然後建立關聯；已停止的 Pod 會被啟動，已不存在的會重新建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ Styles；按 Generate 時的詢問框。 *Since:* 2.763.0
+- **🖥 你的自訂節點上 Pod + Pod 在做什麼** — bitGen 為風格建立的 Pod 會裝上這臺電腦 ComfyUI 的所有自訂節點包（git 包在 Pod 上按相同版本 clone，其餘的以及私有的打成 zip 上傳；.disabled 的和 Pod 上已有的保持不動），然後重新啟動它的 ComfyUI（ComfyUI-Manager，否則重新啟動 Pod）；⬆ My custom nodes 可對任何 Pod 這樣做；風格缺少的節點來自這臺電腦 ComfyUI 指出的節點包；狀態列上方的一行顯示等待中的渲染的 Pod 在做什麼，無法使用的 Pod 會帶著原因停止渲染；在 Both 下有 Pod（自己的或其類型的）的風格會送到那個 Pod。 *Where:* 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ ⬆ My custom nodes；渲染等待時的狀態列上方。 *Since:* 2.763.1
+- **🖥 Pod 渲染不用這臺電腦的 ComfyUI** — 送到 RunPod Pod 的渲染會立即傳送：不啟動這臺電腦的 ComfyUI，也不拿風格去對照它的模型清單或下拉式清單（檔案會放到 Pod 上）；失敗的渲染的原因（[pod] / [gpu] / 錯誤行）會在日誌的「that one failed」之後顯示。 *Where:* Pod 模式下的 Generate；日誌。 *Since:* 2.763.2
+- **🖥 沒有 Pod 的風格開啟 PODS 停靠窗** — 用沒有 Pod 的風格按 Generate 會開啟 PODS 停靠窗：橫幅說明等待中的渲染，建立表單已在 RunPod 的 ComfyUI CUDA 13 範本上開啟，風格、其類型、bitGen 推薦的 GPU、GPU 數量和磁碟都已填好（都可以改）；你的 Pod 上有 ▶ Use for <风格>；Cancel the render；Start / Stop / Terminate 照舊。Pod 渲染現在能到達 Pod（worker 向 RunPod 代理報出自己的名字 - 不再 403；https 上也有即時步數）；風格在 Pod 上的下載會等到完成，仍缺少的檔案會帶著名字停止渲染。 *Where:* 🖥 PODS（按 Generate 時自動開啟）。 *Since:* 2.763.3
+- **🖥 PODS 停靠窗：Pod 的資料 + 建立前的全部細節** — 每個執行中的 Pod 在名字旁顯示 GPU 負載和 GPU 顯示記憶體的條，開啟後顯示 GPU、顯示記憶體、RAM、CPU 和兩個磁碟（每幾秒更新，來自 Pod 的 Jupyter 或 ComfyUI）；建立表單列出 Pod 的全部內容（範本和鏡像、GPU、價格、雲、磁碟、CUDA 13 主機、埠、風格、會放上去的東西），並跟隨表單變化；停靠窗的風格下拉式清單從提示詞停靠窗的風格開始；RunPod 上已不存在的 Pod 不會自己重建 - 停靠窗會開啟，按舊 Pod 的方式填好；從這臺電腦傳送的檔案不再因 HTTP 400 失敗（不再用隱藏的分段檔名）。 *Where:* 🖥 PODS ▸ 🖥 My pods；Create pod…。 *Since:* 2.763.4
+- **📦 Pod 預設 + 一個 Pod 上的多個風格** — Pod 的範本、GPU、GPU 數量、雲、磁碟、類型和風格儲存為 runpod/pods/presets/<名称>.pod；每個預設是一個條目，帶 ▶（已終止的 Pod 會連同所有風格的檔案和你的自訂節點重新建立；GPU 沒有空閒時可選顯示記憶體相同或更多的 GPU）、⏹、🗑（終止 Pod，預設保留）和 ✕（刪除預設）；所有細節都可編輯，可新增 / 移除風格；載入步驟、每小時費用、已用時數和總費用；用沒有 Pod 的風格點 Generate 會開啟一個框，列出你的 Pod 和預設，帶 ＋ <风格>、Create pod… 和 Cancel render；為風格建立的 Pod 會自動儲存為預設，任何 Pod 都可 💾 Save as preset。 *Where:* 🖥 PODS ▸ 📦 Presets；Pod 模式下的 Generate。 *Since:* 2.764.0
+- **Basic Settings ▸ GPU 選 Local 時不顯示遠端內容** — 選 Local 時只顯示 Local · Remote · Both 和「Every job runs on this computer.」：Remote servers / RunPod 選項、🖥 GPU docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都會隱藏，這些停靠窗也會關閉；尚未設定任何遠端時選 Remote 或 Both 會等待並顯示這些選項，直到有可渲染的地方；等待 Pod 的渲染會在 Queue 裡顯示 Pod 正在做什麼（而不是「waiting for the GPU」），傳送到 Pod 的模型會顯示已傳送的 GB、百分比、速度和剩餘時間。 *Where:* Basic Settings ▸ GPU；Queue。 *Since:* 2.764.1
+- **Pod 上只放工作流用到的自訂節點** — Pod 只會得到其風格的工作流用到、而 Pod 上沒有的自訂節點包（從這臺電腦的 ComfyUI 查詢，按相同版本 clone 或上傳）- 為風格建立的 Pod、預設的 ▶ 以及加到 Pod 上的風格都是如此；任何 Pod 都可用 ⬆ Nodes its styles need；日誌會說明每一步（小包顯示 KB、解包、安裝第 n / m 個），Pod 3 分鐘無法彙報時會帶著原因結束這一步。 *Where:* 🖥 PODS ▸ My pods；Presets；Pod 模式下的 Generate。 *Since:* 2.764.2
+- **風格的自訂節點來自它們的 git 地址** — 風格需要的節點包會在 Pod 上 clone（用 git 安裝的按相同提交；其他的從 bitGen 的節點清單、pyproject.toml、ComfyUI-Manager 的清單或 Comfy Registry 查詢，並按其版本標籤 clone；位於更大倉庫裡的包會連結進來）；只有沒有地址或 Pod 無法 clone 的包（私有）才會從你的電腦上傳，日誌會說明原因。 *Where:* Pod 模式 - Generate、預設、⬆ Nodes its styles need。 *Since:* 2.764.3
+- **Pod 下載能完成，受限模型會提示** — Pod 上的下載和節點安裝作為獨立任務執行，不再停在 0%；下載 Hugging Face 檔案前，bitGen 會檢查它是否受限或已不存在，並說明是哪個檔案以及該怎麼做（接受其許可並新增你的 Hugging Face 權杖）；3 分鐘沒有資料的下載或被 Pod 停止的任務也會提示。 *Where:* PODS ▸ ⬇ Models；渲染的 Pod 備註；日誌。 *Since:* 2.764.6
+- **把你的檢查點和 LoRA 從 Civitai 下載到 Pod** — Pod 需要的本機模型會先在 Civitai 上查詢（按其卡片中的版本，否則按唯讀取一次的 SHA-256），然後由 Pod 用你的 API 金鑰從 civitai.com 或 civitai.red 下載完全相同的檔案，代替緩慢的上傳；只有在 Civitai 上沒有或被拒絕時才從本機發送，並說明原因。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* PODS（風格的模型、Override 風格的檢查點、預設）；渲染的 Pod 備註；設定 ▸ General ▸ Civitai。 *Since:* 2.765.0
+- **遠端模型、勾選的 Pod 和每次傳輸的進度列** — runpod/pods/remote_models.json 記錄你的 Pod 使用的模型及各自的下載連結；在遠端模式下，Model manager 和基本設定的 Override 下拉框列出這些模型，而不是本機的模型；勾選 Pod（每個名稱左側的核取方塊，可多選），⇪ 會把模型傳送到所有勾選的 Pod；沒有連結的模型只上傳一次到你的私有 Hugging Face 倉庫（Civitai 上有則用其連結，否則直接傳送到 Pod）；每次傳輸都有自己的進度列。 *Where:* PODS ▸ My pods；Model manager（遠端模式）；基本設定 ▸ Override。 *Since:* 2.766.0
+- **Pod：檔案放在 ComfyUI 能看到的位置，舊版 ComfyUI 會被更新** — 檔案會放到 Pod 的 ComfyUI 讀取的資料夾（包括範本自己的模型資料夾，放錯位置的副本會被移動），缺少新版 ComfyUI 內建節點的 Pod 會在渲染前更新 ComfyUI（git pull、requirements、重新啟動）。 *Where:* 渲染的 Pod 備註；PODS。 *Since:* 2.766.3
+- **新 Pod 的 ComfyUI 自動更新，查詢缺失的檔案** — bitGen 建立的 Pod 在首次載入時會自動更新一次 ComfyUI（渲染會等待它；已是最新的 ComfyUI 保持執行）；下載後 ComfyUI 仍未列出的檔案會在 Pod 上查詢，並連結到它讀取的資料夾，或說明原因。 *Where:* PODS ▸ My pods；在 Pod 上渲染。 *Since:* 2.769.0
+- **bitGen 建立的 Pod 自行完成設定** — bitGen 建立的 Pod 會被記錄為 bitGen 的（Pod 本身也有標記），載入後會更新其 ComfyUI、準備好關聯的風格，如果還沒有正在使用的 Pod，它就成為正在使用的 Pod - 無需按按鈕；⬆ Update ComfyUI 會更新實際正在執行的 ComfyUI。 *Where:* PODS ▸ My pods。 *Since:* 2.769.1
+- **「還沒有 Pod」對話方塊只列出現有的 Pod** — 用沒有 Pod 的風格渲染時，只列出 My pods 中的 Pod（執行中或已停止）；已終止的 Pod 和其 Pod 已不存在的預設不再列出。 *Where:* 詢問由哪個 Pod 渲染風格的對話方塊。 *Since:* 2.769.2
+- **在空白 pod 上安裝 ComfyUI** — bitGen 為風格建立的 pod 從 RunPod 的 PyTorch 範本開始，由 bitGen 自己安裝 ComfyUI：查找 pod 上有什麼，下載最新的 ComfyUI，為它建立沿用 pod 的 PyTorch 的 Python 環境，安裝其 requirements 和 ComfyUI-Manager，啟動並載入 - 每一步都會顯示；重新啟動後只啟動 ComfyUI。任何不含 ComfyUI 的範本都同樣適用。 *Where:* PODS ▸ Create pod…；詢問由哪個 pod 算圖風格的對話框。 *Since:* 2.772.0
+- **pod 正在做什麼，顯示在 pod 上** — 每個 pod 名稱下方顯示現在正在做什麼，帶有動詞（Downloading、Installing、Loading、Finding、Sending、Starting、Updating …）和到目前為止的時間；已完成的工作放在下拉清單中（✓ 完成、– 已存在、✗ 失敗），pod 保持精簡；沒有工作執行時顯示 ✓ Done 或附原因的 ✗ Stopped。 *Where:* PODS ▸ My pods。 *Since:* 2.772.0
+- **左側停靠視窗顯示 pod 的統計** — 遠端模式下 System 統計顯示使用中的 pod：CPU 負載、記憶體、每個 GPU 的負載、溫度和顯示記憶體，以及磁碟；⚡ since start 仍是本機的。 *Where:* 左側停靠視窗的 System。 *Since:* 2.773.0
+- **pod 上只放目前模式的風格** — 圖像模式下只上傳和檢查圖像風格，Video 模式下只處理影片風格；其他風格等到切換到它們的模式。 *Where:* 提示詞停靠視窗的 Generate 模式；PODS ▸ My pods。 *Since:* 2.773.0
+- **在 Pod 上失敗的渲染會重新執行** — 因 Pod 無法使用而停下的渲染（設定中斷、檔案還沒到、缺少節點）會在該 Pod 就緒時自動重新執行：設定完成、ComfyUI 安裝或更新完畢，或你傳送的檔案到達。最多 3 次，從佇列中清除後就不再執行。 *Where:* 佇列（「Pod 就緒後會重新執行」）。 *Since:* 2.774.0
+- **在 Pod 上進行語音合成、語音辨識和歌曲分離** — 建立 Pod 時（或在 My pods 的 Pod 上）勾選 Audio，遠端模式下語音、複製的聲音、轉錄和分軌都會在 Pod 上執行；引擎只在 Pod 上安裝一次，聲音片段只在使用時傳送並保留在那裡；結果回到專案中。 *Where:* PODS ▸ Create pod… ▸ Audio；My pods ▸ 🔊 Audio。 *Since:* 2.775.0
+- **Pod 檔案重試** — 沒能放到 RunPod Pod 上的檔案（上傳、Pod 的下載失敗或哪裡都找不到）會彈出一個框，說明失敗方式和原因：↻ 重試 或 暫不；Pod 需要的檔案也會按名稱在 Civitai 上查詢，並由 Pod 下載。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 遠端生成（Pod）。 *Since:* 2.778.0
+- **Pod 無法建立的原因** — RunPod 不建立 Pod 時，用對話方塊說明原因：GPU 被佔用就直說、該怎麼做、RunPod 自己的原話和 HTTP 狀態，以及請求的內容（模板、GPU、雲、主機、磁碟）；可 📋 複製。RunPod 自己的模板（如 PyTorch）不再被“先選擇模板”拒絕。 *Where:* PODS ▸ Create pod、📦 Presets ▸ ▶、詢問 Pod 的框。 *Since:* 2.779.0
+- **Pod 都是 bitGen Pod** — PODS 停靠窗不再有模板瀏覽器：🖥 My pods（bitGen 的 Pod；RunPod 賬戶裡的其他 Pod 合成一行並顯示費用，可 ⏹ 停止）、📦 Presets 和 ＋ Create pod——選 GPU、雲、磁碟、風格和音訊，用 bitGen 選定的模板（RunPod 的 PyTorch 模板；bitGen 在上面安裝 ComfyUI、自定義節點和檔案）建立。 *Where:* PODS。 *Since:* 2.780.0
+- **取樣器列表；始終起不來的新 Pod 會重建** — 基本設定的模型下拉框上方有取樣器 / 排程器列表（你的 ComfyUI 提供的；在 Pod 上則是 Pod 的），開啟「覆蓋風格」時用於風格工作流程中的每個取樣器節點（風格自帶 = 保持工作流程原樣）；新 Pod 首次啟動時若 5 分鐘毫無動靜，會被終止並按同樣設定重建（最多兩次）；Jupyter 仍在啟動的 Pod 會被等待。 *Where:* 基本設定、PODS。 *Since:* 2.781.0
+- **Pod 的模型檔案、GPU 顯示記憶體、日誌中的 ComfyUI 用時** — 執行中 Pod 的 📁 Files 按資料夾列出模型檔案及大小和剩餘磁碟，並刪除勾選的檔案（先確認；bitGen 會為該 Pod 忘記它們）；GPU 顯示記憶體：把模型留在顯示卡上（預設——24 GB 以上的顯示卡上不用 Dynamic VRAM 啟動 ComfyUI）或 ComfyUI 的 Dynamic VRAM，⟳ 套用到此 Pod；每次算繪的日誌會顯示 ComfyUI 用時和模型的載入方式。 *Where:* PODS。 *Since:* 2.781.2
+- **在 Pod 上 ⟳ 重新啟動 ComfyUI** — PODS ▸ My pods 中執行的 Pod 可以重新啟動其 ComfyUI（按兩次），保留原有命令和 GPU 顯示記憶體方式，並在它再次回應時告知。 *Where:* PODS。 *Since:* 2.781.3
+- **在 Pod 上執行來自 Hugging Face 的 LLM；一個 Pod 執行全部** — 使用 RunPod Pod 時，提示詞停靠窗的 LLM / Vision 列表只顯示你的列表；＋ From Hugging Face… 列出儲存庫的 GGUF（分卷的算作一個，含視覺投影器），把選中的傳送到 Pod（llama.cpp 在 Pod 上只編譯一次），並詢問是否以其名稱儲存到你的列表；可在你的某個 Pod 上執行，或為它新建一個 Pod；在共用的 Pod 上，算繪會停止 LLM 並釋放顯示記憶體，下一次聊天會卸載 ComfyUI 的模型並重新載入 LLM；可擴大 Pod 的磁碟區。 *Where:* 提示詞停靠窗、PODS。 *Since:* 2.782.0
+- **傳輸到 Pod 時的 ⏹ / ↻** — 每個模型傳輸的進度列（PODS ▸ Transfers）末尾有停止和重新開始圖示：上傳在目前分塊後停止（Pod 上的分塊被刪除），Pod 的下載在目前片段後停止；↻ 從頭重新開始。 *Where:* PODS。 *Since:* 2.782.2
+- **Create pod 的 GPU 清單排序:最快 / 最便宜** — PODS ▸ Create pod 的 GPU 清單上方有 GPU 排序(預設最便宜,會記住);每張卡顯示與 RTX 5090 相比的大致速度(bitGen 針對擴散和影片渲染的粗略參考,不是基準測試);換一種排序會選取該順序中第一張有 20 GB 以上的空閒卡。 *Where:* PODS。 *Since:* 2.784.0
+- **清單中的 pod 模型;☐ Remote** — 每個 pod 都儲存一份清單（模型、VAE、文字編碼器、LoRA、它的風格），顯示在 PODS ▸ 🗂 Inventory 中；pod 的模型和 LoRA 以 <pod name>/<file> 的形式出現在 Basic Settings 的清單中，選擇其一即在該 pod 上渲染；在 Use model / Use temporary LoRAs 下勾選 ☐ Remote 並選擇 pod，會把本機的模型或 LoRA 傳送到該 pod（在 Civitai / Hugging Face 上找到則由 pod 下載，否則上傳）並在那裡渲染。*Where:* Basic Settings, PODS. *Since:* 2.787.0
+- **已終止 pod 的檔案保留為 NO_Pod** — 終止 pod 時會詢問：把它的模型和 LoRA 連同 pod 的建立方式以 NO_Pod (<old name>)/<file> 的形式保留在 Basic Settings 的清單中，還是移除；選擇 NO_Pod 檔案會顯示該建立方式並詢問——Make the pod again 會在下一次渲染時按原樣重新建立並放回其檔案（先線上查詢，否則從本機發送）；絕不會未經詢問就重新建立。*Where:* 🖥 PODS, Basic Settings. *Since:* 2.789.0
+- **把 NO_Pod 檔案放到你已有的 Pod 上** — 選擇已終止 Pod 的檔案時，會指出你的哪個 Pod 上已經有它（Start that pod / Use that pod），並列出其他所有 Pod（正在執行的在前），說明每個 Pod 上已有什麼、要傳送什麼（空間不足或模型可能放不進顯示卡時會警告）；只發送 Pod 上沒有的檔案——模型會連同 VAE 和文字編碼器一起轉移——所選項在所有儲存的地方都變成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
+- **缺少的模型：下載到本機或傳送到 Pod** — 渲染缺少的模型 / LoRA 按名稱在網路上查詢並下載到本機，或（在 RunPod Pod 上）詢問後 ⬆ Send to <pod>。*Where:* Models not found 對話方塊。*Since:* 2.806.0
+- **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
+
+### 顯示卡、能耗和費用
+
+- **電費** — 每 kWh 的電價：每個任務的 ⚡ 卡片、其 [power] 行以及啟動以來的耗電量都會顯示費用。 *Where:* Settings ▸ General. *Since:* 2.518.0
+- **每日供電費** — 電費帳單上的固定日費用：任務費用按其執行時長計入相應份額。 *Where:* Settings ▸ General ▸ Energy cost. *Since:* 2.519.0
+- **峰谷電價** — 設定峰時電價和峰時時段（星期幾 + 時間，也可跨越午夜）；其餘時間均為谷時；任務分別統計峰時和谷時耗電量。 *Where:* Settings ▸ General ▸ Energy cost. *Since:* 2.520.0
+- **用量日誌** — 按天記錄每個任務的耗電量、峰時佔比、費用和所用遠端 GPU；可選時間範圍、顯示合計、匯出 CSV。 *Where:* Settings ▸ General ▸ 📊 Usage…，或點選狀態列中的 ⚡ 數值. *Since:* 2.520.0
+- **💲 RunPod 停靠窗 + 你自己的停靠窗裡的停靠窗** — 一個獨立的停靠窗，顯示 RunPod 餘額、目前支出和餘額還能用多久、支出上限、Pod 的費用（正在執行、今天、本月、每個 Pod）以及 RunPod 的 GPU 價格（Secure / Community、顯示記憶體、每小時價格、空閒數量；可搜尋、排序）；Basic Settings 的 💲 費用行移到了這裡；用 ▣ New docker… 建立的停靠窗（浮動的或限定在某個停靠窗內的）可以放入 PODS、💲 RunPod、Basic Settings 等停靠視窗和主停靠窗 - 可以放多個；浮動對話方塊始終在所有停靠窗前面（限定的停靠窗不再蓋住它們）；自訂節點一次打包一個檔案，並在日誌裡顯示進度（不含 venv，權重原樣存放，上限 2 GB）。 *Where:* Basic Settings ▸ GPU 和 🖥 PODS 裡的 💲 RunPod；⊞ Docker configs ▸ ▣ New docker…。 *Since:* 2.763.5
+- **💲 Costs 停靠窗** — RunPod 停靠窗變成了 💲 Costs：所有費用在一個列表中 - 這臺電腦的電費和供電費、RunPod（Pod + Serverless）、OpenRouter、Settings ▸ API 的每個服務和遠端 GPU，各佔一行並有合計 - 可選今天、7 天、本月、上月或全部；點擊一行開啟其詳細列表（按天、任務、Pod、模型、呼叫）。 *Where:* 🖥 GPU 停靠窗；PODS；設定 ▸ 一般 ▸ 電費；System stats 的 💲。 *Since:* 2.771.0
+- **📊 Statistics** — 一個對話框，顯示每次生成的啟動時間（啟動或準備 Pod、檔案、節點包、更新或重啟 ComfyUI）、生成時間和合計，每次 Pod 準備及其階段，按位置和按模式的平均值，以及 CSV。 *Where:* 💲 Costs ▸ 📊 Statistics；設定 ▸ 一般 ▸ 電費。 *Since:* 2.771.0
+- **多塊顯示卡：Local - <card>** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ Image / Video / Music 可以選擇每塊顯示卡；選取的顯示卡有專屬的 ComfyUI（--cuda-device、獨立埠和日誌），在該類工作第一次渲染時啟動並保持執行——圖片在一塊顯示卡上，影片在另一塊上。*Where:* 🖥 GPU. *Since:* 2.791.0
+- **LLM 和語音使用專屬顯示卡；卸載到 CPU / 記憶體** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ LLM / Vision LLM / Text to speech / Speech to text / Song separation 也提供 Local - <card>；LLM 會把顯示卡空閒顯示記憶體放得下的層都放到顯示卡上（其餘放在記憶體），語音只在那塊顯示卡上執行。Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit（預設開啟）——關閉後全部留在顯示卡上，放不下的 LLM 會被拒絕並說明原因。*Where:* 🖥 GPU, Settings ▸ General. *Since:* 2.794.0
+
+### 訓練和微調
+
+- **LoRA 訓練器** — 使用 ai-toolkit（Ostris）以你的圖片訓練 LoRA：九種基礎模型（Z-Image Turbo、FLUX、Qwen-Image、SDXL、SD 1.5、Chroma、Wan 2.1…）、觸發詞、rank、步數、帶描述文字的資料集（或由助手生成描述）、可編輯的 YAML、即時顯示步數 / loss / 樣圖；訓練好的 LoRA 連同卡片存入 ComfyUI 的 loras/trained；可將任務匯出為 zip。 *Where:* 狀態列的 🎓 LoRA. *Since:* 2.520.0
+- **檢查點微調** — 使用 ai-toolkit 訓練影像模型（Lumina 2、Flex.1、FLUX.2 klein、SDXL）的全部權重，通過參數交換降低顯示記憶體佔用；結果合併為 diffusion_models/trained 中的一個 .safetensors 檔案。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
+- **LLM 微調** — 使用 Unsloth 以你自己的對話訓練助手（Qwen3.5 0.8B-9B、Gemma 4、Qwen3.8 27B；LoRA / QLoRA / 全量）；範例可手動輸入或匯入（JSONL / JSON / CSV）；輸出為 LLM 資料夾中的 .gguf。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
+- **視覺模型微調** — 以圖片 + 回答訓練視覺模型（Qwen3.5 / Gemma 4 vision）；輸出 .gguf 和 mmproj 到視覺模型資料夾。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
+- **融合 LoRA** — 將訓練好的 LoRA 合併到其基礎模型中，生成新的檢查點（ComfyUI），任何顯示卡均可。 *Where:* 🎓 LoRA ▸ Run & samples. *Since:* 2.521.0
+- **FLUX.2 klein LoRA** — 可將 FLUX.2 klein base 4B 用作 LoRA 的基礎模型。 *Where:* 🎓 LoRA ▸ Base model. *Since:* 2.521.0
+- **用你的選擇訓練 LLM** — 🔁 Compare LLMs 的每一輪都會儲存完整的提示詞；🏆 ▸ 🎓 將選取的回覆（範例）以及“選取 vs 未選取”配對傳送到訓練器的 LLM 任務；訓練器從 Examples（SFT）或 Preferences（DPO / ORPO，Beta）中學習，並寫出新的 .gguf。 *Where:* 🏆 ▸ 🎓 Train an LLM on your picks；🎓 LoRA trainer ▸ Job ▸ Learn from、Dataset ▸ 🔁 Preference pairs。 *Since:* 2.585.0
+- **🧬 RefMods 庫** — 適用於所有專案的 MiniMax H3 參考 mod，存放在 refmod/<name>/ 中：7 種類型（角色、地點、載具、物體、道具、植物、動物），上傳的媒體自動分類到 images / videos / audio，✨ 使用視覺模型自動生成描述，🧬 Extract（圖片 + 影片幀）-> 生成的 .safetensors 儲存在該資料夾中，在提示詞中寫 @name 即可使用。 *Where:* 🎓 LoRA & fine-tune trainer ▸ 🧬 RefMods。 *Since:* 2.588.0
 
 ## 音樂、人聲與聲音
 
@@ -365,94 +547,6 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✨ Create** — 一鍵把歌曲（專案中的或這台電腦上的）變成四個圖層及其波形、歌詞（Song 分頁的，或從人聲中聽出）以及音符下方帶歌詞的樂譜，並按圖層播放這首歌。 *Where:* Music 面板的 🎼 Sheet Music 分頁 ▸ Song + ✨ Create。 *Since:* 2.739.0
 - **⬇ 缺少的元件就地下載** — 尚未安裝的元件（歌曲分離、語音轉文字）會在帶大小說明的 ⬇ Download / Cancel 框中詢問；Download 會帶進度條安裝，工作隨後自動繼續。 *Where:* ✨ Create、✂ Split into layers、Stems 面板的 Separate。 *Since:* 2.740.0
 - **🎶 ACE-Step 1.5 歌曲** — 快速的音樂模型（8 步，MIT 授權）：從文字和歌詞生成帶人聲的歌曲，10 秒到 10 分鐘，50 多種語言；風格可設定 BPM、調、每小節拍數和語言，並可使用 LoRA。 *Where:* Music 面板（風格 ACE-Step 1.5）；設定 ▸ 音訊 ▸ 音樂風格。 *Since:* 2.741.0
-- **🗂 基本設定的每個分頁保留自己的設定** — Ref、F/L、Text 和 Swap 各自記住格式、尺寸、秒數、步數、CFG、種子和模型；離開分頁時儲存，回來時恢復（重新啟動後仍保留）；Character chain 保留未儲存的輸入。 *Where:* 基本設定。 *Since:* 2.742.0
-- **☁ RunPod Serverless 算圖** — 所有算圖都傳送到 RunPod Serverless 端點（RunPod 的 ComfyUI 工作器，模型在網路磁碟區上），只在工作器執行時計費；圖片、影片和歌曲都會傳回；✓ 測試顯示工作器和任務。 *Where:* 設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.743.0
-- **☁ RunPod Serverless 只顯示能算圖的風格** — 用 RunPod Serverless 端點算圖時，圖片、影片和音樂的風格清單會隱藏它無法算圖的風格（逐個節點對照端點映像檔裡的 ComfyUI）；可以設定更新的 ComfyUI 或額外的節點包。 *Where:* 風格清單；設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.744.0
-- **🖥 基本設定 ▸ GPU：遠端、本機或兩者** — 所有任務在遠端 GPU 上、全部在這裡，或「兩者」：勾選的 LLM、視覺 LLM、圖片和影片 + 歌曲傳送到遠端 GPU；LLM 在 RunPod vLLM 端點上執行（設定 ▸ 遠端 GPU ▸ LLM on RunPod）。 *Where:* 基本設定 ▸ GPU。 *Since:* 2.745.0
-- **🏷 遠端風格** — 每個圖片、影片和音樂風格在這台電腦或遠端 GPU 上執行（執行於，可選為風格指定自己的 RunPod 端點；遠端風格的名稱以 R_ 開頭）；基本設定 ▸ GPU 為本機時列出這台電腦的風格，遠端時列出 R_ 風格，兩者時列出全部 - 選兩者時由風格決定在哪裡算圖。 *Where:* 設定 ▸ 圖片 / 影片 / 音訊 ▸ 音樂風格 ▸ 執行於；基本設定 ▸ GPU。 *Since:* 2.746.0
-- **🖥 GPU 預設為本機；更新檢查很快** — 基本設定 ▸ GPU 從本機開始，位於基本設定第一項並收合（標題顯示選擇）；更新檢查只向 GitHub 詢問最新提交，任何網路都能幾秒完成，立即更新 在背景下載。 *Where:* 基本設定 ▸ GPU；設定 ▸ 一般 ▸ 更新。 *Since:* 2.747.0
-- **🔑 API 金鑰加密儲存，更新後仍在** — Hugging Face、Civitai 和 RunPod 金鑰、遠端存取金鑰以及社群登入儲存在 settings/keys.json 中，每個單獨加密（AES-256-GCM，由 settings/keys.master 開啟）；更新和恢復預設值都不會動它們；custom.settings 不儲存任何金鑰。 *Where:* bitGen 資料夾中的 settings/（設定 ▸ 一般 中顯示）。 *Since:* 2.748.0
-- **☁ 為 RunPod 準備的現成遠端風格** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium 和 R_Z-Image Turbo，各自對應 RunPod 的一個標準 worker-comfyui 映像（無需上傳）；工作室向 RunPod 詢問端點的鏡像並只列出適合的風格；記錄說明任務在哪裡算圖以及在那裡的大致費用。 *Where:* 基本設定 ▸ GPU 遠端 / 兩者；設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像。 *Since:* 2.749.0
-- **🧠 OpenRouter 上的 LLM（免費模型）+「遠端生成」** — 劇本寫作、提示詞輔助和圖片描述可以在 OpenRouter 上執行：一個 API 金鑰（加密儲存）、免費模型（或顯示每百萬 token 價格的付費模型）、用於圖片的視覺模型、✓ Test；不需要遠端 GPU - 圖片、影片和歌曲仍在這裡渲染。設定中的 Remote GPU 分頁現在叫 Remote generation（遠端生成）。 *Where:* Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter；Basic Settings ▸ GPU 選 Both 並勾選 LLM / Vision LLM。 *Since:* 2.753.0
-- **☁ 使用遠端生成 + 遠端生成停靠窗 + Pod 捷徑** — 一個核取方塊開啟或關閉遠端生成（關閉：一切在這裡執行，基本設定 ▸ GPU 隱藏）；從 基本設定 ▸ GPU（而不是狀態列）開啟的浮動停靠窗顯示任務在哪裡執行、你的 RunPod Pod（開始 / 停止 / 使用）以及 Pod 捷徑：用連結新增的 RunPod 範本，部署 ↗ 會開啟已選好該範本的 RunPod。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Settings ▸ Remote generation ▸ Use remote generation；Basic Settings ▸ GPU ▸ 🖥 GPU docker。 *Since:* 2.754.0
-- **🖥 PODS 停靠窗 + RunPod 的 Serverless 或 Pod** — 基本設定 ▸ GPU 選擇遠端伺服器（RunPod 或 OpenRouter），RunPod 再選 Serverless 或 Pod；選擇 Pod 時，PODS 停靠窗列出 RunPod 的公開範本（官方 / 已驗證 / Community、僅 ComfyUI、搜尋），建立 Pod（帶 RunPod 即時價格的 GPU、Secure / Community 雲、磁碟大小、每小時估算），並可開始、停止、使用或終止你的 Pod（🅱 = bitGen 的）。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ Remote servers；Basic Settings ▸ GPU ▸ 🖥 PODS。 *Since:* 2.756.0
-- **🃏 每個 RunPod 範本都是一張卡片** — PODS 停靠窗一次列出 RunPod 的全部公開範本（全部 / 官方 / 已驗證 / 社群，各附數量），每個範本一張卡片（帶首字母的色塊、NVIDIA / AMD / CPU 和 ComfyUI 標記；名稱、映像、分組、磁碟、/workspace 和 Web 連接埠；建立 Pod… 和 ↗ 其頁面），邊輸入邊搜尋（每個詞：名稱、映像、連接埠、種類、分組）和種類篩選；「僅 ComfyUI」一開始是關閉的。*Where:* Basic Settings ▸ GPU ▸ 🖥 PODS。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Since:* 2.756.1
-- **🔑 設定 ▸ API：線上服務作為 API_ 風格 + LLM** — 新增 OpenRouter、fal.ai、Replicate、OpenAI、Google Gemini、Claude 或 RunningHub 的 API 金鑰（根據金鑰識別服務），起個名字並勾選「使用」：它的 API_ 風格（服務能生成的圖片、影片、歌曲）會出現在風格清單中，並在服務端生成，這臺電腦不需要顯示卡或 ComfyUI；每個風格的模型都可以修改（RunningHub 為工作流 ID），✓ Test 檢查金鑰，「用作 LLM」把提示詞 LLM、字幕和分鏡清單傳送到該服務（Claude 只用作 LLM）；金鑰加密儲存。 *Where:* Settings ▸ API；風格的 Runs on ▸ API。 *Since:* 2.757.0
-- **🧩 P_ Pod 風格 + Pod 載入進度列** — 基本設定 ▸ GPU 為 RunPod ▸ Pods 時只顯示 P_ 風格；在已載入的 Pod 上按 🎨 Styles 會讀取它的 ComfyUI，從模型檔案（bitGen 為 Qwen Image、Z-Image、Krea 2、FLUX、SDXL 準備的工作流，填入 Pod 的檔案）和範本儲存的工作流建立 P_ 風格；Override style 為 P_ 風格提供步數、種子、CFG、尺寸和長寬比（從不提供檢查點或 LoRA）；啟動中的 Pod 用進度列顯示階段，以及相對上次載入時間的已用時間；你的 Pod 和 Pod 快捷方式（範本卡片上的 ☆、★ Shortcuts - 連結自動填入）在 PODS 停靠窗中。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ My pods ▸ 🎨 Styles；風格的 Runs on ▸ RunPod pod。 *Since:* 2.758.0
-- **⬇ 把模型下載到 Pod + 為風格選 Pod** — PODS 停靠窗的 For … 把適合某個 bitGen 風格的範本排在前面（✓ fits），這樣建立的 Pod 載入後會自動得到該風格的 P_ 風格；⬇ Models 把風格的檔案（或 bitGen 下載清單中的單個檔案）下載到 Pod 的 ComfyUI，每個檔案一條進度列，通過 Pod 的 Jupyter（bitGen 建立的 Pod 使用 bitGen 自己的密碼，或貼上密碼）或 ComfyUI-Manager（只限其清單）；也可以從連結（Civitai、Hugging Face、任何網址）或這臺電腦的磁碟放入單個檔案。 *注意：* 自 2.780.0 起不再有模板瀏覽器——Pod 都是 bitGen Pod，用 bitGen 選定的模板建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ For …；My pods ▸ ⬇ Models。 *Since:* 2.759.0
-- **🎵 Audio 停靠欄 + 以你的貨幣顯示價格 + 🖥 My pods** — Music、Stems 和 SFX 是同一個 Audio 停靠欄的分頁（狀態列上一個按鈕；螢幕上一次只有一個分頁，上次選的會回來）；設定 ▸ General ▸ Currency 把美元價格（RunPod 的 GPU 和 Pod、OpenRouter 的模型、遠端 GPU）以 AUD、EUR、GBP、CNY、JPY 等顯示，按當天的參考匯率（儲存以便離線使用）或你輸入的匯率，懸停可見美元；PODS 停靠欄的 🖥 My pods 只顯示 Pod，Create pod… 只顯示錶單，新建的 Pod 出現在 My pods 中。 *Where:* 狀態列 ▸ Audio；設定 ▸ General ▸ Currency；Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
-- **🖥 作為條目的 Pod + 它們的費用 + 重新建立 Pod** — My pods 中的每個 Pod 都是一個條目（點名字展開）：Video、LLM、vLLM、Image、Image edit 勾選項，💾 Save（有更改才可用）為勾選的類型建立 Pod 的 P_ 風格，並讓 LLM / 描述圖片的 LLM 使用 Pod 自己的 OpenAI 相容伺服器；在其 checkpoints / loras 中 📁 New folder，從這臺電腦 ➕ Checkpoint 和 ➕ LoRA；Basic Settings ▸ GPU 每分鐘顯示 Pod 的費用（目前執行、RunPod 今天和本月的帳單），📊 Usage 按天記錄；P_ 風格儲存其 Pod 的配方（範本、GPU、大小、檔案）——用它渲染時會啟動已停止的 Pod 或建立新 Pod 並把檔案放回（從這臺電腦，否則從連結）。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods；Basic Settings ▸ GPU（💲）。 *Since:* 2.761.0
-- **🧩 每個 Pod 一個檢查點——Pod 就成為這個風格** — Pod 的 Checkpoint 和 LoRAs 使用 Basic Settings 的 Override 下拉框（這臺電腦的 ComfyUI 模型）；💾 Save 用 bitGen 為該模型系列準備的工作流（Krea 用 Krea 工作流）建立 P_<Pod>，Pod 上已有就直接選用，否則在後臺傳送一次到相同的子資料夾；Override style 開啟且選取 P_ 風格時，Basic Settings 的檢查點會在渲染前傳送到 Pod 並在那裡使用。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ 某個 Pod；Basic Settings ▸ Override style ▸ Checkpoint。 *Since:* 2.762.0
-- **🧩 你的風格在你的 Pod 上** — 不再生成 P_ 副本：在 RunPod Pods 上顯示你自己的風格，每個都在一個 Pod 上渲染 - 先是風格自己的 Pod（Pod 的 Styles：Generate 模式風格的下拉式清單，或 All），再是為該類型勾選的 Pod（Image、Image edit、Video - 每種類型一個 Pod，或全部放在一個 Pod 上），再是正在使用的 Pod；💾 Save 在 Pod 上把它們準備好（目錄中的檔案由 Pod 自己下載，其餘從這臺電腦傳送，缺少的節點包通過它的 Jupyter 安裝並重新啟動 ComfyUI）；沒有 Pod 的風格在渲染前詢問：用 RunPod 的 ComfyUI CUDA 13 範本建立 Pod（Secure / Community、⭐ 顯示記憶體足夠的最便宜 GPU、每小時價格、磁碟），或使用你的某個 Pod - 然後建立關聯；已停止的 Pod 會被啟動，已不存在的會重新建立。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ Styles；按 Generate 時的詢問框。 *Since:* 2.763.0
-- **🖥 你的自訂節點上 Pod + Pod 在做什麼** — bitGen 為風格建立的 Pod 會裝上這臺電腦 ComfyUI 的所有自訂節點包（git 包在 Pod 上按相同版本 clone，其餘的以及私有的打成 zip 上傳；.disabled 的和 Pod 上已有的保持不動），然後重新啟動它的 ComfyUI（ComfyUI-Manager，否則重新啟動 Pod）；⬆ My custom nodes 可對任何 Pod 這樣做；風格缺少的節點來自這臺電腦 ComfyUI 指出的節點包；狀態列上方的一行顯示等待中的渲染的 Pod 在做什麼，無法使用的 Pod 會帶著原因停止渲染；在 Both 下有 Pod（自己的或其類型的）的風格會送到那個 Pod。 *Where:* 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ ⬆ My custom nodes；渲染等待時的狀態列上方。 *Since:* 2.763.1
-- **🖥 Pod 渲染不用這臺電腦的 ComfyUI** — 送到 RunPod Pod 的渲染會立即傳送：不啟動這臺電腦的 ComfyUI，也不拿風格去對照它的模型清單或下拉式清單（檔案會放到 Pod 上）；失敗的渲染的原因（[pod] / [gpu] / 錯誤行）會在日誌的「that one failed」之後顯示。 *Where:* Pod 模式下的 Generate；日誌。 *Since:* 2.763.2
-- **🖥 沒有 Pod 的風格開啟 PODS 停靠窗** — 用沒有 Pod 的風格按 Generate 會開啟 PODS 停靠窗：橫幅說明等待中的渲染，建立表單已在 RunPod 的 ComfyUI CUDA 13 範本上開啟，風格、其類型、bitGen 推薦的 GPU、GPU 數量和磁碟都已填好（都可以改）；你的 Pod 上有 ▶ Use for <风格>；Cancel the render；Start / Stop / Terminate 照舊。Pod 渲染現在能到達 Pod（worker 向 RunPod 代理報出自己的名字 - 不再 403；https 上也有即時步數）；風格在 Pod 上的下載會等到完成，仍缺少的檔案會帶著名字停止渲染。 *Where:* 🖥 PODS（按 Generate 時自動開啟）。 *Since:* 2.763.3
-- **🖥 PODS 停靠窗：Pod 的資料 + 建立前的全部細節** — 每個執行中的 Pod 在名字旁顯示 GPU 負載和 GPU 顯示記憶體的條，開啟後顯示 GPU、顯示記憶體、RAM、CPU 和兩個磁碟（每幾秒更新，來自 Pod 的 Jupyter 或 ComfyUI）；建立表單列出 Pod 的全部內容（範本和鏡像、GPU、價格、雲、磁碟、CUDA 13 主機、埠、風格、會放上去的東西），並跟隨表單變化；停靠窗的風格下拉式清單從提示詞停靠窗的風格開始；RunPod 上已不存在的 Pod 不會自己重建 - 停靠窗會開啟，按舊 Pod 的方式填好；從這臺電腦傳送的檔案不再因 HTTP 400 失敗（不再用隱藏的分段檔名）。 *Where:* 🖥 PODS ▸ 🖥 My pods；Create pod…。 *Since:* 2.763.4
-- **💲 RunPod 停靠窗 + 你自己的停靠窗裡的停靠窗** — 一個獨立的停靠窗，顯示 RunPod 餘額、目前支出和餘額還能用多久、支出上限、Pod 的費用（正在執行、今天、本月、每個 Pod）以及 RunPod 的 GPU 價格（Secure / Community、顯示記憶體、每小時價格、空閒數量；可搜尋、排序）；Basic Settings 的 💲 費用行移到了這裡；用 ▣ New docker… 建立的停靠窗（浮動的或限定在某個停靠窗內的）可以放入 PODS、💲 RunPod、Basic Settings 等停靠視窗和主停靠窗 - 可以放多個；浮動對話方塊始終在所有停靠窗前面（限定的停靠窗不再蓋住它們）；自訂節點一次打包一個檔案，並在日誌裡顯示進度（不含 venv，權重原樣存放，上限 2 GB）。 *Where:* Basic Settings ▸ GPU 和 🖥 PODS 裡的 💲 RunPod；⊞ Docker configs ▸ ▣ New docker…。 *Since:* 2.763.5
-- **📦 Pod 預設 + 一個 Pod 上的多個風格** — Pod 的範本、GPU、GPU 數量、雲、磁碟、類型和風格儲存為 runpod/pods/presets/<名称>.pod；每個預設是一個條目，帶 ▶（已終止的 Pod 會連同所有風格的檔案和你的自訂節點重新建立；GPU 沒有空閒時可選顯示記憶體相同或更多的 GPU）、⏹、🗑（終止 Pod，預設保留）和 ✕（刪除預設）；所有細節都可編輯，可新增 / 移除風格；載入步驟、每小時費用、已用時數和總費用；用沒有 Pod 的風格點 Generate 會開啟一個框，列出你的 Pod 和預設，帶 ＋ <风格>、Create pod… 和 Cancel render；為風格建立的 Pod 會自動儲存為預設，任何 Pod 都可 💾 Save as preset。 *Where:* 🖥 PODS ▸ 📦 Presets；Pod 模式下的 Generate。 *Since:* 2.764.0
-- **Basic Settings ▸ GPU 選 Local 時不顯示遠端內容** — 選 Local 時只顯示 Local · Remote · Both 和「Every job runs on this computer.」：Remote servers / RunPod 選項、🖥 GPU docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都會隱藏，這些停靠窗也會關閉；尚未設定任何遠端時選 Remote 或 Both 會等待並顯示這些選項，直到有可渲染的地方；等待 Pod 的渲染會在 Queue 裡顯示 Pod 正在做什麼（而不是「waiting for the GPU」），傳送到 Pod 的模型會顯示已傳送的 GB、百分比、速度和剩餘時間。 *Where:* Basic Settings ▸ GPU；Queue。 *Since:* 2.764.1
-- **Pod 上只放工作流用到的自訂節點** — Pod 只會得到其風格的工作流用到、而 Pod 上沒有的自訂節點包（從這臺電腦的 ComfyUI 查詢，按相同版本 clone 或上傳）- 為風格建立的 Pod、預設的 ▶ 以及加到 Pod 上的風格都是如此；任何 Pod 都可用 ⬆ Nodes its styles need；日誌會說明每一步（小包顯示 KB、解包、安裝第 n / m 個），Pod 3 分鐘無法彙報時會帶著原因結束這一步。 *Where:* 🖥 PODS ▸ My pods；Presets；Pod 模式下的 Generate。 *Since:* 2.764.2
-- **風格的自訂節點來自它們的 git 地址** — 風格需要的節點包會在 Pod 上 clone（用 git 安裝的按相同提交；其他的從 bitGen 的節點清單、pyproject.toml、ComfyUI-Manager 的清單或 Comfy Registry 查詢，並按其版本標籤 clone；位於更大倉庫裡的包會連結進來）；只有沒有地址或 Pod 無法 clone 的包（私有）才會從你的電腦上傳，日誌會說明原因。 *Where:* Pod 模式 - Generate、預設、⬆ Nodes its styles need。 *Since:* 2.764.3
-- **加入社群時說明為什麼要郵箱驗證碼** — 加入表單（💬 Community 和網站）說明使用或下載 bitGen Studio 不需要成為會員 - 只有在社群裡交流才需要 - 並說明新會員用 6 位驗證碼確認郵箱，是為了防止垃圾註冊並確認加入的是真實的人。 *Where:* 💬 Community ▸ Join；tigerart.com.au ▸ Account。 *Since:* 2.764.4
-- **把停靠窗停靠到另一個停靠窗的上方或下方** — 把浮動停靠窗拖到你的停靠窗（浮動的，或停靠在主列中的 ▣ 停靠窗）裡某個停靠窗的上邊緣或下邊緣附近，兩者就會在那裡上下堆疊；拖到堆疊上時會放到其中停靠窗之間；拖到側邊或中間則像以前一樣並排或作為標籤新增；浮動停靠窗總是顯示在停靠於停靠窗內的停靠窗前面。 *Where:* 你的任何停靠窗（⊞ Docker configs ▸ ▣ New docker…、▣ 停靠窗）。 *Since:* 2.764.5
-- **Pod 下載能完成，受限模型會提示** — Pod 上的下載和節點安裝作為獨立任務執行，不再停在 0%；下載 Hugging Face 檔案前，bitGen 會檢查它是否受限或已不存在，並說明是哪個檔案以及該怎麼做（接受其許可並新增你的 Hugging Face 權杖）；3 分鐘沒有資料的下載或被 Pod 停止的任務也會提示。 *Where:* PODS ▸ ⬇ Models；渲染的 Pod 備註；日誌。 *Since:* 2.764.6
-- **把你的檢查點和 LoRA 從 Civitai 下載到 Pod** — Pod 需要的本機模型會先在 Civitai 上查詢（按其卡片中的版本，否則按唯讀取一次的 SHA-256），然後由 Pod 用你的 API 金鑰從 civitai.com 或 civitai.red 下載完全相同的檔案，代替緩慢的上傳；只有在 Civitai 上沒有或被拒絕時才從本機發送，並說明原因。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* PODS（風格的模型、Override 風格的檢查點、預設）；渲染的 Pod 備註；設定 ▸ General ▸ Civitai。 *Since:* 2.765.0
-- **遠端模型、勾選的 Pod 和每次傳輸的進度列** — runpod/pods/remote_models.json 記錄你的 Pod 使用的模型及各自的下載連結；在遠端模式下，Model manager 和基本設定的 Override 下拉框列出這些模型，而不是本機的模型；勾選 Pod（每個名稱左側的核取方塊，可多選），⇪ 會把模型傳送到所有勾選的 Pod；沒有連結的模型只上傳一次到你的私有 Hugging Face 倉庫（Civitai 上有則用其連結，否則直接傳送到 Pod）；每次傳輸都有自己的進度列。 *Where:* PODS ▸ My pods；Model manager（遠端模式）；基本設定 ▸ Override。 *Since:* 2.766.0
-- **Model manager 中的 Civitai 篩選** — 全部 / 檢查點 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（來自 Civitai 自己的清單，Krea、Flux、Qwen 等系列的全部基礎模型，或只選一個）、排序方式和時間段；更改後立即重新搜尋，篩選條件會被保留。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
-- **本地 / 遠端切換整個應用** — 在基本設定中選擇本地：清單和資料夾篩選顯示本機的模型資料夾，ComfyUI 未執行時會啟動；選擇遠端（Pod）：停止 bitGen 在本機啟動的 ComfyUI，列出遠端模型，資料夾篩選改為顯示它們的模型系列（Krea、Flux、Pony 等）以供篩選。 *Where:* 基本設定 ▸ GPU；模型下拉框；Model manager。 *Since:* 2.766.2
-- **Pod：檔案放在 ComfyUI 能看到的位置，舊版 ComfyUI 會被更新** — 檔案會放到 Pod 的 ComfyUI 讀取的資料夾（包括範本自己的模型資料夾，放錯位置的副本會被移動），缺少新版 ComfyUI 內建節點的 Pod 會在渲染前更新 ComfyUI（git pull、requirements、重新啟動）。 *Where:* 渲染的 Pod 備註；PODS。 *Since:* 2.766.3
-- **遠端模式下的 LLM、Vision LLM 和影片風格** — LLM 和 Vision LLM 各自可在本地、OpenRouter（在基本設定中即可搜尋並選擇模型；推理開啟，每輪都會傳回 reasoning_details）或 RunPod（你的 Pod 用 llama.cpp 運行同一個 GGUF，首次傳送提示時完成設定）上執行；選擇遠端後，所選影片風格的模型會立即送到其 Pod。 *Where:* 基本設定 ▸ GPU；設定 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
-- **遠端選項移到專用停靠窗，提示停靠窗顯示遠端模型清單** — 基本設定 ▸ GPU 只保留本地 / 遠端 / 兩者；遠端選項（伺服器、Pods、LLM / Vision LLM 的選擇、💲 RunPod）移到 🖥 GPU 停靠窗。遠端模式下，提示停靠窗的 LLM 和 Vision 清單顯示 OpenRouter 的免費模型（預設）、你的 Pod 的 GGUF 或 vLLM 端點的模型；選擇後即儲存，不會在本機載入任何模型。 *Where:* 🖥 GPU 停靠窗；提示停靠窗 ▸ LLM / Vision。 *Since:* 2.768.0
-- **新 Pod 的 ComfyUI 自動更新，查詢缺失的檔案** — bitGen 建立的 Pod 在首次載入時會自動更新一次 ComfyUI（渲染會等待它；已是最新的 ComfyUI 保持執行）；下載後 ComfyUI 仍未列出的檔案會在 Pod 上查詢，並連結到它讀取的資料夾，或說明原因。 *Where:* PODS ▸ My pods；在 Pod 上渲染。 *Since:* 2.769.0
-- **bitGen 建立的 Pod 自行完成設定** — bitGen 建立的 Pod 會被記錄為 bitGen 的（Pod 本身也有標記），載入後會更新其 ComfyUI、準備好關聯的風格，如果還沒有正在使用的 Pod，它就成為正在使用的 Pod - 無需按按鈕；⬆ Update ComfyUI 會更新實際正在執行的 ComfyUI。 *Where:* PODS ▸ My pods。 *Since:* 2.769.1
-- **「還沒有 Pod」對話方塊只列出現有的 Pod** — 用沒有 Pod 的風格渲染時，只列出 My pods 中的 Pod（執行中或已停止）；已終止的 Pod 和其 Pod 已不存在的預設不再列出。 *Where:* 詢問由哪個 Pod 渲染風格的對話方塊。 *Since:* 2.769.2
-- **LLM 本地 / 遠端，帶搜尋和 ☰ All 的 OpenRouter 清單** — Remote generation 停靠窗的 LLM 和 Vision LLM 只有本地或遠端（遠端為設定中選擇的平臺，預設 OpenRouter）；設定 ▸ OpenRouter 中「顯示免費」「顯示付費」；提示停靠窗的清單每次顯示 10 個並可搜尋，☰ All 開啟所有 OpenRouter 模型，可篩選、排序並檢視詳情，按 Use 即設定。 *Where:* 🖥 GPU 停靠窗；設定 ▸ Remote generation ▸ 🧠 LLM；提示停靠窗。 *Since:* 2.770.0
-- **💲 Costs 停靠窗** — RunPod 停靠窗變成了 💲 Costs：所有費用在一個列表中 - 這臺電腦的電費和供電費、RunPod（Pod + Serverless）、OpenRouter、Settings ▸ API 的每個服務和遠端 GPU，各佔一行並有合計 - 可選今天、7 天、本月、上月或全部；點擊一行開啟其詳細列表（按天、任務、Pod、模型、呼叫）。 *Where:* 🖥 GPU 停靠窗；PODS；設定 ▸ 一般 ▸ 電費；System stats 的 💲。 *Since:* 2.771.0
-- **📊 Statistics** — 一個對話框，顯示每次生成的啟動時間（啟動或準備 Pod、檔案、節點包、更新或重啟 ComfyUI）、生成時間和合計，每次 Pod 準備及其階段，按位置和按模式的平均值，以及 CSV。 *Where:* 💲 Costs ▸ 📊 Statistics；設定 ▸ 一般 ▸ 電費。 *Since:* 2.771.0
-- **在空白 pod 上安裝 ComfyUI** — bitGen 為風格建立的 pod 從 RunPod 的 PyTorch 範本開始，由 bitGen 自己安裝 ComfyUI：查找 pod 上有什麼，下載最新的 ComfyUI，為它建立沿用 pod 的 PyTorch 的 Python 環境，安裝其 requirements 和 ComfyUI-Manager，啟動並載入 - 每一步都會顯示；重新啟動後只啟動 ComfyUI。任何不含 ComfyUI 的範本都同樣適用。 *Where:* PODS ▸ Create pod…；詢問由哪個 pod 算圖風格的對話框。 *Since:* 2.772.0
-- **pod 正在做什麼，顯示在 pod 上** — 每個 pod 名稱下方顯示現在正在做什麼，帶有動詞（Downloading、Installing、Loading、Finding、Sending、Starting、Updating …）和到目前為止的時間；已完成的工作放在下拉清單中（✓ 完成、– 已存在、✗ 失敗），pod 保持精簡；沒有工作執行時顯示 ✓ Done 或附原因的 ✗ Stopped。 *Where:* PODS ▸ My pods。 *Since:* 2.772.0
-- **左側停靠視窗顯示 pod 的統計** — 遠端模式下 System 統計顯示使用中的 pod：CPU 負載、記憶體、每個 GPU 的負載、溫度和顯示記憶體，以及磁碟；⚡ since start 仍是本機的。 *Where:* 左側停靠視窗的 System。 *Since:* 2.773.0
-- **pod 上只放目前模式的風格** — 圖像模式下只上傳和檢查圖像風格，Video 模式下只處理影片風格；其他風格等到切換到它們的模式。 *Where:* 提示詞停靠視窗的 Generate 模式；PODS ▸ My pods。 *Since:* 2.773.0
-- **在 Pod 上失敗的渲染會重新執行** — 因 Pod 無法使用而停下的渲染（設定中斷、檔案還沒到、缺少節點）會在該 Pod 就緒時自動重新執行：設定完成、ComfyUI 安裝或更新完畢，或你傳送的檔案到達。最多 3 次，從佇列中清除後就不再執行。 *Where:* 佇列（「Pod 就緒後會重新執行」）。 *Since:* 2.774.0
-- **在 Pod 上進行語音合成、語音辨識和歌曲分離** — 建立 Pod 時（或在 My pods 的 Pod 上）勾選 Audio，遠端模式下語音、複製的聲音、轉錄和分軌都會在 Pod 上執行；引擎只在 Pod 上安裝一次，聲音片段只在使用時傳送並保留在那裡；結果回到專案中。 *Where:* PODS ▸ Create pod… ▸ Audio；My pods ▸ 🔊 Audio。 *Since:* 2.775.0
-- **每種類型都可選本地或遠端，並分區顯示** — 遠端生成停靠窗按主題樣式分區：遠端伺服器；生成（影像、影片、音樂）；語言模型（LLM、視覺 LLM）；音訊（語音合成、語音辨識、歌曲分離）——每項在同一欄中選擇本地或遠端，並顯示去向。 *Where:* ☁ 遠端生成停靠窗。 *Since:* 2.776.0
-- **使用模型 / 使用臨時 LoRA** — 開啟“覆蓋風格”時，檢查點／影片模型上方和每個臨時 LoRA 列表上方各有一個勾選框：用風格自帶的模型傳送覆蓋設定，或在任一模型上加上或去掉你的 LoRA。 *Where:* 基本設定。 *Since:* 2.777.0
-- **Pod 檔案重試** — 沒能放到 RunPod Pod 上的檔案（上傳、Pod 的下載失敗或哪裡都找不到）會彈出一個框，說明失敗方式和原因：↻ 重試 或 暫不；Pod 需要的檔案也會按名稱在 Civitai 上查詢，並由 Pod 下載。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 遠端生成（Pod）。 *Since:* 2.778.0
-- **Pod 無法建立的原因** — RunPod 不建立 Pod 時，用對話方塊說明原因：GPU 被佔用就直說、該怎麼做、RunPod 自己的原話和 HTTP 狀態，以及請求的內容（模板、GPU、雲、主機、磁碟）；可 📋 複製。RunPod 自己的模板（如 PyTorch）不再被“先選擇模板”拒絕。 *Where:* PODS ▸ Create pod、📦 Presets ▸ ▶、詢問 Pod 的框。 *Since:* 2.779.0
-- **Pod 都是 bitGen Pod** — PODS 停靠窗不再有模板瀏覽器：🖥 My pods（bitGen 的 Pod；RunPod 賬戶裡的其他 Pod 合成一行並顯示費用，可 ⏹ 停止）、📦 Presets 和 ＋ Create pod——選 GPU、雲、磁碟、風格和音訊，用 bitGen 選定的模板（RunPod 的 PyTorch 模板；bitGen 在上面安裝 ComfyUI、自定義節點和檔案）建立。 *Where:* PODS。 *Since:* 2.780.0
-- **取樣器列表；始終起不來的新 Pod 會重建** — 基本設定的模型下拉框上方有取樣器 / 排程器列表（你的 ComfyUI 提供的；在 Pod 上則是 Pod 的），開啟「覆蓋風格」時用於風格工作流程中的每個取樣器節點（風格自帶 = 保持工作流程原樣）；新 Pod 首次啟動時若 5 分鐘毫無動靜，會被終止並按同樣設定重建（最多兩次）；Jupyter 仍在啟動的 Pod 會被等待。 *Where:* 基本設定、PODS。 *Since:* 2.781.0
-- **Pod 的模型檔案、GPU 顯示記憶體、日誌中的 ComfyUI 用時** — 執行中 Pod 的 📁 Files 按資料夾列出模型檔案及大小和剩餘磁碟，並刪除勾選的檔案（先確認；bitGen 會為該 Pod 忘記它們）；GPU 顯示記憶體：把模型留在顯示卡上（預設——24 GB 以上的顯示卡上不用 Dynamic VRAM 啟動 ComfyUI）或 ComfyUI 的 Dynamic VRAM，⟳ 套用到此 Pod；每次算繪的日誌會顯示 ComfyUI 用時和模型的載入方式。 *Where:* PODS。 *Since:* 2.781.2
-- **在 Pod 上 ⟳ 重新啟動 ComfyUI** — PODS ▸ My pods 中執行的 Pod 可以重新啟動其 ComfyUI（按兩次），保留原有命令和 GPU 顯示記憶體方式，並在它再次回應時告知。 *Where:* PODS。 *Since:* 2.781.3
-- **在 Pod 上執行來自 Hugging Face 的 LLM；一個 Pod 執行全部** — 使用 RunPod Pod 時，提示詞停靠窗的 LLM / Vision 列表只顯示你的列表；＋ From Hugging Face… 列出儲存庫的 GGUF（分卷的算作一個，含視覺投影器），把選中的傳送到 Pod（llama.cpp 在 Pod 上只編譯一次），並詢問是否以其名稱儲存到你的列表；可在你的某個 Pod 上執行，或為它新建一個 Pod；在共用的 Pod 上，算繪會停止 LLM 並釋放顯示記憶體，下一次聊天會卸載 ComfyUI 的模型並重新載入 LLM；可擴大 Pod 的磁碟區。 *Where:* 提示詞停靠窗、PODS。 *Since:* 2.782.0
-- **浮動停靠窗置前；每種類型 Local 或 Remote；RunPod 的選擇移到設定** — 變為浮動的停靠窗會立即置於其他停靠窗之前（包括 ▣ 停靠窗）；🖥 GPU 停靠窗中 Image / Video / Music 的 Local / Remote 決定該類型的模式（全部 Local = 本機模式；混合 = 保留本機的 ComfyUI 並列出兩種模型列表）；RunPod ▸ Pods / Serverless 移到 Settings ▸ Remote generation；Pod 的 ComfyUI 也把文字編碼器和 VAE 留在顯示卡上（--highvram）。 *Where:* 停靠窗、🖥 GPU、Settings ▸ Remote generation。 *Since:* 2.782.1
-- **傳輸到 Pod 時的 ⏹ / ↻** — 每個模型傳輸的進度列（PODS ▸ Transfers）末尾有停止和重新開始圖示：上傳在目前分塊後停止（Pod 上的分塊被刪除），Pod 的下載在目前片段後停止；↻ 從頭重新開始。 *Where:* PODS。 *Since:* 2.782.2
-- **System 停靠窗;狀態列上的 Remote 和 Pods;全部本地 / 全部遠端 / Both** — 左側停靠窗改名為 System;全部在 Pod 上執行時圖表顯示 Pod 的資料,一部分在本機、一部分在 Pod 上時本機的圖表保持不變,Pod 的資料在下方的 ☁ 框中;Basic Settings ▸ GPU 已移除 - 全部本地 / 全部遠端 / Both 位於 🖥 GPU 停靠窗最上方(某一行改回 Local 時全部遠端會切換為 Both);狀態列上的 Remote 開啟該停靠窗,Pods 開啟 PODS,且只在有工作遠端執行時顯示。 *Where:* System 停靠窗、狀態列、🖥 GPU。 *Since:* 2.783.0
-- **Create pod 的 GPU 清單排序:最快 / 最便宜** — PODS ▸ Create pod 的 GPU 清單上方有 GPU 排序(預設最便宜,會記住);每張卡顯示與 RTX 5090 相比的大致速度(bitGen 針對擴散和影片渲染的粗略參考,不是基準測試);換一種排序會選取該順序中第一張有 20 GB 以上的空閒卡。 *Where:* PODS。 *Since:* 2.784.0
-- **Queue 的 Pending 標籤只顯示尚未完成的** — 排隊中和執行中的生成在 Pending;已完成、失敗和取消的在 Done(可用 ↻ 重新生成);Pending 的數量包括排隊中的。 *Where:* Queue。 *Since:* 2.784.1
-- **Runs on:每種類型一個下拉框** — 🖥 GPU 停靠窗最上方有 Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM 的下拉框:Local、RunPod(你的 Pod)、OpenRouter(目前僅 LLM)、LAN 和 Team(可用前顯示為灰色);全部設定可一次更改所有行;單選按鈕已移除;只有某行為 RunPod 時狀態列才顯示 Pods。 *Where:* 🖥 GPU、狀態列。 *Since:* 2.785.0
-- **OpenRouter models;在 OpenRouter 上產生圖片和影片** — 🖥 GPU ▸ OpenRouter models… 依系列列出 OpenRouter 的圖片、影片、LLM 和 Vision LLM 模型及價格(免費或付費);按兩下即可加入你的清單(🗑 移除);你的模型以 openrouter/<model> 出現在 Basic Settings 的 Model 清單和提示詞停靠窗的 LLM / Vision 清單中(其他項目保留);Use model + openrouter/ 模型,或 Runs on ▸ Image / Video = OpenRouter,會在顯示價格的對話框之後在 OpenRouter 上產生圖片或影片;💲 Costs 會統計它們;OpenRouter 不再列出的模型會離開你的清單。 *Where:* 🖥 GPU、Basic Settings、提示詞停靠窗。 *Since:* 2.786.0
-- **清單中的 pod 模型;☐ Remote** — 每個 pod 都儲存一份清單（模型、VAE、文字編碼器、LoRA、它的風格），顯示在 PODS ▸ 🗂 Inventory 中；pod 的模型和 LoRA 以 <pod name>/<file> 的形式出現在 Basic Settings 的清單中，選擇其一即在該 pod 上渲染；在 Use model / Use temporary LoRAs 下勾選 ☐ Remote 並選擇 pod，會把本機的模型或 LoRA 傳送到該 pod（在 Civitai / Hugging Face 上找到則由 pod 下載，否則上傳）並在那裡渲染。*Where:* Basic Settings, PODS. *Since:* 2.787.0
-- **Basic Settings 的清單跟隨所選風格** — 圖片的 Checkpoint 和 LoRA 清單顯示圖片風格的模型系列和類型（image / image edit），影片的 Model 和 LoRA 清單顯示影片風格的（MiniMax H3、LTX、Wan）；無法判斷系列的檔案留在末尾並加標記；有一行說明顯示的內容，並帶 Show all；已選但不符合的檔案保持選取並加以說明。*Where:* Basic Settings. *Since:* 2.788.0
-- **已終止 pod 的檔案保留為 NO_Pod** — 終止 pod 時會詢問：把它的模型和 LoRA 連同 pod 的建立方式以 NO_Pod (<old name>)/<file> 的形式保留在 Basic Settings 的清單中，還是移除；選擇 NO_Pod 檔案會顯示該建立方式並詢問——Make the pod again 會在下一次渲染時按原樣重新建立並放回其檔案（先線上查詢，否則從本機發送）；絕不會未經詢問就重新建立。*Where:* 🖥 PODS, Basic Settings. *Since:* 2.789.0
-- **Model manager：Local、RunPod、OpenRouter + ☁ OpenRouter 分頁** — Models / LoRAs 分頁把本機檔案、pod 上的檔案和你的 OpenRouter 模型一起列出並加標籤；用 ☐ Local ☐ RunPod ☐ OpenRouter ☐ All 篩選；🗑 刪除本機檔案，或把 pod 檔案 / OpenRouter 模型從清單中移除；☁ OpenRouter 分頁按類型和系列列出 OpenRouter 的模型，帶 Free / Paid 和排序，＋ 把模型連同端點加入你的模型。*Where:* 🧩 Model manager. *Since:* 2.790.0
-- **多塊顯示卡：Local - <card>** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ Image / Video / Music 可以選擇每塊顯示卡；選取的顯示卡有專屬的 ComfyUI（--cuda-device、獨立埠和日誌），在該類工作第一次渲染時啟動並保持執行——圖片在一塊顯示卡上，影片在另一塊上。*Where:* 🖥 GPU. *Since:* 2.791.0
-- **你的 OpenRouter 模型顯示為綠、橙、紅** — OpenRouter 對話方塊已移除：🧩 Model manager ▸ ☁ OpenRouter 管理你的清單（🖥 GPU 的按鈕會開啟它）；你的模型在該分頁和 Models 分頁中以深綠（免費）、深橙（付費）或深紅（OpenRouter 已不再列出——保留到你 🗑 為止，不出現在下拉式清單中，渲染被拒絕）的邊框顯示。*Where:* 🧩 Model manager. *Since:* 2.792.0
-- **把 NO_Pod 檔案放到你已有的 Pod 上** — 選擇已終止 Pod 的檔案時，會指出你的哪個 Pod 上已經有它（Start that pod / Use that pod），並列出其他所有 Pod（正在執行的在前），說明每個 Pod 上已有什麼、要傳送什麼（空間不足或模型可能放不進顯示卡時會警告）；只發送 Pod 上沒有的檔案——模型會連同 VAE 和文字編碼器一起轉移——所選項在所有儲存的地方都變成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
-- **LLM 和語音使用專屬顯示卡；卸載到 CPU / 記憶體** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ LLM / Vision LLM / Text to speech / Speech to text / Song separation 也提供 Local - <card>；LLM 會把顯示卡空閒顯示記憶體放得下的層都放到顯示卡上（其餘放在記憶體），語音只在那塊顯示卡上執行。Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit（預設開啟）——關閉後全部留在顯示卡上，放不下的 LLM 會被拒絕並說明原因。*Where:* 🖥 GPU, Settings ▸ General. *Since:* 2.794.0
-- **模型管理器的來源；GPU 停靠欄** — 🧩 Model manager ▸ ＋ Add source 可為任何模型 API 建一個分頁：⚙ Settings 中設定 URL、API 金鑰（加密儲存）和格式（OpenAI 相容、Ollama、Anthropic 風格或你自己的範本），✓ Test 列出它的模型並顯示 bitGen 填好的端點；＋ 把模型加入你的模型，你的 LLM / 視覺模型會以 <source>/<model> 出現在提示詞停靠欄的清單中，通過該來源聊天。☁ Remote generation 停靠欄現在叫 🖥 GPU。*Where:* 🧩 Model manager, the prompt docker, 🖥 GPU. *Since:* 2.795.0
-- **模型管理器的篩選改為下拉式清單** — 位置（All places / This computer / RunPod / OpenRouter，帶數量 - 之前什麼都篩不掉，已修復）、資料夾、Civitai 的類型、OpenRouter 的類型和價格都改成了下拉式清單；標籤欄的工具改為圖示。*Where:* 🧩 Model manager. *Since:* 2.796.0
-- **Basic Settings 的清單按位置篩選** — 圖片 Checkpoint、影片 Model 和每行臨時 LoRA 前面都有 All places / This computer / RunPod / OpenRouter（帶數量），在風格家族篩選之後；☐ Remote 和 Pod 行已移除（Pod 的檔案以 <pod>/<file> 選擇）；Model manager 的 Civitai info 和 Sync 在它的 Civitai 分頁中。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
-- **風格家族清單不再區分圖片 / 編輯** — Basic Settings 的清單顯示風格家族的所有模型，圖片模型和編輯模型都包括（Klein 既能生成也能編輯圖片）。*Where:* Basic Settings. *Since:* 2.798.0
-- **頁面與文件匯出** — 影像編輯器可製作多頁文件（A3 - A6、Letter、Legal、Tabloid、卡片、DL、自訂尺寸；縱向 / 橫向；72 - 300 dpi），每頁都有自己的圖層和復原歷史；Pages 清單可新增、複製、移動、重新命名和刪除頁面；Page setup；所有頁面及其圖層可匯出為 PDF（形狀為路徑，文字為真實文字，每個圖層是一個 PDF 圖層）、.ai、SVG 頁面或用於 .cdr 的包；.bgi 會儲存所有頁面。*Where:* Image editor ▸ File ▸ New Document with Pages…, Window ▸ Pages, File ▸ Export ▸ Document. *Since:* 2.799.0
-- **主頁、頁碼和對頁** — 主頁的圖層（頁首、頁尾、標誌、背景）顯示在每個使用它的頁面下方，可分配給所有 / 奇數 / 偶數頁；文字中的 {page} / {pages} / {name} 自動生成頁碼（1、i、I、a、A，可從任意數字開始），# 新增頁碼；對頁以跨頁顯示並可按跨頁匯出；主頁作為自己的圖層匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Window ▸ Pages. *Since:* 2.800.0
-- **連結文字框和文字繞排** — 段落文字從一個框流向另一個框、從一頁流向另一頁（＋ Frame、＋ Next page、Edit Story、Unlink），在任何框中輸入都會進入文章；文字帶間距繞排形狀（沿輪廓）和圖片；作為真實文字逐行匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
-- **印刷就緒 PDF** — 匯出時帶出血（邊緣內容延伸到裁切線之外）、裁切和套準標記、頁面資訊、TrimBox / BleedBox / MediaBox、CMYK 顏色和圖片（銅版紙 / 非塗布紙 / 新聞紙）以及嵌入字型。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
-- **雷射刀路和 G-code** — Laser 面板：GRBL 或 Marlin 機器設定，每個圖層一個操作（Line 切割 / 劃線、Fill 填充線、Offset fill、Image 光柵雕刻 - 抖動、閾值或灰度），圖片圖層按中心線或輪廓描摹，用 ControlNet 前處理器從圖片生成線稿，帶時間和距離的刀路預覽，G-code 儲存到專案中。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
-- **通過 USB 或 Wi-Fi 傳送到雷射機** — Laser 面板連線機器（USB 序列埠或 Wi-Fi / TCP，由 bitGen 的伺服器保持，桌面應用中也可）：回原點、解鎖、走邊框、開始（先確認）、暫停 / 繼續、始終可用的 STOP、主控台；為自帶雷射軟體的機器匯出 SVG + PNG。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.804.0
-- **用任意風格 + 它的基本設定 Change style** — 影像預覽中 🎨 Change style 旁邊：風格下拉式清單（提示詞的風格或任意影像風格）和 ☐ Basic Settings（該風格上次的步數、CFG、種子和檢查點）；只在顯示圖片時出現。*Where:* 影像預覽。*Since:* 2.805.0
-- **從 Blender 圖層的場景 Generate + 即時 Blender 圖層** — 選取 Blender 圖層後 ✨ Generate 會用它的場景、提示詞和 References 面板的圖片生成圖片（編輯模型，或按場景強度使用圖片風格）；選取該圖層會再次開啟場景，選取其他圖層則關閉。*Where:* 影像編輯器 ▸ 🟧 Blender 分頁 + 提示詞面板。*Since:* 2.806.0
-- **缺少的模型：下載到本機或傳送到 Pod** — 渲染缺少的模型 / LoRA 按名稱在網路上查詢並下載到本機，或（在 RunPod Pod 上）詢問後 ⬆ Send to <pod>。*Where:* Models not found 對話方塊。*Since:* 2.806.0
-- **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 
@@ -467,20 +561,15 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **文字轉語音** — 用複製的聲音朗讀一句話；可選 OpenAudio 或 OmniVoice（600 多種語言，支援聲音設計）。 *Where:* Settings > Audio. *Since:* 2.102.0
 - **Ming-3.0 TTS** — 第二個語音引擎（inclusionAI，0.5B，44.1 kHz）：根據片段及其文字稿複製聲音，也可設計聲音。從 Settings ▸ Add-ons 安裝。 *Where:* Settings > Audio > Speech engine. *Since:* 2.594.0
 - **從提示詞生成語音** — 在語音模式下使用 Generate。 *Where:* Generate 下拉式清單
+- **語音與對白** — 由 OmniVoice 或 Ming-3.0 TTS 朗讀輸入、貼上或由 LLM 編寫的文字，可以只用一個聲音，也可以是一組角色（按 "Name (emotion): line" 為每位說話者指定聲音和情緒），支援聲音標籤和停頓；儲存為 WAV 或 MP3，放入 Audio 素材。 *Where:* SFX 面板 ▸ 🗣 Speech & dialog。 *Since:* 2.621.0
+- **帶情緒的語音** — 中性、開心、悲傷、憤怒、恐懼、厭惡、驚訝：使用 Ming-3.0 TTS 的情緒任務（複製聲音同樣適用）；使用 OmniVoice 時，則通過語速、以該情緒錄製的聲音（"Name.happy"）和聲音標籤來表現。 *Where:* SFX 面板 ▸ 🗣 Speech & dialog。 *Since:* 2.621.0
+- **語音檔案中的後設資料** — 標題、日期和時間、描述、文字以及所用的聲音會寫入 WAV（INFO）或 MP3（ID3）。 *Where:* SFX 面板 ▸ 🗣 Read & save。 *Since:* 2.621.0
 
 ### 轉錄與歌詞
 
 - **語音轉文字** — 從任意聲音或影片中轉錄語音或提取帶時間軸的歌詞，儲存為 .txt、.srt 和 .lrc。 *Where:* 素材托盤. *Since:* 2.38.0
 - **本地轉錄** — faster-whisper 在本機執行，每個檔案只轉錄一次。 *Where:* Settings > Audio
 - **Bark 3.0 語音轉文字** — Underdog 的 Bark 3.0（163 MB，僅支援英語），用於普通文字稿、聲音複製文字稿、手機遙控和 🎙 語音聊天；歌詞、字幕及其他需要時間軸的工作仍使用 faster-whisper。從 Settings ▸ Add-ons 安裝。 *Where:* Settings > Audio > Speech-to-text engine. *Since:* 2.594.0
-- **WeVisOne-VL 視覺模型** — 騰訊的 WeVisOne-VL（基於 Qwen3-VL）作為提示詞面板的視覺模型：它能讀取圖片中的文字、計數和查詢物體，併為 LLM 描述圖片內容。可在下拉式清單中選擇 4B 或 2B；模型會下載到你的視覺模型資料夾。 *Where:* Settings > Add-ons > WeVisOne-VL. *Since:* 2.595.0
-- **⟳ 更新 llama.cpp** — 檢視已安裝的 llama.cpp 版本以及是否有更新版本，並就地更新（LLM 和視覺伺服器會先停止；模型和設定保持不變）；進度直接顯示在原處。 *Where:* Settings > LLM. *Since:* 2.596.0
-- **MP4 · 社交媒體匯出** — 生成 Facebook、Instagram 和 TikTok 可直接接受的檔案：H.264 High 8-bit、AAC 48 kHz 立體聲、恆定幀率、faststart、短邊最大 1080、無時間碼軌道；編碼後進行檢查（逐項顯示是否合格，9:16 影片超過 90 s 時另有提示）。社交媒體套裝可一次生成 9:16 Reels、4:5 資訊流、1:1 和 16:9。 *Where:* 時間軸的 📤 Export. *Since:* 2.597.0
-- **Basic Settings 的 Format 中的 📱 社交媒體選項** — Reels / Stories 9:16、Facebook 資訊流 4:5、Square 1:1、Landscape 16:9 或渲染本身的比例：Aspect 隨之改變，完成的 MP4 在進入相簿之前會處理成適合 Facebook / Instagram / TikTok 的格式（使用 Export 預設的設定並經過檢查）。 *Where:* Basic Settings > Format（以及音樂影片的 Format）. *Since:* 2.600.0
-- **種子：🎲 隨機 / 📌 固定** — 種子旁的一個開關：Random = 每次渲染使用新種子，Fixed = 每次都使用旁邊的數字（輸入數字或用 ♻ 呼叫上次使用的種子會切換為 Fixed）。Basic Settings（影片和影像）以及每個風格（影像、影片、音樂）中都有——風格總能以自己的種子渲染。 *Where:* Basic Settings，Settings > Image / Video / Music styles. *Since:* 2.598.0
-- **專案重設鎖定螢幕** — 專案重設期間，整個視窗會被遮罩覆蓋，顯示 "Resetting Project..."，帶有旋轉圓環、跳動的圓點、目前正在進行的操作和已用秒數；遮罩後面的任何內容都無法點選，並且會一直保持到重新載入完成、空專案開啟為止（"✓ Project reset"）。 *Where:* ↺ Reset project. *Since:* 2.599.0
-- **模型管理器能找到 ComfyUI 已有的內容** — 它會詢問正在執行的 ComfyUI 其模型資料夾在哪裡、下拉式清單裡有哪些內容，因此即使模型和 LoRA 不在 Settings 中設定的 ComfyUI 資料夾下（例如桌面版自己的資料夾，或 ComfyUI 命令列指定的 yaml），也能顯示出來。 *Where:* 🧩 Models. *Since:* 2.598.0
-- **按鈕顯示正在進行的操作** — Install、Update、Start（隨後是 Loading the model）、Stop、Rescan、Scan folder 和 Save 會變成旋轉的 "…ing" 並顯示秒數，然後顯示 ✓ 或 ✗ 及原因。 *Where:* Settings > LLM 和 Save. *Since:* 2.596.0
 
 ### 卡拉 OK
 
@@ -525,6 +614,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **微移片段** — 方向鍵按幀移動片段，按住 Shift 按秒移動。 *Where:* Timeline settings. *Since:* 2.376.0
 - **命名的時間軸** — 一個專案可包含多條時間軸；可切換、儲存和另存新檔。 *Where:* 時間軸工具列. *Since:* 2.107.0
 - **轉場** — 59 種轉場，在入點和出點處以其形狀繪製。 *Where:* 每個圖層. *Since:* 2.415.0
+- **單個圖層上的範圍** — 把位置標記放在起點，在圖層上 Shift+點選終點：即得到該圖層上的範圍；✂ Cut 只從該圖層中刪除整個範圍，↶ / Ctrl+Z 可復原。 *Where:* 時間軸的圖層。 *Since:* 2.603.0
 
 ### 關鍵影格
 
@@ -551,17 +641,11 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **資料驅動動畫** — 將 CSV 或 JSON 匯入為帶目前行的資料集；文字中使用 {{set.column}}，表示式中使用 data()，還可將某一列逐行設為任意屬性的關鍵影格。 *Where:* 圖層 Properties 中的 📋 Data & fields. *Since:* 2.511.0
 - **公開的範本欄位** — 將圖層的顏色、不透明度、位置、縮放或旋轉標記為欄位；在一個清單中編輯所有欄位，範本拖入時會提供這些欄位。 *Where:* 圖層 Properties 中的 📋 Template fields，🧩 Templates. *Since:* 2.511.0
 - **Lottie (JSON) 匯出** — 將圖片和文字圖層匯出為適用於網頁和應用的 Lottie 動畫：移動、縮放、旋轉和淡入淡出匯出為帶緩動的真正動畫圖層，效果圖層匯出為幀；已用 lottie-web 驗證。 *Where:* 📤 Export → ⤓ Lottie (JSON). *Since:* 2.512.0
-- **載入 UE 專案** — 選擇一個 Unreal 專案資料夾，bitGen 會放入（或更新）bitGen Bridge 外掛，啟用所需外掛，並以該專案重新啟動 Unreal。 *Where:* 選單列中的 🎮. *Since:* 2.513.0
 - **時間軸的畫面尺寸** — 寬 × 高、尺寸預設（從 4K 到直向和方形），以及畫布和合成共用的鎖定長寬比；V1 會適配到畫面內並置中。 *Where:* Timeline 面板頂部的欄. *Since:* 2.513.0
 - **在整個鏡頭中摳出主體** — 點選主體（或框選），它就會在整個片段中被追蹤（SAM 2、AI 遮罩或內建方法），可最佳化邊緣，結果為一個透明影片圖層。 *Where:* 影片片段 Properties 中的 🧍 Cut out. *Since:* 2.515.0
 - **影片內容識別填充** — 從每個影格中移除摳出的主體或遮罩區域，並用周圍幀（+ 一張參考幀）填充。 *Where:* 影片片段 Properties 中的 🩹 Remove. *Since:* 2.515.0
 - **3D 攝影機追蹤器** — 解算相機和場景中的點，選擇點並將圖層平放、豎立或朝向相機放置；3D 相機跟隨解算結果（包括滾轉）。 *Where:* 影片片段 Properties 中的 📷 3D camera track. *Since:* 2.515.0
 - **任意設定均可設關鍵影格** — 每個顏色、效果、遮罩、文字和時間設定旁的 ◇ 可在播放頭處為其設關鍵影格（之後修改即會自動設關鍵影格）；Graph Editor 會顯示這些關鍵影格，合成結果一致。 *Where:* 片段 Properties 和 🎨 Colour 對話方塊中的 ◇. *Since:* 2.516.0
-- **主題編輯模式：調整大小、移動、隱藏、重新命名** — 拖曳手柄調整元素大小，拖曳元素移動位置，隱藏元素或修改其文字；每次修改都會儲存在 themes/<name>.tmp 中，退出編輯模式時可選擇 Save theme、Save theme as…、Reset theme、Not now 或 Cancel。 *Where:* 頂部欄中的 🖌. *Since:* 2.514.0
-- **主題編輯模式：每個按鈕及其文字** — 雙擊任意文字（按鈕、面板標題、分頁、標籤、標題、提示）即可就地修改；可重新命名下拉式清單的選項；可修改佔位文字和工具提示；浮動工具面板的編輯方式與面板相同；Shift+點選（2.682.0）或 Alt+點選可執行按鈕的操作，並在不退出該模式的情況下開啟分割槽 / 分頁 / 選單。 *Where:* 頂部欄中的 🖌. *Since:* 2.623.0
-- **僅在 Expert 模式下隱藏** — 主題可以只在開啟 Expert 模式時隱藏某個元素；Basic 模式下仍會顯示。 *Where:* 主題編輯模式 > Style 面板 > Hide. *Since:* 2.544.0
-- **對話方塊的主題編輯模式** — Ctrl+Shift+Alt+E 也可為開啟的對話方塊（Settings 等）設定樣式；Ctrl+S 儲存主題並退出。 *Where:* 任意位置. *Since:* 2.515.0
-- **摺疊面板** — 側邊面板可摺疊為細長的標題列；影像編輯器的面板組可摺疊為其分頁，並可用 ✕ 關閉；View ▸ Dockers 可顯示或隱藏每個面板。 *Where:* 面板標題欄中的 ▾；影像編輯器的 View 選單. *Since:* 2.514.0
 - **運動追蹤** — 在片段中以亞像素精度追蹤一個點、兩個點（縮放和旋轉）、四個角點或一個平面（平面追蹤），然後將其應用到圖層的位置，或將圖層釘入其中。 *Where:* 影片片段 Properties 中的 🎯 Track. *Since:* 2.499.0
 - **邊角定位** — 將圖層繪製到四個角點中，角點可來自追蹤或手動拖曳；合成結果與畫布一致。 *Where:* 圖層 Properties 中的 ▢ Corner pin. *Since:* 2.499.0
 - **貝塞爾遮罩** — 每個圖層可用鋼筆繪製多個遮罩（角點和曲線），支援相加、相減、交集和差集，以及羽化、擴充功能、不透明度、反轉和動畫路徑；適用於圖片、文字、形狀和影片。 *Where:* ✒ Mask Pen（Shift+M）以及圖層 Properties 中的 ✒ Masks. *Since:* 2.498.0
@@ -593,6 +677,14 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **J / K / L 穿梭播放** — 以 2x、4x、8x 倒放或正放；逐幀步進。 *Where:* 時間軸面板. *Since:* 2.411.0
 - **編輯點與首尾** — 跳到上一個或下一個編輯點、開頭或結尾。 *Where:* 方向鍵、Home、End. *Since:* 2.410.0
 - **在倒放和變速片段上編輯** — 編輯工具和分割在變速片段上同樣精確到幀。 *Where:* 時間軸. *Since:* 2.413.0
+- **時間軸復原 / 重做** — 對時間軸的每次編輯都是一個步驟：使用其選單列中的 ↶ / ↷，或在圖層上按 Ctrl+Z / Ctrl+Shift+Z。 *Where:* 時間軸。 *Since:* 2.603.0
+- **▯ 幀：點選一幀，按 Del 刪除** — 一種時間軸工具，用於選擇某個圖層上的單幀（點選，拖曳選多幀，Shift+點選，← / →）；按 Del / ⌫ 將其從該圖層中剪掉併合攏空隙，↶ 可恢復。 *Where:* 時間軸的選單列 ▸ ▯（或在圖層上按 F）. *Since:* 2.611.0
+- **剪下後的片段仍是一個片段** — 對跨越片段的幀執行 ✂ Cut / Del，會把前後兩部分連線成一個連續片段（影片 / 聲音會生成一個幀精確的 "-join" 檔案；圖片則只是變短）；一次 ↶ 即可復原。預覽會提前一秒載入下一個片段，因此剪下處絕不會閃黑。 *Where:* 時間軸 ▸ ✂ Cut（開啟波紋）. *Since:* 2.612.0
+- **播放時標記 ▼ 範圍** — 預覽播放時按一下 Ctrl 標記範圍的開始，再按一下標記結束，可在高亮的圖層上標記任意多個，每個範圍顏色不同；拖曳 ▼ 可移動它（預覽會顯示該幀）。 *Where:* 時間軸（Ctrl），時間標尺中的 ▼. *Since:* 2.613.0
+- **選擇範圍，用 ✂ Cut 剪掉** — 點選 ▼ 選擇其範圍，Ctrl / Shift + 點選可選擇更多；✂ Cut（以及 ⏩ / ✕）作用於所選範圍，未選擇時作用於全部範圍。 *Where:* 時間軸標尺的 ▼ + 選單列的 ▼ 組. *Since:* 2.614.0
+- **✂ 剪掉所有範圍 / ⏩ 加速範圍** — 一次剪掉所有已標記的範圍（被剪多次的片段仍是一個片段），或將每個範圍以 2× - 10× 的速度播放，快進渲染畫面。 *Where:* 時間軸的選單列 ▸ ▼ 組. *Since:* 2.613.0
+- **✂ 到新圖層** — 一個核取方塊，勾選後剪下或 Ctrl+K 分割之後的部分會放到正上方的新圖層上。 *Where:* 時間軸的選單列. *Since:* 2.612.0
+- **✨ 自動轉場；🔇 影片聲音** — 在不同圖層的影片片段之間的每個剪下點新增 N 幀轉場，不移動任何片段（與歌曲的口型同步保持精確——前一個片段會延續到下一個片段之下）；一個按鈕即可將所有影片圖層靜音 / 取消靜音，只播放完整的歌曲。 *Where:* 時間軸工具列 ▸ ✨ Auto transition [frames] [type]、🔊 Video sound。 *Since:* 2.572.0
 
 ### 標記與時間碼
 
@@ -662,6 +754,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **渲染預覽** — 合成一次，即可在已渲染的區段以全速播放與成片完全一致的畫面。 *Where:* Render 按鈕. *Since:* 2.418.0
 - **遲到幀計數與播放解析度** — 播放時使用全尺寸、二分之一或四分之一尺寸。 *Where:* 播放按鈕旁邊. *Since:* 2.418.0
 - **GPU 合成器** — 播放時在顯示卡上合成圖層。 *Where:* GPU 開關. *Since:* 2.420.0
+- **懸停時間 + 播放速度** — 指標所在位置的時間顯示在時間軸上方的小框中；預覽可以 0.125× - 8× 的速度播放。 *Where:* 時間軸；預覽下方的速度清單. *Since:* 2.613.0
 
 ### 時間軸中的 AI
 
@@ -669,6 +762,9 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **延長** — 從片段的最後一個影格接續生成更多秒數。 *Where:* AI 選單. *Since:* 2.420.0
 - **B-roll 補充鏡頭** — 填充 V1 上的空白區段，或在某個範圍上插入切出鏡頭。 *Where:* AI 選單. *Since:* 2.420.0
 - **踩點剪輯** — 找出歌曲的節拍，然後在節拍處放置標記或剪下片段。 *Where:* AI 選單. *Since:* 2.420.0
+- **🧬 變形** — 在兩個圖層之間讓一個角色變成另一個角色：寫出兩個角色，選擇這兩個圖層；提示詞會自動寫好，首幀 / 尾幀會自動擷取，由影片模型渲染，結果放在兩者之間的 🧬 Morph 圖層上，圖層 2 會後移到它之後開始。 *Where:* 時間軸的圖層面板 ▸ 🧬 Morph 分頁. *Since:* 2.610.0
+- **✨ 自動剪輯第 2 部分：聲音、閃白、變速、先看一遍** — 🔊 bitGen 自己的音效（在專案中由 ffmpeg 生成）與畫面對齊：在推移 / 變焦轉場上達到峰值的呼嘯聲、甩鏡的嗖聲、急推變焦的衝擊聲、閃白切 / 分步變焦 / 定格的打擊聲、標題卡的滴答聲、上升音 → 衝擊聲 → 閃光聲的收尾；絕不像機關槍；閃白切轉場（硬切上的白色畫面）；影片的定格後追上和慢動作（時間重對映）；👁 視覺模型檢視每張圖片 / 每段影片，LLM 按內容挑選鏡頭；提示詞面板中的 "auto edit …"。 *Where:* Timeline ▸ ✨、提示詞面板。 *Since:* 2.895.0
+- **📇 更多名片列印方式** — 檔案 ▸ 📇 名片拼版… 可選版式：🖨 家用印表機拼版（A4 / Letter；出血取自卡片自身邊緣）、🏷 你的標籤 / 帶齒孔的卡紙（輸入尺寸並按名稱儲存 - 不使用廠商範本；尺寸不同的卡片會縮放放入）、🏭 印刷廠拼版（SRA3、SRA4、A3、12 × 18、13 × 19 英寸、小報或自訂；每張卡片都有出血、套準色裁切線、套準標記、作業資訊行）或 ✂ 每頁一張（設定成品框和出血框）；📋 清單每行一張（團隊成員的名字 - 每一列替換卡片上的文字，根據企業資訊或該行的樣子推測；可設份數）；多頁文件的每一頁可作為不同的卡片。*Where:* 影像編輯器 ▸ 檔案 ▸ 📇 名片拼版…。*Since:* 2.896.0
 
 ### 路徑圖層
 
@@ -691,6 +787,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **3D 工具列** — 控制項、吸附、檢視、旋轉、重設、材質、燈光、關鍵影格和烘焙。 *Where:* 畫布頂部. *Since:* 2.386.0
 - **為合成而烘焙** — 3D 圖層會自動烘焙為透明影片。 *Where:* Compile
 - **用 Blender 渲染** — 合成時由 Blender 渲染 3D 圖層。 *Where:* 3D 圖層的 Properties. *Since:* 2.385.0
+- **🕺 從影片取得動作（FlowHMR）** — 把影片中的人物捕捉為 3D 動作：帶動畫的骨架（.fbx）和 SMPL-H（.npz）存入專案的 models3d，可用於時間軸的 3D 圖層、Blender、Daz 和 Unreal；支援移動或固定鏡頭。僅限非商業用途（SMPL-H 人體模型以及 Meta 的 SAM 3D Body / VGGT-Omega 授權）。 *Where:* 預覽列的 🕺 動作，以及 Settings > Add-ons > FlowHMR 動作捕捉。 *Since:* 2.730.0
+- **✨ 在設定表標籤裡生成角色圖片** — 描述角色、選一個影像風格並點 ✨ Generate：圖片會在設定表的畫布中開啟，可直接拖框並生成設定表；勾選 Override style 時用這個風格自己的 Basic Settings 渲染。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet，在 📂 Load picture 下面。*Since:* 2.871.0
 
 ### 標尺、參考線與網格
 
@@ -704,19 +802,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **文字效果預設** — 輸入時即時繪製的多層 3D 文字效果；可從 PSD 匯入你自己的效果。 *Where:* 文字圖層的 Properties. *Since:* 2.411.0
 - **動畫文字、路徑文字和 3D 文字上的預設** — 帶預設的文字在使用 ✨ Text Animators 和 〰 On a path 時保留預設；3D 文字將預設用作正面（側面使用其顏色）。 *Where:* 文字的 Properties，3D 文字的 Properties. *Since:* 2.607.0
 - **使用你的預設新建文字** — T 工具新建的文字預設使用上次選擇的預設；未選取任何內容時 = Properties ▸ New text ▸ Preset。 *Where:* 時間軸. *Since:* 2.607.0
-- **🧬 變形** — 在兩個圖層之間讓一個角色變成另一個角色：寫出兩個角色，選擇這兩個圖層；提示詞會自動寫好，首幀 / 尾幀會自動擷取，由影片模型渲染，結果放在兩者之間的 🧬 Morph 圖層上，圖層 2 會後移到它之後開始。 *Where:* 時間軸的圖層面板 ▸ 🧬 Morph 分頁. *Since:* 2.610.0
-- **▯ 幀：點選一幀，按 Del 刪除** — 一種時間軸工具，用於選擇某個圖層上的單幀（點選，拖曳選多幀，Shift+點選，← / →）；按 Del / ⌫ 將其從該圖層中剪掉併合攏空隙，↶ 可恢復。 *Where:* 時間軸的選單列 ▸ ▯（或在圖層上按 F）. *Since:* 2.611.0
-- **剪下後的片段仍是一個片段** — 對跨越片段的幀執行 ✂ Cut / Del，會把前後兩部分連線成一個連續片段（影片 / 聲音會生成一個幀精確的 "-join" 檔案；圖片則只是變短）；一次 ↶ 即可復原。預覽會提前一秒載入下一個片段，因此剪下處絕不會閃黑。 *Where:* 時間軸 ▸ ✂ Cut（開啟波紋）. *Since:* 2.612.0
-- **播放時標記 ▼ 範圍** — 預覽播放時按一下 Ctrl 標記範圍的開始，再按一下標記結束，可在高亮的圖層上標記任意多個，每個範圍顏色不同；拖曳 ▼ 可移動它（預覽會顯示該幀）。 *Where:* 時間軸（Ctrl），時間標尺中的 ▼. *Since:* 2.613.0
-- **選擇範圍，用 ✂ Cut 剪掉** — 點選 ▼ 選擇其範圍，Ctrl / Shift + 點選可選擇更多；✂ Cut（以及 ⏩ / ✕）作用於所選範圍，未選擇時作用於全部範圍。 *Where:* 時間軸標尺的 ▼ + 選單列的 ▼ 組. *Since:* 2.614.0
-- **每個風格獨立的 Basic Settings** — 每個風格都會保留你上次與它一起使用的 Basic Settings（misc/basic_settings.tmp）：切換風格時，先儲存所離開風格的設定，再恢復新風格的設定；應用啟動時會開啟上次使用的風格及其設定。影片風格儲存除影像設定組以外的所有設定；影像風格儲存影像設定組。 *Where:* 任意風格清單（提示詞面板、Basic Settings 的風格卡片）. *Since:* 2.615.0
-- **彩色安裝過程，絕不看起來卡住** — 在安裝視窗的步驟、日誌和下載中，以及安裝腳本中，已完成顯示為綠色，正在安裝顯示為淺綠色（帶用時），警告為橙色，錯誤為紅色；長時間無輸出的步驟會說明它仍在執行、為何可能耗時較長，以及它並沒有卡住。 *Where:* 安裝視窗，install_all，start.bat. *Since:* 2.634.0
-- **一個檔案完成安裝** — install_all.bat / install_all.sh / install_all.command：缺少 Git 和 Node.js 時自動安裝（Windows：還有 Python），將倉庫複製到該檔案旁邊，然後啟動工作室（首次啟動時安裝其餘部分）。 *Where:* 倉庫根目錄——只需下載該檔案. *Since:* 2.616.0
 - **從 zip 匯入文字效果** — 一個包含 PSD 文字效果的 zip（效果包）可一次性將其中每個效果安裝為預設，並附帶其中的字型；也可以一次選擇多個 PSD。 *Where:* 文字圖層的 Properties / 影像編輯器的 Type 工具 ▸ Presets ▾ ＋ Import PSD text effects or a zip…. *Since:* 2.617.0
-- **隱藏 / 刪除橋接圖層時關閉其橋接** — 隱藏或刪除 Blender、3D（Daz / Blender）或 Unreal 圖層時，會關閉其在影像編輯器和時間軸中的場景 / 即時檢視（Blender 程序結束，Unreal View 停止，Daz 中等待執行的命令被丟棄）。 *Where:* 影像編輯器的 Layers（👁 / 刪除），時間軸的圖層. *Since:* 2.618.0
-- **✂ 剪掉所有範圍 / ⏩ 加速範圍** — 一次剪掉所有已標記的範圍（被剪多次的片段仍是一個片段），或將每個範圍以 2× - 10× 的速度播放，快進渲染畫面。 *Where:* 時間軸的選單列 ▸ ▼ 組. *Since:* 2.613.0
-- **懸停時間 + 播放速度** — 指標所在位置的時間顯示在時間軸上方的小框中；預覽可以 0.125× - 8× 的速度播放。 *Where:* 時間軸；預覽下方的速度清單. *Since:* 2.613.0
-- **✂ 到新圖層** — 一個核取方塊，勾選後剪下或 Ctrl+K 分割之後的部分會放到正上方的新圖層上。 *Where:* 時間軸的選單列. *Since:* 2.612.0
 - **形狀圖層中的文字** — 文字拉伸以填滿形狀圖層的輪廓，或在其中排布（Fit），放置在形狀上；跟隨動畫形狀變化。 *Where:* 文字的 Properties ▸ 🔤 In a shape. *Since:* 2.608.0
 - **🅰 形狀圖層的文字填充** — 用一行行文字填充形狀（字型、字號、顏色、角度）。 *Where:* 形狀圖層的 Properties ▸ ◆ Shape. *Since:* 2.608.0
 - **任意圖層上的變形預設** — 16 種預設（Arc … Twist、Wedge），以可編輯的 ⌗ 網格形式提供，可用 📌 拖曳。 *Where:* Properties ▸ 📌 Warp ▸ ⌇ Preset. *Since:* 2.608.0
@@ -750,6 +836,16 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **屬性欄** — 所選圖層的 X、Y、W 和 H，帶比例鎖定；矩形的圓角半徑；向量形狀的輪廓寬度和線型。 *Where:* 選項欄下方。 *Since:* 2.439.0
 - **歷史記錄** — 最近 80 步；點選其中一步即可後退或前進到該步。 *Where:* History 面板
 - **編輯器設定** — AI 結果、上下文、羽化、百萬像素、Apply 的作用、外觀、標尺、面板和選項欄。 *Where:* 設定按鈕，或 Edit > Preferences（Ctrl+,）。 *Since:* 2.444.0
+- **Shift+右鍵點選退出 全螢幕模式** — 在影像編輯器僅顯示畫布的 全螢幕模式中，在任意位置 Shift+右鍵點選即可退出（不彈出右鍵選單）；Ctrl+Esc / Ctrl+Shift+F 仍然有效。 *Where:* 影像編輯器 ▸ 🎨 Full Screen。 *Since:* 2.637.0
+- **🎨 全螢幕模式（影像編輯器）** — 只顯示畫布，全螢幕且無邊框；Alt+P 在指標處開啟調色盤（方形色域 + 色相條、色塊、最近使用），Alt+G 開啟 Layers 面板 + ⏳ Pending，Ctrl+P 開啟提示詞面板（從目前所在圖層生成），Ctrl+B 開啟畫筆（預設、大小、不透明度、流量），Ctrl+Esc（或 Ctrl+Shift+F）返回。 *Where:* Image editor ▸ 🎨 Full Screen（緊接在選單之後）/ View ▸ Full Screen。 *Since:* 2.588.0 (2.590.0 起命名為 Full Screen)
+- **影像編輯器的每個分頁都是面板** — 將分頁拖出 = 浮動；拖到另一個面板上 = 成為其分頁；拖到面板欄邊緣 = 在該處成為獨立面板；⠿ 可拖曳整個面板；佈局會被保留；Window ▸ Show All Dockers / Reset Docker Tabs。 *Where:* 影像編輯器的各面板。 *Since:* 2.590.0
+- **形狀模式、修剪、鏡像、偏移** — 形狀工具的形狀按鈕選擇模式：點選 = 新增，Shift+點選 = 選取的形狀變成它（下一個形狀替換它），Ctrl+點選 = 新增到它，Alt+點選 = 從它中減去，Ctrl+Alt+點選 = 相交；✂ 修剪剪掉輪廓上位於其他輪廓交點之間的一段（其餘首尾相連）；⇋ 翻轉 / 鏡像複製；⧈ 偏移擴大或縮小輪廓（圓角）；拿著形狀工具時也在右鍵選單中。*Where:* 影像編輯器 ▸ 形狀工具 (U)。*Since:* 2.810.0
+- **⟷ 縮放到頁面寬度** — 頁面寬度填滿影像編輯器的畫布（為標尺留出空間），檢視頂部的那一行保持不動；在縮放工具的設定、頂部條、檢視 ▸ 頁面寬度、Shift+Ctrl+0 和 WP 檢視的佈局功能區中。*Where:* 影像編輯器。*Since:* 2.845.0
+- **📄 頁面屬性** — 頁面的範本（內建的文件、小冊子、傳單、海報、名片、摺頁、桌面 / 平板 / 手機網頁、社交帖子、幻燈片，或在所有專案中可用的你自己的範本）、以 mm 或 px 計的尺寸、方向、dpi，以及以 mm 計的頁邊距（顯示為不列印的虛線，可讓 WP 圖層適應頁邊距），可用於此頁或所有頁面。*Where:* 影像編輯器（檔案、右鍵、WP / 網頁功能區）。*Since:* 2.846.0
+- **📅 網站預約日曆** — 把 📅 日曆拖到網頁上，它的資料表會立即在專案的 MariaDB 中建立。設定包括每次預約的時長、每個時段人數、可提前天數、提前通知、帶休息的營業時間和時區，每種物件都可單獨設定樣式（月份名稱、星期、日期、今天、可預約 / 約滿 / 過去的日期、時段、預約按鈕）。PHP + MySQL 網站讓訪客檢視空閒時段並預約（有防偽造提交的檢查，絕不重複預約）；📅 預約清單顯示訪客的預約。*Where:* 影像編輯器的網頁檢視 + 🌐 建網站。*Since:* 2.846.0
+- **⟷ 不含頁邊距的頁寬** — ⟷ 頁寬旁邊的 ▯ 開關：關 = 頁邊距之間的區域填滿檢視。*Where:* 影像編輯器（頂部工具條、縮放工具選項、檢視選單）。*Since:* 2.847.0
+- **▦ 可選擇、刪除、調整大小和設定樣式的表格** — ⊞ 選擇整個表格；Del 刪除（Ctrl+Z 恢復），◢ 調整大小，🎨 表格樣式設定寬度、對齊、邊框、內邊距、顏色和條紋行；每行每列都可拖曳邊緣調整大小。*Where:* 影像編輯器中的 WP 圖層。*Since:* 2.847.0
+- **✨ 用 AI 建立** — LLM 按你的描述撰寫文件、故事、傳單、三折宣傳冊、名片、網站或發票，bitGen 在真實頁面（A4、A4 橫向、90 × 55 mm、網頁）上排版成可編輯的圖層，需要時還用你的影像風格生成圖片；絕不編造你的名稱、價格和聯絡方式。*Where:* 檔案 ▸ ✨ 用 AI 建立…、工具列的 ✨、提示詞停靠窗。*Since:* 2.849.0
 
 ### 圖層
 
@@ -767,74 +863,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **同時操作多個圖層** — Shift+點選選取兩個圖層之間的所有圖層，Ctrl+點選新增或移除單個圖層；Move 工具可一起移動它們，Del 將它們全部刪除。 *Where:* Layers 面板。 *Since:* 2.474.0
 - **將選取的圖層編組和刪除** — 選取多個圖層時，Ctrl+G 將它們放入一個組（對單個組按 Ctrl+G 則取消編組），🗑 按鈕將它們全部刪除。 *Where:* Layers 面板。 *Since:* 2.547.0
 - **拖入為圖層或新文件** — 將圖片拖放到已開啟的畫布上時會詢問：作為圖層新增，還是作為新文件開啟。 *Where:* 影像編輯器的畫布。 *Since:* 2.549.0
-- **生成 = 新圖層** — 在影像編輯模式下，生成的圖片總是作為新圖層匯入，並使用提示詞面板中選定的風格（Generate 會列出 Krea 2 及其他所有風格）。 *Where:* 影像編輯模式下的提示詞面板。 *Since:* 2.549.0
-- **無縫填充** — 選取範圍通過提示詞面板所選風格的專用工作流圖（編碼後的圖片 + 雜訊遮罩 + 差分擴散）進行填充，融合效果與 Krita AI 外掛相同；Krea 2、Klein 等風格現在都能用於填充。 *Where:* 有選取範圍時的影像編輯器，Generate / Refine。 *Since:* 2.550.0
 - **帶斜切的變換；粘貼後移動** — Ctrl+T（或 Move 工具選項欄上的 ⤡ Transform）可縮放、旋轉和斜切（Ctrl + 拖曳邊緣）；Paste 會取消選取範圍，以便 Move 工具移動貼上進來的圖層。 *Where:* 影像編輯器。 *Since:* 2.550.0
 - **用中間控點斜切** — Free Transform 的中間控點可斜切圖層（顯示斜切游標），按住 Shift / Alt 拖曳中間控點則為拉伸。 *Where:* 影像編輯器，Ctrl+T。 *Since:* 2.551.0
-- **像 Krita AI 外掛一樣填充** — 選取範圍周圍提供更多上下文，選取範圍先由其邊緣內容預填充，使用柔和遮罩，對未針對區域性重繪訓練的模型以 0.9 為起始值。 *Where:* 有選取範圍時的影像編輯器。 *Since:* 2.551.0
-- **採用 Krita 外掛自身程式碼的填充與編輯** — Generate 以全強度執行，小區域放大後渲染，遮罩大小隨選取範圍而定，越過邊緣進行融合併匹配顏色，在選取範圍內 Edit 只改動選取範圍。 *Where:* 有選取範圍時的影像編輯器。 *Since:* 2.552.0
-- **用編輯模型填充** — 在選取範圍中通過編輯模型執行 Generate / Remove / New background（選取範圍塗成綠色 + Krita 的指令），使新內容與場景融為一體；▾ Edit 可限定在選取範圍內，或限定在圖層自身的像素內。 *Where:* 影像編輯器的 ✨ AI 面板（👁）、提示詞面板。 *Since:* 2.553.0
-- **Generate 適應選取範圍** — 無法看到選取範圍周圍內容的風格會按選取範圍自身邊界框的尺寸生成圖片，因此畫出的內容與選取範圍大小一致。 *Where:* 影像編輯器的 ✨ AI 面板（👁 關閉）、提示詞面板。 *Since:* 2.554.0
-- **按模型系列採用 Krita AI 外掛的填充方式** — SDXL / Pony 使用 Fooocus inpaint 補丁，Illustrious / SD 1.5 / FLUX.1 使用區域性重繪 ControlNet，Remove 先用 MAT / LaMa 處理，並採用 Krita 的上下文邊界及其 Add content / Fill 模式。 *Where:* 影像編輯器的 ✨ AI 面板（填充行）、提示詞面板；安裝介面會列出所需節點包和模型。 *Since:* 2.555.0
-- **⏳ 待處理** — 每次 ✨ 執行都直接進入佇列，無需等待；結果在編輯器內的一個面板中等待，✔ Apply 將其放到所屬圖層上方、該圖層的“✨ changes”組中，🗑 Delete 將其丟棄。 *Where:* 影像編輯器（✨ AI 面板中的 ⏳ Pending）。 *Since:* 2.556.0
-- **面板欄可放入任意浮動面板** — 按住標題將浮動面板（用 ⇱ 浮動出來的主面板、▣ 面板、Basic Settings、LLM tokens、提示詞面板、⏳ Pending）拖到影像編輯器的面板欄上，即可停靠在此——可從其標題欄摺疊、移動、調整大小或再次浮動；下次啟動時保留，並隨編輯器一起顯示 / 隱藏。 *Where:* 影像編輯器的面板欄（Layers 所在處）。 *Since:* 2.609.0
-- **所有 ✨ 模式都可使用參考圖** — 提示詞中的“picture N”會把 References 面板中的對應圖片帶入 Edit、Generate、Fill、Remove、Refine（通過編輯模型）；Compose 中則使用“ref N”。 *Where:* 影像編輯器的 ✨ AI 面板、提示詞面板。 *Since:* 2.556.0
-- **AI 填充模型附加元件** — 用於 Krita 方式填充的節點包 + Fooocus / MAT / 區域性重繪 ControlNet 檔案，在 Settings ▸ Add-ons 中勾選並下載。 *Where:* Settings ▸ Add-ons ▸ AI fill models。 *Since:* 2.557.0
-- **▣ 面板可容納任意麵板** — 與其他浮動面板位於同一浮動層（而非置於所有內容之上），拖曳面板時會顯示輪廓；Settings、References、Assets、Queue、Gallery 和 StoryBoard 可按住標題欄拖入。 *Where:* 狀態列的 ▣ Docker（Ctrl+Alt+D）。 *Since:* 2.558.0
-- **資料夾篩選會記住所選資料夾；Basic Settings 儲存在 basic.cfg 中** — 每個資料夾篩選下拉框都會保留你選擇的資料夾（folder_filters.cfg）；Basic Settings 在更改時儲存到 basic.cfg，並在啟動時讀回。 *Where:* 任意模型下拉框的資料夾篩選、📁 瀏覽器、Model manager；Basic Settings。 *Since:* 2.559.0
-- **▣ 面板可停靠，任何面板都能放入** — 按住標題欄拖曳浮動的 ▣ 面板，可將其停靠到某個面板的上方 / 下方 / 旁邊，或停靠到側邊面板中（藍色放置區域）；Basic Settings、LLM tokens 和提示詞面板可放入 ▣ 面板，也可再浮動出來。 *Where:* 狀態列的 ▣ Docker（Ctrl+Alt+D）。 *Since:* 2.560.0
-- **將 ▣ 面板作為獨立的一欄** — 放到兩欄之間的接縫處（或視窗邊緣）時，它會變成一個全高的欄，並帶有自己的分隔條；重新啟動後保留。 *Where:* 按住標題欄拖曳 ▣ 面板。 *Since:* 2.561.0
-- **恢復的任務回到所屬場景；不再自動播放** — 因重新啟動而中斷的 StoryBoard 場景，在 Queue 面板的 Pending 分頁中按下 ▶ Resume 後會取回其任務（執行狀態及其進度列）；影片和歌曲載入後處於暫停狀態，按 ▶ / Space 才開始播放。 *Where:* Queue 面板的 Pending 分頁；StoryBoard；播放器。 *Since:* 2.562.0
-- **使用其他場景的圖片；以 🅰 Picture A 生成首幀** — 場景選擇器的 🎬 Scenes 分頁（每個場景自身的圖片）和 🎞 Clips（任意鏡次的幀）；✎ First frame 以選定的 Picture A 為起點（保留風格、構圖和姿勢），置於新的地點或全域提示詞設定的地點，指令由 LLM 編寫（🤖 Write）。 *Where:* StoryBoard 場景卡片。 *Since:* 2.563.0
-- **🎙 語音對話** — 像即時聊天一樣免手動與應用交談：它能聽懂你說的話（faster-whisper，本地執行，常駐載入），本地 LLM 會出聲回答並執行你的要求——提示詞、風格、Basic Settings、Generate、StoryBoard 場景、面板。 *Where:* 狀態列的 🎙 Voice（Ctrl+Alt+V）。 *Since:* 2.564.0
-- **StoryBoard 網格；🎞 編寫故事板** — 場景以類似 Model manager 的卡片排列在網格中，用 ➜ 指向下一個場景，點選可開啟完整的場景卡片；LLM 編寫各個場景，每個場景都會以其故事板圖片作為起始（First）幀。 *Where:* StoryBoard（▦ / ☰、🎞 Write storyboard、☑ Start on it）。 *Since:* 2.565.0
-- **MOSS-Image** — OpenMOSS 的 5B 影像模型，提供兩種影像風格（SFT、Base）；Settings ▸ Add-ons ▸ MOSS-Image 會將你勾選的模型、文字編碼器和 VAE 下載到 ComfyUI 中，並檢查 ComfyUI 版本是否足夠新。 *Where:* Settings ▸ Add-ons；Settings ▸ Image（各風格）。 *Since:* 2.566.0
-- **NitroFusion2 圖像** — 把 Z-Image-Turbo 蒸餾到 1-2 步：一步就有清晰的文字和細節；三個風格（1 步、配合去蒸餾 LoRA 的 2 步、適合小顯示卡的 GGUF），cfg 1，無負面提示詞。 *Where:* Image 停駐欄的風格，檔案在 Settings > Add-ons > NitroFusion2。 *Since:* 2.729.0
-- **主題編輯器：對齊、內邊距、外邊距、圓角** — Style 面板可對齊文字（左 / 置中 / 右 / 兩端對齊，上 / 中 / 下——適用於按鈕、彈性行 / 列、網格和文字塊），為元素及其文字設定內邊距和外邊距（每一邊單獨設定，= 同時設定四邊），並可單獨設定每個角的圓角。 *Where:* 🖌 Edit theme 模式 ▸ 點選某個元素 ▸ Text / Box。 *Since:* 2.567.0
-- **由 LLM 編寫的 StoryBoard 圖片** — 🖼 將場景發回給 LLM，為其開場幀編寫圖片提示詞，並以角色設定表和上一個場景的最後一個影格（若該場景已有鏡次）作為參考圖；📁 更換圖片（其他場景的圖片、某個鏡次的幀、專案圖片或檔案）；圖片在網格中鋪滿整張卡片。 *Where:* StoryBoard ▸ ▦ 網格 ▸ 卡片的 🖼 / 📁；工具列上的 ☑ LLM writes it / ☑ Previous last frame。 *Since:* 2.568.0
-- **🔲 區域（影像編輯器）** — 畫布上的若干框，每個框寫明其中要放的內容；可逐框填充（每個框執行一次 ✨ Generate）、由 Edit 模型一次完成（在副本上勾出各框輪廓），或作為區域提示詞一次完成（生成新圖片，每個框的文字只作用於框內）。 *Where:* Image editor ▸ ✨ AI panel ▸ 🔲 Zones；與選框工具放在一起的 Zones 工具。 *Since:* 2.569.0
-- **🎭 區域角色 LoRA** — 區域的 🎭 可選擇一個只在該框內生效的角色 LoRA（最多兩個不同的 LoRA），讓兩個角色在同一張圖片中各自保持自己的面孔；場景描述作用於整張圖片。 *Where:* Image editor ▸ ✨ AI ▸ 🔲 Zones ▸ ▦ Regional（Settings ▸ Add-ons ▸ Nougan Nodes）。 *Since:* 2.592.0
-- **🖊 數位板（影像編輯器）** — 帶曲線的筆壓（預設或自訂）、最輕觸壓 / 滿壓力區間、你的筆所傳送的壓感級數、傾斜、橡皮擦端和側鍵；所有畫筆均支援壓力 → 大小 / 不透明度；7 種筆刷（G-pen、Mapping pen、Brush pen、Real pencil、Fineliner、Technical pen、Calligraphy）。 *Where:* Image editor ▸ 🖊 Pen 分頁（位於 🖌 Brush 旁）、Window ▸ Pen Tablet；畫筆預設 ▾。 *Since:* 2.570.0
-- **多選並拖曳多個片段；⛓ 順序排列** — 在 Gallery、Assets 或 References 中按住 Ctrl / Shift 點選多個片段，一起拖到時間軸上（最早的放在最上層，依次首尾相接）；⛓ Sequential 讓時間軸上的片段沿各圖層依次連續播放，刪除、新建圖層和修剪後都不會留下空隙。 *Where:* Gallery / Assets / References（Ctrl / Shift+點選、拖曳）；時間軸工具列 ▸ ⛓ Sequential。 *Since:* 2.571.0
-- **✨ 自動轉場；🔇 影片聲音** — 在不同圖層的影片片段之間的每個剪下點新增 N 幀轉場，不移動任何片段（與歌曲的口型同步保持精確——前一個片段會延續到下一個片段之下）；一個按鈕即可將所有影片圖層靜音 / 取消靜音，只播放完整的歌曲。 *Where:* 時間軸工具列 ▸ ✨ Auto transition [frames] [type]、🔊 Video sound。 *Since:* 2.572.0
-- **✂ 歌曲剪下時長** — StoryBoard 歌曲條可按任意間隔自動剪下（2-60 s；29.9 = 每個場景一次 Long video 執行）；已鎖定的段落保持不變；設定會被記住。 *Where:* 歌曲條的選單列 ▸ ✂ [s]。 *Since:* 2.573.0
-- **⤓ 更新 ComfyUI；啟動時檢查更新** — 就地更新 ComfyUI（使用便攜版自帶的更新程式，或 git + pip），可選 Newest 或 Stable 通道，由本應用啟動的 ComfyUI 會隨之重新啟動；啟動後在 GitHub 上檢查 bitGen Studio 和 ComfyUI，任一有新版本時狀態列顯示 ⬆。 *Where:* Settings ▸ ComfyUI ▸ ⟳ ComfyUI updates；Settings ▸ General ▸ ⟳ Updates ▸ Check for updates on startup。 *Since:* 2.573.0
-- **FastH3 Omni** — 以 8 步完成 MiniMax H3 的參考圖生影片（FastVideo）：一種影片風格、一個 StoryBoard Workflow、一個負責下載的附加元件，以及在任何載入它的 H3 工作流圖上應用的配方（shift 12/3、VSA、8 步）。 *Where:* Settings ▸ Add-ons ▸ FastH3 Omni；StoryBoard ▸ Workflow ▸ FastH3 Omni。 *Since:* 2.573.0
-- **在主題編輯模式中重新命名面板標題和任意文字** — 面板的標題欄，以及按鈕 / 框旁帶文字的任意元素，都可改用新文字（保留下拉箭頭和按鈕，摺疊後依然保留新文字）。 *Where:* 🖌 主題編輯模式 ▸ 選取 ▸ Layout ▸ Text。 *Since:* 2.574.0
-- **隨處顯示目前步數 / 總步數** — 圖片（ComfyUI 和 sd-cli）、音樂和影片會即時報告取樣器步數，所有顯示正在執行的生成任務的面板、對話方塊和卡片都會顯示“第 n 步 / 共 total 步”。 *Since:* 2.574.0
-- **主題編輯 ▸ Apply to: This element only（預設）** — 每次選取都只作用於該元素本身；新文字絕不會擴散到其他面板或元素。 *Where:* 🖌 主題編輯模式 ▸ Apply to。 *Since:* 2.574.1
-- **模型管理器：你的檔案、縮圖、後設資料** — 模型的圖片 / 影片 / 聲音及其提示詞 + 種子 / cfg / 步數（從檔案或渲染記錄中讀取），點選開啟檢視器，✎→ 傳送到提示詞，🖼 設為縮圖。 *Where:* 🧩 Model manager ▸ ⓘ ▸ Your pictures, videos and sounds；✎ Edit ▸ Thumbnail。 *Since:* 2.575.0
-- **模型管理器：半星評分、模型類型、NSFW** — 以半星為單位的五星評分編輯器、模型類型（檢查點（checkpoint）、LoRA …）以及 NSFW 標記；篩選欄可按這兩項篩選。 *Where:* 🧩 Model manager ▸ ✎ Edit；篩選欄。 *Since:* 2.575.0
-- **✎→ 從任意檔案傳送到提示詞** — 將檔案的提示詞及其種子、cfg 和步數傳送到提示詞框 + Basic Settings。 *Where:* 相簿、Assets、References 的縮圖塊；檢視器的 ⓘ 詳情。 *Since:* 2.575.0
-- **狀態列中的 Civitai 同步** — 同步時顯示 🔄 Civitai n/total，完成時顯示 ✓ synced 及各項計數。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Since:* 2.575.0
-- **面板按離開時的佈局恢復** — ▣ 面板的成員、標籤順序、目前顯示的分頁、隱藏 / 摺疊狀態、最小化的浮動面板、擴充功能面板——重新啟動後都會保留。 *Since:* 2.575.0
-- **按 SHA-256 進行 Civitai 同步** — 按名稱找不到的模型會按檔案內容查詢；狀態列顯示讀取進度 n%。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager ▸ 🔄 Sync。 *Since:* 2.576.0
-- **🧩 傳送到模型… / Ctrl+↓ 設為縮圖** — 檢視器可將圖片 / 影片 / 歌曲連同其後設資料傳送到某個模型的檔案中；Ctrl+↓ 將圖片設為該模型的縮圖。 *Where:* 檢視器；🧩 Model manager ▸ ⓘ。 *Since:* 2.576.0
-- **🪪 用 H3 Character Sheet Designer 製作角色設定表** — 一張圖片變成最多 13 個檢視（臉部、全身、服裝、手、腳）的參考設定表，可加部點陣圖片、部位備註和檢視指令，生成前先顯示佈局，由 ComfyUI 中的 MiniMax H3 Image 繪製；取代姿勢表。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet；設定 ▸ 附加元件 ▸ H3 Character Sheet Designer。*Since:* 2.870.0
-- **📐 SolidCraft 面板** — 開源參數化 3D CAD（SolidCraft，MIT OR Apache-2.0）位於獨立面板中，包含 SolidCraft 的全部功能；設計和零件儲存在專案中，SolidCraft 的 Save 會使其保持最新；可將模型的圖片（或 SolidCraft 的渲染圖）送入影像編輯器，將模型作為時間軸 3D 圖層，將影像編輯器的草圖圖層送入 SolidCraft，並將 STEP / STL / OBJ / 3MF 匯入專案。 *Where:* 狀態列中的 📐 SolidCraft；Settings ▸ Add-ons ▸ SolidCraft。 *Since:* 2.578.0
-- **從 SolidCraft 傳送** — 將零件傳送到影像編輯器、時間軸、📏 Sketcher（2.630.0：作為一個組——此前是 House builder）、Blender（隨之開啟並儲存為 .blend——找到 Blender 時顯示）和 Unreal（作為 Static Mesh 放入關卡——設定了 Unreal 專案時顯示；外掛 1.4.0）；僅在安裝了 SolidCraft 時顯示該面板。 *Where:* 📐 SolidCraft 的工具列。 *Since:* 2.579.0
-- **無需設定即可使用已安裝 ComfyUI 的模型** — Settings 中未指定 ComfyUI 資料夾時，會自動查詢本機上的 ComfyUI（環境變數、應用旁邊、主目錄、Pinokio、Stability Matrix、各驅動器根目錄、ComfyUI Desktop），並在 Model manager 和 Basic Settings 中列出其檢查點和擴散模型；點選 Use this folder 即可將其設定下來。 *Where:* 🧩 Model manager；Basic Settings ▸ Model / checkpoint；Settings ▸ ComfyUI ▸ Folder。 *Since:* 2.622.0
-- **從磁碟刪除模型** — 刪除該檔案、其旁邊的相關檔案以及它的 model_info 頁面，刪除前會彈出確認，列出這些檔案及使用該模型的風格。 *Where:* 🧩 Model manager ▸ 卡片上的 🗑 / ⓘ ▸ 🗑 Delete。 *Since:* 2.579.0
-- **設定 ▸ 面板** — 列出每個面板和浮動視窗（包括擴充功能的），顯示其所在位置，↺ Reset 可將其恢復到預設位置和大小；↺ Reset all 全部重設。 *Where:* Settings ▸ Dockers。 *Since:* 2.579.0
-- **模型路徑（extra_model_paths.yaml）** — 管理 ComfyUI 額外模型路徑的每個組：➕ 新建組（other_ui1、other_ui2 …，根據其 base 下的資料夾自動填充），更改 / 新增 / 刪除路徑（用 📁 選擇），重新命名，is_default，🗑 刪除組；檔案的其餘內容保持不變，並保留上一版的 .bak 備份；⟳ Restart ComfyUI。 *Where:* 🧩 Model manager ▸ 📁 Model paths。 *Since:* 2.580.0
-- **Civitai 影片和動態圖片** — 🔄 Sync / ⤓ Civitai info 也會儲存模型的影片和 GIF 範例；影片縮圖在卡片及其 ⓘ 頁面上播放，檢視器也可播放；影片可用作卡片的縮圖。 *注意：* Civitai 自 2026 年 3 月 16 日起封鎖澳洲使用者，因此在澳洲無法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager。 *Since:* 2.581.0
-- **LLM 提示詞中的 LoRA 關鍵詞** — ✨ Enhance 和提示詞聊天會將所選 LoRA 的關鍵詞（觸發詞）寫入提示詞；LLM 遺漏的關鍵詞由 Enhance 補上。 *Where:* Prompt 面板 ▸ ✨ Enhance / 提示詞聊天。 *Since:* 2.581.0
-- **✨ 在 SolidCraft 中生成零件** — 文字描述或圖片 -> CadQuery 程式碼（cadrille，或帶錯誤修復的本地 LLM）-> SolidCraft 自身可編輯的草圖、拉伸、切除、孔、圓角和倒角（按體積校驗；否則將 STEP 作為單個實體匯入）；程式碼可編輯並重新執行。 *Where:* 📐 SolidCraft ▸ ✨ Generate；Settings ▸ Add-ons ▸ CAD generate。 *Since:* 2.581.0
-- **Fibo 2.0（編輯，低顯示記憶體）** — Bria 的 8B 模型，提供兩種影像風格：Edit Turbo（4 步指令編輯）和 Dev（文生圖 + 編輯）；最多 4 張圖片 <image_1>..；w4a8 或 GGUF Q4_0 檔案適用於約 8 GB 顯示記憶體的顯示卡；從 Settings ▸ Add-ons ▸ Fibo 2.0 下載（CC BY-NC 4.0）。 *Where:* image editor ▸ ✨ AI ▸ Edit；Settings ▸ Image。 *Since:* 2.582.0
-- **團隊 ▸ 渲染農場** — 基於 NAS 資料夾的團隊：負責人審批成員，其 bitGen 每天為每位成員簽發一個簽名金鑰；所有人開啟相同的專案；PC 的所有者可允許成員在該 PC 上渲染（不限時段或指定起止時間），且僅在該 PC 執行 bitGen 並開啟共享時有效；🖥 Render on: This PC / 某位成員的 PC / ⚡ Spread，並顯示團隊的渲染任務和進度。需處於同一網路或使用 Tailscale。2.589.0：改為可選的附加元件（單獨的 zip——可能會觸發防毒軟體）。 *Where:* Settings ▸ Add-ons ▸ Team render farm，然後 Settings ▸ Team；狀態列的 🖥 狀態標籤。 *Since:* 2.583.0
-- **🔁 比較 LLM** — 同一個提示詞依次由每個勾選的 LLM 回答，每條回覆顯示在聊天中各自的名稱下；✓ Use this one 將其設為答案，每一輪（請求、每條回覆、所做的選擇、耗時）都會被記錄，🏆 顯示每類工作（劇本、音樂影片、歌曲、圖片 / 影片提示詞、聊天）的最佳 LLM，附帶勝率、平均耗時及 CSV 匯出。 *Where:* 提示詞面板的選單列（🔁 ▾ 🏆）。 *Since:* 2.584.0
-- **用你的選擇訓練 LLM** — 🔁 Compare LLMs 的每一輪都會儲存完整的提示詞；🏆 ▸ 🎓 將選取的回覆（範例）以及“選取 vs 未選取”配對傳送到訓練器的 LLM 任務；訓練器從 Examples（SFT）或 Preferences（DPO / ORPO，Beta）中學習，並寫出新的 .gguf。 *Where:* 🏆 ▸ 🎓 Train an LLM on your picks；🎓 LoRA trainer ▸ Job ▸ Learn from、Dataset ▸ 🔁 Preference pairs。 *Since:* 2.585.0
-- **附加元件 ▸ LLM** — 聊天 / 寫作用的 LLM 集中在一個下拉框中（★ Qwen3.8 27B——用作你自己檢查點的基礎模型、Gemma 4 31B / 12B、Qwen3.5 9B、Qwen3 4B / 8B / 14B），下載到 LLM 資料夾；訓練器的 Qwen3.8 27B 基礎模型可在 32 GB 顯示記憶體的顯示卡上以 4-bit QLoRA 方式訓練。 *Where:* Settings ▸ Add-ons ▸ LLM；🎓 LoRA trainer ▸ Base model。 *Since:* 2.586.0
-- **⤒ 匯入並檢查 ComfyUI 工作流** — 任意儲存版 / API 版工作流：統計其圖片 / 影片 / 聲音輸入，將預覽節點改為儲存節點，報告缺失的節點和模型檔案，連線 Prompt / Negative / Seed / Steps / CFG / 尺寸 / 時長控制項，並繪製工作流圖；▶ Test run 使用測試輸入試執行——成功時儲存到 comfy_workflows/ 並附帶工作流圖，失敗時顯示 ComfyUI 的錯誤。 *Where:* Settings ▸ ComfyUI ▸ Graphs。 *Since:* 2.587.0
-- **面板開關 + 佈局** — 👁 關閉某個面板及其狀態列按鈕；🗂 Layouts 可儲存 / 應用 / 匯出 / 匯入整個面板佈局及主題（layouts/<name>.json）；★ Save as the default = layouts/default.json + themes/default.json，用於全新安裝。 *Where:* Settings ▸ Dockers。 *Since:* 2.587.0
-- **⚡ 即時生成（影像編輯器）** — Krita 的即時模式：每次更改後稍等片刻即重新渲染（以即時強度對整張圖片執行 Refine，並使用獨立的風格 / 步數 / 尺寸 / 🔒 種子），一次只渲染一張，以最新的更改為準，模型常駐載入，排在佇列最前，從不出現在佇列面板 / 相簿中；▣ 以混合比例顯示在畫布上；✔ Apply as layer 作為圖層應用。 *Where:* Image editor ▸ ⚡（選單列）/ View ▸ ⚡ Live Generation。 *Since:* 2.588.0
-- **🎨 全螢幕模式（影像編輯器）** — 只顯示畫布，全螢幕且無邊框；Alt+P 在指標處開啟調色盤（方形色域 + 色相條、色塊、最近使用），Alt+G 開啟 Layers 面板 + ⏳ Pending，Ctrl+P 開啟提示詞面板（從目前所在圖層生成），Ctrl+B 開啟畫筆（預設、大小、不透明度、流量），Ctrl+Esc（或 Ctrl+Shift+F）返回。 *Where:* Image editor ▸ 🎨 Full Screen（緊接在選單之後）/ View ▸ Full Screen。 *Since:* 2.588.0 (2.590.0 起命名為 Full Screen)
-- **🧬 RefMods 庫** — 適用於所有專案的 MiniMax H3 參考 mod，存放在 refmod/<name>/ 中：7 種類型（角色、地點、載具、物體、道具、植物、動物），上傳的媒體自動分類到 images / videos / audio，✨ 使用視覺模型自動生成描述，🧬 Extract（圖片 + 影片幀）-> 生成的 .safetensors 儲存在該資料夾中，在提示詞中寫 @name 即可使用。 *Where:* 🎓 LoRA & fine-tune trainer ▸ 🧬 RefMods。 *Since:* 2.588.0
-- **SolarRenderer** — 結構影片（+ 首幀、六段式提示詞）-> 在 MiniMax H3 上以 4 步生成片段：節點包 + LoRA 作為附加元件提供，其工作流通過 ⤒ Import & check 匯入。 *Where:* Settings ▸ Add-ons ▸ SolarRenderer；Settings ▸ ComfyUI ▸ Graphs ▸ ☀ SolarRenderer。 *Since:* 2.588.0
-- **帶伺服器元件的可選擴充功能** — 擴充功能（ext/<id>/）可自帶伺服器程式碼（ext.json 中的 "server"），在啟動時掛載，且僅在其執行時顯示；Settings ▸ Add-ons 可從擴充功能的 zip 安裝（📦）和移除擴充功能。Team render farm 就是這樣一個擴充功能——因可能觸發防毒軟體而未包含在安裝 zip 中。 *Where:* Settings ▸ Add-ons ▸ Team render farm。 *Since:* 2.589.0
-- **影像編輯器的每個分頁都是面板** — 將分頁拖出 = 浮動；拖到另一個面板上 = 成為其分頁；拖到面板欄邊緣 = 在該處成為獨立面板；⠿ 可拖曳整個面板；佈局會被保留；Window ▸ Show All Dockers / Reset Docker Tabs。 *Where:* 影像編輯器的各面板。 *Since:* 2.590.0
-- **📺 Unreal 檢視** — 所選 Unreal / MetaHuman 圖層（影像編輯器）或 Unreal 片段（時間軸，位於播放頭處）的攝影機畫面，即時來自 Unreal；S / M / L、⏸、⚡ 讓 Unreal 在 bitGen 後臺保持流暢。Unreal 必須保持執行，但無需位於前臺。 *Where:* 影像編輯器（有 Unreal 圖層時開啟）；時間軸 UNREAL ▸ View ▸ 📺 Unreal View。 *Since:* 2.590.0 (bitGen Bridge 1.5.0)
-- **使用中 LoRA 的關鍵詞** — ✨ Enhance 和提示詞聊天只寫入 Basic Settings 臨時 LoRA 的關鍵詞（Override style 開啟時），或所選風格的 LoRA 的關鍵詞（關閉時）。 *Where:* Basic Settings ▸ Override style；該風格的 LoRA。 *Since:* 2.585.0
 
 ### 選取範圍
 
@@ -872,6 +902,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **漸層工具** — 線性、徑向、角度、對稱或菱形漸層。*Where:* G
 - **油漆桶** — 用前景色、背景色或漸層填充，可設定容差、連續和所有圖層。*Where:* G，Shift+G。*Since:* 2.396.0
 - **裁切** — 拖出一個框，選擇比例，按 Enter 裁切。*Where:* C
+- **🖊 數位板（影像編輯器）** — 帶曲線的筆壓（預設或自訂）、最輕觸壓 / 滿壓力區間、你的筆所傳送的壓感級數、傾斜、橡皮擦端和側鍵；所有畫筆均支援壓力 → 大小 / 不透明度；7 種筆刷（G-pen、Mapping pen、Brush pen、Real pencil、Fineliner、Technical pen、Calligraphy）。 *Where:* Image editor ▸ 🖊 Pen 分頁（位於 🖌 Brush 旁）、Window ▸ Pen Tablet；畫筆預設 ▾。 *Since:* 2.570.0
 
 ### 變換與變形
 
@@ -975,6 +1006,9 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **自動填充** — 閉合曲線或新形狀會以最後選取的顏色填充。*Where:* 曲線工具列。*Since:* 2.430.0
 - **懸停與選取高亮** — 使用 Move 工具時，指標下的物件以藍色勾勒，選取的物件以橙色勾勒；在空白畫布上點選則不選取任何物件。*Where:* Move 工具。*Since:* 2.470.0
 - **繪製後切換到移動工具** — 繪製形狀後會自動選用 Move 工具並選取新形狀（可關閉）。*Where:* CAD 工具列的設定。*Since:* 2.470.0
+- **文書處理文字** — 像文書處理軟體一樣輸入的文件框：段落樣式（正文、標題、副標題、標題 1-3、引用、程式碼）、字型、字號、加粗 / 傾斜 / 底線 / 刪除線、下標 / 上標、顏色、突出顯示、含兩端對齊的對齊方式、行距、段前 / 段後間距、項目符號、編號、縮排；文章以整行在框之間流動；檔案 ▸ 新建文字文件… 隨文字增加自動新增頁面。*Where:* 影像編輯器 ▸ 文件文字工具 (T) / 檔案 ▸ 新建文字文件…。*Since:* 2.811.0
+- **✉ 郵件：儲存的帳戶、多封郵件、搜尋、資料夾** — 登入成功的 ✓ 測試會儲存帳戶（關閉對話框也會儲存變更）；Ctrl / Shift+點選選取多封郵件，一次執行 🗑 ★ ● 和 📁 移動 ▾；把郵件拖曳到資料夾上；在 🔍 中按 Enter 在伺服器上搜尋整個資料夾（from: / to: / subject: / body:）；⤓ 較舊的郵件；＋ 新增資料夾；收件人 / 副本 / 密件副本提示你郵件裡的聯絡人。 *Where:* 頂欄的 ✉。 *Since:* 2.820.0
+- **▦ 試算表** — 由多張工作表組成的工作簿，公式在輸入時重新計算（SUM、IF、VLOOKUP、XLOOKUP、SUMIFS、日期、文字——約 50 個函式），點選儲存格即可把地址放進公式，填充柄複製公式並延續序列，複製 / 貼上（也可貼上其他程式的表格），插入 / 刪除行和列時公式隨之調整，數字格式，粗體 / 顏色 / 邊框 / 合併，排序、篩選、凍結、自動求和、工作表之間的引用、復原；以 .bgs 檔案儲存在專案中。*Where:* 頂部欄的 ▦。*Since:* 2.822.0
 
 ### 向量工作面板
 
@@ -1024,6 +1058,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **透明色塊** — 設為前景色時，畫筆會繪製出透明。*Where:* 調色盤和 Swatches 面板。*Since:* 2.430.0
 - **漸層編輯器** — 預設及你自己的漸層，色標可設定顏色、不透明度和位置；供漸層工具、油漆桶、填充圖層和形狀使用。*Where:* Edit > Gradient Editor。*Since:* 2.434.0
 - **圖案庫** — 從畫面定義圖案、圖案填充圖層、用圖案填充，並可在 Pattern Overlay 中使用你的圖案。*Where:* Edit > Define Pattern，Pattern Library。*Since:* 2.437.0
+- **🖌 透明度漸層和漸隱滑塊** — 在圖層（圖片、形狀、文字、WP 圖層、組）中按下並拖曳：沿線從開始 % 漸隱到結束 %，線性或徑向；拖曳兩端或菱形（漸隱到一半的位置）；漸層填充和投影也有同樣的菱形（漸隱 / 影子不透明度）。套索、鋼筆和曲線工具只有在距起點 5 px 以內結束時才閉合——否則線保持開放。*Where:* 🖌 影像編輯器（Shift+G）。*Since:* 2.830.0
+- **🎞 幻燈片** — 自己的簡報：幻燈片清單（拖曳重新排序）、7 種版式、6 種主題、帶專案符號的文字框、形狀、圖片（拖放 / 貼上）、吸附參考線、演講者備註、切換效果；▶ 全螢幕放映（F5）；儲存在專案中（.bgk），也可存為 PowerPoint（.pptx）。*Where:* 頂部欄的 🎞。*Since:* 2.831.0
 
 ### 動作與自動化
 
@@ -1079,6 +1115,24 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **生成到形狀中** — 當閉合形狀處於活動狀態時，結果會作為框架放入其中。*Where:* AI 面板。*Since:* 2.442.0
 - **提示詞面板跟隨分頁** — Edit 分頁會將提示詞面板切換為影像編輯，Generate 分頁則切換為生成到選取範圍中。*Where:* AI 面板。*Since:* 2.451.0
 - **從 3D 圖層生成** — 根據你目前看到的 3D 檢視生成一張新影像。*Where:* 3D 分頁。*Since:* 2.460.0
+- **影像編輯器中的參考圖** — 拖入的參考圖會變成一個圖層；✨ Edit 可以把參考圖用作 Picture 2。 *Where:* 🖼 Image editor。 *Since:* 2.539.0
+- **生成 = 新圖層** — 在影像編輯模式下，生成的圖片總是作為新圖層匯入，並使用提示詞面板中選定的風格（Generate 會列出 Krea 2 及其他所有風格）。 *Where:* 影像編輯模式下的提示詞面板。 *Since:* 2.549.0
+- **無縫填充** — 選取範圍通過提示詞面板所選風格的專用工作流圖（編碼後的圖片 + 雜訊遮罩 + 差分擴散）進行填充，融合效果與 Krita AI 外掛相同；Krea 2、Klein 等風格現在都能用於填充。 *Where:* 有選取範圍時的影像編輯器，Generate / Refine。 *Since:* 2.550.0
+- **像 Krita AI 外掛一樣填充** — 選取範圍周圍提供更多上下文，選取範圍先由其邊緣內容預填充，使用柔和遮罩，對未針對區域性重繪訓練的模型以 0.9 為起始值。 *Where:* 有選取範圍時的影像編輯器。 *Since:* 2.551.0
+- **採用 Krita 外掛自身程式碼的填充與編輯** — Generate 以全強度執行，小區域放大後渲染，遮罩大小隨選取範圍而定，越過邊緣進行融合併匹配顏色，在選取範圍內 Edit 只改動選取範圍。 *Where:* 有選取範圍時的影像編輯器。 *Since:* 2.552.0
+- **用編輯模型填充** — 在選取範圍中通過編輯模型執行 Generate / Remove / New background（選取範圍塗成綠色 + Krita 的指令），使新內容與場景融為一體；▾ Edit 可限定在選取範圍內，或限定在圖層自身的像素內。 *Where:* 影像編輯器的 ✨ AI 面板（👁）、提示詞面板。 *Since:* 2.553.0
+- **Generate 適應選取範圍** — 無法看到選取範圍周圍內容的風格會按選取範圍自身邊界框的尺寸生成圖片，因此畫出的內容與選取範圍大小一致。 *Where:* 影像編輯器的 ✨ AI 面板（👁 關閉）、提示詞面板。 *Since:* 2.554.0
+- **按模型系列採用 Krita AI 外掛的填充方式** — SDXL / Pony 使用 Fooocus inpaint 補丁，Illustrious / SD 1.5 / FLUX.1 使用區域性重繪 ControlNet，Remove 先用 MAT / LaMa 處理，並採用 Krita 的上下文邊界及其 Add content / Fill 模式。 *Where:* 影像編輯器的 ✨ AI 面板（填充行）、提示詞面板；安裝介面會列出所需節點包和模型。 *Since:* 2.555.0
+- **⏳ 待處理** — 每次 ✨ 執行都直接進入佇列，無需等待；結果在編輯器內的一個面板中等待，✔ Apply 將其放到所屬圖層上方、該圖層的“✨ changes”組中，🗑 Delete 將其丟棄。 *Where:* 影像編輯器（✨ AI 面板中的 ⏳ Pending）。 *Since:* 2.556.0
+- **所有 ✨ 模式都可使用參考圖** — 提示詞中的“picture N”會把 References 面板中的對應圖片帶入 Edit、Generate、Fill、Remove、Refine（通過編輯模型）；Compose 中則使用“ref N”。 *Where:* 影像編輯器的 ✨ AI 面板、提示詞面板。 *Since:* 2.556.0
+- **AI 填充模型附加元件** — 用於 Krita 方式填充的節點包 + Fooocus / MAT / 區域性重繪 ControlNet 檔案，在 Settings ▸ Add-ons 中勾選並下載。 *Where:* Settings ▸ Add-ons ▸ AI fill models。 *Since:* 2.557.0
+- **🔲 區域（影像編輯器）** — 畫布上的若干框，每個框寫明其中要放的內容；可逐框填充（每個框執行一次 ✨ Generate）、由 Edit 模型一次完成（在副本上勾出各框輪廓），或作為區域提示詞一次完成（生成新圖片，每個框的文字只作用於框內）。 *Where:* Image editor ▸ ✨ AI panel ▸ 🔲 Zones；與選框工具放在一起的 Zones 工具。 *Since:* 2.569.0
+- **🎭 區域角色 LoRA** — 區域的 🎭 可選擇一個只在該框內生效的角色 LoRA（最多兩個不同的 LoRA），讓兩個角色在同一張圖片中各自保持自己的面孔；場景描述作用於整張圖片。 *Where:* Image editor ▸ ✨ AI ▸ 🔲 Zones ▸ ▦ Regional（Settings ▸ Add-ons ▸ Nougan Nodes）。 *Since:* 2.592.0
+- **⚡ 即時生成（影像編輯器）** — Krita 的即時模式：每次更改後稍等片刻即重新渲染（以即時強度對整張圖片執行 Refine，並使用獨立的風格 / 步數 / 尺寸 / 🔒 種子），一次只渲染一張，以最新的更改為準，模型常駐載入，排在佇列最前，從不出現在佇列面板 / 相簿中；▣ 以混合比例顯示在畫布上；✔ Apply as layer 作為圖層應用。 *Where:* Image editor ▸ ⚡（選單列）/ View ▸ ⚡ Live Generation。 *Since:* 2.588.0
+- **右鍵：Copy、Paste 和 Full Screen** — 影像編輯器的畫布選單有 Copy 和 Paste（新圖層）以及 🎨 Full Screen；在 Full Screen 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（開啟 / 關閉場景工具）、✨ Prompt（把提示詞停靠窗帶到前面）和 Exit Full Screen。*Where:* 影像編輯器 ▸ 右鍵點選畫布。*Since:* 2.809.0
+- **🎞 幻燈片：表格、圖表、品牌主題** — ▦ 表格和 📊 圖表（柱形、條形、折線、面積、餅圖、圓環圖），編輯器可貼上試算表儲存格，與 PowerPoint 互通真正的表格 / 圖表並繪入 PDF；🎨 用你的顏色和字型或標誌生成品牌主題，為所有專案儲存。*Where:* 🎞 幻燈片。*Since:* 2.835.0
+- **🖼 在形狀中生成、轉換為形狀、✨ 用 AI 撰寫** — 選取的形狀（包括鋼筆 / 貝塞爾 / 線條路徑）+ ✨ 生成會填滿形狀（閉合形狀變成裝著圖片的框架，開放線條按其區域裁切）；向量線條或路徑可轉換為帶填充和邊框的形狀；選取 WP 圖層時，提示詞停靠欄的 LLM 會把文章 / 報告 / 故事寫進去（也可依據 .txt、.md、.docx、.pdf 文件）——表格在正文中，圖表和圖片作為 WP 組中的圖層。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.837.0
+- **🖼 AI 的圖放在正文中、試算表作為資料** — ✨ 用 AI 撰寫 會把每個圖表 / 圖片放在討論它的段落之後，其圖層跟隨正文進入下一個框架或下一頁，並在新寬度下清晰重繪；選取 WP 圖層時給出的 .xlsx / .csv 就是資料（工作表以儲存格行的形式）；Word 匯出會把圖作為圖片帶上。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.838.0
 
 ## CAD 與 3D
 
@@ -1171,7 +1225,6 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Blender 模式** — 選取 3D 圖層後，提示詞面板的 Edit 和 Refine 會先用 Blender 渲染場景，再基於這張圖片工作；結果進入 AI 面板，✔ 可將其中一個保留為圖層。 *Where:* 提示詞面板的下拉選單。 *Since:* 2.541.0
 - **Blender 圖層** — 在影像編輯器的畫布上使用時間軸的 Blender 場景工具（開啟 .blend、場景攝影機或自由檢視、移動 / 旋轉 / 縮放物件、儲存）；該檢視成為一個圖層，提示詞面板中的 Edit 會根據場景生成一個新圖層。 *Where:* 編輯器的 🟧 按鈕，或 Layer > New Blender Layer。 *Since:* 2.542.0
 - **配合 Blender 場景使用參考圖** — 在提示詞中提到 References 面板中的某張圖片（"the face of the woman in picture 1"），它就會與場景一起傳送給編輯模型；編號和該詞會被改成模型自己的寫法（image 2、<image2>、Picture 2）。 *Where:* 🟧 Blender 分頁 > References。 *Since:* 2.546.0
-- **恢復內建風格** — ↺ Built-in 列出缺失的內建影像或影片風格並將其恢復；Krea 2 風格會自動恢復一次。 *Where:* Settings > Image styles / Video styles。 *Since:* 2.547.0
 - **在 Blender 檢視中縮放** — 🔍＋ / 🔍－、Alt+拖曳（向前 = 放大，向後 = 縮小）以及 ⌖ Zoom to object (Z)；在影像編輯器中不顯示播放條和 Auto-key。 *Where:* Blender 場景工具的按鈕。 *Since:* 2.546.0
 - **按骨架選取繫結好的人物** — 點選帶蒙皮的身體會選取它的骨架，因此移動時整個人物隨之移動（而不只是控制項）。 *Where:* Blender 場景工具（時間軸和影像編輯器）。 *Since:* 2.550.0
 
@@ -1179,6 +1232,13 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 
 - **圖片轉 3D** — Hunyuan3D 2.1（形狀）或 TRELLIS.2（形狀和紋理）可從任意圖片生成 .glb。 *Where:* Gallery 和 Assets 圖片上的 3D 按鈕。 *Since:* 2.404.0
 - **用 AI 搭建場景** — 本地 LLM 用 58 類物件規劃 3D 場景和攝影機路徑，其餘部分使用 3D 模型；由 Blender 完成搭建。 *Where:* Blender 預覽的 Build 按鈕。 *Since:* 2.404.0
+
+### SolidCraft 參數化 CAD
+
+- **SolidCraft 全視窗** — SolidCraft 面板上的 ⛶ 會填滿整個視窗（標題欄和狀態列保留）並關閉其他面板；🗗 / Esc 將佈局恢復原樣。 *Where:* 📐 SolidCraft 面板。 *Since:* 2.638.0
+- **📐 SolidCraft 面板** — 開源參數化 3D CAD（SolidCraft，MIT OR Apache-2.0）位於獨立面板中，包含 SolidCraft 的全部功能；設計和零件儲存在專案中，SolidCraft 的 Save 會使其保持最新；可將模型的圖片（或 SolidCraft 的渲染圖）送入影像編輯器，將模型作為時間軸 3D 圖層，將影像編輯器的草圖圖層送入 SolidCraft，並將 STEP / STL / OBJ / 3MF 匯入專案。 *Where:* 狀態列中的 📐 SolidCraft；Settings ▸ Add-ons ▸ SolidCraft。 *Since:* 2.578.0
+- **從 SolidCraft 傳送** — 將零件傳送到影像編輯器、時間軸、📏 Sketcher（2.630.0：作為一個組——此前是 House builder）、Blender（隨之開啟並儲存為 .blend——找到 Blender 時顯示）和 Unreal（作為 Static Mesh 放入關卡——設定了 Unreal 專案時顯示；外掛 1.4.0）；僅在安裝了 SolidCraft 時顯示該面板。 *Where:* 📐 SolidCraft 的工具列。 *Since:* 2.579.0
+- **✨ 在 SolidCraft 中生成零件** — 文字描述或圖片 -> CadQuery 程式碼（cadrille，或帶錯誤修復的本地 LLM）-> SolidCraft 自身可編輯的草圖、拉伸、切除、孔、圓角和倒角（按體積校驗；否則將 STEP 作為單個實體匯入）；程式碼可編輯並重新執行。 *Where:* 📐 SolidCraft ▸ ✨ Generate；Settings ▸ Add-ons ▸ CAD generate。 *Since:* 2.581.0
 
 ### Sketcher 建模
 
@@ -1222,13 +1282,9 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **方正的牆端，從角部拖出牆** — 每面牆在角部以方正端頭收口（角部和自由端是獨立的構件）；用 Select 從角部的某一側或牆的端頭構件拖出，就會朝該方向生成一面新牆（從頂部拖出：任意方向），沿用原牆的高度、厚度和類型。 *Where:* Sketcher ▸ 在角部 / 牆端上使用 ➤ Select。 *Since:* 2.662.0
 - **拆分牆、草圖平面、Look at** — 雙擊牆即可拆分（3D 或平面圖中）；選取一段可刪除或拖出，新牆會將其與房間連線；Wall 工具可在房間牆上任意位置開始 / 結束；角部 / 牆端可設寬度（牆垛）；點選的面即為繪圖工具所用的草圖平面（2.687.0：不再在其上疊加繪製任何內容），⊥ Look at 正對該面；2.688.0：點選牆的端頭構件會選取整面牆，雙擊則從該端推 / 拉牆，Ctrl+拖曳使移動保持水平 / 豎直，工具條始終留在螢幕上，✨ Photo 的提示詞只提及模型中實際存在的東西。 *Where:* Sketcher ▸ ➤ Select、✏ Wall、⊥ Look at。 *Since:* 2.663.0
 - **⇄ 上一次設定** — 位於提示詞面板的影像 / 影片風格下拉選單旁：在目前風格和上一個風格之間切換；開啟 Override style 時，其 Basic Settings 數值和臨時 LoRA 也會一併恢復；儲存在 model_settings.tmp 中（2.683.0：應用自身更換風格時同樣有效；— none — / — template — 也計入）。 *Where:* 提示詞面板 ▸ ⇄。 *Since:* 2.680.0
-- **P-H3 Image** — PrunaAI 基於 MiniMax H3 的影像模型：*P-H3 Image* 風格（文生圖，4-8 MP）和 *P-H3 Image Edit*（最多借助 7 張參考圖編輯圖片，被編輯的是 `<image1>`）；它自帶的提示詞擴寫器會把簡短的請求擴寫成完整的提示詞。Settings ▸ Add-ons ▸ P-H3 Image 會下載其 LoRA、文字編碼器、VAE 和擴寫器（約 17 GB），配合影片已在使用的 MiniMax H3 FL2VA transformer。需要帶 P-H3 節點的 ComfyUI（master / nightly，0.44）；MiniMax H3 Community License。 *Where:* Settings ▸ Image ▸ P-H3 Image / P-H3 Image Edit。 *Since:* 2.678.0
-- **🎨 為圖片更換風格** — 影像預覽的外觀下拉選單 + 🎨 Change style（2.681.0：所選外觀會保持選取）會使用提示詞的影像風格，把目前顯示的圖片重新生成為 📷 Photoreal、🧸 Pixar、🧊 2.5D、🌸 Anime 或 🖍 Cartoon（編輯模型按指令修改並保留原圖；SDXL / FLUX 風格則對整張圖片進行精修）；開啟 Override style 時，Basic Settings 中的步數、CFG、種子、檢查點（checkpoint）和 LoRA 會一併使用；結果在預覽中開啟；圖片下方的進度列顯示各步驟（2.677.0）；⇆ Before / after 將原圖與結果並排顯示（2.679.0）。（2.685.0：SDXL / Pony / Illustrious 風格用其自己的工作流重新生成，因此 Override 對其生效；進度列會說明 Override 應用了哪些設定）（2.686.0：非編輯模型的風格會先繪製 ✏ 線稿，再通過其模型系列的線稿 ControlNet 從線稿渲染出該外觀） *Where:* 任意影像預覽 ▸ 外觀下拉選單 ▸ 🎨 Change style。 *Since:* 2.676.0
-- **🛤 道路工具** — 像 SimCity 一樣繪製道路：Dirt road、Street、Road、One-way、Avenue 和 Highway（車道、人行道、中央隔離帶、護欄、標線），貼合地面；坡度超過該類型的允許值時，⛏ 將地面開挖成均勻坡度，或 🚇 以隧道穿過（深谷上則架橋）；自動識別路口，並設定紅綠燈、停車 / 讓行標誌、停車線、人行橫道、路名牌和限速標誌；可選擇靠左或靠右行駛。 *Where:* Sketcher ▸ Ground ▸ 🛤 Road。 *Since:* 2.673.0
 - **簷溝截面** — 屋頂的簷溝是一個截面：內建 Quad、Half round、OG（ogee 正面）和 Square line，也可像踢腳線或頂角線一樣在截面編輯器中自己繪製（直線和貝塞爾曲線），沿每條簷口掃掠生成並配有落水管。 *Where:* Sketcher ▸ 屋頂 ▸ Gutters / Gutter profile / ✎ Gutter profiles…。 *Since:* 2.671.0
 - **貝塞爾截面編輯器** — 用節點和貝塞爾曲線繪製踢腳線、頂角線、框線和窗臺截面（內建圓弧各為一條曲線）；雙擊線段可新增節點，右鍵點選可將線段轉換為曲線 / 直線或刪除節點。 *Where:* Sketcher ▸ 踢腳線 / 頂角線 ▸ ✎ New / edit profiles…。 *Since:* 2.670.0
 - **更新和退出時清理 ComfyUI** — ⤓ Update ComfyUI 會先執行 misc\clear-comfy.bat（結束所有 ComfyUI 程序、釋放 8188 埠、清除其快取）；退出時同樣執行，並結束所有 bitGen Studio 程序、關閉終端視窗。 *Where:* Settings ▸ ComfyUI（Clear ComfyUI completely when bitGen Studio exits）。 *Since:* 2.669.0
-- **屋簷、封簷板和簷溝** — 每個屋頂的簷口可設為 Simple、Open（外露椽尾）、Boxed（平底簷口板）或 Closed（沿坡面襯板），配封簷板 + 山牆封簷板，帶落水管的方形或半圓形簷溝，各有自己的顏色。 *Where:* Sketcher ▸ △ Roof / 選取的屋頂。 *Since:* 2.668.0
 - **物件面板：形狀、構造、重新命名** — Sketcher 的物件面板列出每個形狀（實體、形狀、線、組；點選即可選取，拖曳面可推 / 拉——組的面也可以），Construction 標題下列出平面（沿用草圖平面，或地面 / 正面 / 側面）和構造線（Tape measure + Ctrl，可被吸附），雙擊任意一行即可重新命名。 *Where:* Sketcher ▸ 🗂 Outline。 *Since:* 2.667.0
 - **屋頂類型** — 人字、四坡、單坡、荷蘭式人字、截角人字（jerkinhead）、復折式、孟莎式、鹽盒式、四角攢尖、蝶形、平屋頂以及隨牆屋頂，通過圖片選擇，每種都有各自的坡度 / 比例 / 翻轉設定。 *Where:* Sketcher ▸ △ Roof (Y) 或選取屋頂的面板。 *Since:* 2.666.0
 - **建築圖紙匯出為 PDF** — 每層的平面圖、四個立面圖以及屋頂 / 總平面圖，按比例繪製在 A4 - A1 圖紙上（橫向或縱向），可全部放在一張圖紙上，也可每頁一個檢視，帶以 mm 為單位的尺寸標註、標高、房間名稱和麵積，以及圖籤（指北針、比例尺、第 n 張 / 共 m 張）。 *Where:* Sketcher ▸ 📄 Plans。 *Since:* 2.665.0
@@ -1253,114 +1309,19 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Esc = Orbit** — 按一次 Esc 即放下目前工具並取消選取，在所有 Sketcher 檢視（3D、平面圖、攝影機檢視）中切換到 🔄 Orbit。 *Where:* Sketcher。 *Since:* 2.647.0
 - **房間寬度和長度** — 每個房間的面板都有 Width 和 Length（矩形保持其角點不動，其他形狀則被拉伸）；Room 工具的 Width × Length 一次點選即可放置該尺寸的房間。 *Where:* Sketcher ▸ 房間，Room 工具。 *Since:* 2.647.0
 - **從 Full Screen 生成** — 在 🎨 Full Screen 中，Alt+G 在畫布上方顯示 Layers 面板和 ⏳ Pending，Ctrl+P 顯示提示詞面板：選取圖層，▾ Edit 或 Generate，從 ⏳ Pending 中保留結果——全程不離開全螢幕畫布；調色盤為 Alt+P。 *Where:* 影像編輯器 ▸ 🎨 Full Screen。 *Since:* 2.646.0
-- **右鍵：Copy、Paste 和 Full Screen** — 影像編輯器的畫布選單有 Copy 和 Paste（新圖層）以及 🎨 Full Screen；在 Full Screen 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（開啟 / 關閉場景工具）、✨ Prompt（把提示詞停靠窗帶到前面）和 Exit Full Screen。*Where:* 影像編輯器 ▸ 右鍵點選畫布。*Since:* 2.809.0
-- **形狀模式、修剪、鏡像、偏移** — 形狀工具的形狀按鈕選擇模式：點選 = 新增，Shift+點選 = 選取的形狀變成它（下一個形狀替換它），Ctrl+點選 = 新增到它，Alt+點選 = 從它中減去，Ctrl+Alt+點選 = 相交；✂ 修剪剪掉輪廓上位於其他輪廓交點之間的一段（其餘首尾相連）；⇋ 翻轉 / 鏡像複製；⧈ 偏移擴大或縮小輪廓（圓角）；拿著形狀工具時也在右鍵選單中。*Where:* 影像編輯器 ▸ 形狀工具 (U)。*Since:* 2.810.0
-- **文書處理文字** — 像文書處理軟體一樣輸入的文件框：段落樣式（正文、標題、副標題、標題 1-3、引用、程式碼）、字型、字號、加粗 / 傾斜 / 底線 / 刪除線、下標 / 上標、顏色、突出顯示、含兩端對齊的對齊方式、行距、段前 / 段後間距、項目符號、編號、縮排；文章以整行在框之間流動；檔案 ▸ 新建文字文件… 隨文字增加自動新增頁面。*Where:* 影像編輯器 ▸ 文件文字工具 (T) / 檔案 ▸ 新建文字文件…。*Since:* 2.811.0
-- **文件文字中的表格** — 插入表格（行、列、標題行），Tab 在儲存格間移動（在最後一格新增一行），插入 / 刪除行和列，合併 / 拆分儲存格，標題行在每頁重複，邊框（所有 / 外側 / 無），儲存格底紋，儲存格對齊，拖曳列寬；長表格以整行延續。*Where:* 影像編輯器 ▸ 文件文字工具 ▸ ▦ Table ▾ / 右鍵點選儲存格。*Since:* 2.812.0
-- **每頁頁碼 + 多頁檢視** — Page Numbers…：格式（Page {page} of {pages} 等）、編號樣式與起始頁碼、位置、字型、字號、顏色 - 放在主頁上，因此每一頁（包括之後新增的頁面）都顯示自己的頁碼；檢視 ▸ Pages: One / Two / Many - 頁面並排或以網格顯示，點選即在原位置來到前面。*Where:* 影像編輯器 ▸ Pages 面板的 # / 檢視 ▸ Pages。*Since:* 2.813.0
-- **Word 檔案 (.docx) 匯出與匯入** — 檔案 ▸ 匯出 ▸ Word 文件 (.docx)…：文件文字連同段落樣式、字型、粗體 / 斜體 / 下劃線、顏色、連結、對齊、間距、清單和表格（列寬、標題行、合併儲存格、底紋、邊框），頁面大小、取自第一個文字框的頁邊距、主頁文字作為頁首 / 頁尾（使用 Word 自己的頁碼域）；檔案 ▸ 📂 開啟 Word 文件 (.docx)… 把它作為新的文字文件開啟。*Where:* 影像編輯器 ▸ 檔案。*Since:* 2.814.0
-- **文件文字中的批註和腳註** — 為選取詞語 💬 新建批註 (Ctrl+Alt+M)，批註清單（作者、時間、詞語；編輯、解決、刪除），檢視 ▸ 顯示批註；¹ 腳註 (Ctrl+Alt+F) 按文章順序編號，畫在顯示其編號的文字框底部，雙擊編輯；兩者都作為真正的 Word 批註 / 腳註匯出，並能匯入回來。*Where:* 影像編輯器 ▸ Document Text 工具列。*Since:* 2.815.0
-- **文件文字中的郵件合併** — «» 合併 ▾：📇 資料來源…（.csv / .tsv / 貼上的行），«» 插入合併域…（«Field»，輸入時為一個整體），用 ◀ / ▶ 切換記錄的預覽結果，🖨 完成併合併… - 包含所有記錄的一個 Word 文件、每條記錄一個 Word 文件（.zip，按模式命名），或 Word 郵件合併文件 + 其 .csv；全部記錄或某個範圍。*Where:* 影像編輯器 ▸ Document Text 工具列。*Since:* 2.816.0
-- **頂部欄的應用條** — 🖼 影像編輯器（✉ 郵件、▦ 電子表格、🎞 幻燈片推出後加入）| 📐 SolidCraft 📏 Sketcher 作為圖示放在工作區和 🔍 之後，移出狀態列；開啟時點亮，點選開啟 / 關閉。*Where:* 頂部欄。*Since:* 2.817.0
-- **用你自己的 AI 處理郵件** — 通過 IMAP / SMTP 連線你自己的郵箱（無需註冊；密碼加密儲存在本機）：資料夾、清單、閱讀窗格（不執行腳本，網際網路圖片按需顯示）、附件；LLM 給每封郵件標記緊急 / 重要 / 普通 / 低並說明理由（新郵件 ✨ 自動標記，“對我重要的事”），總結郵件，起草回覆；寫信視窗的 ✨ 幫我寫 和 ✨ 改寫；傳送、草稿、帶附件轉發。*Where:* 頂端列上的 ✉。*Since:* 2.818.0
-- **全部取消選取、雙擊變換、統一的形狀模式** — Ctrl+Shift+A 清除所有選取（選取範圍、選取的物件、選取、節點）；雙擊形狀或其在 Layers 中的列 = Move 工具的控制柄（無邊框），再次點選 = 旋轉 / 斜切；Lasso 的線條在任何圖片上都可見，Polygonal Lasso 和 Bézier 會顯示通往指標的下一條邊；屬性列上的 ◻ ⊕ ⊖ ⊗ ⊘ 讓所有形狀工具進入該模式，模式符號顯示在指標旁邊。 *Where:* 影像編輯器。 *Since:* 2.819.0
-- **✉ 郵件：儲存的帳戶、多封郵件、搜尋、資料夾** — 登入成功的 ✓ 測試會儲存帳戶（關閉對話框也會儲存變更）；Ctrl / Shift+點選選取多封郵件，一次執行 🗑 ★ ● 和 📁 移動 ▾；把郵件拖曳到資料夾上；在 🔍 中按 Enter 在伺服器上搜尋整個資料夾（from: / to: / subject: / body:）；⤓ 較舊的郵件；＋ 新增資料夾；收件人 / 副本 / 密件副本提示你郵件裡的聯絡人。 *Where:* 頂欄的 ✉。 *Since:* 2.820.0
-- **插入框架、排列、形狀和文字的漸層、真正的剪下** — Insert Into Frame：粗黑箭頭，點選封閉形狀後選取的圖層放入其中（填色作為背景，排列順序保持，隨框架移動和縮放）；右鍵點選物件可 Bring to Front / Forward、Send Backward / to Back（框架內的圖層留在框架內）；Gradient 工具的拖曳可填色向量形狀（仍是形狀）或文字（漸層覆蓋）；Shape 工具的相加 / 相減 / 相交產生一個真正的輪廓。 *Where:* 影像編輯器。 *Since:* 2.821.0
-- **▦ 試算表** — 由多張工作表組成的工作簿，公式在輸入時重新計算（SUM、IF、VLOOKUP、XLOOKUP、SUMIFS、日期、文字——約 50 個函式），點選儲存格即可把地址放進公式，填充柄複製公式並延續序列，複製 / 貼上（也可貼上其他程式的表格），插入 / 刪除行和列時公式隨之調整，數字格式，粗體 / 顏色 / 邊框 / 合併，排序、篩選、凍結、自動求和、工作表之間的引用、復原；以 .bgs 檔案儲存在專案中。*Where:* 頂部欄的 ▦。*Since:* 2.822.0
-- **▤ 設定儲存格格式（試算表）** — Ctrl+1 / ▤ 格式… / 右鍵：數字（常規、數值、貨幣、會計專用、日期、時間、百分比、分數、科學記數、文字、特殊、自訂——帶分節、顏色、條件、累計時間的真正數字格式程式碼）、對齊（縮排、跨列置中、分散對齊、自動換行、縮小字型填充、合併、文字方向、方向刻度盤 / 豎排）、字型、邊框（13 種線條、預置、對角線、可點選的預覽）、填充（調色盤、雙色漸層、17 種圖案）、保護（鎖定 / 隱藏 + 保護工作表）；只應用更改的專案。*Where:* ▦ 試算表。*Since:* 2.823.0
-- **✨ 試算表儀表板、Excel 檔案、圖表** — ⤒ 匯入 / ⤓ 匯出 .xlsx（值、公式、數字格式、外觀、合併、列寬、凍結窗格）和 CSV；📊 圖表（柱形、條形、折線、面積、餅圖、圓環、散點）可拖曳、調整大小並隨工作簿儲存；✨ 儀表板：LLM 讀取列（不是行）並規劃關鍵數字、帶圖表的細分和趨勢——bitGen 用即時公式搭建，並把資料格式化為表格（沒有 LLM 時根據資料本身的形態）。*Where:* ▦ 試算表。*Since:* 2.824.0
-- **✨ 試算表儲存格中的 AI** — ✍ 根據文字編寫公式（填入前先計算，可向下填充）、💡 解釋公式（目前讀取的內容 + 通俗說明）、🪄 按範例填充（Ctrl+E：由 bitGen 自己找規則——詞、符號之間的部分、大小寫、首字母縮寫——否則用 LLM 的公式，且必須能得出每個範例，再不行則由 LLM 填值並註明是推測）；新增 33 個函式（PROPER、TEXTJOIN、MAXIFS、SUMPRODUCT、EOMONTH、SWITCH …）。LLM 看到的是列，不是行。*Where:* ▦ 試算表 ▸ ✨ AI ▾。*Since:* 2.825.0
-- **📌 試算表常量——重複出現的金額** — 房租、工資、貸款：名稱、金額、每天 / 周 / 兩週 / 月 / 季度 / 年、開始日期、收入或支出、結束；從某天起的新金額不影響之前日期的原金額；⟳ 更新到最新 先顯示再按日期順序把每筆應記錄寫入帳本（餘額、防止重複記錄的 Ref、往前追加的金額勾選後更正），一步復原；公式中可用 =Rent / CONST("Rent", 日期)。*Where:* ▦ 試算表 ▸ 📌 常量。*Since:* 2.826.0
-- **📌 Paid to——常量的付款夠付到哪一天** — 房租付到哪一天：帳本中的付款從開始日期起逐日抵扣（一天 = 每週 ÷ 7）；常量清單顯示已付到的日期、落後 / 提前的天數和欠款；帳本的 Paid to 列顯示每筆付款後的日期（即時 =PAIDTO()）；常量也可以由你自己記入付款（租客每次不同的付款）。*Where:* ▦ 試算表 ▸ 📌 常量。*Since:* 2.827.0
-- **▦ 從提示詞停靠窗操作試算表** — 用 ＋ 附加 Excel / CSV 檔案即在試算表中開啟；說“create a dashboard”“format it”“received a payment of 540 for rent”“paid 80 for power yesterday”（received = 收入，paid = 支出——先顯示該行，再 ✔ 新增 按日期順序記入帳本）、“rent went up to 580 from 12/01/2027”“bring the ledger up to date”“explain this formula”…；普通聊天照常是聊天。*Where:* 提示詞停靠窗 + ▦ 試算表。*Since:* 2.828.0
-- **🖌 投影工具和 WP 圖層** — 在圖層中按下並拖到影子落下的位置（控點可再次移動；模糊 / 不透明度 / 顏色 / ✕ 移除）；文書處理圖層改為 WP 圖層（Layer ▸ New、WP 標記、✎ 在此 WP 圖層中輸入）。試算表的 Excel 匯出加入 Constants 工作表，開啟時恢復。*Where:* 🖌 影像編輯器（Shift+G）、▦ 試算表 ▸ 匯出。*Since:* 2.829.0
-- **🖌 透明度漸層和漸隱滑塊** — 在圖層（圖片、形狀、文字、WP 圖層、組）中按下並拖曳：沿線從開始 % 漸隱到結束 %，線性或徑向；拖曳兩端或菱形（漸隱到一半的位置）；漸層填充和投影也有同樣的菱形（漸隱 / 影子不透明度）。套索、鋼筆和曲線工具只有在距起點 5 px 以內結束時才閉合——否則線保持開放。*Where:* 🖌 影像編輯器（Shift+G）。*Since:* 2.830.0
-- **🎞 幻燈片** — 自己的簡報：幻燈片清單（拖曳重新排序）、7 種版式、6 種主題、帶專案符號的文字框、形狀、圖片（拖放 / 貼上）、吸附參考線、演講者備註、切換效果；▶ 全螢幕放映（F5）；儲存在專案中（.bgk），也可存為 PowerPoint（.pptx）。*Where:* 頂部欄的 🎞。*Since:* 2.831.0
-- **🎞 幻燈片：演講者檢視、開啟 PowerPoint、匯出 PDF** — 🎤 觀眾視窗顯示幻燈片時，你的螢幕上有幻燈片、下一張、備註和計時器；⤒ 開啟 .pptx 檔案（文字、形狀、圖片、組合、備註、切換效果、版式位置）；⤓ PDF（幻燈片，或幻燈片 + 備註）；旋轉控點；來自相簿 / 素材的圖片。*Where:* 🎞 幻燈片。*Since:* 2.832.0
-- **🎞 AI 製作幻燈片** — ✨ 根據主題或文字 / 大綱 / 檔案製作幻燈片（提示詞停靠欄的 LLM 規劃，帶演講者備註），圖片框用提示詞停靠欄的影像風格生成圖片，重寫 / 縮短 / 修正幻燈片，根據幻燈片寫演講者備註；在提示詞停靠欄中說“make slides about …”。*Where:* 🎞 幻燈片 ▸ ✨ AI ▾、提示詞停靠欄。*Since:* 2.833.0
-- **🖼 生成到選取範圍 / 整個畫布；編輯：區域性重繪 / 填充 / 擴圖** — 開啟影像編輯器時，✨ 生成會畫進選取範圍（沒有選取範圍則按畫布形狀鋪滿整個畫布），作為新圖層；✏ 編輯像 Krita AI 外掛一樣選擇 自動 / 區域性重繪 / 填充 / 擴圖，使用提示詞停靠欄的編輯模型。*Where:* 提示詞停靠欄的 ▾ + 影像編輯器。*Since:* 2.834.0
-- **🎞 幻燈片：表格、圖表、品牌主題** — ▦ 表格和 📊 圖表（柱形、條形、折線、面積、餅圖、圓環圖），編輯器可貼上試算表儲存格，與 PowerPoint 互通真正的表格 / 圖表並繪入 PDF；🎨 用你的顏色和字型或標誌生成品牌主題，為所有專案儲存。*Where:* 🎞 幻燈片。*Since:* 2.835.0
-- **🖼 在空圖層上生成、非矩形選取範圍、WP 圖層、控點指標** — 空圖層 + ✨ 生成會用任何影像風格（勾選“覆蓋風格”時使用基本設定）填滿選取範圍形狀（或整個畫布），非矩形選取範圍外不留任何內容；非矩形選取範圍的填充為硬邊；點選 WP 圖層 = 文書處理；每個控點顯示自己的指標，拖曳時為強調色。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.836.0
-- **🖼 在形狀中生成、轉換為形狀、✨ 用 AI 撰寫** — 選取的形狀（包括鋼筆 / 貝塞爾 / 線條路徑）+ ✨ 生成會填滿形狀（閉合形狀變成裝著圖片的框架，開放線條按其區域裁切）；向量線條或路徑可轉換為帶填充和邊框的形狀；選取 WP 圖層時，提示詞停靠欄的 LLM 會把文章 / 報告 / 故事寫進去（也可依據 .txt、.md、.docx、.pdf 文件）——表格在正文中，圖表和圖片作為 WP 組中的圖層。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.837.0
-- **🖼 AI 的圖放在正文中、試算表作為資料** — ✨ 用 AI 撰寫 會把每個圖表 / 圖片放在討論它的段落之後，其圖層跟隨正文進入下一個框架或下一頁，並在新寬度下清晰重繪；選取 WP 圖層時給出的 .xlsx / .csv 就是資料（工作表以儲存格行的形式）；Word 匯出會把圖作為圖片帶上。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.838.0
-- **🖼 在正文中移動圖、圖放在正文旁邊** — 用移動工具拖曳文件中的圖會移動它在正文中的位置（一步復原）；◧ / ◨ 把它放在正文旁邊並讓正文圍繞，＋ / － 調整寬度，▭ 恢復整欄寬；說明文字始終在圖下方。*Where:* 影像編輯器。*Since:* 2.839.0
-- **🖼 開啟 Word 檔案時帶上圖片；WP 框架的邊緣就是頁邊距** — 開啟的 .docx 中的圖片作為正文中對應位置的圖帶入（替代文字 = 說明）；拖曳 WP 框架的邊緣會改變整篇文章該側的頁邊距（顯示毫米，一步復原）；圖層 ▸ 📏 WP 頁邊距… 以毫米輸入。*Where:* 影像編輯器。*Since:* 2.840.0
-- **🧾 範本：發票、報價單、收據** — 檔案 ▸ 🧾 從範本新建…（內建的發票 / 報價單 / 收據或你自己的）和 🧾 填寫框：欄位、明細、✨ 讓 AI 填寫；金額、稅額和總計由 bitGen 計算，並按範本編號；也可在提示詞停靠欄說出來；含 {{fields}} 和 {{item.*}} 行的任意文件用 檔案 ▸ 💾 另存新檔範本… 儲存。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.841.0
-- **🗄 由 AI 設計的資料庫（MySQL / MariaDB）** — 用於此專案、所有專案（bitGen 自己的 MariaDB，通過下載 / 取消框只下載一次，僅 127.0.0.1）或你自己伺服器上的資料庫；✨ 設計：LLM 以 SQL 編寫表、欄位、鍵、關聯、索引和檢視，先閱讀再 ▶ 執行（絕不刪除資料）；表 / 檢視、其行、SQL 框；在提示詞停靠欄說“為……建立一個數據庫”。*Where:* 頂部欄的 🗄 停靠欄。*Since:* 2.842.0
-- **🌐 用你的頁面建網站** — 影像編輯器文件的每一頁都成為一個網頁；檔案 ▸ 🌐 建網站… 生成靜態網站或 PHP + MySQL 網站，由 AI 用你原樣的文字和圖片編寫每頁自適應的 HTML / CSS（經過檢查；否則用 bitGen 自己的排版）；PHP + MySQL 帶公共頁首 / 頁尾、儲存到 MySQL 的聯絡表單、schema.sql；預覽和 .zip。*Where:* 影像編輯器。*Since:* 2.843.0
-- **📝 ✒ 🖼 🌐 影像編輯器頂部條上的四種檢視** — WP 檢視（頁面上下排列，寫作功能區：開始、插入、佈局、郵件、審閱、匯出）、向量檢視（調色盤、泊塢窗、標尺）、影像檢視（工具、顏色、屬性、圖層）和網頁檢視（每頁即一個網頁：新網站、＋ 網頁、建網站、快速預覽、在編輯器內按桌面 / 平板 / 手機寬度預覽）；也在視窗 ▸ 工作區中。*Where:* 影像編輯器。*Since:* 2.844.0
-- **⟷ 縮放到頁面寬度** — 頁面寬度填滿影像編輯器的畫布（為標尺留出空間），檢視頂部的那一行保持不動；在縮放工具的設定、頂部條、檢視 ▸ 頁面寬度、Shift+Ctrl+0 和 WP 檢視的佈局功能區中。*Where:* 影像編輯器。*Since:* 2.845.0
-- **📄 頁面屬性** — 頁面的範本（內建的文件、小冊子、傳單、海報、名片、摺頁、桌面 / 平板 / 手機網頁、社交帖子、幻燈片，或在所有專案中可用的你自己的範本）、以 mm 或 px 計的尺寸、方向、dpi，以及以 mm 計的頁邊距（顯示為不列印的虛線，可讓 WP 圖層適應頁邊距），可用於此頁或所有頁面。*Where:* 影像編輯器（檔案、右鍵、WP / 網頁功能區）。*Since:* 2.846.0
-- **📅 網站預約日曆** — 把 📅 日曆拖到網頁上，它的資料表會立即在專案的 MariaDB 中建立。設定包括每次預約的時長、每個時段人數、可提前天數、提前通知、帶休息的營業時間和時區，每種物件都可單獨設定樣式（月份名稱、星期、日期、今天、可預約 / 約滿 / 過去的日期、時段、預約按鈕）。PHP + MySQL 網站讓訪客檢視空閒時段並預約（有防偽造提交的檢查，絕不重複預約）；📅 預約清單顯示訪客的預約。*Where:* 影像編輯器的網頁檢視 + 🌐 建網站。*Since:* 2.846.0
-- **🧲 吸附按鈕和吸附到 WP 框** — 🧲 吸附、┼ 參考線、◰ 物件、▤ WP 框和頁邊距作為頂部工具條上的開關按鈕；移動、變換和繪製都會吸附（Ctrl = 自由）。*Where:* 影像編輯器的頂部工具條、檢視 ▸ 吸附到。*Since:* 2.847.0
-- **⟷ 不含頁邊距的頁寬** — ⟷ 頁寬旁邊的 ▯ 開關：關 = 頁邊距之間的區域填滿檢視。*Where:* 影像編輯器（頂部工具條、縮放工具選項、檢視選單）。*Since:* 2.847.0
-- **▦ 可選擇、刪除、調整大小和設定樣式的表格** — ⊞ 選擇整個表格；Del 刪除（Ctrl+Z 恢復），◢ 調整大小，🎨 表格樣式設定寬度、對齊、邊框、內邊距、顏色和條紋行；每行每列都可拖曳邊緣調整大小。*Where:* 影像編輯器中的 WP 圖層。*Since:* 2.847.0
-- **📅 任何頁面都能放日曆，預約功能完整** — 任何頁面上的列印月曆，或帶服務專案、緩衝時間、每天上限、確認、休息日、電子郵件，以及每次預約可檢視、加入日曆（.ics）或取消的連結的網站預約日曆。*Where:* 影像編輯器（WP 插入、網頁檢視、工具列）+ 🌐 建網站。*Since:* 2.847.0
-- **🔐 網站管理後臺和 myadmin 資料庫** — 有預約日曆（或勾選了）的 PHP 網站都會有 /admin/：用設定金鑰建立所有者，登入（所有者 / 管理員 / 員工）密碼錯 5 次鎖定，登入記錄和審計日誌；確認 / 取消 / 電話新增預約，工作室再次上傳時保留休息日和營業時間；為獸醫 / 牙科 / 診所準備的客戶、寵物和病歷，員工，以及完整的商店（商品、規格、庫存、分類、訂單、付款、發票、優惠券、配送、評價、電子報）——沒有資料庫 myadmin 時自動建立（給主機用的 admin-schema.sql）。*Where:* 🌐 建網站、📅 日曆設定 ▸ 資料庫。*Since:* 2.848.0
-- **影像編輯器的圖示工具列和 🔍 列印預覽** — 新建、開啟、儲存、另存新檔、列印、列印預覽、復原、重做、剪下、複製、貼上和 ✨ 建立以圖示放在選單下方；列印預覽按實際尺寸顯示每一頁，並作為一個任務列印全部頁面。*Where:* 影像編輯器，檔案 ▸ 🔍 列印預覽（Ctrl+F2）。*Since:* 2.849.0
-- **✨ 用 AI 建立** — LLM 按你的描述撰寫文件、故事、傳單、三折宣傳冊、名片、網站或發票，bitGen 在真實頁面（A4、A4 橫向、90 × 55 mm、網頁）上排版成可編輯的圖層，需要時還用你的影像風格生成圖片；絕不編造你的名稱、價格和聯絡方式。*Where:* 檔案 ▸ ✨ 用 AI 建立…、工具列的 ✨、提示詞停靠窗。*Since:* 2.849.0
-- **🛒 網站商店** — PHP + MySQL 網站會有商品目錄（分類、搜尋）、商品頁（選項、庫存）、購物車（優惠碼、滿額免運費、含稅或另加稅）、結帳（銀行轉帳 / 取貨時付款）和每個訂單的專用頁面；下單時一次完成扣減庫存、新增客戶並給買家和商店發郵件。*Where:* 影像編輯器，檔案 ▸ 🌐 建網站… ▸ 🛒 商店；商品和訂單在 /admin/。*Since:* 2.850.0
-- **🟧 影像編輯器的 Blender 選單** — 新建場景（Blender 建立空場景）、開啟、儲存、把 .glb / .gltf 模型匯入開啟的場景，以及最近 5 個場景；每項都在畫布上開啟場景工具，成為新的 Blender 圖層；Blender 圖層的設定在屬性底部。*Where:* 影像編輯器頂部的 🟧 ▾，檔案 ▸ 🟧 新建 / 開啟 Blender 場景…。*Since:* 2.851.0
-- **對齊選取的表格** — 用 ⊞ 選取的表格可在框內左 / 置中 / 右對齊：框上的 ⯇ ↔ ⯈、Ctrl+L / E / R 或對齊按鈕。*Where:* 影像編輯器的 WP 圖層。*Since:* 2.851.0
-- **🌐 幫我建網站** — 一句話（“幫我的麵包店建個網站……”），LLM 規劃頁面、文字、顏色、商店商品和預約服務；bitGen 把每個頁面排版成可編輯的圖層（首屏、帶照片的部分、聯絡方式、預約日曆），用你的影像風格生成圖片並建網站——帶商店、預約、聯絡表單和管理區的 PHP + MySQL，或普通 HTML；商品進入商店資料庫。*Where:* 影像編輯器，檔案 ▸ 🌐 幫我建網站…、網頁檢視的 ✨、提示詞停靠窗。*Since:* 2.852.0
-- **🎬 主視覺影片和 🛒 商品圖片** — 幫我建網站可加入 5 秒首屏影片（你的影片風格，從首屏照片生成；在網站上靜音迴圈播放），🛒 商品圖片 用編輯模型（優先 Qwen Image Edit）、影像編輯器或檔案修改商店每個商品的圖片，然後重新生成網站
-- **⤴ 將網站釋出到 GitHub** — 把最近一次生成的網站傳送到 GitHub 倉庫（不存在時建立為私有；只發送有變化的檔案，每次釋出一個提交），權杖加密儲存，inc/config.php 和 README.txt 永不傳送；主機用 Plesk ▸ Git 或可選的 FTP 工作流部署
-- **🟧 Blender 技能** — ✨ 用 AI 建模：LLM 藉助 Blender 技能表編寫 Blender 腳本，執行前顯示並檢查（不讀寫檔案、不聯網、不執行程式），在場景副本上無視窗執行，錯誤由 LLM 修復，預覽 + QA，作為 Blender 圖層開啟；🧰 Blender 工具：LOD、UV 打包、烘焙貼圖、遊戲引擎匯出、卡通風格、時間段、天氣、轉檯、QA（Blender 5.2+，blender-skills MIT）
-- **🌐 網頁編輯器** — 專案 www 資料夾的停靠窗（專案 ▸ 新建 ▸ ☑ 網站 會連同網站各資料夾和初始頁面一起建立）：🗂 CRM（頁面、文章、商品 + 客戶、預約、訂單、留言）、✎ 所見即所得、</> 程式碼和 👁 預覽分頁，右側可摺疊的檔案面板
-- **🗄 網站的即時資料庫** — 網頁編輯器的 CRM 建立網站的資料庫（在這臺電腦或你的主機上），包含管理、商店、預約和聯絡表單的表，匯入專案的記錄並連結到它：客戶、預約、訂單和留言即時讀寫；inc/config.php 讓網站指向它（絕不寫入密碼）
-- **🌐 生成到 www + ⤴ 釋出 www** — 建網站可把生成的網站放入專案的 www 資料夾（你的檔案和 inc/config.php 會保留），網頁編輯器把 www 釋出到 GitHub（只發送有變化的檔案，絕不傳送 inc/config.php）
-- **🧩 網頁技能** — 圖片 / 影片 / 音訊 / 3D 畫廊、主題、佈局、AJAX、帶分類的商品目錄、商品頁、購物車 + 結帳（在伺服器上計價，儲存到 CRM 的資料庫）和會員登入（密碼雜湊、CSRF、輸錯後等待）——＋ 連同檔案新增到開啟的頁面，或 ✨ 由 AI 用它們編寫一部分
-- **📤 把網站傳送到你的主機** — 通過 FTP / FTPS 把 www 資料夾直接傳送到 cPanel（GoDaddy 等）或 Plesk：✓ 測試、只發送改動的檔案、刪除的檔案會被移除、inc/config.php 只在主機上沒有時傳送（± 資料庫密碼，只寫入主機）、密碼加密儲存；cPanel 上網站的資料庫以 localhost 連線
-- **📅 📰 📍 更多網頁技能** — 基於 CRM 預約日曆的預約元件（空閒時間在伺服器上再次檢查，進入 📅 預約）、來自 CRM 📰 文章的部落格 / 新聞頁、帶 OpenStreetMap 地圖的聯絡方式和進入 ✉ 留言的聯絡表單
-- **🌏 網頁技能卡片也用你的語言** — 🧩 技能 卡片的名稱、說明、分組和提示跟隨語言下拉選單（日本語 / 简体中文 / 繁體中文）
-- **💳 商店結帳可刷卡支付** — Stripe Checkout：買家在 Stripe 自己的頁面上付款，只有當 Stripe 就該訂單和金額確認已付款時（返回時和經簽名的 Webhook），訂單才標為已付款，CRM 中記一筆付款；金鑰在應用中加密儲存，只寫入主機的 inc/config.php
-- **</> 網頁建構器的程式碼編輯器** — 行號、著色的標籤 / CSS / JS / PHP、標出並列出未閉合的標籤（點選即跳到那裡）、快速標籤和快速註釋的左側工具列、Ctrl+/ 註釋行
-- **✨ 用 AI 編輯網站** — 網頁編輯器裡的提示面板：輸入或 🎙 說出要改什麼，LLM 把開啟的頁面（或僅所選部分）作為一次修改來改，可 ↶ 復原
-- **◧ WYSIWYG 區塊 + 📱 手機 / 平板** — WYSIWYG 分頁的圖示工具列（畫廊 ▸ 圖片 / 影片 / 音訊 / 3D、日曆、預約表、商品圖片、分類 ▸、首屏、頁首、頁尾）、📱 讓頁面適合手機和平板、🖥 ▭ 📱 寬度、頂部欄的 ⇡ 自動隱藏
-- **🎛 元素屬性** — 在 WYSIWYG 頁面上選取任何東西並設定樣式：尺寸、間距、每個角的半徑（或四個一起）、邊框、背景顏色 / 圖片 / 線性或徑向漸層、陰影 + 文字陰影、不透明度、文字
-- **🗄 網頁建構器的資料庫管理** — 在分頁中管理網站的資料庫：表 + 檢視、每次 50 行、雙擊修改儲存格、＋ 行、🗑、⌨ SQL（危險語句先詢問）、⤓ CSV / SQL / 整個資料庫、⤒ .sql
-- **🕺 時間軸動作捕捉（RGB MoCap）** — 設定 ▸ 附加元件 安裝 RGB MoCap（Windows）；時間軸的 🕺 動捕 為它準備片段、開啟它，並把它的 FBX / BVH 作為播放動畫的 🕺 3D 圖層帶回來
-- **✨ 在設定表標籤裡生成角色圖片** — 描述角色、選一個影像風格並點 ✨ Generate：圖片會在設定表的畫布中開啟，可直接拖框並生成設定表；勾選 Override style 時用這個風格自己的 Basic Settings 渲染。*Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ 🪪 Character sheet，在 📂 Load picture 下面。*Since:* 2.871.0
-- **🎞 H3 Long Video（40 秒及更長）** — 一個提示詞產生一段長的 MiniMax H3 影片：第一段是場景 + 風格，之後每段一個鏡頭，每個鏡頭從上一個鏡頭的最後一格開始，因此面孔和畫面流程保持一致；Characters: 段落保持每張面孔；可選 2K 處理。 *Where:* H3 Long Video (40 s) 影片風格、StoryBoard 的 ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
-- **🧍 用於角色設定表的 3D 人體模型** — bitGen Studio 自己的解剖學比例人體模型（男性 8 頭身 / 178 cm，女性 7.5 頭身 / 165 cm，自然的 A 字姿勢）作為設定表的起始圖片載入；Dress it（選用，預設關閉）用編輯風格穿上你描述的衣服。 *Where:* Character creator ▸ 🪪 Character sheet ▸ 🧍 Mannequin…。 *Since:* 2.873.0
-- **🪪 你自己的人體模型和設定表範本** — 加入你自己的人體模型圖片（🧍 Mannequin… ▸ Your mannequins），並上傳一張完成的角色設定表作為 Template：新的設定表遵循它的佈局——面板、檢視、姿勢、構圖——而角色來自你的圖片；所有專案都能用。 *Where:* Character creator ▸ 🪪 Character sheet。 *Since:* 2.874.0
-- **💳 用於名片、信紙、傳單和海報的業務資訊** — 圖像編輯器的 ✨ Create 會詢問公司、名字、職位、電話、電子郵件、網站、地址、服務、標誌、品牌顏色以及正面 / 背面的要求，並儲存（business/profiles.json）、原樣使用；新增 ✉ Letterhead（A4，附寫信用的 WP 框）和 🪧 Poster（A3）；標誌會放入。每個對話框右上角都有 ✕；選取圖形或文字會顯示 Properties。 *Where:* 圖像編輯器 ▸ ✨ Create With the AI。 *Since:* 2.875.0
-- **💳 名片尺寸——卡紙或 PVC** — 名片的業務資訊對話框有 Card size ▾：按國家分的卡紙 / 紙（澳洲 90 × 55 mm、美國 3.5 × 2 英寸、英國 / 歐洲 85 × 55、日本 91 × 55、中國 90 × 54、東歐 90 × 50、方形、迷你），或帶圓角的 PVC CR80 / CR79 / CR90 / CR100；名片按該尺寸（300 dpi）製作，尺寸與資訊一起保存。 *Where:* 圖像編輯器 ▸ ✨ Create With the AI ▸ 💳 Business card。 *Since:* 2.876.0
-- **📒 Accounts——帳簿** — 新的停靠窗，採用老式會計帳頁風格：收據、待付帳單和已開發票（附圖片 / PDF，GST 自動計算，部分付款），普通日記帳分錄，五種日記帳，分類帳，試算表，損益表，資產負債表，BAS GST 工作表（收付實現制或權責發生制），專案，待收 / 待付和逾期，澳大利亞會計科目表；每個企業一套帳簿。 *Where:* 頂欄的 📒。 *Since:* 2.877.0
-- **✍ Accounts 中的發票和報價單** — 編寫報價單和發票（客戶、地址、郵箱、ABN；每行數量 × 單價），報價單狀態和有效期、轉為發票，🖨 列印或另存為 PDF 的符合 ATO 要求的稅務發票（你的 ABN、每行 GST、免 GST 的行、$1,000 或以上的買方），付款方式；業務資訊中的 ABN 校驗。 *Where:* 📒 Accounts ▸ ＋ 📝 Quote / ＋ 📤 Invoice we sent。 *Since:* 2.878.0
-- **🧾 用影像編輯器製作的發票和報價單版式** — 影像編輯器的 File ▸ 🧾 Insert Field… 把欄位（你的企業、客戶、單據、合計——包括應付總額——和明細表）作為文字圖層放到頁面上，拖到該放的位置；儲存為發票或報價單模板，在 Accounts 的 Invoice / Quote layout ▾ 中選擇，🖨 用該單據的數字填好它。📒 Accounts 預設關閉——在 Settings ▸ Dockers 中開啟。 *Where:* 影像編輯器 ▸ File ▸ 🧾 Insert Field…；📒 Accounts ▸ Accounts。 *Since:* 2.879.0
-- **✨ AI 讀取收據、CSV、列印 BAS** — 📒 Accounts 中的 ＋ ✨ Read a receipt…（照片、掃描件或 PDF）：你的視覺模型讀取供應商、ABN、日期、明細、合計和 GST，bitGen 核對（日期、合計、GST 約 1/11、ABN、科目），填好對話方塊供你核對並儲存；每個列表和報表的 ⤓ CSV；BAS 工作表 🖨 列印 / PDF。 *Where:* 📒 Accounts。 *Since:* 2.880.0
-- **✉ 郵寄發票和 ⤺ 貸項通知單** — 發票 / 報價單 / 貸項通知單的 ⤓ PDF 檔案（bitGen 生成），✉ 在 ✉ Mail 中開啟附有 PDF、客戶郵箱、主題和正文的郵件，傳送後標記 ✉✓；⤺ 為發票開具貸項通知單（GST 登記時為 Adjustment Note），應用到發票或單獨退款，帳簿和 BAS 中作為減少調整。 *Where:* 📒 Accounts ▸ Documents。 *Since:* 2.881.0
-- **🏦 銀行對帳單與對帳** — 匯入網上銀行的對帳單（澳大利亞銀行的 CSV、OFX / QFX、QIF，或貼上），與帳簿匹配（自動匹配唯一的相同金額，建議未結髮票 / 帳單和以前用過的帳戶），✚ 從一行建立付款、支出、銷售或轉帳，⚖ 用期末餘額檢查並 ✔ 對帳。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.882.0
-- **🧾 稅務設定與 👷 工資發放** — 組織形式、BAS 頻率、GST、PAYG 預扣（工資帳戶、12 % 養老金）和 PAYG 分期預繳（T7 金額或 T2 比率）；工資發放生成日記帳（稅前、預扣稅、實發、養老金）；BAS 顯示 W1 / W2 / 4、T1 / T11 / T7 / 5A 和 8A / 8B / 9。不儲存稅號。 *Where:* 📒 Accounts ▸ 🧾 Taxes / ＋ 👷 Pay run。 *Since:* 2.883.0
-- **📇 名片排版頁** — 開啟的名片在 A4 或 US Letter 上排滿（A4 上 10 張 90 × 55 mm），居中，頁邊有裁切標記，背面在第 2 頁並映象以便雙面列印，可選間隙和出血；生成 PDF 儲存到專案並下載，按實際尺寸列印。 *Where:* 影像編輯器 ▸ File ▸ 📇 Business Card Sheet…。 *Since:* 2.884.0
-- **💵 向 ATO 付款和支付養老金** — 💵 向 ATO 付款…用一條分錄把一個 BAS 期間記入帳簿（1A 從 GST Collected 扣除，1B 從 GST Paid 扣除，代扣的 PAYG、分期繳納、捨去的分，標籤 9 記入 ATO 帳戶），並記錄你付了多少 - 現在、以後或分次 - 或退稅；從不記兩次，也從不算作 GST 調整；💵 支付養老金…按人支付工資發放所欠的養老金；🏦 銀行標籤會把兩者與對帳單匹配。 *Where:* 會計 ▸ 💵 向 ATO 付款… / 💵 支付養老金…；BAS 標籤。 *Since:* 2.889.0
-- **🌐 LLM 的網路搜尋** — 提示詞停靠窗的 🌐 讓聊天的 LLM 搜尋網路並閱讀頁面後再回答，並列出來源；設定 ▸ 常規中可選 Brave Search（預設關閉，金鑰加密）、你的 SearXNG 或 Wikipedia；只搜尋和閱讀——不下載、不安裝、不執行，不訪問本機或區域網地址，拒絕程式和壓縮包，去除指令碼，網頁內容視為不可信資料。 *Where:* 提示詞停靠窗 ▸ 🌐；設定 ▸ 常規。 *Since:* 2.885.0
-- **🔎 SearXNG 與 ⬇ 下載** — 設定 ▸ 常規中一鍵在本機安裝 SearXNG（免費，無需金鑰，Windows 也可以），聊天搜尋覆蓋整個網路；讓聊天下載圖片、影片或聲音時儲存到 <專案>/web/downloads/ 並顯示在相簿中——只在你要求時、只下載媒體（按型別和開頭位元組檢查），絕不執行。 *Where:* 設定 ▸ 常規 ▸ 🌐；提示詞停靠窗 ▸ 🌐；相簿。 *Since:* 2.886.0
-- **🧰 LLM 的檔案和命令** — 按下提示詞停靠窗的 🧰，聊天的 LLM 就在你選擇的一個資料夾中工作：自己列出、讀取和搜尋檔案，只有在你看過（更改顯示為紅 / 綠行，命令顯示其資料夾和時間限制）並點“是”之後才會更改檔案或執行命令；每個被更改的檔案都有備份，每次更改和命令都記錄在帶 ↶ 的日誌中；一次回答只能用網路或資料夾之一，所以網頁永遠無法更改你的檔案。 *Where:* 提示詞停靠窗 ▸ 🧰；設定 ▸ 常規 ▸ 🧰。 *Since:* 2.887.0
-- **🎛 LLM 的應用操作和技能** — 按下提示詞停靠窗的 🎛，聊天的 LLM 就會替你操作應用：寫提示詞，選擇風格或基本設定的值，按下生成，新增或渲染故事板場景，顯示停靠窗（語音聊天的操作，在螢幕上完成）；技能 - 某類工作的指示（內建四個：影片提示詞、從故事到故事板、圖片、音樂影片）以及你在 設定 ▸ 常規 ▸ 🎛 技能 中自己建立的 - 在符合要求時載入；讀過網頁後從不使用。 *Where:* 提示詞停靠窗 ▸ 🎛；設定 ▸ 常規 ▸ 🎛 技能。 *Since:* 2.888.0
-- **🎬 PAN 2（MBZUAI 的世界模型）** — 一種影片風格：用平常的話寫下發生的事情（或在參考停靠窗中放一張首幀圖片），PAN 2 就會生成影片 - 24 fps，預設 10 秒，最長 20 秒，按 1248 × 704 訓練；LLM 用 PAN 2 自己的改寫方針把你的話寫成 PAN 2 專用的結構化描述（一行提示詞會變成雜訊），經過檢查，LLM 沒有回應時則簡單包裝；PAN 2 的固定負面提示詞，加上 ⊖ 中的詞；參考停靠窗的第一個聲音鋪在下面。在 ComfyUI 自帶的節點中執行（0.46.0 或更新）；設定 ▸ 附加元件 ▸ PAN 2 會下載 int8 模型（32 GB 顯示卡）或 bf16（80 GB 以上）、Qwen3.5 9B 文字編碼器和 Wan 2.2 VAE。 *Where:* 提示詞停靠窗中的 PAN 2 影片風格；設定 ▸ 附加元件 ▸ PAN 2。 *Since:* 2.890.0
-- **🧩 PAN 2 的提示詞用 JSON** — PAN 2 影片風格旁的 { } JSON 讓 LLM 根據你的話（和首幀圖片）把 PAN 2 的 JSON 描述寫進提示詞框，帶縮排，可閱讀或編輯；提示詞還不是 JSON 時，生成會自動這樣做，然後傳送 JSON。 *Where:* 選取 PAN 2 影片風格的提示詞面板。 *Since:* 2.891.0
-- **💾 面板佈局儲存每個面板** — ⊞ 面板佈局 ▸ 💾 儲存佈局 會顯示已儲存（✓ 已儲存），並儲存每個面板 - 主列中的、擴充功能的、浮動視窗和命名 ▣ 面板 - 的位置、大小和狀態（正常、最小化、最大化、隱藏）；載入會全部恢復。 *Where:* 選單列的 ⊞ 面板佈局。 *Since:* 2.891.0
-- **🧯 視窗會自行恢復** — 桌面視窗崩潰或卡住時，會詢問 重新載入 / 重設面板和快取後重新啟動 / 退出；新版本或沒能啟動起來的一次啟動會清除快取，連續兩次還會重設面板 - 儲存在 backups\layout-auto-… 中，記錄在 logs\electron-crash.log；手動：設定 ▸ 面板 ▸ 🧯 重設面板和快取…；在瀏覽器中用 ?safe-layout=1。 *Where:* 桌面應用；設定 ▸ 面板。 *Since:* 2.891.0
-- **🏦 銀行附加功能：拆分、轉帳、規則** — ✚ Make… ▸ Split over several accounts 把對帳單上的一行記為每部分一行的收據或銷售（每行各自的 GST，顯示還需拆分的金額），勾選後則為無 GST 的日記帳，並按比例記住供下一行使用；你自己兩個帳戶之間的轉帳會根據另一份對帳單給出建議（↔），只建立一次並在兩份對帳單上都匹配——另一份對帳單稍後匯入時也會匹配；⚙ Rules… 列出記住的文字 → 帳戶 / 稅碼 / 拆分及待處理的行，✎ 更改（縮短為“officeworks”即可識別所有門店），🗑 刪除。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.892.0
-- **👷 每人的年度付款彙總** — 按人彙總一個財政年度（7 月 1 日至 6 月 30 日）的發薪記錄：發薪次數、首次和最後一次、稅前工資、預扣稅、實發、養老金、合計；任何有發薪記錄的年度；🖨 每人一頁（或全部，先給年度合計）可列印或存為 PDF，⤓ CSV——帳簿記錄，不是申報（Single Touch Payroll）。 *Where:* 📒 Accounts ▸ 👷 Pay summary…。 *Since:* 2.893.0
-- **🖼 由你的文字生成名片背景** — 名片正面和背面的描述成為兩個背景的提示詞（提示詞面板的影像風格，只有背景圖案——文字和標誌作為圖層放在其上；PVC 卡保留圓角；☐ Backgrounds = 純色）；企業資訊框更寬，所有輸入框都在框內。 *Where:* 影像編輯器 ▸ ✨ Create ▸ 💳 Business card。 *Since:* 2.893.0
-- **✨ 時間軸上的自動剪輯** — 把圖片和影片按音樂剪輯：找出歌曲的節拍，每個剪下點都在節拍上；LLM 用 video-shotcraft 的剪輯技法規劃鏡頭（停留的開場、主角鏡頭、熱鬧與平靜鏡頭交替並穿插標題卡的攀升段、高潮結尾、停留的收尾；每個鏡頭一種運動——推近、拉遠、平移、上升、Ken Burns、漂移、急推變焦、分步變焦、脈動；轉場——切換、疊化、推移、甩鏡、變焦——按兩側的能量選擇），沒有 LLM 時用 bitGen 自己的規劃；可修改的故事板，然後用時間軸自己的關鍵影格、標題、末尾淡出的歌曲放到新時間軸上，檢查後即可 ⚙ Compile。 *Where:* Timeline ▸ ✨。 *Since:* 2.894.0
-- **✨ 自動剪輯第 2 部分：聲音、閃白、變速、先看一遍** — 🔊 bitGen 自己的音效（在專案中由 ffmpeg 生成）與畫面對齊：在推移 / 變焦轉場上達到峰值的呼嘯聲、甩鏡的嗖聲、急推變焦的衝擊聲、閃白切 / 分步變焦 / 定格的打擊聲、標題卡的滴答聲、上升音 → 衝擊聲 → 閃光聲的收尾；絕不像機關槍；閃白切轉場（硬切上的白色畫面）；影片的定格後追上和慢動作（時間重對映）；👁 視覺模型檢視每張圖片 / 每段影片，LLM 按內容挑選鏡頭；提示詞面板中的 "auto edit …"。 *Where:* Timeline ▸ ✨、提示詞面板。 *Since:* 2.895.0
-- **📇 更多名片列印方式** — 檔案 ▸ 📇 名片拼版… 可選版式：🖨 家用印表機拼版（A4 / Letter；出血取自卡片自身邊緣）、🏷 你的標籤 / 帶齒孔的卡紙（輸入尺寸並按名稱儲存 - 不使用廠商範本；尺寸不同的卡片會縮放放入）、🏭 印刷廠拼版（SRA3、SRA4、A3、12 × 18、13 × 19 英寸、小報或自訂；每張卡片都有出血、套準色裁切線、套準標記、作業資訊行）或 ✂ 每頁一張（設定成品框和出血框）；📋 清單每行一張（團隊成員的名字 - 每一列替換卡片上的文字，根據企業資訊或該行的樣子推測；可設份數）；多頁文件的每一頁可作為不同的卡片。*Where:* 影像編輯器 ▸ 檔案 ▸ 📇 名片拼版…。*Since:* 2.896.0
-- **💳 企業資訊儲存在 MariaDB 中** — 企業資訊對話方塊的 🗄 儲存位置…：這臺電腦（一個檔案）、bitGen 自己的 MariaDB，或你的資料庫伺服器（在你的電腦之間共享）；✔ 儲存到那裡 會建立資料庫及其表（含標誌本身的企業資訊，服務和顏色每項一行）併發送這臺電腦上的資訊；儲存和刪除會立即傳送，⟳ 同步 取得其他電腦的更改（較新的副本優先）；資料庫沒有響應時更改在這臺電腦上等待，稍後傳送；會計、發票和名片讀取這臺電腦上的副本。*Where:* 影像編輯器 ▸ ✨ 建立 ▸ 💳 / ✉ / 📰 / 🪧 ▸ 🗄 儲存位置…。*Since:* 2.897.0
-- **🖼 參考排序 + 企業資料庫中的卡紙** — 在參考停靠欄中把圖片、影片或聲音拖到同類的另一項上即可調整順序（圖片 6 拖到圖片 1 上 = 圖片 1，其餘依次移動；提示詞中的 <Picture n> / <Video n> / <Audio n> 標籤隨之更新；隨專案儲存）；企業資訊儲存在資料庫中時，📇 卡紙也儲存到那裡（在電腦之間共享，每個名稱一種，資料庫無響應時等待）。*Where:* 參考停靠欄；📇 名片拼版。*Since:* 2.898.0
-- **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
-- **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Full Screen 中也可以（2.646.0）。 *Since:* 2.645.0
-- **攝影機移動和旋轉控制項** — 選取的攝影機會高亮顯示（無邊框），並顯示 X / Y / Z 移動箭頭：拖曳攝影機可在其目前高度上移動，拖曳箭頭可沿單軸移動（步長 1 cm）；雙擊可切換到旋轉環，再雙擊切回；點選其他物件則選取該物件。 *Where:* Sketcher ▸ Select，攝影機。 *Since:* 2.641.0
 - **每個部件的專屬屬性** — 在檢視或大綱中點選牆、地板、天花板、踢腳線、頂角線或地板樓板，會顯示其專屬面板：牆的長度、高度和內側顏色，地板的標高，天花板的類型；Delete 關閉該部件。 *Where:* Sketcher ▸ Select，🗂 Outline。 *Since:* 2.640.0
 - **踢腳線、頂角線、框線和窗臺的截面** — 圖片下拉選單中有 30 種內建截面；踢腳線沿牆掃掠，轉角斜接（在門框處止住），頂角線位於天花板下方，門窗套線環繞門（兩面）和窗，另有窗臺；✎ Profiles… 可繪製自訂截面（1 mm 網格上的點，按寬 / 高縮放）並儲存在專案中。 *Where:* Sketcher ▸ 踢腳線 / 頂角線 / 門 / 窗的面板。 *Since:* 2.640.0
 - **斜牆** — 雙擊牆頂新增一個切點，向上 / 向下拖曳（山牆端）；選取頂邊後拖曳或輸入其高度（單坡牆）；Delete 刪除切點 / 邊。 *Where:* Sketcher ▸ Select。 *Since:* 2.624.0
 - **隨牆而定的天花板和屋頂** — 房間的天花板可設為 None / Flat / Follows the walls' slope；隨牆的屋頂帶有簷口寬度。 *Where:* Sketcher ▸ 房間的面板，Y Roof。 *Since:* 2.624.0
 - **Sketcher 採用 bitGen 的配色；雙擊空白處 = Orbit** — 面板及其 3D 檢視使用主題顏色；雙擊空白處會取消所有選取並進入環繞。 *Where:* Sketcher。 *Since:* 2.624.0
 - **Sketcher 的獨立視窗和 File 選單** — ⛶ 讓它充滿標題欄與狀態列之間的整個 bitGen 視窗（之後 ⇲ Dock 將其放回，2.624.0），✕ 將其關閉；☰ File：新建、開啟、儲存、另存新檔、重新命名、匯入、匯出、傳送、刪除、關閉；🖼 → Image editor 和 🎞 → Timeline 按鈕；⌂ Cut-away。 *Where:* Sketcher 的標題欄和工具條。 *Since:* 2.620.0
+- **📷 讓相機在房屋中漫遊** — 在平面圖上拖曳相機，3D 檢視會透過它觀察；方向鍵使其轉向和俯仰，Shift / Alt 使其升高和降低。 *Where:* 🏠 House. *Since:* 2.532.0
+
+### 雷射切割和雕刻
+
+- **雷射刀路和 G-code** — Laser 面板：GRBL 或 Marlin 機器設定，每個圖層一個操作（Line 切割 / 劃線、Fill 填充線、Offset fill、Image 光柵雕刻 - 抖動、閾值或灰度），圖片圖層按中心線或輪廓描摹，用 ControlNet 前處理器從圖片生成線稿，帶時間和距離的刀路預覽，G-code 儲存到專案中。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
+- **通過 USB 或 Wi-Fi 傳送到雷射機** — Laser 面板連線機器（USB 序列埠或 Wi-Fi / TCP，由 bitGen 的伺服器保持，桌面應用中也可）：回原點、解鎖、走邊框、開始（先確認）、暫停 / 繼續、始終可用的 STOP、主控台；為自帶雷射軟體的機器匯出 SVG + PNG。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.804.0
 
 ## 橋接
 
@@ -1376,6 +1337,10 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **新增模型** — 將專案中的 3D 模型新增到開啟的場景。 *Where:* .blend 預覽的 Properties。 *Since:* 2.404.0
 - **預覽中的姿勢** — 轉動人物的骨骼；儲存和渲染時，Blender 會為該姿勢設定關鍵影格。 *Where:* .blend 預覽的 Pose 部分。 *Since:* 2.461.0
 - **送到影像編輯器** — 以目前姿勢和檢視將場景作為 3D 圖層傳送。 *Where:* .blend 預覽。 *Since:* 2.461.0
+- **從 Blender 圖層的場景 Generate + 即時 Blender 圖層** — 選取 Blender 圖層後 ✨ Generate 會用它的場景、提示詞和 References 面板的圖片生成圖片（編輯模型，或按場景強度使用圖片風格）；選取該圖層會再次開啟場景，選取其他圖層則關閉。*Where:* 影像編輯器 ▸ 🟧 Blender 分頁 + 提示詞面板。*Since:* 2.806.0
+- **隱藏 / 刪除橋接圖層時關閉其橋接** — 隱藏或刪除 Blender、3D（Daz / Blender）或 Unreal 圖層時，會關閉其在影像編輯器和時間軸中的場景 / 即時檢視（Blender 程序結束，Unreal View 停止，Daz 中等待執行的命令被丟棄）。 *Where:* 影像編輯器的 Layers（👁 / 刪除），時間軸的圖層. *Since:* 2.618.0
+- **對齊選取的表格** — 用 ⊞ 選取的表格可在框內左 / 置中 / 右對齊：框上的 ⯇ ↔ ⯈、Ctrl+L / E / R 或對齊按鈕。*Where:* 影像編輯器的 WP 圖層。*Since:* 2.851.0
+- **🌐 網頁編輯器** — 專案 www 資料夾的停靠窗（專案 ▸ 新建 ▸ ☑ 網站 會連同網站各資料夾和初始頁面一起建立）：🗂 CRM（頁面、文章、商品 + 客戶、預約、訂單、留言）、✎ 所見即所得、</> 程式碼和 👁 預覽分頁，右側可摺疊的檔案面板 *Since:* 2.855.0
 
 ### Daz Studio
 
@@ -1402,6 +1367,115 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **霧與體積霧** — 指數高度霧（密度、衰減、顏色、起始距離）與體積霧（反照率、消光、距離），以及霧預設。 *Where:* Lights 分頁，時間軸的 Lights & Fog。 *Since:* 2.476.0
 - **燈光工具** — 每盞燈在圖片上顯示為一個標記：拖曳可在畫面上移動，Shift-拖曳拉近或推遠，Alt-拖曳調整其朝向。 *Where:* 影像編輯器的 UNREAL 分頁，Lights。 *Since:* 2.476.0
 - **時間軸上的燈光** — 為 Unreal、MetaHuman 或 Unreal 攝影機片段設定同樣的燈光和霧，或將影像編輯器中的燈光和霧帶過來。 *Where:* 時間軸的 UNREAL 分頁，Lights & Fog。 *Since:* 2.476.0
+- **載入 UE 專案** — 選擇一個 Unreal 專案資料夾，bitGen 會放入（或更新）bitGen Bridge 外掛，啟用所需外掛，並以該專案重新啟動 Unreal。 *Where:* 選單列中的 🎮. *Since:* 2.513.0
+- **📺 Unreal 檢視** — 所選 Unreal / MetaHuman 圖層（影像編輯器）或 Unreal 片段（時間軸，位於播放頭處）的攝影機畫面，即時來自 Unreal；S / M / L、⏸、⚡ 讓 Unreal 在 bitGen 後臺保持流暢。Unreal 必須保持執行，但無需位於前臺。 *Where:* 影像編輯器（有 Unreal 圖層時開啟）；時間軸 UNREAL ▸ View ▸ 📺 Unreal View。 *Since:* 2.590.0 (bitGen Bridge 1.5.0)
+
+## 辦公：文件、試算表、簡報和郵件
+
+在同一個工作室裡寫作、排版、計算、演示和處理郵件，由你自己的 AI 協助。
+
+### 文件和桌面排版
+
+- **頁面與文件匯出** — 影像編輯器可製作多頁文件（A3 - A6、Letter、Legal、Tabloid、卡片、DL、自訂尺寸；縱向 / 橫向；72 - 300 dpi），每頁都有自己的圖層和復原歷史；Pages 清單可新增、複製、移動、重新命名和刪除頁面；Page setup；所有頁面及其圖層可匯出為 PDF（形狀為路徑，文字為真實文字，每個圖層是一個 PDF 圖層）、.ai、SVG 頁面或用於 .cdr 的包；.bgi 會儲存所有頁面。*Where:* Image editor ▸ File ▸ New Document with Pages…, Window ▸ Pages, File ▸ Export ▸ Document. *Since:* 2.799.0
+- **主頁、頁碼和對頁** — 主頁的圖層（頁首、頁尾、標誌、背景）顯示在每個使用它的頁面下方，可分配給所有 / 奇數 / 偶數頁；文字中的 {page} / {pages} / {name} 自動生成頁碼（1、i、I、a、A，可從任意數字開始），# 新增頁碼；對頁以跨頁顯示並可按跨頁匯出；主頁作為自己的圖層匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Window ▸ Pages. *Since:* 2.800.0
+- **連結文字框和文字繞排** — 段落文字從一個框流向另一個框、從一頁流向另一頁（＋ Frame、＋ Next page、Edit Story、Unlink），在任何框中輸入都會進入文章；文字帶間距繞排形狀（沿輪廓）和圖片；作為真實文字逐行匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
+- **印刷就緒 PDF** — 匯出時帶出血（邊緣內容延伸到裁切線之外）、裁切和套準標記、頁面資訊、TrimBox / BleedBox / MediaBox、CMYK 顏色和圖片（銅版紙 / 非塗布紙 / 新聞紙）以及嵌入字型。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
+- **文件文字中的表格** — 插入表格（行、列、標題行），Tab 在儲存格間移動（在最後一格新增一行），插入 / 刪除行和列，合併 / 拆分儲存格，標題行在每頁重複，邊框（所有 / 外側 / 無），儲存格底紋，儲存格對齊，拖曳列寬；長表格以整行延續。*Where:* 影像編輯器 ▸ 文件文字工具 ▸ ▦ Table ▾ / 右鍵點選儲存格。*Since:* 2.812.0
+- **每頁頁碼 + 多頁檢視** — Page Numbers…：格式（Page {page} of {pages} 等）、編號樣式與起始頁碼、位置、字型、字號、顏色 - 放在主頁上，因此每一頁（包括之後新增的頁面）都顯示自己的頁碼；檢視 ▸ Pages: One / Two / Many - 頁面並排或以網格顯示，點選即在原位置來到前面。*Where:* 影像編輯器 ▸ Pages 面板的 # / 檢視 ▸ Pages。*Since:* 2.813.0
+- **Word 檔案 (.docx) 匯出與匯入** — 檔案 ▸ 匯出 ▸ Word 文件 (.docx)…：文件文字連同段落樣式、字型、粗體 / 斜體 / 下劃線、顏色、連結、對齊、間距、清單和表格（列寬、標題行、合併儲存格、底紋、邊框），頁面大小、取自第一個文字框的頁邊距、主頁文字作為頁首 / 頁尾（使用 Word 自己的頁碼域）；檔案 ▸ 📂 開啟 Word 文件 (.docx)… 把它作為新的文字文件開啟。*Where:* 影像編輯器 ▸ 檔案。*Since:* 2.814.0
+- **文件文字中的批註和腳註** — 為選取詞語 💬 新建批註 (Ctrl+Alt+M)，批註清單（作者、時間、詞語；編輯、解決、刪除），檢視 ▸ 顯示批註；¹ 腳註 (Ctrl+Alt+F) 按文章順序編號，畫在顯示其編號的文字框底部，雙擊編輯；兩者都作為真正的 Word 批註 / 腳註匯出，並能匯入回來。*Where:* 影像編輯器 ▸ Document Text 工具列。*Since:* 2.815.0
+- **文件文字中的郵件合併** — «» 合併 ▾：📇 資料來源…（.csv / .tsv / 貼上的行），«» 插入合併域…（«Field»，輸入時為一個整體），用 ◀ / ▶ 切換記錄的預覽結果，🖨 完成併合併… - 包含所有記錄的一個 Word 文件、每條記錄一個 Word 文件（.zip，按模式命名），或 Word 郵件合併文件 + 其 .csv；全部記錄或某個範圍。*Where:* 影像編輯器 ▸ Document Text 工具列。*Since:* 2.816.0
+- **頂部欄的應用條** — 🖼 影像編輯器（✉ 郵件、▦ 電子表格、🎞 幻燈片推出後加入）| 📐 SolidCraft 📏 Sketcher 作為圖示放在工作區和 🔍 之後，移出狀態列；開啟時點亮，點選開啟 / 關閉。*Where:* 頂部欄。*Since:* 2.817.0
+- **🖼 在正文中移動圖、圖放在正文旁邊** — 用移動工具拖曳文件中的圖會移動它在正文中的位置（一步復原）；◧ / ◨ 把它放在正文旁邊並讓正文圍繞，＋ / － 調整寬度，▭ 恢復整欄寬；說明文字始終在圖下方。*Where:* 影像編輯器。*Since:* 2.839.0
+- **🖼 開啟 Word 檔案時帶上圖片；WP 框架的邊緣就是頁邊距** — 開啟的 .docx 中的圖片作為正文中對應位置的圖帶入（替代文字 = 說明）；拖曳 WP 框架的邊緣會改變整篇文章該側的頁邊距（顯示毫米，一步復原）；圖層 ▸ 📏 WP 頁邊距… 以毫米輸入。*Where:* 影像編輯器。*Since:* 2.840.0
+- **🧾 範本：發票、報價單、收據** — 檔案 ▸ 🧾 從範本新建…（內建的發票 / 報價單 / 收據或你自己的）和 🧾 填寫框：欄位、明細、✨ 讓 AI 填寫；金額、稅額和總計由 bitGen 計算，並按範本編號；也可在提示詞停靠欄說出來；含 {{fields}} 和 {{item.*}} 行的任意文件用 檔案 ▸ 💾 另存新檔範本… 儲存。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.841.0
+- **📅 任何頁面都能放日曆，預約功能完整** — 任何頁面上的列印月曆，或帶服務專案、緩衝時間、每天上限、確認、休息日、電子郵件，以及每次預約可檢視、加入日曆（.ics）或取消的連結的網站預約日曆。*Where:* 影像編輯器（WP 插入、網頁檢視、工具列）+ 🌐 建網站。*Since:* 2.847.0
+- **🛒 網站商店** — PHP + MySQL 網站會有商品目錄（分類、搜尋）、商品頁（選項、庫存）、購物車（優惠碼、滿額免運費、含稅或另加稅）、結帳（銀行轉帳 / 取貨時付款）和每個訂單的專用頁面；下單時一次完成扣減庫存、新增客戶並給買家和商店發郵件。*Where:* 影像編輯器，檔案 ▸ 🌐 建網站… ▸ 🛒 商店；商品和訂單在 /admin/。*Since:* 2.850.0
+- **🌐 幫我建網站** — 一句話（“幫我的麵包店建個網站……”），LLM 規劃頁面、文字、顏色、商店商品和預約服務；bitGen 把每個頁面排版成可編輯的圖層（首屏、帶照片的部分、聯絡方式、預約日曆），用你的影像風格生成圖片並建網站——帶商店、預約、聯絡表單和管理區的 PHP + MySQL，或普通 HTML；商品進入商店資料庫。*Where:* 影像編輯器，檔案 ▸ 🌐 幫我建網站…、網頁檢視的 ✨、提示詞停靠窗。*Since:* 2.852.0
+
+### 試算表
+
+- **▤ 設定儲存格格式（試算表）** — Ctrl+1 / ▤ 格式… / 右鍵：數字（常規、數值、貨幣、會計專用、日期、時間、百分比、分數、科學記數、文字、特殊、自訂——帶分節、顏色、條件、累計時間的真正數字格式程式碼）、對齊（縮排、跨列置中、分散對齊、自動換行、縮小字型填充、合併、文字方向、方向刻度盤 / 豎排）、字型、邊框（13 種線條、預置、對角線、可點選的預覽）、填充（調色盤、雙色漸層、17 種圖案）、保護（鎖定 / 隱藏 + 保護工作表）；只應用更改的專案。*Where:* ▦ 試算表。*Since:* 2.823.0
+- **✨ 試算表儀表板、Excel 檔案、圖表** — ⤒ 匯入 / ⤓ 匯出 .xlsx（值、公式、數字格式、外觀、合併、列寬、凍結窗格）和 CSV；📊 圖表（柱形、條形、折線、面積、餅圖、圓環、散點）可拖曳、調整大小並隨工作簿儲存；✨ 儀表板：LLM 讀取列（不是行）並規劃關鍵數字、帶圖表的細分和趨勢——bitGen 用即時公式搭建，並把資料格式化為表格（沒有 LLM 時根據資料本身的形態）。*Where:* ▦ 試算表。*Since:* 2.824.0
+- **✨ 試算表儲存格中的 AI** — ✍ 根據文字編寫公式（填入前先計算，可向下填充）、💡 解釋公式（目前讀取的內容 + 通俗說明）、🪄 按範例填充（Ctrl+E：由 bitGen 自己找規則——詞、符號之間的部分、大小寫、首字母縮寫——否則用 LLM 的公式，且必須能得出每個範例，再不行則由 LLM 填值並註明是推測）；新增 33 個函式（PROPER、TEXTJOIN、MAXIFS、SUMPRODUCT、EOMONTH、SWITCH …）。LLM 看到的是列，不是行。*Where:* ▦ 試算表 ▸ ✨ AI ▾。*Since:* 2.825.0
+- **📌 試算表常量——重複出現的金額** — 房租、工資、貸款：名稱、金額、每天 / 周 / 兩週 / 月 / 季度 / 年、開始日期、收入或支出、結束；從某天起的新金額不影響之前日期的原金額；⟳ 更新到最新 先顯示再按日期順序把每筆應記錄寫入帳本（餘額、防止重複記錄的 Ref、往前追加的金額勾選後更正），一步復原；公式中可用 =Rent / CONST("Rent", 日期)。*Where:* ▦ 試算表 ▸ 📌 常量。*Since:* 2.826.0
+- **📌 Paid to——常量的付款夠付到哪一天** — 房租付到哪一天：帳本中的付款從開始日期起逐日抵扣（一天 = 每週 ÷ 7）；常量清單顯示已付到的日期、落後 / 提前的天數和欠款；帳本的 Paid to 列顯示每筆付款後的日期（即時 =PAIDTO()）；常量也可以由你自己記入付款（租客每次不同的付款）。*Where:* ▦ 試算表 ▸ 📌 常量。*Since:* 2.827.0
+- **▦ 從提示詞停靠窗操作試算表** — 用 ＋ 附加 Excel / CSV 檔案即在試算表中開啟；說“create a dashboard”“format it”“received a payment of 540 for rent”“paid 80 for power yesterday”（received = 收入，paid = 支出——先顯示該行，再 ✔ 新增 按日期順序記入帳本）、“rent went up to 580 from 12/01/2027”“bring the ledger up to date”“explain this formula”…；普通聊天照常是聊天。*Where:* 提示詞停靠窗 + ▦ 試算表。*Since:* 2.828.0
+- **🖌 投影工具和 WP 圖層** — 在圖層中按下並拖到影子落下的位置（控點可再次移動；模糊 / 不透明度 / 顏色 / ✕ 移除）；文書處理圖層改為 WP 圖層（Layer ▸ New、WP 標記、✎ 在此 WP 圖層中輸入）。試算表的 Excel 匯出加入 Constants 工作表，開啟時恢復。*Where:* 🖌 影像編輯器（Shift+G）、▦ 試算表 ▸ 匯出。*Since:* 2.829.0
+
+### 簡報
+
+- **🎞 幻燈片：演講者檢視、開啟 PowerPoint、匯出 PDF** — 🎤 觀眾視窗顯示幻燈片時，你的螢幕上有幻燈片、下一張、備註和計時器；⤒ 開啟 .pptx 檔案（文字、形狀、圖片、組合、備註、切換效果、版式位置）；⤓ PDF（幻燈片，或幻燈片 + 備註）；旋轉控點；來自相簿 / 素材的圖片。*Where:* 🎞 幻燈片。*Since:* 2.832.0
+- **🎞 AI 製作幻燈片** — ✨ 根據主題或文字 / 大綱 / 檔案製作幻燈片（提示詞停靠欄的 LLM 規劃，帶演講者備註），圖片框用提示詞停靠欄的影像風格生成圖片，重寫 / 縮短 / 修正幻燈片，根據幻燈片寫演講者備註；在提示詞停靠欄中說“make slides about …”。*Where:* 🎞 幻燈片 ▸ ✨ AI ▾、提示詞停靠欄。*Since:* 2.833.0
+- **🖼 生成到選取範圍 / 整個畫布；編輯：區域性重繪 / 填充 / 擴圖** — 開啟影像編輯器時，✨ 生成會畫進選取範圍（沒有選取範圍則按畫布形狀鋪滿整個畫布），作為新圖層；✏ 編輯像 Krita AI 外掛一樣選擇 自動 / 區域性重繪 / 填充 / 擴圖，使用提示詞停靠欄的編輯模型。*Where:* 提示詞停靠欄的 ▾ + 影像編輯器。*Since:* 2.834.0
+- **🖼 在空圖層上生成、非矩形選取範圍、WP 圖層、控點指標** — 空圖層 + ✨ 生成會用任何影像風格（勾選“覆蓋風格”時使用基本設定）填滿選取範圍形狀（或整個畫布），非矩形選取範圍外不留任何內容；非矩形選取範圍的填充為硬邊；點選 WP 圖層 = 文書處理；每個控點顯示自己的指標，拖曳時為強調色。*Where:* 影像編輯器 + 提示詞停靠欄。*Since:* 2.836.0
+
+### 郵件
+
+- **全部取消選取、雙擊變換、統一的形狀模式** — Ctrl+Shift+A 清除所有選取（選取範圍、選取的物件、選取、節點）；雙擊形狀或其在 Layers 中的列 = Move 工具的控制柄（無邊框），再次點選 = 旋轉 / 斜切；Lasso 的線條在任何圖片上都可見，Polygonal Lasso 和 Bézier 會顯示通往指標的下一條邊；屬性列上的 ◻ ⊕ ⊖ ⊗ ⊘ 讓所有形狀工具進入該模式，模式符號顯示在指標旁邊。 *Where:* 影像編輯器。 *Since:* 2.819.0
+- **插入框架、排列、形狀和文字的漸層、真正的剪下** — Insert Into Frame：粗黑箭頭，點選封閉形狀後選取的圖層放入其中（填色作為背景，排列順序保持，隨框架移動和縮放）；右鍵點選物件可 Bring to Front / Forward、Send Backward / to Back（框架內的圖層留在框架內）；Gradient 工具的拖曳可填色向量形狀（仍是形狀）或文字（漸層覆蓋）；Shape 工具的相加 / 相減 / 相交產生一個真正的輪廓。 *Where:* 影像編輯器。 *Since:* 2.821.0
+
+## 網站
+
+在影像編輯器中設計頁面，或讓 AI 建立整個網站，然後編輯它、加上商店和預約，再發布上線。
+
+### 建立網站
+
+- **📝 ✒ 🖼 🌐 影像編輯器頂部條上的四種檢視** — WP 檢視（頁面上下排列，寫作功能區：開始、插入、佈局、郵件、審閱、匯出）、向量檢視（調色盤、泊塢窗、標尺）、影像檢視（工具、顏色、屬性、圖層）和網頁檢視（每頁即一個網頁：新網站、＋ 網頁、建網站、快速預覽、在編輯器內按桌面 / 平板 / 手機寬度預覽）；也在視窗 ▸ 工作區中。*Where:* 影像編輯器。*Since:* 2.844.0
+- **🎬 主視覺影片和 🛒 商品圖片** — 幫我建網站可加入 5 秒首屏影片（你的影片風格，從首屏照片生成；在網站上靜音迴圈播放），🛒 商品圖片 用編輯模型（優先 Qwen Image Edit）、影像編輯器或檔案修改商店每個商品的圖片，然後重新生成網站
+- **⤴ 將網站釋出到 GitHub** — 把最近一次生成的網站傳送到 GitHub 倉庫（不存在時建立為私有；只發送有變化的檔案，每次釋出一個提交），權杖加密儲存，inc/config.php 和 README.txt 永不傳送；主機用 Plesk ▸ Git 或可選的 FTP 工作流部署 *Since:* 2.853.0
+- **🟧 Blender 技能** — ✨ 用 AI 建模：LLM 藉助 Blender 技能表編寫 Blender 腳本，執行前顯示並檢查（不讀寫檔案、不聯網、不執行程式），在場景副本上無視窗執行，錯誤由 LLM 修復，預覽 + QA，作為 Blender 圖層開啟；🧰 Blender 工具：LOD、UV 打包、烘焙貼圖、遊戲引擎匯出、卡通風格、時間段、天氣、轉檯、QA（Blender 5.2+，blender-skills MIT） *Since:* 2.854.0
+- **🧩 網頁技能** — 圖片 / 影片 / 音訊 / 3D 畫廊、主題、佈局、AJAX、帶分類的商品目錄、商品頁、購物車 + 結帳（在伺服器上計價，儲存到 CRM 的資料庫）和會員登入（密碼雜湊、CSRF、輸錯後等待）——＋ 連同檔案新增到開啟的頁面，或 ✨ 由 AI 用它們編寫一部分 *Since:* 2.858.0
+- **📅 📰 📍 更多網頁技能** — 基於 CRM 預約日曆的預約元件（空閒時間在伺服器上再次檢查，進入 📅 預約）、來自 CRM 📰 文章的部落格 / 新聞頁、帶 OpenStreetMap 地圖的聯絡方式和進入 ✉ 留言的聯絡表單 *Since:* 2.860.0
+
+### 網頁編輯器
+
+- **🗄 網站的即時資料庫** — 網頁編輯器的 CRM 建立網站的資料庫（在這臺電腦或你的主機上），包含管理、商店、預約和聯絡表單的表，匯入專案的記錄並連結到它：客戶、預約、訂單和留言即時讀寫；inc/config.php 讓網站指向它（絕不寫入密碼） *Since:* 2.856.0
+- **📤 把網站傳送到你的主機** — 通過 FTP / FTPS 把 www 資料夾直接傳送到 cPanel（GoDaddy 等）或 Plesk：✓ 測試、只發送改動的檔案、刪除的檔案會被移除、inc/config.php 只在主機上沒有時傳送（± 資料庫密碼，只寫入主機）、密碼加密儲存；cPanel 上網站的資料庫以 localhost 連線 *Since:* 2.859.0
+- **🌏 網頁技能卡片也用你的語言** — 🧩 技能 卡片的名稱、說明、分組和提示跟隨語言下拉選單（日本語 / 简体中文 / 繁體中文） *Since:* 2.861.0
+- **💳 商店結帳可刷卡支付** — Stripe Checkout：買家在 Stripe 自己的頁面上付款，只有當 Stripe 就該訂單和金額確認已付款時（返回時和經簽名的 Webhook），訂單才標為已付款，CRM 中記一筆付款；金鑰在應用中加密儲存，只寫入主機的 inc/config.php *Since:* 2.862.0
+- **✨ 用 AI 編輯網站** — 網頁編輯器裡的提示面板：輸入或 🎙 說出要改什麼，LLM 把開啟的頁面（或僅所選部分）作為一次修改來改，可 ↶ 復原 *Since:* 2.864.0
+- **◧ WYSIWYG 區塊 + 📱 手機 / 平板** — WYSIWYG 分頁的圖示工具列（畫廊 ▸ 圖片 / 影片 / 音訊 / 3D、日曆、預約表、商品圖片、分類 ▸、首屏、頁首、頁尾）、📱 讓頁面適合手機和平板、🖥 ▭ 📱 寬度、頂部欄的 ⇡ 自動隱藏 *Since:* 2.865.0
+- **🎛 元素屬性** — 在 WYSIWYG 頁面上選取任何東西並設定樣式：尺寸、間距、每個角的半徑（或四個一起）、邊框、背景顏色 / 圖片 / 線性或徑向漸層、陰影 + 文字陰影、不透明度、文字 *Since:* 2.866.0
+- **🗄 網頁建構器的資料庫管理** — 在分頁中管理網站的資料庫：表 + 檢視、每次 50 行、雙擊修改儲存格、＋ 行、🗑、⌨ SQL（危險語句先詢問）、⤓ CSV / SQL / 整個資料庫、⤒ .sql *Since:* 2.867.0
+
+### 商店、預約和網站資料庫
+
+- **🌐 用你的頁面建網站** — 影像編輯器文件的每一頁都成為一個網頁；檔案 ▸ 🌐 建網站… 生成靜態網站或 PHP + MySQL 網站，由 AI 用你原樣的文字和圖片編寫每頁自適應的 HTML / CSS（經過檢查；否則用 bitGen 自己的排版）；PHP + MySQL 帶公共頁首 / 頁尾、儲存到 MySQL 的聯絡表單、schema.sql；預覽和 .zip。*Where:* 影像編輯器。*Since:* 2.843.0
+- **🧲 吸附按鈕和吸附到 WP 框** — 🧲 吸附、┼ 參考線、◰ 物件、▤ WP 框和頁邊距作為頂部工具條上的開關按鈕；移動、變換和繪製都會吸附（Ctrl = 自由）。*Where:* 影像編輯器的頂部工具條、檢視 ▸ 吸附到。*Since:* 2.847.0
+- **🔐 網站管理後臺和 myadmin 資料庫** — 有預約日曆（或勾選了）的 PHP 網站都會有 /admin/：用設定金鑰建立所有者，登入（所有者 / 管理員 / 員工）密碼錯 5 次鎖定，登入記錄和審計日誌；確認 / 取消 / 電話新增預約，工作室再次上傳時保留休息日和營業時間；為獸醫 / 牙科 / 診所準備的客戶、寵物和病歷，員工，以及完整的商店（商品、規格、庫存、分類、訂單、付款、發票、優惠券、配送、評價、電子報）——沒有資料庫 myadmin 時自動建立（給主機用的 admin-schema.sql）。*Where:* 🌐 建網站、📅 日曆設定 ▸ 資料庫。*Since:* 2.848.0
+- **影像編輯器的圖示工具列和 🔍 列印預覽** — 新建、開啟、儲存、另存新檔、列印、列印預覽、復原、重做、剪下、複製、貼上和 ✨ 建立以圖示放在選單下方；列印預覽按實際尺寸顯示每一頁，並作為一個任務列印全部頁面。*Where:* 影像編輯器，檔案 ▸ 🔍 列印預覽（Ctrl+F2）。*Since:* 2.849.0
+- **🟧 影像編輯器的 Blender 選單** — 新建場景（Blender 建立空場景）、開啟、儲存、把 .glb / .gltf 模型匯入開啟的場景，以及最近 5 個場景；每項都在畫布上開啟場景工具，成為新的 Blender 圖層；Blender 圖層的設定在屬性底部。*Where:* 影像編輯器頂部的 🟧 ▾，檔案 ▸ 🟧 新建 / 開啟 Blender 場景…。*Since:* 2.851.0
+- **🌐 生成到 www + ⤴ 釋出 www** — 建網站可把生成的網站放入專案的 www 資料夾（你的檔案和 inc/config.php 會保留），網頁編輯器把 www 釋出到 GitHub（只發送有變化的檔案，絕不傳送 inc/config.php） *Since:* 2.857.0
+- **</> 網頁建構器的程式碼編輯器** — 行號、著色的標籤 / CSS / JS / PHP、標出並列出未閉合的標籤（點選即跳到那裡）、快速標籤和快速註釋的左側工具列、Ctrl+/ 註釋行 *Since:* 2.863.0
+- **🕺 時間軸動作捕捉（RGB MoCap）** — 設定 ▸ 附加元件 安裝 RGB MoCap（Windows）；時間軸的 🕺 動捕 為它準備片段、開啟它，並把它的 FBX / BVH 作為播放動畫的 🕺 3D 圖層帶回來 *Since:* 2.868.0
+
+## 商務和會計
+
+用你的企業資訊製作名片、信箋和印刷拼版，以及按傳統會計風格記帳。會計功能是新加入的，尚未經過測試：在依賴任何數字或進行申報之前，請先與你的會計師核對每一個數字。
+
+### 企業資訊、名片和印刷
+
+- **🗄 由 AI 設計的資料庫（MySQL / MariaDB）** — 用於此專案、所有專案（bitGen 自己的 MariaDB，通過下載 / 取消框只下載一次，僅 127.0.0.1）或你自己伺服器上的資料庫；✨ 設計：LLM 以 SQL 編寫表、欄位、鍵、關聯、索引和檢視，先閱讀再 ▶ 執行（絕不刪除資料）；表 / 檢視、其行、SQL 框；在提示詞停靠欄說“為……建立一個數據庫”。*Where:* 頂部欄的 🗄 停靠欄。*Since:* 2.842.0
+- **💳 名片尺寸——卡紙或 PVC** — 名片的業務資訊對話框有 Card size ▾：按國家分的卡紙 / 紙（澳洲 90 × 55 mm、美國 3.5 × 2 英寸、英國 / 歐洲 85 × 55、日本 91 × 55、中國 90 × 54、東歐 90 × 50、方形、迷你），或帶圓角的 PVC CR80 / CR79 / CR90 / CR100；名片按該尺寸（300 dpi）製作，尺寸與資訊一起保存。 *Where:* 圖像編輯器 ▸ ✨ Create With the AI ▸ 💳 Business card。 *Since:* 2.876.0
+- **📒 Accounts——帳簿** — 新的停靠窗，採用老式會計帳頁風格：收據、待付帳單和已開發票（附圖片 / PDF，GST 自動計算，部分付款），普通日記帳分錄，五種日記帳，分類帳，試算表，損益表，資產負債表，BAS GST 工作表（收付實現制或權責發生制），專案，待收 / 待付和逾期，澳大利亞會計科目表；每個企業一套帳簿。 *Where:* 頂欄的 📒。 *Since:* 2.877.0
+- **💵 向 ATO 付款和支付養老金** — 💵 向 ATO 付款…用一條分錄把一個 BAS 期間記入帳簿（1A 從 GST Collected 扣除，1B 從 GST Paid 扣除，代扣的 PAYG、分期繳納、捨去的分，標籤 9 記入 ATO 帳戶），並記錄你付了多少 - 現在、以後或分次 - 或退稅；從不記兩次，也從不算作 GST 調整；💵 支付養老金…按人支付工資發放所欠的養老金；🏦 銀行標籤會把兩者與對帳單匹配。 *Where:* 會計 ▸ 💵 向 ATO 付款… / 💵 支付養老金…；BAS 標籤。 *Since:* 2.889.0
+- **✨ 時間軸上的自動剪輯** — 把圖片和影片按音樂剪輯：找出歌曲的節拍，每個剪下點都在節拍上；LLM 用 video-shotcraft 的剪輯技法規劃鏡頭（停留的開場、主角鏡頭、熱鬧與平靜鏡頭交替並穿插標題卡的攀升段、高潮結尾、停留的收尾；每個鏡頭一種運動——推近、拉遠、平移、上升、Ken Burns、漂移、急推變焦、分步變焦、脈動；轉場——切換、疊化、推移、甩鏡、變焦——按兩側的能量選擇），沒有 LLM 時用 bitGen 自己的規劃；可修改的故事板，然後用時間軸自己的關鍵影格、標題、末尾淡出的歌曲放到新時間軸上，檢查後即可 ⚙ Compile。 *Where:* Timeline ▸ ✨。 *Since:* 2.894.0
+- **💳 企業資訊儲存在 MariaDB 中** — 企業資訊對話方塊的 🗄 儲存位置…：這臺電腦（一個檔案）、bitGen 自己的 MariaDB，或你的資料庫伺服器（在你的電腦之間共享）；✔ 儲存到那裡 會建立資料庫及其表（含標誌本身的企業資訊，服務和顏色每項一行）併發送這臺電腦上的資訊；儲存和刪除會立即傳送，⟳ 同步 取得其他電腦的更改（較新的副本優先）；資料庫沒有響應時更改在這臺電腦上等待，稍後傳送；會計、發票和名片讀取這臺電腦上的副本。*Where:* 影像編輯器 ▸ ✨ 建立 ▸ 💳 / ✉ / 📰 / 🪧 ▸ 🗄 儲存位置…。*Since:* 2.897.0
+- **🖼 參考排序 + 企業資料庫中的卡紙** — 在參考停靠欄中把圖片、影片或聲音拖到同類的另一項上即可調整順序（圖片 6 拖到圖片 1 上 = 圖片 1，其餘依次移動；提示詞中的 <Picture n> / <Video n> / <Audio n> 標籤隨之更新；隨專案儲存）；企業資訊儲存在資料庫中時，📇 卡紙也儲存到那裡（在電腦之間共享，每個名稱一種，資料庫無響應時等待）。*Where:* 參考停靠欄；📇 名片拼版。*Since:* 2.898.0
+
+### 📒 會計（未測試）
+
+- **✍ Accounts 中的發票和報價單** — 編寫報價單和發票（客戶、地址、郵箱、ABN；每行數量 × 單價），報價單狀態和有效期、轉為發票，🖨 列印或另存為 PDF 的符合 ATO 要求的稅務發票（你的 ABN、每行 GST、免 GST 的行、$1,000 或以上的買方），付款方式；業務資訊中的 ABN 校驗。 *Where:* 📒 Accounts ▸ ＋ 📝 Quote / ＋ 📤 Invoice we sent。 *Since:* 2.878.0
+- **🧾 用影像編輯器製作的發票和報價單版式** — 影像編輯器的 File ▸ 🧾 Insert Field… 把欄位（你的企業、客戶、單據、合計——包括應付總額——和明細表）作為文字圖層放到頁面上，拖到該放的位置；儲存為發票或報價單模板，在 Accounts 的 Invoice / Quote layout ▾ 中選擇，🖨 用該單據的數字填好它。📒 Accounts 預設關閉——在 Settings ▸ Dockers 中開啟。 *Where:* 影像編輯器 ▸ File ▸ 🧾 Insert Field…；📒 Accounts ▸ Accounts。 *Since:* 2.879.0
+- **✨ AI 讀取收據、CSV、列印 BAS** — 📒 Accounts 中的 ＋ ✨ Read a receipt…（照片、掃描件或 PDF）：你的視覺模型讀取供應商、ABN、日期、明細、合計和 GST，bitGen 核對（日期、合計、GST 約 1/11、ABN、科目），填好對話方塊供你核對並儲存；每個列表和報表的 ⤓ CSV；BAS 工作表 🖨 列印 / PDF。 *Where:* 📒 Accounts。 *Since:* 2.880.0
+- **✉ 郵寄發票和 ⤺ 貸項通知單** — 發票 / 報價單 / 貸項通知單的 ⤓ PDF 檔案（bitGen 生成），✉ 在 ✉ Mail 中開啟附有 PDF、客戶郵箱、主題和正文的郵件，傳送後標記 ✉✓；⤺ 為發票開具貸項通知單（GST 登記時為 Adjustment Note），應用到發票或單獨退款，帳簿和 BAS 中作為減少調整。 *Where:* 📒 Accounts ▸ Documents。 *Since:* 2.881.0
+- **🏦 銀行對帳單與對帳** — 匯入網上銀行的對帳單（澳大利亞銀行的 CSV、OFX / QFX、QIF，或貼上），與帳簿匹配（自動匹配唯一的相同金額，建議未結髮票 / 帳單和以前用過的帳戶），✚ 從一行建立付款、支出、銷售或轉帳，⚖ 用期末餘額檢查並 ✔ 對帳。 *Where:* 📒 Accounts ▸ 🏦 Bank。 *Since:* 2.882.0
+- **🧾 稅務設定與 👷 工資發放** — 組織形式、BAS 頻率、GST、PAYG 預扣（工資帳戶、12 % 養老金）和 PAYG 分期預繳（T7 金額或 T2 比率）；工資發放生成日記帳（稅前、預扣稅、實發、養老金）；BAS 顯示 W1 / W2 / 4、T1 / T11 / T7 / 5A 和 8A / 8B / 9。不儲存稅號。 *Where:* 📒 Accounts ▸ 🧾 Taxes / ＋ 👷 Pay run。 *Since:* 2.883.0
+- **📇 名片排版頁** — 開啟的名片在 A4 或 US Letter 上排滿（A4 上 10 張 90 × 55 mm），居中，頁邊有裁切標記，背面在第 2 頁並映象以便雙面列印，可選間隙和出血；生成 PDF 儲存到專案並下載，按實際尺寸列印。 *Where:* 影像編輯器 ▸ File ▸ 📇 Business Card Sheet…。 *Since:* 2.884.0
+- **🌐 LLM 的網路搜尋** — 提示詞停靠窗的 🌐 讓聊天的 LLM 搜尋網路並閱讀頁面後再回答，並列出來源；設定 ▸ 常規中可選 Brave Search（預設關閉，金鑰加密）、你的 SearXNG 或 Wikipedia；只搜尋和閱讀——不下載、不安裝、不執行，不訪問本機或區域網地址，拒絕程式和壓縮包，去除指令碼，網頁內容視為不可信資料。 *Where:* 提示詞停靠窗 ▸ 🌐；設定 ▸ 常規。 *Since:* 2.885.0
+- **👷 每人的年度付款彙總** — 按人彙總一個財政年度（7 月 1 日至 6 月 30 日）的發薪記錄：發薪次數、首次和最後一次、稅前工資、預扣稅、實發、養老金、合計；任何有發薪記錄的年度；🖨 每人一頁（或全部，先給年度合計）可列印或存為 PDF，⤓ CSV——帳簿記錄，不是申報（Single Touch Payroll）。 *Where:* 📒 Accounts ▸ 👷 Pay summary…。 *Since:* 2.893.0
+- **🖼 由你的文字生成名片背景** — 名片正面和背面的描述成為兩個背景的提示詞（提示詞面板的影像風格，只有背景圖案——文字和標誌作為圖層放在其上；PVC 卡保留圓角；☐ Backgrounds = 純色）；企業資訊框更寬，所有輸入框都在框內。 *Where:* 影像編輯器 ▸ ✨ Create ▸ 💳 Business card。 *Since:* 2.893.0
 
 ## 交付與格式
 
@@ -1418,6 +1492,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **In / Out 匯出與單幀** — 僅匯出標尺上的選定範圍，或將標記處的幀匯出為 PNG。 *Where:* Export 對話方塊，Ctrl+Shift+E。 *Since:* 2.410.0
 - **響度目標** — -14、-16、-23 或 -24 LUFS。 *Where:* Mix 對話方塊。 *Since:* 2.406.0
 - **字幕輸出** — 燒錄進畫面，或在每部影片旁生成 .srt 檔案。 *Where:* Captions 對話方塊。 *Since:* 2.406.0
+- **MP4 · 社交媒體匯出** — 生成 Facebook、Instagram 和 TikTok 可直接接受的檔案：H.264 High 8-bit、AAC 48 kHz 立體聲、恆定幀率、faststart、短邊最大 1080、無時間碼軌道；編碼後進行檢查（逐項顯示是否合格，9:16 影片超過 90 s 時另有提示）。社交媒體套裝可一次生成 9:16 Reels、4:5 資訊流、1:1 和 16:9。 *Where:* 時間軸的 📤 Export. *Since:* 2.597.0
+- **Basic Settings 的 Format 中的 📱 社交媒體選項** — Reels / Stories 9:16、Facebook 資訊流 4:5、Square 1:1、Landscape 16:9 或渲染本身的比例：Aspect 隨之改變，完成的 MP4 在進入相簿之前會處理成適合 Facebook / Instagram / TikTok 的格式（使用 Export 預設的設定並經過檢查）。 *Where:* Basic Settings > Format（以及音樂影片的 Format）. *Since:* 2.600.0
 
 ### 與其他編輯軟體交換
 
@@ -1445,12 +1521,6 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **中文和日文版指南與幫助** — 📖 Help 視窗、Ctrl+K 中的指南條目、❔ 幫助頁面、快捷鍵清單和 Guide PDF，提供簡體中文（中國大陸）、繁體中文（臺灣 / 香港，2.704.0）或日文版本；應用自身的按鈕保持英文，因此譯文用英文稱呼它們。若某一節的英文版較新，會註明這一點，並可一鍵切換到英文版。 *Where:* 📖 Help 或 ❔ 幫助頁面中的語言選擇器；docs/bitGen-Studio-Guide-zh-CN.pdf、-zh-TW.pdf、-ja.pdf。 *Since:* 2.703.0
 - **語言包** — 除英文外，每種語言都是一個語言包：⤒ 從 .zip 安裝（先進行檢查；已有的語言會先詢問是否替換），✕ 移除，檢視每個語言包的翻譯進度（應用、指南、幫助、快捷鍵、功能）；⤓ 主語言包 - 全部英文內容並附 TRANSLATING.txt - 用於將 bitGen Studio 翻譯成新語言；⤓ 匯出以供翻譯 會返回語言包，補入較新的英文並保留其譯文。 *Where:* 設定 ▸ 語言。 *Since:* 2.715.0
 - **社群語言包** — 社群分享的語言包列出其他人翻譯的語言包（來自 tigerart.com.au 上的 bitGen 社群，每個都經過管理員檢查）：⤓ 一鍵安裝；⇪ 分享以你的身份將已安裝的語言包傳送到社群，並可附上給管理員的留言；你分享的語言包顯示每個語言包是等待中、已分享還是未被接受（及原因），✕ 可將其撤下。網站的語言包頁面也列出這些語言包，並提供主語言包和上傳表單。 *Where:* 設定 ▸ 語言 ▸ 社群分享的語言包；tigerart.com.au/languages.php。 *Since:* 2.716.0
-- **更快的首幀（Auto）+ Qwen Image 2.1 Turbo8** — 場景卡片的 ✎ 首幀預設為 Auto：已安裝時用 Qwen Image Edit 2511 以 4 步生成（Apache 2.0——可以商用），超過三張圖片時用 Qwen Image 2.1 edit；新的 Qwen Image 2.1 edit Turbo8 樣式讓 Qwen 2.1 只需 8 步而非 25 步（Qwen Research License——非商業）。 *Where:* 場景卡片 ▸ ✎ 首幀 ▸ 樣式；設定 ▸ 模型 ▸ 模型目錄。 *Since:* 2.717.0
-- **渲染前檢查缺失的模型** — 渲染要載入的每個模型檔案（工作流的、樣式的，以及 Basic Settings 的）都會與 ComfyUI 模型路徑中已找到的模型檔案清單比對（misc/models_found.json，缺少某個名稱時重新生成）；對話方塊列出缺少的檔案及各自應放入的資料夾，⬇ Download 下載模型目錄中有的檔案後渲染自動開始，Cancel 則停止渲染；仍因缺少模型而停止的渲染會詢問是否下載（2.720.0）。 *Where:* 生成（圖片、影片、音樂）；🧩 Models ▸ ⟳ 重新生成清單。 *Since:* 2.719.0
-- **僅在模型改變時釋放顯示記憶體** — 連續使用同一模型的渲染會把它留在顯示卡上（不解除安裝、不重新載入）；換用其他模型或發生顯示記憶體不足的錯誤時，會先釋放顯示卡；也可以像以前一樣每次生成前釋放。 *Where:* 設定 ▸ ComfyUI ▸ Free VRAM before a generation ▸ Free it。 *Since:* 2.722.0
-- **最後使用的浮動面板在最上面** — 💬 Community、Basic Settings、LLM tokens、▣ 面板、你自己命名的面板、浮動的主面板、舞台面板和語音聊天，在應用程式其餘部分之上共用一個順序：點擊或打開其中一個，它就會到最上面（命名面板不會再遮住 Community）。 *Where:* 每個浮動面板。 *Since:* 2.724.0
-- **預覽中的歌曲：視覺化效果，Next 播放下一首** — 在預覽中對歌曲或聲音按 ▶，會開始一個隨機選擇的視覺化效果（條形、鏡像、波形、圓環、星空、漣漪；🎲 換一個）；Next / Prev 跳到所點擊面板中的下一首 / 上一首並播放。 *Where:* 預覽（在 Gallery、Assets 或 References 中點擊歌曲）。 *Since:* 2.725.0
-- **Neural blue 主題和 bitGen 大腦圖片** — 午夜海軍藍配電光藍強調色的主題；啟動畫面是大腦影片，左上角顯示標誌（自 2.752.0 起；此前隨機顯示片頭影片或大腦）；新安裝的第一個專案會在 Assets ▸ Images 中自帶這張圖片。 *Where:* Settings ▸ Themes、啟動畫面、Assets ▸ Images。 *Since:* 2.726.0
 
 ## 鍵盤快捷鍵
 
