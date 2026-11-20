@@ -209,6 +209,39 @@
    }
   },
   {
+   "id": "pan2",
+   "label": "PAN 2 (MBZUAI's world model - text / a first picture, up to 20 s)",
+   "modes": [
+    "t2va",
+    "fl2va"
+   ],
+   "workflow_hints": {},
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder (CLIPLoader type pan2)",
+     "hint": "qwen3.5_9b_int8_convrot.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "VAE",
+    "hint": "wan2.2_vae.safetensors"
+   },
+   "defaults": {
+    "steps": 50,
+    "cfg": 2.5,
+    "width": 1248,
+    "height": 704
+   },
+   "note": "2.890.0: PAN 2 in ComfyUI's own nodes (0.46.0 or newer; lib/pan2.js + misc/pan2_worker.py). Your words become PAN 2's structured caption (the LLM with PAN 2's own rewriter policy) - a one-line prompt comes back as noise. A first picture (the reference dock's first, or F/L's first frame) makes it image-to-video. 24 fps, 10 s by default, up to 20 s; trained at 1248 x 704; 50 steps, cfg 2.5, shift 9, euler / simple. No sound - the reference dock's first sound is laid under it. Settings ▸ Add-ons ▸ PAN 2 downloads the files.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "PAN 2's graph is built by its worker; the H3 accelerators do not apply."
+   }
+  },
+  {
    "id": "custom",
    "label": "Other (your own export)",
    "modes": [

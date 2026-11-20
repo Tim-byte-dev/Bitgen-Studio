@@ -113,7 +113,8 @@ def core_schemas():
                           "options": _folder_combo(["text_encoders", "clip"],
                                                    ["clip_l.safetensors"])},
             "type": {"type": "COMBO",
-                     "options": ["stable_diffusion", "minimax", "wan", "ltxv", "lumina2"]}}}},   # 2.729.0: + lumina2 (Z-Image)
+                     "options": ["stable_diffusion", "minimax", "wan", "ltxv", "lumina2"]
+                     + ([] if os.environ.get("STUB_PAN2_ABSENT") else ["pan2"])}}}},   # 2.729.0: + lumina2 (Z-Image); 2.890.0: + pan2 (v0.46.0)
         "VAELoader": {"input": {"required": {
             "vae_name": [_folder_combo(["vae"], ["Wan2.1_VAE.safetensors"])]}}},
         # 2.334.0: the swap looks for the H3 Character Swap LoRA here - a
@@ -148,6 +149,11 @@ def core_schemas():
         **({"KSampler": LTX25_REAL["KSampler"]} if "KSampler" in LTX25_REAL else {}),
         # 2.400.0: ComfyUI's core SeedVR2 nodes (comfy_extras/nodes_seedvr.py) + the video I/O around them
         **SEEDVR2_SCHEMAS,
+        # 2.890.0: PAN 2's latent node (comfy_extras/nodes_wan.py) with its real inputs - absent with STUB_PAN2_ABSENT
+        **({} if os.environ.get("STUB_PAN2_ABSENT") else {"Wan22ImageToVideoLatent": {"input": {"required": {
+            "vae": ["VAE"], "width": ["INT", {"default": 1280, "min": 32, "step": 32}], "height": ["INT", {"default": 704, "min": 32, "step": 32}],
+            "length": ["INT", {"default": 49, "min": 1, "step": 4}], "batch_size": ["INT", {"default": 1, "min": 1}]},
+            "optional": {"start_image": ["IMAGE"]}}, "output": ["LATENT"]}}),
         # 2.504.0: RunningHub's DLSS 5 pack (nodes.py INPUT_TYPES - all optional, as the pack declares them)
         **DLSS5_SCHEMAS,
         # 2.708.0: the DENO pack's RTX VFX finisher (STUB_RTXVFX_ABSENT=1 = a ComfyUI without the pack)
@@ -583,6 +589,57 @@ def render_relayvsr(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+def render_pan2(pid, g):
+    """2.890.0: a PAN 2 graph answered like ComfyUI's own PAN 2 support would: Wan22ImageToVideoLatent's width x height,
+    `length` frames at CreateVideo's fps, no sound. The wiring is checked the way the real nodes need it: the sampler's
+    latent is Wan22ImageToVideoLatent's, its positive / negative are CLIPTextEncodes on the CLIPLoader of type pan2, the
+    length is 4n+1, a start_image is a LoadImage of an uploaded file."""
+    def node(link):
+        return g.get(str(link[0])) if isinstance(link, list) and link else None
+    def err(nid, ct, msg):
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_start", {"prompt_id": pid, "timestamp": 1}],
+            ["execution_error", {"prompt_id": pid, "node_id": str(nid), "node_type": ct, "exception_type": "ValueError",
+                                 "exception_message": msg, "traceback": ["  File \"comfy_extras/nodes_wan.py\""]}]]},
+            "outputs": {}}
+    by = lambda ct: next(((k, v) for k, v in g.items() if v.get("class_type") == ct), (None, None))   # noqa: E731
+    lid, lat = by("Wan22ImageToVideoLatent")
+    sid, smp = by("KSampler")
+    _, cvid = by("CreateVideo")
+    li, si = (lat or {}).get("inputs") or {}, (smp or {}).get("inputs") or {}
+    if node(si.get("latent_image")) is not lat:
+        return err(sid, "KSampler", "latent_image must be Wan22ImageToVideoLatent's latent")
+    for k in ("positive", "negative"):
+        enc = node(si.get(k))
+        if not enc or enc.get("class_type") != "CLIPTextEncode":
+            return err(sid, "KSampler", f"{k} must be a CLIPTextEncode")
+        cl = node((enc.get("inputs") or {}).get("clip"))
+        if not cl or (cl.get("inputs") or {}).get("type") != "pan2":
+            return err(sid, "KSampler", f"{k}'s text encoder must be a CLIPLoader of type pan2")
+    n = int(li.get("length") or 0)
+    if n < 1 or (n - 1) % 4:
+        return err(lid, "Wan22ImageToVideoLatent", f"length {n} is not 4n+1")
+    if li.get("start_image") is not None:
+        ld = node(li.get("start_image"))
+        f = ((ld or {}).get("inputs") or {}).get("image")
+        if not ld or ld.get("class_type") != "LoadImage" or f not in UPLOADED:
+            return err(lid, "Wan22ImageToVideoLatent", f"start_image must be a LoadImage of an uploaded picture (got {f})")
+    w, h = int(li.get("width") or 1248), int(li.get("height") or 704)
+    if w % 32 or h % 32:
+        return err(lid, "Wan22ImageToVideoLatent", f"{w}x{h} is not in 32-px steps")
+    fps = float(((cvid or {}).get("inputs") or {}).get("fps") or 24)
+    fn = f"pan2_{pid}.mp4"
+    sw, sh = max(32, w // 4 // 2 * 2), max(32, h // 4 // 2 * 2)      # small, the shape kept - a stub need not be big
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={sw}x{sh}:rate={int(fps)}",
+                    "-frames:v", str(n), "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "ultrafast", str(OUT / fn)], check=False)
+    rec = {"_pan2": {k: (v.get("inputs") or {}) for k, v in g.items()},
+           "_classes": sorted({str(v.get("class_type", "")) for v in g.values()}), "_size": [w, h], "_frames": n, "_fps": fps}
+    Path(OUT / f"video_{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
+    sv = next((k for k, v in g.items() if v.get("class_type") == "SaveVideo"), "12")
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True},
+                 "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
+
+
 def render_dlss5(pid, g):
     """2.504.0: a DLSS 5 graph answered like the pack would: the LOADED video at the size DLSS picks (the pack's
     fixed factors / 1K-8K buckets - scripts/dlss5_graph.target states the same rule), as long as the source, at the
@@ -732,6 +789,9 @@ def _render(pid, g):
         return render_img_upscale(pid, g)              # 2.733.0
     if any(v.get("class_type") == "RelayVSRConditioning" for v in g.values()):
         return render_relayvsr(pid, g)                 # 2.728.0
+    if any(v.get("class_type") == "Wan22ImageToVideoLatent" for v in g.values()) and \
+            any((v.get("inputs") or {}).get("type") == "pan2" for v in g.values() if v.get("class_type") == "CLIPLoader"):
+        return render_pan2(pid, g)                     # 2.890.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
         return render_dlss5(pid, g)                    # 2.504.0
     if any(v.get("class_type") == "DenoRTXVFXVideoFinisher" for v in g.values()):

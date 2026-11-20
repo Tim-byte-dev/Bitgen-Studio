@@ -158,6 +158,7 @@ function mount(app) {
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run
+  require("./pan2").mount(app);        // 2.890.0: PAN 2 (MBZUAI's world model) from the prompt docker (lib/pan2.js) - the LLM writes its caption
   require("./sheetLibrary").mount(app);  // 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
   require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
@@ -670,6 +671,10 @@ function mount(app) {
       if (require("../lib/ltx").isLtxStyle(vs))
         return res.status(400).json({ error: `"${vs.name}" is an LTX style - it renders through the LTX modes `
           + "(the prompt docker sends it to /api/ltx; reload the page if this came from an old tab)." });
+      // 2.890.0: a PAN 2 style renders through POST /api/pan2 (routes/pan2.js - its caption is written first)
+      if (require("../lib/pan2").isPan2Style(vs))
+        return res.status(400).json({ error: `"${vs.name}" is a PAN 2 style - it renders through PAN 2's own path `
+          + "(the prompt docker sends it to /api/pan2; reload the page if this came from an old tab)." });
       // 2.368.0 (Tim: "add a wan2.1 style so we can use wan as well, also wan2.2"): a Wan style renders through
       // wan_worker.py - the request's own pictures / sound / size / length (lib/wan.fromGenerate)
       { const wan = require("../lib/wan");

@@ -93,6 +93,15 @@ MIT, `blender/skills/LICENSE`): the SKILL.md sheets are given to the LLM for ✨
 Blender tools (LODs, UV packing, baking, export, toon, time of day, weather, turntable, QA). They run in your own Blender
 (5.2 or newer), headless, on a copy of the scene.
 
+## 🎬 PAN 2's caption policy (2.890.0)
+
+`lib/pan2/system_prompt.md` and `lib/pan2/generic_negative.txt` are PAN 2's prompt rewriter policy and fixed negative from
+[ifm-ai/PAN2](https://github.com/ifm-ai/PAN2) (`inference/pan-prompt-rewriter/`, commit 0fb907b, Apache-2.0 - Copyright 2026
+MBZUAI, developed by the Institute of Foundation Models), unchanged: the policy is given to your LLM so it writes PAN 2's
+structured caption, the negative is sent with every PAN 2 render. The PAN 2 model files themselves are not shipped - Settings
+▸ Add-ons ▸ PAN 2 downloads Comfy-Org/PAN2's repacks (Apache-2.0; the Qwen3.5-9B text encoder and the Wan 2.2 VAE under their
+own Apache-2.0 licences).
+
 ## What is downloaded and run, not shipped
 
 | Tool | Role | Where it comes from |

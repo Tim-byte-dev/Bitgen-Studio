@@ -14614,6 +14614,16 @@ node scripts/test-889.js > /tmp/t889.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui889-ui.js > /tmp/ui889.log 2>&1 \
   && ok "2.889.0 browser test: Accounts' 💵 Pay the ATO… (the plan, lodge + pay, already lodged), 💵 Pay super… (owed, pay), the BAS tab's Lodge + pay this BAS…" \
   || { bad "2.889.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui889.log | head -12; }
+# ---- 2.890.0 (🎬 PAN 2 - MBZUAI's world model as a video style: lib/pan2.js, routes/pan2.js, misc/pan2_worker.py, scripts/pan2_graph.py)
+node scripts/test-890.js > /tmp/t890.log 2>&1 \
+  && ok "2.890.0 units: PAN 2's caption (its own rewriter policy to the LLM, checked like prompt_tools.py, asked again, wrapped when the LLM fails, a typed caption kept, the first picture described), the fixed negative, 4n+1 frames, the params, the add-on, the catalogue, arch, starter, family, wiring" \
+  || { bad "2.890.0 units"; grep -a "^FAIL" -A1 /tmp/t890.log | head -12; }
+python3 scripts/test-pan2890.py > /tmp/tp890.log 2>&1 \
+  && ok "2.890.0 graph + worker on the stub ComfyUI: CLIPLoader type pan2, the Wan 2.2 VAE, Wan22ImageToVideoLatent, shift 9, 50 steps cfg 2.5; text and image to video rendered, the sound laid under; an old ComfyUI and missing files said" \
+  || { bad "2.890.0 graph + worker"; grep -a "^FAIL" -A1 /tmp/tp890.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui890-ui.js > /tmp/ui890.log 2>&1 \
+  && ok "2.890.0 browser test: the PAN 2 style's hint, Generate -> /api/pan2 (words, seconds, size, seed, first picture, sound, ⊖ negative), the Download / Cancel box, GET /api/pan2, /api/pan2/caption, wrong style refused, /api/generate turns it away" \
+  || { bad "2.890.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui890.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

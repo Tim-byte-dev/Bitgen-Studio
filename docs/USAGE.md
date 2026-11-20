@@ -10025,6 +10025,25 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
 - Both are entries in the General Journal with a bank line, so the **🏦 Bank** tab matches them to your statement like any other
   payment. Lodge the BAS and pay the super through the ATO, your tax agent or your clearing house - this keeps the books in step.
 
+## 🎬 PAN 2 - a world model as a video style (2.890.0)
+
+- **PAN 2** is MBZUAI's 29B world model: it simulates what happens next and draws it as video - **24 fps, 10 s by default, up
+  to 20 s**, trained at **1248 × 704**. Pick the **PAN 2** video style in the prompt docker and press Generate. A picture in the
+  reference dock (or the one you typed **First frame**) starts the video - image to video; with no picture it is text to video.
+- **Write plain words.** PAN 2 was trained on long structured captions (the scene, the lighting, the camera, each actor and
+  every timed action) and a one-line prompt comes back as noise. bitGen sends your words to your LLM with **PAN 2's own
+  rewriter policy**, checks the caption it writes the way PAN 2's tools do (every second of the video covered, the camera moves
+  and actors named properly), asks once more when something is wrong, and wraps your words in a simple caption when no LLM
+  answers - the Queue log says which. With a first picture, your vision model describes it for the writer first. A caption you
+  paste in yourself is used as it is.
+- PAN 2's own fixed negative goes with every render; words in the **⊖** negative docker are added to it. PAN 2 makes no sound -
+  the reference dock's first sound is laid under the video. Basic Settings' seconds, size and seed are used; 50 steps, cfg 2.5,
+  shift 9 unless the style says otherwise.
+- **Settings ▸ Add-ons ▸ PAN 2** downloads the files into ComfyUI: the **int8** model (26.7 GB - for a 32 GB card like the
+  RTX 5090) or **bf16** (67.4 GB - for 80 GB cards), the Qwen3.5 9B text encoder and the Wan 2.2 VAE. PAN 2 runs in ComfyUI's
+  **own nodes since 0.46.0** - update ComfyUI first (Settings ▸ ComfyUI ▸ ⤓ Update ComfyUI) and restart it after the download.
+  If the files are missing, Generate offers the Download / Cancel box.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10068,6 +10087,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **FastH3 Omni** - the FastH3 recipe for MiniMax H3 graphs
 - **Veda** - the optional sparse-attention accelerator for MiniMax H3
 - **[MiniMax-H3-NativeAudio-MusicVideo-Workflow](https://github.com/Shrek3OnVH5/MiniMax-H3-NativeAudio-MusicVideo-Workflow)** (Shrek3OnVH5) - the music-video lip-sync workflow the MMH3_NativeAudio_MV style is built from (MIT)
+- **[PAN 2](https://github.com/ifm-ai/PAN2)** (the Institute of Foundation Models (IFM) at MBZUAI) - the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files
 
 ### Image models
 

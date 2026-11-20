@@ -46,6 +46,10 @@
       "label": "Video - H3 Long Video (MATLOWAI's fused turbo MiniMax H3; Settings ▸ Add-ons ▸ H3 Long Video)"
     },
     {
+      "id": "pan2",
+      "label": "Video - PAN 2 (MBZUAI's 29B world model, text / a first picture -> up to 20 s; Settings ▸ Add-ons ▸ PAN 2)"
+    },
+    {
       "id": "fibo",
       "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
     },
@@ -1545,6 +1549,50 @@
       "dest": "comfy/diffusion_models",
       "size": 20980178976,
       "for": "H3 Long Video (the chained 40 s+ MiniMax H3 shots)"
+    },
+    {
+      "id": "pan2_int8",
+      "group": "pan2",
+      "label": "PAN 2 (int8, 26.7 GB)",
+      "repo": "Comfy-Org/PAN2",
+      "file": "diffusion_models/pan2_int8_convrot.safetensors",
+      "as": "pan2_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 26700000000,
+      "for": "the PAN 2 video style (2.890.0; ComfyUI 0.46.0 or newer) - the one for a 32 GB card (RTX 5090)"
+    },
+    {
+      "id": "pan2_bf16",
+      "group": "pan2",
+      "label": "PAN 2 (bf16, 67.4 GB)",
+      "repo": "Comfy-Org/PAN2",
+      "file": "diffusion_models/pan2_bf16.safetensors",
+      "as": "pan2_bf16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 67400000000,
+      "for": "optional - the full-precision model for 80-96 GB cards (set it as the style's model)"
+    },
+    {
+      "id": "pan2_te",
+      "group": "pan2",
+      "label": "PAN 2 text encoder (Qwen3.5 9B int8)",
+      "repo": "Comfy-Org/PAN2",
+      "file": "text_encoders/qwen3.5_9b_int8_convrot.safetensors",
+      "as": "qwen3.5_9b_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 9800000000,
+      "for": "the PAN 2 video style (2.890.0; ComfyUI 0.46.0 or newer) (CLIPLoader type pan2 - the stock Qwen3.5-9B; MOSS-Image's file of the same name is the same model)"
+    },
+    {
+      "id": "pan2_vae",
+      "group": "pan2",
+      "label": "Wan 2.2 VAE",
+      "repo": "Comfy-Org/PAN2",
+      "file": "vae/wan2.2_vae.safetensors",
+      "as": "wan2.2_vae.safetensors",
+      "dest": "comfy/vae",
+      "size": 1400000000,
+      "for": "the PAN 2 video style (2.890.0; ComfyUI 0.46.0 or newer) (PAN 2 draws its video with the Wan 2.2 VAE)"
     },
     {
       "id": "fibo_edit_w4a8",

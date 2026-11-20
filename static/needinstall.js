@@ -33,6 +33,10 @@
     h3long: { name: "H3 Long Video", desc: "Chains MiniMax H3 shots into one long video - each shot starts from the last frame of the one before.",
       hint: "about 21 GB: the H3-LongVideos node pack (from its own page), PlagueKind's and NVIDIA's VFX node packs, and MATLOWAI's fused turbo MiniMax H3 model, plus the MiniMax H3 text encoder and VAEs if you do not have them; ComfyUI restarted once afterwards",
       status: "/api/h3long", addon: "h3long" },
+    // 2.890.0: PAN 2 (Settings ▸ Add-ons ▸ PAN 2)
+    pan2: { name: "PAN 2", desc: "MBZUAI's world model: your words (or a first picture + words) become a video of up to 20 seconds.",
+      hint: "about 38 GB: the int8 PAN 2 model, its Qwen3.5 9B text encoder and the Wan 2.2 VAE into ComfyUI's models; ComfyUI 0.46.0 or newer, restarted once afterwards",
+      status: "/api/pan2", addon: "pan2" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }

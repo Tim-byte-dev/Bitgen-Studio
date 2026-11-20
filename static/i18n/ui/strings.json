@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7278,
+ "count": 7287,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67859,6 +67859,87 @@
    ],
    "where": [
     "button.ghost in #acPaper"
+   ]
+  },
+  {
+   "s": "PAN 2 (video world model, up to 20 s)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon card"
+   ]
+  },
+  {
+   "s": "The PAN 2 video style: MBZUAI's 29B world model - text, or a first picture + text, becomes a video at 24 fps (1248 x 704, 10 s by default, up to 20 s); your words are written into PAN 2's own structured caption by the LLM",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon card"
+   ]
+  },
+  {
+   "s": "ComfyUI 0.46.0 or newer (its own PAN 2 support - ⤓ Update ComfyUI); a 32 GB card for the int8 model (RTX 5090; ComfyUI moves what does not fit to RAM, slowly), 80 GB+ for bf16; an LLM to write the caption. Apache-2.0",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon card"
+   ]
+  },
+  {
+   "s": "PAN 2 int8 (26.7 GB + text encoder + VAE)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon item"
+   ]
+  },
+  {
+   "s": "the model for a 32 GB card (RTX 5090) - what the PAN 2 style uses",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon item"
+   ]
+  },
+  {
+   "s": "PAN 2 bf16 (67.4 GB + text encoder + VAE)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon item"
+   ]
+  },
+  {
+   "s": "full precision for 80-96 GB cards - set it as the style's model",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "addon item"
+   ]
+  },
+  {
+   "s": "PAN 2: write what happens in plain words - the LLM turns them into PAN 2's own caption before it renders. A picture in the reference dock (or F/L's first frame) starts the video. Up to 20 s at 24 fps; trained at 1248 x 704.",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "span#pan2Tip"
+   ]
+  },
+  {
+   "s": "ⓘ PAN 2",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#pan2Tip"
    ]
   }
  ]

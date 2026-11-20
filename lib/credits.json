@@ -105,6 +105,12 @@
           "by": "Shrek3OnVH5",
           "url": "https://github.com/Shrek3OnVH5/MiniMax-H3-NativeAudio-MusicVideo-Workflow",
           "what": "the music-video lip-sync workflow the MMH3_NativeAudio_MV style is built from (MIT)"
+        },
+        {
+          "name": "PAN 2",
+          "by": "the Institute of Foundation Models (IFM) at MBZUAI",
+          "url": "https://github.com/ifm-ai/PAN2",
+          "what": "the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files"
         }
       ]
     },
