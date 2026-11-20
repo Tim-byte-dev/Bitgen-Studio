@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7310,
+ "count": 7318,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -65747,7 +65747,7 @@
    ]
   },
   {
-   "s": "Front of the card - what it should look like and say",
+   "s": "Front of the card - what it should look like and say (its background is made from this)",
    "kinds": [
     "text",
     "title",
@@ -65758,7 +65758,7 @@
    ]
   },
   {
-   "s": "Back of the card - what it should look like and say",
+   "s": "Back of the card - what it should look like and say (its background is made from this)",
    "kinds": [
     "text",
     "title",
@@ -68147,6 +68147,78 @@
    ],
    "where": [
     "2.892.0"
+   ]
+  },
+  {
+   "s": "👷 Payment summaries",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "👷 Pay summary…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "A year's payment summary for each person from the pay runs: gross, tax withheld, super - to print or save as PDF",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "🖨 All",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "This person's payment summary - to print or save as PDF",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "Every person's page (and the year's totals) - to print or save as PDF",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "Each side's background made from its description above with the prompt docker's image style - the words and logo go over it as layers",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
+   ]
+  },
+  {
+   "s": "🖼 Backgrounds - made from the front and back descriptions",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.893.0"
    ]
   }
  ]

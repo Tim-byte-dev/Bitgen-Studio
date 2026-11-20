@@ -10081,6 +10081,22 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   (the longest words that start a line win). **🗑** deletes a rule that keeps suggesting the wrong thing; **+ a rule** adds
   one by hand.
 
+## 👷 Payment summaries and business card backgrounds (2.893.0)
+
+- **📒 Accounts ▸ 👷 Pay summary…** adds up the pay runs (＋ 👷 Pay run) of a financial year - 1 July to 30 June - for each
+  person: how many pays, the first and last, the **gross payments**, the **tax withheld**, the **net paid** and the **super**,
+  with the total underneath. Pick another year from the list (every year with pay runs is there). **🖨** beside a person opens
+  their payment summary - the business's name and ABN, the year's figures and every pay - to print or save as PDF; **🖨 All**
+  gives the year's totals then a page for each person; **⤓ CSV** a line each. The same name typed with different capitals or
+  spaces counts as one person. It is a record from your books for you, each person and your tax agent - not a lodgement: since
+  Single Touch Payroll the ATO gives employees their income statement in myGov from what the employer reports.
+- **The business card's backgrounds come from your words.** In the image editor's ✨ Create ▸ 💳 Business card, what you write
+  under **Front of the card** and **Back of the card** becomes the prompt for that side's background, made with the prompt
+  docker's image style. The LLM turns each description into background art only - no words, letters or logo - and the name,
+  contact details and logo are laid over it as layers you can change; a PVC card's background keeps its round corners. Untick
+  **🖼 Backgrounds** to keep the plain colours. A side with no description keeps its colour.
+- The business details box is wider (860 px, never past the window) and every box stays inside its frame; a tall box scrolls.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -49,6 +49,6 @@ const rt = src("routes/accounting.js");
 check("routes: GET / POST /api/accounts/tax, POST /api/accounts/payrun", rt.includes('app.get("/api/accounts/tax"') && rt.includes('app.post("/api/accounts/tax"') && rt.includes('app.post("/api/accounts/payrun"'));
 const ui = src("ext/acctdock/accttax.js"), dock = src("ext/acctdock/acctdock.js"), html2 = src("ext/acctdock/dock.html");
 check("the docker: 🧾 Taxes… + ＋ 👷 Pay run buttons, accttax.js (H3AcctTax open / payRun), the BAS tab shows PAYG, no tax file number asked", /id="acTaxes"/.test(html2) && /id="acPayRun"/.test(html2)
-  && /H3AcctTax = \{ open, payRun \}/.test(ui) && /b\.payg && b\.payg\.paygShown/.test(dock) && !/tax file number"|id="[^"]*tfn/i.test(ui) && /"accttax\.js"/.test(src("ext/acctdock/ext.json")));
+  && /H3AcctTax = \{ open, payRun(, paySummary)? \}/.test(ui) && /b\.payg && b\.payg\.paygShown/.test(dock) && !/tax file number"|id="[^"]*tfn/i.test(ui) && /"accttax\.js"/.test(src("ext/acctdock/ext.json")));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

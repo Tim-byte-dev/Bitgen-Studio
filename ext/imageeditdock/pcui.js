@@ -883,6 +883,9 @@
       kx.querySelectorAll(".kxdlg.pcd").forEach((d) => d.remove());
       const o = opts || {}, d = doc.createElement("div"); d.className = "kxdlg pcd" + (o.wide ? " wide" : "");
       d.innerHTML = `<h4>${esc(title)}</h4><div class="pcdb" style="padding:0 10px">${html}</div><div class="bt">${o.extra || ""}<button class="ghost cn">Cancel</button><button class="ghost ok">${esc(o.okLabel || "OK")}</button></div>`;
+      // 2.893.0: a dialog can ask for its own width (never past the window) and a body that scrolls when tall
+      if (o.width) { d.style.width = o.width; d.style.maxWidth = "96vw"; }
+      if (o.scroll) { const b = d.querySelector(".pcdb"); b.style.maxHeight = "calc(90vh - 90px)"; b.style.overflow = "auto"; }
       kx.appendChild(d); dragDialog(d);
       const close = () => d.remove();
       d.querySelector(".cn").onclick = () => { if (E.ui.onDialogCancel) E.ui.onDialogCancel(d, title); if (o.cancel) o.cancel(); close(); };

@@ -16,7 +16,7 @@
   const TITLES = { card: "💳 Business card", letterhead: "✉ Letterhead", flyer: "📰 Flyer", poster: "🪧 Poster" };
   /** what the front / back boxes are called for a kind (null = no back) */
   function sideLabels(kind) {
-    if (kind === "card") return { front: "Front of the card - what it should look like and say", back: "Back of the card - what it should look like and say" };
+    if (kind === "card") return { front: "Front of the card - what it should look like and say (its background is made from this)", back: "Back of the card - what it should look like and say (its background is made from this)" };
     if (kind === "flyer") return { front: "Front - what the flyer should look like and say", back: "Back - leave empty for a one-sided flyer" };
     if (kind === "letterhead") return { front: "The letterhead - how it should look (layout, mood, what to show)", back: null };
     return { front: "The poster - what it is for and how it should look", back: null };
@@ -70,6 +70,7 @@
         <div class="kxrow pcbz-cols"><span>Brand colours</span>${[0, 1, 2].map((i) => `<label class="pcbz-c"><input type="checkbox" id="pcbzCon${i}"><input type="color" id="pcbzCol${i}" value="${DEF[i]}"></label>`).join("")}<span class="pcbz-dim">the first is the main colour</span></div>
         <label class="pcbz-f pcbz-w"><span>${esc(side.front)}</span><textarea id="pcbzFront" rows="3" placeholder="Clean and warm, cream with the logo top left, my name big, the phone and email under it"></textarea></label>
         ${side.back ? `<label class="pcbz-f pcbz-w"><span>${esc(side.back)}</span><textarea id="pcbzBack" rows="3" placeholder="The logo in the middle on our main colour, the services under it"></textarea></label>` : ""}
+        ${k === "card" ? `<div class="kxrow"><label title="Each side's background made from its description above with the prompt docker's image style - the words and logo go over it as layers"><input type="checkbox" id="pcbzBgs"${store.get("create.cardBgs", "1") === "1" ? " checked" : ""}> 🖼 Backgrounds - made from the front and back descriptions</label></div>` : ""}
         ${k === "flyer" || k === "poster" ? `<div class="kxrow"><label><input type="checkbox" id="pcbzPics"${opt.pictures ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>` : ""}
         <div class="pcbz-dim">Kept on this computer for next time (business/profiles.json). The LLM writes the words around them; your details are used exactly.</div>
       </div>`;
@@ -86,9 +87,11 @@
           .then((r) => r.json().then((j) => { if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; }))
           .then((saved) => { cache = null; say("✨ your details are kept - making the " + TITLES[k].replace(/^\S+ /, "").toLowerCase() + "…");
             if (v("pcbzSize")) store.set("create.cardSize", v("pcbzSize").value);
-            return E.create.make({ kind: k, ask: opt.ask || "", pictures: pics, business: saved, cardSize: v("pcbzSize") ? v("pcbzSize").value : undefined }); })
+            const bgs = v("pcbzBgs") ? v("pcbzBgs").checked : undefined;
+            if (bgs != null) store.set("create.cardBgs", bgs ? "1" : "0");
+            return E.create.make({ kind: k, ask: opt.ask || "", pictures: pics, business: saved, cardSize: v("pcbzSize") ? v("pcbzSize").value : undefined, backgrounds: bgs }); })
           .then((m) => m && say(m)).catch((e) => say("✨ " + e.message));
-      }, { okLabel: "✨ Create", wide: true, init: (dd) => {
+      }, { okLabel: "✨ Create", wide: true, width: "min(860px, 96vw)", scroll: true, init: (dd) => {
         const v = (id) => dd.querySelector("#" + id);
         const paintLogo = (url) => { const pv = v("pcbzLogoPv"); pv.innerHTML = url ? `<img src="${esc(url)}" alt="the logo">` : "no logo"; v("pcbzLogoNo").hidden = !url; };
         const fill = (p) => {
@@ -127,8 +130,11 @@
       return d;
     }
     const css = doc.createElement("style");
-    css.textContent = ".pcbz{display:flex;flex-direction:column;gap:7px;min-width:min(620px,86vw)}.pcbz-g{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}"
-      + ".pcbz-f{display:flex;flex-direction:column;gap:2px;font-size:11px}.pcbz-f>span{color:var(--pc-dim)}.pcbz-f input,.pcbz-f textarea{width:100%;box-sizing:border-box}.pcbz-w{grid-column:1/-1}"
+    // 2.893.0 (Tim: "make the dialog wider, the input boxes go past the dialog frame"): the dialog is 860 px (pcui width), the
+    // grid's columns may shrink (minmax(0, 1fr) - an input's own width no longer pushes them out), every row wraps
+    css.textContent = ".pcbz{display:flex;flex-direction:column;gap:7px;min-width:0;max-width:100%;box-sizing:border-box}.pcbz-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 12px}"
+      + ".pcbz .kxrow{flex-wrap:wrap;min-width:0}.pcbz .kxrow select{min-width:0;max-width:100%}.pcbz textarea{resize:vertical}"
+      + ".pcbz-f{display:flex;flex-direction:column;gap:2px;font-size:11px;min-width:0}.pcbz-f>span{color:var(--pc-dim)}.pcbz-f input,.pcbz-f textarea{width:100%;box-sizing:border-box}.pcbz-w{grid-column:1/-1}"
       + ".pcbz-lp{display:inline-flex;align-items:center;min-width:60px;height:44px;padding:2px 6px;border:1px dashed var(--pc-line);border-radius:6px;color:var(--pc-dim);font-size:11px}.pcbz-lp img{max-height:40px;max-width:160px}"
       + ".pcbz-c{display:inline-flex;align-items:center;gap:3px}.pcbz-c input[type=color]{width:34px;height:24px;padding:0;border:none;background:none}.pcbz-dim{color:var(--pc-dim);font-size:11px}";
     doc.head.appendChild(css);

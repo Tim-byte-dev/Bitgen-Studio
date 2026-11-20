@@ -14638,6 +14638,13 @@ node scripts/test-892.js > /tmp/t892.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui892-ui.js > /tmp/ui892.log 2>&1 \
   && ok "2.892.0 browser test: Accounts ▸ Bank: ↔ the transfer (shown on both accounts), ✚ Make… ▸ Split (left to split, + a part, taxes), ⚙ Rules… (✎ the words cut, 🗑), the split suggested again" \
   || { bad "2.892.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui892.log | head -12; }
+# ---- 2.893.0 (👷 a year's payment summary per person: lib/accountingPaySummary.js; the business card's backgrounds from its descriptions + the wider details box: lib/createAi.js, pccreate.js, pcbizinfo.js, pcui.js)
+node scripts/test-893.js > /tmp/t893.log 2>&1 \
+  && ok "2.893.0 units: the financial year, people grouped by name, totals, years, the CSV, the print page, routes, the docker; the card's background prompts from the front / back descriptions, the backgrounds under the words, the wider dialog" \
+  || { bad "2.893.0 units"; grep -a "^FAIL" -A1 /tmp/t893.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui893-ui.js > /tmp/ui893.log 2>&1 \
+  && ok "2.893.0 browser test: the 860 px business details box with nothing past its frame, the front / back backgrounds made from the descriptions under the words, ☐ Backgrounds; 👷 Pay summary… (years, people, 🖨 one person's page)" \
+  || { bad "2.893.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui893.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

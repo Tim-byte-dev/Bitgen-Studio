@@ -418,6 +418,7 @@
     on("acNewJournal", "click", () => loadBooks().then(journalForm));
     // 2.883.0: 🧾 the tax settings + 👷 a pay run (accttax.js)
     on("acTaxes", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.open(ctx())).catch((er) => msg("✗ " + er.message, true)));
+    on("acPaySum", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.paySummary(ctx())).catch((er) => msg("✗ " + er.message, true)));   // 2.893.0
     on("acPayRun", "click", () => loadBooks().then(() => root.H3AcctTax && root.H3AcctTax.payRun(ctx())).catch((er) => msg("✗ " + er.message, true)));
     // 2.889.0: 💵 the BAS lodged + paid, super paid (acctsettle.js)
     on("acPayAto", "click", () => loadBooks().then(() => root.H3AcctSettle && root.H3AcctSettle.ato(ctx())).catch((er) => msg("✗ " + er.message, true)));

@@ -61,5 +61,30 @@
       $("acprSuper").addEventListener("input", () => { touched = true; sum(); });
     });
   }
-  root.H3AcctTax = { open, payRun };
+  /** 2.893.0: 👷 a year's payment summary per person (lib/accountingPaySummary.js) - the year, each person's figures, 🖨 a page
+   *  each (or all), ⤓ CSV. Tim (verbatim): "continue next" (parked: "👷 A year's payment summary per person ... from the pay runs") */
+  async function paySummary(c) {
+    const S = c.S, esc = c.esc, q = (fy, more) => c.qs(Object.assign({ biz: S.biz, fy }, more || {}));
+    const body = (P) => (P.people.length ? `<table class="actab acps-tab"><tr><th>Name</th><th class="n">Pays</th><th>First - last</th><th class="n">Gross</th><th class="n">Tax withheld</th><th class="n">Net</th><th class="n">Super</th><th></th></tr>`
+      + P.people.map((p) => `<tr><td>${esc(p.name)}</td><td class="n">${p.runs}</td><td>${esc(p.first)} - ${esc(p.last)}</td><td class="n">${c.N(p.gross)}</td><td class="n">${c.N(p.tax)}</td><td class="n">${c.N(p.net)}</td><td class="n">${c.N(p.super)}</td>`
+        + `<td class="act"><button type="button" data-psprint="${esc(p.name)}" title="This person's payment summary - to print or save as PDF">🖨</button></td></tr>`).join("")
+      + `<tr class="tot"><td>Total</td><td class="n">${P.totals.runs}</td><td></td><td class="n">${c.N(P.totals.gross)}</td><td class="n">${c.N(P.totals.tax)}</td><td class="n">${c.N(P.totals.net)}</td><td class="n">${c.N(P.totals.super)}</td><td></td></tr></table>`
+      : `<div class="acnote">No pay runs in ${esc(P.label)} - ＋ 👷 Pay run enters them.</div>`);
+    let P = await c.api("/api/accounts/paysummary?" + q(""));
+    const html = `<div class="acrow"><span>Financial year</span><select id="acpsFy">${P.years.map((y) => `<option value="${y.end}"${y.end === P.end ? " selected" : ""}>${esc(y.label)} (1 July ${y.end - 1} - 30 June ${y.end})</option>`).join("")}</select>`
+      + `<button type="button" class="ghost" id="acpsAll" title="Every person's page (and the year's totals) - to print or save as PDF">🖨 All</button><button type="button" class="ghost" id="acpsCsv">⤓ CSV</button></div>`
+      + `<div id="acpsBody">${body(P)}</div>`
+      + `<div class="acnote">From the pay runs (👷) in the books. A record for you, each person and your tax agent - not a lodgement: since Single Touch Payroll the ATO gives employees their income statement in myGov from what the employer reports. No tax file numbers are kept.</div>`;
+    c.dialog("👷 Payment summaries", html, async () => {}, (b) => {
+      const fy = () => $("acpsFy").value;
+      $("acpsFy").addEventListener("change", async () => { P = await c.api("/api/accounts/paysummary?" + q(fy())); $("acpsBody").innerHTML = body(P); });
+      b.addEventListener("click", (e) => {
+        const t = e.target, x = t.closest("[data-psprint]");
+        if (x) root.open("/api/accounts/paysummary/print?" + q(fy(), { person: x.dataset.psprint }), "_blank");
+        else if (t.id === "acpsAll") root.open("/api/accounts/paysummary/print?" + q(fy()), "_blank");
+        else if (t.id === "acpsCsv") root.open("/api/accounts/paysummary/csv?" + q(fy()), "_blank");
+      });
+    });
+  }
+  root.H3AcctTax = { open, payRun, paySummary };
 })(typeof window !== "undefined" ? window : globalThis);

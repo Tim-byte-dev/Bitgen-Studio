@@ -110,6 +110,19 @@ function mount(app) {
   app.post("/api/accounts/settle/atopay", small, wrap((req) => ST().atoPay(biz(req), (req.body || {}).pay)));
   app.get("/api/accounts/settle/super", wrap((req) => ST().superPlan(A().load(biz(req)), (req.query || {}).at)));
   app.post("/api/accounts/settle/super", small, wrap((req) => ST().superPay(biz(req), (req.body || {}).pay)));
+  // 2.893.0: 👷 a year's payment summary per person (lib/accountingPaySummary.js) - the figures, the page to print, the CSV
+  const PS = () => require("../lib/accountingPaySummary");
+  app.get("/api/accounts/paysummary", wrap((req) => PS().summaryOf(biz(req), req.query.fy)));
+  app.get("/api/accounts/paysummary/print", (req, res) => {
+    try { const B = A().load(biz(req)); res.type("html").send(PS().html(PS().summary(B, req.query.fy), printBusiness(biz(req), B), req.query.person ? String(req.query.person) : "")); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
+  app.get("/api/accounts/paysummary/csv", (req, res) => {
+    try {
+      const S = PS().summaryOf(biz(req), req.query.fy), name = `payment-summaries-${S.label.replace(/\s+/g, "-")}${biz(req) === "main" ? "" : "-" + biz(req)}.csv`;
+      res.set("Content-Disposition", `attachment; filename="${name}"`).type("text/csv; charset=utf-8").send(require("../lib/accountingCsv").csv(PS().rows(S)));
+    } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
   // 2.882.0: 🏦 bank statements matched against the books, reconciled
   const R = () => require("../lib/bankRec");
   app.get("/api/accounts/bank", wrap((req) => R().viewOf(biz(req), req.query.account)));

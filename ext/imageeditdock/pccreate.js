@@ -134,17 +134,19 @@
     for (let k = 0; k < 3; k++) inside.push(...panel(k * pw, p.panels[k] || {}, k === 1 && pics[1] !== undefined ? pics[1] : k === 2 && pics[2] !== undefined ? pics[2] : undefined));
     return [guides(outside), guides(inside)];
   }
+  /** 2.893.0: a card side's background - a picture made from the side's description (p.bgPics + its prompt), else the colour */
+  const BG = (W, H, fill, rd, prompt, name) => (prompt ? Object.assign(P(0, 0, W, H, prompt, fill), { bg: true, name, radius: rd ? rd.radius : 0 }) : R(0, 0, W, H, fill, rd));
   /** a business card: front + back (its size picked - CARD_SIZES; p.radius = a PVC card's rounded corners in px) */
   function cardLayout(p, W, H) {
     const c = p.palette, m = W * 0.07, cw = W - 2 * m, rd = p.radius > 0 ? { radius: p.radius } : null;
     // 2.876.0: a PVC card's corners are round - the background and the foot band follow them (the band's top stays square)
-    const front = [R(0, 0, W, H, c.bg, rd), R(0, H * 0.82, W, H * 0.18, c.accent, rd)];
+    const front = [BG(W, H, c.bg, rd, p.bgPics && p.frontBg, "Front background"), R(0, H * 0.82, W, H * 0.18, c.accent, rd)];
     if (rd) front.push(R(0, H * 0.82, W, H * 0.09, c.accent));
     const lw = p.hasLogo ? H * 0.42 : 0;                    // 2.875.0: the logo top right of the front, big on the back
     if (lw) front.push(L0(W - m - lw, H * 0.1, lw, H * 0.3, "right"));
     front.push(...stack([[p.name, H * 0.13, { weight: 800, color: c.ink }], [p.role, H * 0.07, { color: c.accent, weight: 600 }]], m, H * 0.12, cw - (lw ? lw + m * 0.5 : 0), H * 0.03).els);
     front.push(...stack([[[p.phone, p.email, p.web].filter(Boolean).join("\n"), H * 0.065, { color: c.ink }], [p.address, H * 0.055, { color: c.ink }]], m, H * 0.45, cw, H * 0.02).els);
-    const back = [R(0, 0, W, H, c.accent, rd)];
+    const back = [BG(W, H, c.accent, rd, p.bgPics && p.backBg, "Back background")];
     if (lw) back.push(L0(W / 2 - H * 0.35, H * 0.08, H * 0.7, H * 0.3));
     const bw = p.back || {}, sv = (p.services || []).slice(0, 4).join("  ·  ");
     back.push(...stack([[p.company || p.name, H * 0.13, { weight: 800, color: c.accentInk, align: "center" }], [bw.heading || p.tagline, H * 0.07, { color: c.accentInk, align: "center", weight: 600 }],
@@ -193,9 +195,9 @@
         E.addLayer(L, "✨ create", false); return L;
       }
       if (e.t === "rect" || (e.t === "picture" && !e.url)) {
-        const L = E.makeLayer(e.t === "picture" ? "🖼 Picture" : e.name === "fold" ? "Fold line" : "Shape", S.w, S.h, "shape");
+        const L = E.makeLayer(e.t === "picture" ? "🖼 " + (e.bg ? e.name : "Picture") : e.name === "fold" ? "Fold line" : "Shape", S.w, S.h, "shape");
         L.shape = Object.assign({}, D.SHAPE_DEFAULT, { kind: "rect", x: e.x, y: e.y, w: e.w, h: e.h, radius: e.radius || 0, fill: e.fill || "#cccccc", fillOn: true, strokeOn: false });
-        if (e.t === "picture") L.opacity = 0.35;
+        if (e.t === "picture" && !e.bg) L.opacity = 0.35;   // 2.893.0: a background's stand-in is its colour, whole
         D.rasterize(L); E.addLayer(L, "✨ create", false); return L;
       }
       if (e.t === "text") {
@@ -207,9 +209,11 @@
     }
     /** a picture into its box (cover) as a layer named after its idea */
     function putPicture(img, e) {
-      const L = E.makeLayer("🖼 " + (e.prompt || "Picture").slice(0, 28), S.w, S.h), g = L.canvas.getContext("2d");
+      const L = E.makeLayer("🖼 " + (e.bg ? e.name : (e.prompt || "Picture").slice(0, 28)), S.w, S.h), g = L.canvas.getContext("2d");
       const k = Math.max(e.w / img.naturalWidth, e.h / img.naturalHeight), w = img.naturalWidth * k, h = img.naturalHeight * k;
-      g.save(); g.beginPath(); g.rect(e.x, e.y, e.w, e.h); g.clip(); g.drawImage(img, e.x + (e.w - w) / 2, e.y + (e.h - h) / 2, w, h); g.restore();
+      g.save(); g.beginPath();
+      if (e.radius > 0 && typeof g.roundRect === "function") g.roundRect(e.x, e.y, e.w, e.h, Math.min(e.radius, e.w / 2, e.h / 2)); else g.rect(e.x, e.y, e.w, e.h);   // 2.893.0: a PVC card's round corners
+      g.clip(); g.drawImage(img, e.x + (e.w - w) / 2, e.y + (e.h - h) / 2, w, h); g.restore();
       E.addLayer(L, "✨ picture", false); return L;
     }
     const loadImg = (url) => new Promise((ok, no) => { const im = new win.Image(); im.onload = () => ok(im); im.onerror = () => no(new Error("the picture did not load")); im.src = url; });
@@ -233,7 +237,9 @@
           const img = await loadImg(url), back = E.pages.count() > 1 ? E.pages.cur() : 0;
           if (E.pages.count() > 1) E.pages.go(b.i);
           const at = S.layers.indexOf(b.L); if (at >= 0) S.layers.splice(at, 1);   // the placeholder makes way
-          putPicture(img, b.e); n++;
+          const NL = putPicture(img, b.e); n++;
+          const now = S.layers.indexOf(NL);                     // 2.893.0: in the placeholder's place - a background stays under the words
+          if (at >= 0 && now >= 0 && now !== at) { S.layers.splice(now, 1); S.layers.splice(Math.min(at, S.layers.length), 0, NL); S.active = S.layers.indexOf(NL); }
           if (E.pages.count() > 1) E.pages.go(back);
           E.refresh(); E.renderLayersPanel();
         } catch (err) { say("✨ a picture was not made: " + err.message); }
@@ -277,7 +283,7 @@
       let [spec, n0] = SPECS[kind]; const n = kind === "flyer" && plan.back ? 2 : n0;
       // 2.876.0: a card is the size picked in the Business details box (kept with the details), paper or PVC
       const cs = kind === "card" ? cardSpec(a.cardSize || (biz && biz.card_size) || "") : null;
-      if (cs) { spec = cs.spec; plan.radius = cs.radius; }
+      if (cs) { spec = cs.spec; plan.radius = cs.radius; plan.bgPics = a.backgrounds !== false && !!(plan.frontBg || plan.backBg); }
       const NAMES = { card: plan.name || plan.company || "Business card", letterhead: (plan.company || "Letterhead") + " letterhead", poster: plan.headline || "Poster", flyer: plan.headline || "Flyer", brochure: plan.title || "Brochure" };
       E.pages.newDocument(spec, n, NAMES[kind]);
       if (kind === "flyer" && n === 2 && E.pages.rename) { E.pages.rename(0, "Front"); E.pages.rename(1, "Back"); }
@@ -285,11 +291,11 @@
       if (kind === "card" && E.pages.rename) { E.pages.rename(0, "Front"); E.pages.rename(1, "Back"); }
       const LAY = { flyer: flyerLayout, brochure: brochureLayout, card: cardLayout, letterhead: letterheadLayout, poster: posterLayout };
       const pages = LAY[kind](plan, S.w, S.h);
-      const pics = await lay(pages, !!a.pictures, logo);
+      const pics = await lay(pages, !!a.pictures || !!plan.bgPics, logo);
       // 2.875.0: the letter itself goes in a WP frame between the letterhead's head and foot
       if (kind === "letterhead" && pages.body && E.docText && E.docText.addFrame) { try { E.docText.addFrame(pages.body.x, pages.body.y, pages.body.w, pages.body.h, { k: 150 / 96 }, false); E.refresh(); E.renderLayersPanel(); } catch (e) { /* the letterhead stands */ } }
       const WORDS = { card: `💳 the business card (front + back, ${cs ? mmLabel(cs.size) + (cs.size.group === "pvc" ? " PVC " + cs.size.id.toUpperCase() : "") : ""})`, flyer: n === 2 ? "📰 the flyer (front + back)" : "📰 the flyer", brochure: "📑 the tri-fold brochure (outside + inside)", letterhead: "✉ the letterhead (type the letter in its frame)", poster: "🪧 the poster" };
-      return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} picture(s) made` : ""} - File ▸ Export ▸ Document or 🖨 Print${kind === "card" ? " · 📇 File ▸ Business Card Sheet… for a sheet of them to print and cut" : ""}`;
+      return `✨ ${WORDS[kind]} is laid out as layers to change${logo ? " with your logo" : ""}${pics ? `, ${pics} ${kind === "card" ? "background(s)" : "picture(s)"} made` : ""} - File ▸ Export ▸ Document or 🖨 Print${kind === "card" ? " · 📇 File ▸ Business Card Sheet… for a sheet of them to print and cut" : ""}`;
     }
     /* ---- the box */
     function dialog(kind0, ask0) {

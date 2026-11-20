@@ -11119,6 +11119,34 @@
    "src": "ext/acctdock/accttax.js:46"
   },
   {
+   "s": "Pays",
+   "src": "ext/acctdock/accttax.js:68"
+  },
+  {
+   "s": "First - last",
+   "src": "ext/acctdock/accttax.js:68"
+  },
+  {
+   "s": "Gross",
+   "src": "ext/acctdock/accttax.js:68"
+  },
+  {
+   "s": "Tax withheld",
+   "src": "ext/acctdock/accttax.js:68"
+  },
+  {
+   "s": "Net",
+   "src": "ext/acctdock/accttax.js:68"
+  },
+  {
+   "s": "Financial year",
+   "src": "ext/acctdock/accttax.js:74"
+  },
+  {
+   "s": "From the pay runs (👷) in the books. A record for you, each person and your tax agent - not a lodgement: since Single Touch Payroll the ATO gives employees their income statement in myGov from what the employer reports. No tax file numbers are kept",
+   "src": "ext/acctdock/accttax.js:77"
+  },
+  {
    "s": "not running",
    "src": "ext/comfydock/comfydock.js:17"
   },
@@ -12983,6 +13011,10 @@
    "src": "ext/imageeditdock/pcbizinfo.js:56"
   },
   {
+   "s": "Backgrounds - made from the front and back descriptions",
+   "src": "ext/imageeditdock/pcbizinfo.js:56"
+  },
+  {
    "s": "Pictures - made with the prompt docker's image style",
    "src": "ext/imageeditdock/pcbizinfo.js:56"
   },
@@ -13944,27 +13976,27 @@
   },
   {
    "s": "words",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "Quote",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "Receipt",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "Front + back at 300 dpi - pick the size (cardboard or PVC) in the next box",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
-   "src": "ext/imageeditdock/pccreate.js:298"
+   "src": "ext/imageeditdock/pccreate.js:304"
   },
   {
    "s": "Distance from the walls (px)",
@@ -19652,79 +19684,79 @@
   },
   {
    "s": "Percent",
-   "src": "ext/imageeditdock/pcui.js:922"
+   "src": "ext/imageeditdock/pcui.js:925"
   },
   {
    "s": "Constrain proportions",
-   "src": "ext/imageeditdock/pcui.js:922"
+   "src": "ext/imageeditdock/pcui.js:925"
   },
   {
    "s": "Anchor",
-   "src": "ext/imageeditdock/pcui.js:934"
+   "src": "ext/imageeditdock/pcui.js:937"
   },
   {
    "s": "New room on a Background layer is the background colour; elsewhere transparent",
-   "src": "ext/imageeditdock/pcui.js:934"
+   "src": "ext/imageeditdock/pcui.js:937"
   },
   {
    "s": "Fills the selection",
-   "src": "ext/imageeditdock/pcui.js:941"
+   "src": "ext/imageeditdock/pcui.js:944"
   },
   {
    "s": "Nothing selected - fills the whole layer",
-   "src": "ext/imageeditdock/pcui.js:941"
+   "src": "ext/imageeditdock/pcui.js:944"
   },
   {
    "s": "Center",
-   "src": "ext/imageeditdock/pcui.js:958"
+   "src": "ext/imageeditdock/pcui.js:961"
   },
   {
    "s": "Outside",
-   "src": "ext/imageeditdock/pcui.js:958"
+   "src": "ext/imageeditdock/pcui.js:961"
   },
   {
    "s": "Sample radius (px)",
-   "src": "ext/imageeditdock/pcui.js:966"
+   "src": "ext/imageeditdock/pcui.js:969"
   },
   {
    "s": "Expand by (px)",
-   "src": "ext/imageeditdock/pcui.js:966"
+   "src": "ext/imageeditdock/pcui.js:969"
   },
   {
    "s": "Contract by (px)",
-   "src": "ext/imageeditdock/pcui.js:966"
+   "src": "ext/imageeditdock/pcui.js:969"
   },
   {
    "s": "Fuzziness",
-   "src": "ext/imageeditdock/pcui.js:970"
+   "src": "ext/imageeditdock/pcui.js:973"
   },
   {
    "s": "Selects every pixel near the colour (all visible layers). Tip: the Eyedropper (I) sets the foreground colour first",
-   "src": "ext/imageeditdock/pcui.js:970"
+   "src": "ext/imageeditdock/pcui.js:973"
   },
   {
    "s": "pick a look —",
-   "src": "ext/imageeditdock/pcui.js:1004"
+   "src": "ext/imageeditdock/pcui.js:1007"
   },
   {
    "s": "Blending",
-   "src": "ext/imageeditdock/pcui.js:1004"
+   "src": "ext/imageeditdock/pcui.js:1007"
   },
   {
    "s": "Fill opacity (%)",
-   "src": "ext/imageeditdock/pcui.js:1004"
+   "src": "ext/imageeditdock/pcui.js:1007"
   },
   {
    "s": "Lossless (every pixel kept exactly)",
-   "src": "ext/imageeditdock/pcui.js:1056"
+   "src": "ext/imageeditdock/pcui.js:1059"
   },
   {
    "s": "Type a command or a tool",
-   "src": "ext/imageeditdock/pcui.js:1106"
+   "src": "ext/imageeditdock/pcui.js:1109"
   },
   {
    "s": "click adds, drag moves, double-click removes",
-   "src": "ext/imageeditdock/pcui.js:1129"
+   "src": "ext/imageeditdock/pcui.js:1132"
   },
   {
    "s": "Level",
@@ -31249,6 +31281,14 @@
    "src": "ext/acctdock/accttax.js:58"
   },
   {
+   "p": "No pay runs in {0} - ＋ 👷 Pay run enters them",
+   "src": "ext/acctdock/accttax.js:72"
+  },
+  {
+   "p": "{0} (1 July {1} - 30 June {2})",
+   "src": "ext/acctdock/accttax.js:74"
+  },
+  {
    "p": "ComfyUI is not reachable at {0}. Start it in Settings → ComfyUI (or press ↻ once it is up)",
    "src": "ext/comfydock/comfydock.js:20"
   },
@@ -32046,11 +32086,11 @@
   },
   {
    "p": "{0} × {1} px · {2} · {3} MB",
-   "src": "ext/imageeditdock/pcui.js:1078"
+   "src": "ext/imageeditdock/pcui.js:1081"
   },
   {
    "p": "{0} × {1} px · {2} · {3} KB",
-   "src": "ext/imageeditdock/pcui.js:1078"
+   "src": "ext/imageeditdock/pcui.js:1081"
   },
   {
    "p": "Unreal {0} · {1}",
