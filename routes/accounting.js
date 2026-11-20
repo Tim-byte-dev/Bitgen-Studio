@@ -121,6 +121,10 @@ function mount(app) {
   app.delete("/api/accounts/bank/line/:id", wrap((req) => ({ ok: R().deleteLine(biz(req), req.params.id) })));
   app.get("/api/accounts/bank/check", wrap((req) => R().checkRec(biz(req), req.query.account, req.query.date, req.query.balance)));
   app.post("/api/accounts/bank/reconcile", small, wrap((req) => { const b = req.body || {}; return R().doReconcile(biz(req), b.account, b.date, b.balance); }));
+  // 2.892.0: the remembered words -> account rules (⚙ Rules…)
+  app.get("/api/accounts/bank/rules", wrap((req) => R().rulesOf(biz(req))));
+  app.post("/api/accounts/bank/rules", small, wrap((req) => { const b = req.body || {}; return R().saveRuleFor(biz(req), b.rule, b.was); }));
+  app.post("/api/accounts/bank/rules/delete", small, wrap((req) => { const b = req.body || {}; return R().deleteRuleFor(biz(req), b.key, b.sign); }));
   app.post("/api/accounts/bank/unreconcile", small, wrap((req) => R().undoReconcile(biz(req), (req.body || {}).account)));
   app.post("/api/accounts/payment", small, wrap((req) => A().savePayment(biz(req), (req.body || {}).payment)));
   app.delete("/api/accounts/payment/:id", wrap((req) => ({ ok: A().removePayment(biz(req), req.params.id) })));

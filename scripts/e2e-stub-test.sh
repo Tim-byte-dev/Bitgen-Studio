@@ -14631,6 +14631,13 @@ node scripts/test-891.js > /tmp/t891.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui891-ui.js > /tmp/ui891.log 2>&1 \
   && ok "2.891.0 browser test: 💾 Save layout says ✓ Saved and keeps every docker (an extension's, Basic Settings maximized), Load puts the statuses back; PAN 2 { } JSON into the prompt box, Generate formats then sends JSON; ?safe-layout=1 backs up + clears the storage and reloads clean" \
   || { bad "2.891.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui891.log | head -12; }
+# ---- 2.892.0 (🏦 bank extras: a line split over several accounts, a transfer matched on both statements, ⚙ the rules editor: lib/bankRec.js, acctbank.js)
+node scripts/test-892.js > /tmp/t892.log 2>&1 \
+  && ok "2.892.0 units: ↔ a transfer suggested from the other statement, made once and matched on both (now or when the other statement comes in), splits (a receipt / sale with a line each, a journal for a loan), the split remembered as shares, the rules listed / changed / deleted, a cut rule catching another store, routes" \
+  || { bad "2.892.0 units"; grep -a "^FAIL" -A1 /tmp/t892.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui892-ui.js > /tmp/ui892.log 2>&1 \
+  && ok "2.892.0 browser test: Accounts ▸ Bank: ↔ the transfer (shown on both accounts), ✚ Make… ▸ Split (left to split, + a part, taxes), ⚙ Rules… (✎ the words cut, 🗑), the split suggested again" \
+  || { bad "2.892.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui892.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

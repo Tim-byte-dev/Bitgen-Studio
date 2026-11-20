@@ -10061,6 +10061,26 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   what happened is written to **logs\electron-crash.log**. **Settings ▸ Dockers ▸ 🧯 Reset the dockers and the cache…** does
   the same reset by hand, without misc\reset-layout.bat. In a browser, open the app's address with **?safe-layout=1**.
 
+## 🏦 Bank extras: split a line, transfers on both statements, the rules (2.892.0)
+
+- **✚ Make… ▸ Split over several accounts** puts one statement line on more than one account - an Officeworks line that is
+  part paper, part software and part a fee. Pick an account and an amount for each part (**+ a part** for more); each part's
+  tax comes from its account and can be changed, and the box says what is **left to split** until it **✔ adds up**. Money out
+  becomes one paid receipt with a line per part, money in a sale (an invoice + its payment), each with its own GST. Tick **as
+  a journal (no GST)** for parts that are not expenses or income - a loan repayment split into the loan and its interest, or
+  owner's money. The split is remembered as shares, so the next line with the same words is offered **✚ Split over 3 accounts
+  (as before)** with its own amount shared out the same way.
+- **A transfer between two of your own accounts** (the business account, the savings account, the credit card, cash) is made
+  once and matched on **both** statements. When the other account's statement already has the same money going the other way
+  within 5 days, the line offers **↔ Transfer to 1120 Savings Account (date)** - one click makes the journal and matches both
+  lines. Or use **✚ Make… ▸ A transfer to another of my accounts** and pick the account. If the other statement is not in yet,
+  its line is matched by itself when it is imported. A matched transfer shows **↔** and the other account beside it.
+- **⚙ Rules…** (beside ⤒ Import) lists what the words of a line remember: the words, money in or out, what it makes (a spend,
+  a sale, a transfer / other or a split), the account and tax, who, and how many unmatched lines it suggests for now. **✎**
+  changes a rule - cut its words to **officeworks** and every Officeworks store's line is caught, not just the one in Sydney
+  (the longest words that start a line win). **🗑** deletes a rule that keeps suggesting the wrong thing; **+ a rule** adds
+  one by hand.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

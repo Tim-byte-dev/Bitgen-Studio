@@ -10024,211 +10024,335 @@
   },
   {
    "s": "ignored",
-   "src": "ext/acctdock/acctbank.js:22"
-  },
-  {
-   "s": "Take it back",
-   "src": "ext/acctdock/acctbank.js:22"
-  },
-  {
-   "s": "reconciled",
-   "src": "ext/acctdock/acctbank.js:25"
-  },
-  {
-   "s": "matched by bitGen",
-   "src": "ext/acctdock/acctbank.js:25"
-  },
-  {
-   "s": "matched",
-   "src": "ext/acctdock/acctbank.js:25"
-  },
-  {
-   "s": "Unmatch - the entry stays in the books",
    "src": "ext/acctdock/acctbank.js:26"
   },
   {
-   "s": "Match to this entry in the books",
-   "src": "ext/acctdock/acctbank.js:30"
+   "s": "Take it back",
+   "src": "ext/acctdock/acctbank.js:26"
   },
   {
-   "s": "Record the payment on it and match",
+   "s": "reconciled",
+   "src": "ext/acctdock/acctbank.js:29"
+  },
+  {
+   "s": "matched by bitGen",
+   "src": "ext/acctdock/acctbank.js:29"
+  },
+  {
+   "s": "matched",
+   "src": "ext/acctdock/acctbank.js:29"
+  },
+  {
+   "s": "Unmatch - the entry stays in the books",
    "src": "ext/acctdock/acctbank.js:31"
   },
   {
+   "s": "Match to this entry in the books",
+   "src": "ext/acctdock/acctbank.js:35"
+  },
+  {
+   "s": "Make the transfer once and match it on both statements",
+   "src": "ext/acctdock/acctbank.js:36"
+  },
+  {
+   "s": "Record the payment on it and match",
+   "src": "ext/acctdock/acctbank.js:37"
+  },
+  {
    "s": "Make it the same way as before",
-   "src": "ext/acctdock/acctbank.js:32"
+   "src": "ext/acctdock/acctbank.js:38"
   },
   {
    "s": "Make what is missing in the books from this line",
-   "src": "ext/acctdock/acctbank.js:34"
+   "src": "ext/acctdock/acctbank.js:40"
   },
   {
    "s": "Ignore - not for these books",
-   "src": "ext/acctdock/acctbank.js:35"
+   "src": "ext/acctdock/acctbank.js:41"
   },
   {
    "s": "Delete the line",
-   "src": "ext/acctdock/acctbank.js:35"
+   "src": "ext/acctdock/acctbank.js:41"
   },
   {
    "s": "Import a statement",
-   "src": "ext/acctdock/acctbank.js:51"
+   "src": "ext/acctdock/acctbank.js:57"
   },
   {
    "s": "Paste",
-   "src": "ext/acctdock/acctbank.js:52"
+   "src": "ext/acctdock/acctbank.js:58"
   },
   {
    "s": "Paste the lines from a statement (CSV)",
-   "src": "ext/acctdock/acctbank.js:52"
+   "src": "ext/acctdock/acctbank.js:58"
+  },
+  {
+   "s": "The words of a line → where it went: what bitGen suggests for the next line like it",
+   "src": "ext/acctdock/acctbank.js:59"
+  },
+  {
+   "s": "Rules",
+   "src": "ext/acctdock/acctbank.js:59"
   },
   {
    "s": "dates day first",
-   "src": "ext/acctdock/acctbank.js:53"
+   "src": "ext/acctdock/acctbank.js:60"
   },
   {
    "s": "Australian banks write dates day first (05/07/2026 = 5 July)",
-   "src": "ext/acctdock/acctbank.js:53"
+   "src": "ext/acctdock/acctbank.js:60"
   },
   {
    "s": "Date",
-   "src": "ext/acctdock/acctbank.js:56"
-  },
-  {
-   "s": "On the statement",
-   "src": "ext/acctdock/acctbank.js:56"
-  },
-  {
-   "s": "Money in",
-   "src": "ext/acctdock/acctbank.js:56"
-  },
-  {
-   "s": "Money out",
-   "src": "ext/acctdock/acctbank.js:56"
-  },
-  {
-   "s": "In the books",
-   "src": "ext/acctdock/acctbank.js:56"
-  },
-  {
-   "s": "Nothing here",
-   "src": "ext/acctdock/acctbank.js:58"
-  },
-  {
-   "s": "No statement yet - ⤒ import one from your internet banking (CSV, OFX / QFX or QIF). Lines already in the books are matched by themselves",
-   "src": "ext/acctdock/acctbank.js:58"
-  },
-  {
-   "s": "Entry",
-   "src": "ext/acctdock/acctbank.js:59"
-  },
-  {
-   "s": "In",
-   "src": "ext/acctdock/acctbank.js:59"
-  },
-  {
-   "s": "Out",
-   "src": "ext/acctdock/acctbank.js:59"
-  },
-  {
-   "s": "Reconcile",
-   "src": "ext/acctdock/acctbank.js:61"
-  },
-  {
-   "s": "Statement date",
-   "src": "ext/acctdock/acctbank.js:61"
-  },
-  {
-   "s": "closing balance $",
-   "src": "ext/acctdock/acctbank.js:61"
-  },
-  {
-   "s": "When it agrees to the cent",
    "src": "ext/acctdock/acctbank.js:63"
   },
   {
-   "s": "Undo last",
-   "src": "ext/acctdock/acctbank.js:64"
+   "s": "On the statement",
+   "src": "ext/acctdock/acctbank.js:63"
   },
   {
-   "s": "Money in the books is matched to the statement line that shows it; ✚ makes what the books do not have yet (a payment on an open invoice or bill, a spend with its GST, a sale, a transfer). The words of a line remember where it went, so the next one like it is suggested",
+   "s": "Money in",
+   "src": "ext/acctdock/acctbank.js:63"
+  },
+  {
+   "s": "Money out",
+   "src": "ext/acctdock/acctbank.js:63"
+  },
+  {
+   "s": "In the books",
+   "src": "ext/acctdock/acctbank.js:63"
+  },
+  {
+   "s": "Nothing here",
    "src": "ext/acctdock/acctbank.js:65"
   },
   {
+   "s": "No statement yet - ⤒ import one from your internet banking (CSV, OFX / QFX or QIF). Lines already in the books are matched by themselves",
+   "src": "ext/acctdock/acctbank.js:65"
+  },
+  {
+   "s": "Entry",
+   "src": "ext/acctdock/acctbank.js:66"
+  },
+  {
+   "s": "In",
+   "src": "ext/acctdock/acctbank.js:66"
+  },
+  {
+   "s": "Out",
+   "src": "ext/acctdock/acctbank.js:66"
+  },
+  {
+   "s": "Reconcile",
+   "src": "ext/acctdock/acctbank.js:68"
+  },
+  {
+   "s": "Statement date",
+   "src": "ext/acctdock/acctbank.js:68"
+  },
+  {
+   "s": "closing balance $",
+   "src": "ext/acctdock/acctbank.js:68"
+  },
+  {
+   "s": "When it agrees to the cent",
+   "src": "ext/acctdock/acctbank.js:70"
+  },
+  {
+   "s": "Undo last",
+   "src": "ext/acctdock/acctbank.js:71"
+  },
+  {
+   "s": "Money in the books is matched to the statement line that shows it; ✚ makes what the books do not have yet (a payment on an open invoice or bill, a spend with its GST, a sale, a split over several accounts, a transfer - matched on both statements when it is between two of your accounts). The words of a line remember where it went, so the next one like it is suggested",
+   "src": "ext/acctdock/acctbank.js:72"
+  },
+  {
    "s": "Out by",
-   "src": "ext/acctdock/acctbank.js:73"
+   "src": "ext/acctdock/acctbank.js:80"
   },
   {
    "s": "Difference",
-   "src": "ext/acctdock/acctbank.js:73"
+   "src": "ext/acctdock/acctbank.js:80"
   },
   {
    "s": "It agrees to the cent - ✔ Reconcile marks the lines to this date reconciled",
-   "src": "ext/acctdock/acctbank.js:74"
+   "src": "ext/acctdock/acctbank.js:81"
   },
   {
    "s": "Match, make or ignore the lines still to match first",
-   "src": "ext/acctdock/acctbank.js:74"
+   "src": "ext/acctdock/acctbank.js:81"
   },
   {
    "s": "It does not agree yet - look for a line typed wrongly, one missing or one matched to the wrong entry",
-   "src": "ext/acctdock/acctbank.js:74"
+   "src": "ext/acctdock/acctbank.js:81"
   },
   {
-   "s": "A transfer, loan, owner's money or other (no GST)",
-   "src": "ext/acctdock/acctbank.js:79"
+   "s": "Split over several accounts",
+   "src": "ext/acctdock/acctbank.js:88"
+  },
+  {
+   "s": "A loan, owner's money or other (no GST)",
+   "src": "ext/acctdock/acctbank.js:88"
   },
   {
    "s": "What it is",
-   "src": "ext/acctdock/acctbank.js:83"
+   "src": "ext/acctdock/acctbank.js:92"
   },
   {
    "s": "Invoice",
-   "src": "ext/acctdock/acctbank.js:84"
+   "src": "ext/acctdock/acctbank.js:93"
   },
   {
    "s": "none open —",
-   "src": "ext/acctdock/acctbank.js:84"
+   "src": "ext/acctdock/acctbank.js:93"
   },
   {
    "s": "Bill / credit note",
-   "src": "ext/acctdock/acctbank.js:84"
+   "src": "ext/acctdock/acctbank.js:93"
   },
   {
    "s": "Paid to",
-   "src": "ext/acctdock/acctbank.js:85"
+   "src": "ext/acctdock/acctbank.js:94"
   },
   {
    "s": "Words",
-   "src": "ext/acctdock/acctbank.js:86"
+   "src": "ext/acctdock/acctbank.js:95"
   },
   {
    "s": "Tax",
-   "src": "ext/acctdock/acctbank.js:87"
+   "src": "ext/acctdock/acctbank.js:96"
+  },
+  {
+   "s": "a part",
+   "src": "ext/acctdock/acctbank.js:99"
+  },
+  {
+   "s": "as a journal (no GST)",
+   "src": "ext/acctdock/acctbank.js:100"
+  },
+  {
+   "s": "From my",
+   "src": "ext/acctdock/acctbank.js:101"
+  },
+  {
+   "s": "no other bank, card or cash account —",
+   "src": "ext/acctdock/acctbank.js:101"
+  },
+  {
+   "s": "To my",
+   "src": "ext/acctdock/acctbank.js:101"
   },
   {
    "s": "Came from",
-   "src": "ext/acctdock/acctbank.js:88"
+   "src": "ext/acctdock/acctbank.js:102"
   },
   {
    "s": "Went to",
-   "src": "ext/acctdock/acctbank.js:88"
+   "src": "ext/acctdock/acctbank.js:102"
+  },
+  {
+   "s": "adds up",
+   "src": "ext/acctdock/acctbank.js:116"
+  },
+  {
+   "s": "account —",
+   "src": "ext/acctdock/acctbank.js:124"
+  },
+  {
+   "s": "the account's",
+   "src": "ext/acctdock/acctbank.js:125"
+  },
+  {
+   "s": "words (optional)",
+   "src": "ext/acctdock/acctbank.js:127"
+  },
+  {
+   "s": "Take the part out",
+   "src": "ext/acctdock/acctbank.js:127"
+  },
+  {
+   "s": "Words on the line",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "In / out",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "Makes",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "Who",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "Waiting",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "Unmatched lines it suggests for now",
+   "src": "ext/acctdock/acctbank.js:160"
+  },
+  {
+   "s": "money in",
+   "src": "ext/acctdock/acctbank.js:161"
+  },
+  {
+   "s": "money out",
+   "src": "ext/acctdock/acctbank.js:161"
+  },
+  {
+   "s": "Change it",
+   "src": "ext/acctdock/acctbank.js:162"
+  },
+  {
+   "s": "Delete it - the next line like it is not suggested",
+   "src": "ext/acctdock/acctbank.js:162"
+  },
+  {
+   "s": "No rules yet - one is remembered each time ✚ makes a spend, a sale, a split or a transfer from a line",
+   "src": "ext/acctdock/acctbank.js:163"
+  },
+  {
+   "s": "When a statement line's first words match, bitGen suggests making it the same way again. Change what a rule makes, or delete one that keeps suggesting the wrong thing",
+   "src": "ext/acctdock/acctbank.js:165"
+  },
+  {
+   "s": "a rule",
+   "src": "ext/acctdock/acctbank.js:166"
+  },
+  {
+   "s": "Change the rule",
+   "src": "ext/acctdock/acctbank.js:173"
+  },
+  {
+   "s": "Save the rule",
+   "src": "ext/acctdock/acctbank.js:173"
+  },
+  {
+   "s": "e.g. officeworks",
+   "src": "ext/acctdock/acctbank.js:173"
+  },
+  {
+   "s": "A new rule",
+   "src": "ext/acctdock/acctbank.js:173"
   },
   {
    "s": "The columns were not found by themselves. The first lines",
-   "src": "ext/acctdock/acctbank.js:119"
+   "src": "ext/acctdock/acctbank.js:221"
   },
   {
    "s": "Amount",
-   "src": "ext/acctdock/acctbank.js:120"
+   "src": "ext/acctdock/acctbank.js:222"
   },
   {
    "s": "or Money out",
-   "src": "ext/acctdock/acctbank.js:120"
+   "src": "ext/acctdock/acctbank.js:222"
   },
   {
    "s": "Paste the lines (CSV: date, amount, description …) - a header row is fine",
-   "src": "ext/acctdock/acctbank.js:135"
+   "src": "ext/acctdock/acctbank.js:237"
   },
   {
    "s": "Receipts",
@@ -27779,10 +27903,6 @@
    "src": "ext/webdock/wbai.js:81"
   },
   {
-   "s": "Change it",
-   "src": "ext/webdock/wbai.js:81"
-  },
-  {
    "s": "Ask again",
    "src": "ext/webdock/wbai.js:81"
   },
@@ -31009,28 +31129,44 @@
    "src": "static/websearchset.js:57"
   },
   {
-   "p": "In the books, not on a statement yet ({0})",
+   "p": "Rules ({0})",
    "src": "ext/acctdock/acctbank.js:59"
   },
   {
+   "p": "In the books, not on a statement yet ({0})",
+   "src": "ext/acctdock/acctbank.js:66"
+  },
+  {
    "p": "Undo the last reconciliation ({0})",
-   "src": "ext/acctdock/acctbank.js:64"
+   "src": "ext/acctdock/acctbank.js:71"
   },
   {
    "p": "Bank reconciliation at {0}",
-   "src": "ext/acctdock/acctbank.js:69"
+   "src": "ext/acctdock/acctbank.js:76"
   },
   {
    "p": "money in ${0}",
-   "src": "ext/acctdock/acctbank.js:82"
+   "src": "ext/acctdock/acctbank.js:91"
   },
   {
    "p": "money out ${0}",
-   "src": "ext/acctdock/acctbank.js:82"
+   "src": "ext/acctdock/acctbank.js:91"
+  },
+  {
+   "p": "left to split ${0}",
+   "src": "ext/acctdock/acctbank.js:116"
+  },
+  {
+   "p": "over by ${0}",
+   "src": "ext/acctdock/acctbank.js:116"
+  },
+  {
+   "p": "{0} % - make it 100 %",
+   "src": "ext/acctdock/acctbank.js:182"
   },
   {
    "p": "column {0}1",
-   "src": "ext/acctdock/acctbank.js:118"
+   "src": "ext/acctdock/acctbank.js:220"
   },
   {
    "p": "GST this quarter ({0})",

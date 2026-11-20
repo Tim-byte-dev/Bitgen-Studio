@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7294,
+ "count": 7310,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -68003,6 +68003,150 @@
    ],
    "where": [
     "2.891.0"
+   ]
+  },
+  {
+   "s": "⚙ Bank rules",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "a spend",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "a sale",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "a transfer / other (no GST)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "a split",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "Spend",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "Sale",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "Transfer / other",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "Delete?",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "✔ 100 %",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "✔ adds up",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "+ a part",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "+ a rule",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "💾 Save the rule",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "A transfer from another of my accounts (matched on both statements)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
+   ]
+  },
+  {
+   "s": "A transfer to another of my accounts (matched on both statements)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.892.0"
    ]
   }
  ]

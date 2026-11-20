@@ -55,7 +55,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.click(".bank-tab tr[data-bline] [data-bmake]:not(.bank-sug)");
     await p.waitForSelector("#acbAs");
     const f = await ev(() => ({ t: document.getElementById("acDlgT").textContent, as: document.getElementById("acbAs").value, opts: [...document.querySelectorAll("#acbAs option")].map((o) => o.value).join(), note: document.querySelector("#acDlgB .acnote").textContent }));
-    check("✚ Make…: money out $2.50 - payment / spend / transfer; a spend first (no open bills)", f.t === "✚ Make it in the books" && f.as === "spend" && f.opts === "payment,spend,journal" && /money out \$2\.50/.test(f.note), f);
+    check("✚ Make…: money out $2.50 - payment / spend / split / transfer / other; a spend first (no open bills)", f.t === "✚ Make it in the books" && f.as === "spend" && f.opts === "payment,spend,split,transfer,journal" && /money out \$2\.50/.test(f.note), f);
     await p.selectOption("#acbAcc", "6110"); await p.fill("#acbParty", "The bank");
     const tax = await ev(() => document.getElementById("acbTax").value);
     await p.click("#acDlgOk"); await p.waitForFunction(() => !document.getElementById("acDlg").open, null, { timeout: 5000 });
