@@ -36,6 +36,7 @@ function mount(app) {
   app.get("/api/accounts", wrap((req) => {
     const B = A().load(biz(req));
     let businesses = [];
+    try { const BD = require("../lib/businessDb"); if (BD.store().mode === "db") BD.sync().catch(() => {}); } catch (e) { /* 2.897.0: a shared database's details - fetched for the next look, never waited for */ }
     try { businesses = require("../lib/businessProfiles").list().profiles.map((p) => ({ id: p.id, name: p.company || p.name })); } catch (e) { /* none */ }
     return Object.assign(A().view(B, req.query.at), { biz: biz(req), businesses, kinds: A().KINDS, tax: A().TAX, journalNames: A().JOURNALS });
   }));

@@ -14666,6 +14666,16 @@ node scripts/test-896.js > /tmp/t896.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui896-ui.js > /tmp/ui896.log 2>&1 \
   && ok "2.896.0 browser test: 📇 the print shop sheet (SRA3, the bleed is the card's own red), one card a page (TrimBox / BleedBox read back), your stock kept + listed + deleted, a card per row of a list (each person's words on their cards, read back)" \
   || { bad "2.896.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui896.log | head -12; }
+# ---- 2.897.0 (💳 the business details in MariaDB - bitGen's own database or your server, shared between computers: lib/businessDb.js, routes/businessProfiles.js, pcbizinfo.js)
+node scripts/test-897.js > /tmp/t897.log 2>&1 \
+  && ok "2.897.0 units: kept on this computer by default, a file-mode save never reaches for a database, the database not answering = waiting (never lost), no MariaDB / no server said, odd names refused, the tables' shape, parameters only, routes, the dialog" \
+  || { bad "2.897.0 units"; grep -a "^FAIL" -A1 /tmp/t897.log | head -12; }
+node scripts/test-897-live.js > /tmp/t897l.log 2>&1 \
+  && ok "2.897.0 LIVE (real MariaDB; SKIPs without): two computers on one database - moved there, the logo's bytes, a change seen on the other's sync, a delete gone from both, waiting while it does not answer, the newer copy wins, back to a file" \
+  || { bad "2.897.0 LIVE"; grep -a "^FAIL" -A1 /tmp/t897l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui897-ui.js > /tmp/ui897.log 2>&1 \
+  && ok "2.897.0 browser test: 💳 🗄 Where they are kept… - to bitGen's own database (the line + ⟳ Sync), another computer's profile after ⟳ Sync, a save in the database at once, 📁 back on this computer" \
+  || { bad "2.897.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui897.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

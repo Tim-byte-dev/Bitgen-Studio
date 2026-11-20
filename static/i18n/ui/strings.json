@@ -68562,6 +68562,42 @@
    "where": [
     "2.896.0"
    ]
+  },
+  {
+   "s": "Keep the details on this computer, in bitGen's own database or on your database server (shared with your other computers)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "2.897.0"
+   ]
+  },
+  {
+   "s": "Send what waits and get the database's details now",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "2.897.0"
+   ]
+  },
+  {
+   "s": "the database did not answer - kept on this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.897.0"
+   ]
+  },
+  {
+   "s": "synced with the database",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.897.0"
+   ]
   }
  ]
 }

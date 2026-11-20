@@ -13120,71 +13120,115 @@
   },
   {
    "s": "Saved details",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "New details",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Services - one a line",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Company logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "no logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Choose",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Brand colours",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "the first is the main colour",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Backgrounds - made from the front and back descriptions",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Pictures - made with the prompt docker's image style",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
-   "s": "Kept on this computer for next time (business/profiles.json). The LLM writes the words around them; your details are used exactly",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "s": "Kept on this computer for next time (business/profiles.json)",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "Where they are kept",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "On this computer only (a file)",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "In bitGen's own database (MariaDB on this computer)",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "On your database server - shared with your other computers (set it up in 🗄 Database on the top bar)",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "Database",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "Keep them there",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "Your details stay on this computer as well, so invoices and cards work when the database does not answer; changes made then go to the database when it answers",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "The LLM writes the words around them; your details are used exactly",
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Delete these saved details",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "12 Main Street, Springfield QLD 4300",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Sourdough and rye breads&#10;Celebration cakes&#10;Wholesale to cafes",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "No logo",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "Clean and warm, cream with the logo top left, my name big, the phone and email under it",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
    "s": "The logo in the middle on our main colour, the services under it",
-   "src": "ext/imageeditdock/pcbizinfo.js:56"
+   "src": "ext/imageeditdock/pcbizinfo.js:58"
+  },
+  {
+   "s": "bringing them back to this computer",
+   "src": "ext/imageeditdock/pcbizinfo.js:156"
+  },
+  {
+   "s": "starting the database and moving them there",
+   "src": "ext/imageeditdock/pcbizinfo.js:156"
+  },
+  {
+   "s": "kept on this computer only now (the database keeps its copy)",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
   },
   {
    "s": "Open as a Blender layer",
@@ -13896,10 +13940,6 @@
   },
   {
    "s": "Your server (🗄 Database ▸ ⚙)",
-   "src": "ext/imageeditdock/pccalendar.js:145"
-  },
-  {
-   "s": "Database",
    "src": "ext/imageeditdock/pccalendar.js:145"
   },
   {
@@ -31734,7 +31774,35 @@
   },
   {
    "p": "{0} - {1} × {2} mm",
-   "src": "ext/imageeditdock/pcbizinfo.js:36"
+   "src": "ext/imageeditdock/pcbizinfo.js:38"
+  },
+  {
+   "p": "Kept {0} · synced {1}",
+   "src": "ext/imageeditdock/pcbizinfo.js:142"
+  },
+  {
+   "p": "Kept {0}",
+   "src": "ext/imageeditdock/pcbizinfo.js:142"
+  },
+  {
+   "p": "the database did not answer ({0}) - kept on this computer, {1} changes waiting to go there",
+   "src": "ext/imageeditdock/pcbizinfo.js:143"
+  },
+  {
+   "p": "the database did not answer ({0}) - kept on this computer, {1} change waiting to go there",
+   "src": "ext/imageeditdock/pcbizinfo.js:143"
+  },
+  {
+   "p": "the database did not answer ({0}) - kept on this computer",
+   "src": "ext/imageeditdock/pcbizinfo.js:143"
+  },
+  {
+   "p": "kept {0} now - {1} sent from this computer, {2} were there already",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
+  },
+  {
+   "p": "kept {0} now - {1} sent from this computer",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
   },
   {
    "p": "The Blender skills are written for Blender {0} or newer. Install it from blender.org, then pick it in Settings ▸ Blender if bitGen does not find it",

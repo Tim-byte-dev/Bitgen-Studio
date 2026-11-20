@@ -10170,6 +10170,27 @@ whole sheet each). As many sheets as it takes, each person's cards together; the
 
 A document of more pages can also print **each page as a different card** (one side each) - pick it beside the card's size.
 
+## 💳 Your business details in MariaDB (2.897.0)
+
+The business details box (✨ Create ▸ 💳 Business card, ✉ Letterhead, 📰 Flyer or 🪧 Poster in the image editor) has
+**🗄 Where they are kept…** at its foot:
+
+- **📁 On this computer only (a file)** - as before: business/profiles.json.
+- **🗄 In bitGen's own database (MariaDB on this computer)** - bitGen's own MariaDB for everything (⬇ downloaded once in 🗄
+  Database on the top bar).
+- **🌐 On your database server** - your own MySQL / MariaDB server (set it up in 🗄 Database ▸ Your server). Every computer that
+  picks the same server and database shares one set of details.
+
+Pick one, name the database (bitgen_business) and press **✔ Keep them there**. bitGen makes the database and its tables -
+**business_profiles** (every field, the card size and the logo itself), **business_services** and **business_colours** (a row
+each) - and sends the details on this computer; details already on a shared server are kept. The line under the box then says
+where they are and when they were last synced; **⟳ Sync** fetches the database's now (opening the box does it too).
+
+A save or a delete goes to the database at once. When the database does not answer, the change is kept on this computer and
+waits - the line says how many - and goes there when it answers. If another computer changed the same details since, its newer
+copy wins and the line says so. Accounts, invoices and cards always read the copy on this computer, so they work without the
+database. **📁 On this computer only** + ✔ brings them back to the file; the database is left as it is.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
