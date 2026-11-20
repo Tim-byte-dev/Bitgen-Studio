@@ -110,8 +110,8 @@ const ff = (args) => execFileSync("ffmpeg", ["-y", "-v", "error", ...args]);
   // ---- 4
   const R = read("routes", "index.js"), I = read("static", "index.html"), SL = read("scripts", "stub-llm.py"), ST = read("scripts", "stub-tts.py");
   check("routes: the chat describes the op video's frame and builds the fl2va dock; Enhance too (no mapping lines, the block in the user turn, mode fl2va)",
-    /const rop = refContext\.opOf\(rctx\);/.test(R) && /refContext\.frameDesc\(core, dir, rop, core\.pDir\("video"\), describe\)/.test(R) && /refContext\.dock\(rctx, dsc\.descs, fd\.desc\)/.test(R)
-    && /const eop = refContext\.opOf\(req\.body \|\| \{\}\);/.test(R) && /const mapping = eop \? "" :/.test(R) && /const avLines = eop \? refContext\.block\(eDock\)\.trim\(\)/.test(R)
+    /const rop = rProf\.mapping \? refContext\.opOf\(rctx\) : null;/.test(R) && /refContext\.frameDesc\(core, dir, rop, core\.pDir\("video"\), describe\)/.test(R) && /refContext\.dock\(rop \? rctx : Object\.assign\(\{\}, rctx, \{ ref_video_op: undefined \}\), dsc\.descs, fd\.desc\)/.test(R)
+    && /const eop = eProf\.mapping \? refContext\.opOf\(req\.body \|\| \{\}\) : null;/.test(R) && /const mapping = eop \|\| !eProf\.mapping \? "" :/.test(R) && /const avLines = eop \? refContext\.block\(eDock\)\.trim\(\)/.test(R)
     && /mode = "fl2va \(" \+ eop\.op/.test(R) && /files: referenceFiles, names: referenceNames, upscaler/.test(R));
   check("page: the tray tags from frameOpTags (the rest dimmed), mapping lines off, the video's fl2va note, Generate / Enhance / chat send the op",
     /const fopTags = fopT && RefRoles\.frameOpTags \? RefRoles\.frameOpTags\(fopT, refs\) : null;/.test(I) && /const tag = fopTags \? fopTags\[i\]/.test(I)
@@ -139,16 +139,17 @@ const ff = (args) => execFileSync("ffmpeg", ["-y", "-v", "error", ...args]);
     fd.append("ref_images", new Blob([fs.readFileSync(path.join(tmp, "pic.png"))], { type: "image/png" }), "girl.png");
     const cj = await (await fetch(URL_ + "api/chat", { method: "POST", body: fd })).json();
     const rep = String(cj.reply || cj.text || "");
+    // 2.899.0: the stub ECHOES the system prompt and every reply is retagged (a bare file name too), so "file girl.png" may come back as <Picture 2>
     check("LIVE chat, Append: the LLM is told fl2va - <Picture 1> the video's LAST frame (the part starts on it), <Picture 2> girl.png (it ends on it), no mapping lines; the video is not a <Video n>",
       /FRAMEOP-ECHO/.test(rep) && new RegExp("THIS RENDER APPENDS A NEW PART TO THE VIDEO " + name).test(rep) && /<Picture 1> - the LAST frame of fol395_\d+\.mp4: the new part STARTS exactly on it/.test(rep)
-      && /<Picture 2> - file girl\.png, the user's picture: the new part ENDS exactly on it/.test(rep) && /NO <Subject n> mapping lines/.test(rep) && !/<Video 1> - reference video/.test(rep), rep.slice(-1500));
+      && /<Picture 2> - (?:file girl\.png|<Picture 2>), the user's picture: the new part ENDS exactly on it/.test(rep) && /NO <Subject n> mapping lines/.test(rep) && !/<Video 1> - reference video/.test(rep), rep.slice(-1500));
     const ej = await (await fetch(URL_ + "api/enhance", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: "FRAMEOP_TEST she walks on", mode: "ref2va", ref_video_op: { name, op: "prepend" },
         refs: [{ subject: 1, role: "person", picture: 2, name: "girl.png" }], ref_videos: [name] }) })).json();
     const et = String(ej.text || "");
     check("LIVE Enhance, Prepend: mode fl2va (prepend), <Picture 1> the video's FIRST frame (the part ends on it), <Picture 2> where it starts, no <Subject 1> mapping line",
       /FRAMEOP-ECHO/.test(et) && /Rough prompt \(mode: fl2va \(prepend fol395_\d+\.mp4\)\)/.test(et) && /<Picture 1> - the FIRST frame of fol395_\d+\.mp4: the new part ENDS exactly on it/.test(et)
-      && /<Picture 2> - file girl\.png, the user's picture: the new part STARTS exactly on it/.test(et) && !/<Subject 1> is in <Picture/.test(et), et.slice(-1500));
+      && /<Picture 2> - (?:file girl\.png|<Picture 2>), the user's picture: the new part STARTS exactly on it/.test(et) && !/<Subject 1> is in <Picture/.test(et), et.slice(-1500));
     try { fs.rmSync(path.join(pv, name), { force: true }); } catch { /* fine */ }
   }
   try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* fine */ }

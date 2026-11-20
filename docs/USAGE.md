@@ -10205,6 +10205,28 @@ timeline together, and a single picture dragged onto the timeline or the image e
 shared with your other computers (one stock per name), a change waiting on this computer when the database does not answer.
 Saving a stock says where it was kept.
 
+## 🏷 How the LLM names your reference pictures (2.899.0)
+
+The prompt chat and **✨ Enhance** now name the References docker's pictures the way the selected model reads them, never by
+file name:
+
+| You are making | With | The pictures are called |
+|---|---|---|
+| a video | MiniMax H3, H3 Long | **<Picture 1>**, **<Picture 2>** … (and <Video 1>, <Audio 1>, the <Subject 1> lines) |
+| a video | LTX, Wan, PAN 2 | **picture 1**, **picture 2** … in plain words - these models take the pictures as frames |
+| a picture | FLUX.2 Klein, FLUX 3 Klein | **image 1**, **image 2** … |
+| a picture | Qwen Image 2.1 | **<image1>**, **<image2>** … |
+| a picture | Fibo 2.0 | **<image_1>**, **<image_2>** … |
+| a picture | Qwen Image Edit 2511 and the other edit styles | **Picture 1**, **Picture 2** … |
+| a picture | a style that takes no reference pictures (SDXL, Krea 2 …) | not numbered - the LLM describes them in words |
+
+The Generate button's mode (Video or Image) and the style picked for it decide which. In **Image** mode the docker's pictures
+now go to the LLM too, in tray order, so it knows what image 1 and image 2 are. If the LLM still writes a file name - bare
+(ava_face.png), in quotes or brackets, with or without the extension, or with a folder in front - bitGen changes it to the
+picture's number before you see the reply; a picture number written another way (<Picture 1>, img 1, picture #2) is written
+the model's way too. ✨ Enhance writes for the picked image model or LTX / Wan as well - no H3 dialogue tags there - and a FLUX
+Klein render now gets image 1 / image 2 in its prompt instead of <Picture 1>.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

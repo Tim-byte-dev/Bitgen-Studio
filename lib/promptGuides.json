@@ -58,7 +58,7 @@
         "Be specific about materials, colours and light direction; name the lens if it matters (35mm, 85mm portrait, macro).",
         "Text in the image: put it in quotes and say where and in what style; FLUX renders text well.",
         "It is a STILL: no camera movement, no 'then'.",
-        "EDIT mode (Klein edit): describe the CHANGE, not the whole picture: 'replace the sky with a stormy one, keep everything else'. Reference pictures are <Picture n>.",
+        "EDIT mode (Klein edit): describe the CHANGE, not the whole picture: 'replace the sky with a stormy one, keep everything else'. Reference pictures are image 1, image 2 … - Klein's own words, no brackets, never a file name.",
         "Length: 30-120 words."
       ],
       "example": "A weathered fisherman in a yellow oilskin coils rope on a wet stone pier at dawn, low golden light from the left, thin sea mist, gulls blurred in the background. Medium shot, 50mm, shallow depth of field, muted teal and amber palette, documentary photograph."

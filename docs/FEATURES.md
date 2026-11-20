@@ -215,6 +215,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 - **Save, load and clear chats** — a chat is saved as "subject - date" and listed newest first; clear wipes the window and the model's memory. *Where:* the Prompt chat. *Since:* 2.370.0
 - **The LLM sees your references** — pictures in tray order with a one-line description from the local vision model, the videos and the sounds, so it writes prompts with the right tags. *Where:* the prompt chat. *Since:* 2.354.0
 - **Model-specific prompting** — with an LTX or Wan style picked the LLM writes for that model. *Where:* the prompt chat. *Since:* 2.419.0
+- **Pictures named the model's way** — the prompt chat and ✨ Enhance call the reference pictures what the selected model reads: <Picture 1> for MiniMax H3, picture 1 for LTX / Wan / PAN 2, image 1 for FLUX Klein, <image1> for Qwen Image 2.1, <image_1> for Fibo, Picture 1 for Qwen Image Edit; a file name in a reply becomes the picture's number; Image mode sends the pictures too. *Where:* the prompt chat; Prompt docker ▸ ✨ Enhance. *Since:* 2.899.0
 - **Speech prompts shaped for MiniMax H3** — spoken lines are put into H3's dialogue syntax with the language and the voice timbre; stray instructions are tidied away. *Where:* every prompt render
 - **Read replies aloud** — speaks each answer with the chosen voice. *Where:* the prompt chat. *Since:* 2.87.0
 - **Longform shot lists** — asked for something longer than one clip, the LLM writes a numbered shot list that chains. *Where:* the prompt chat. *Since:* 2.126.0

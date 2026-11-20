@@ -141,7 +141,7 @@ check("2.364.0: the dock's voice - the one the prompt names, else the ONE sound 
 const RI = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8");
 check("2.364.0 / 2.365.0: ✨ enhance teaches the syntax AND formats its reply; every prompt render formats its prompt and logs it",
   RI.includes('require("../lib/voiceStyle").ENHANCE_RULE,') && RI.includes('require("../lib/voiceStyle").TEACHING,')
-  && RI.includes("const ms = vs.formatSpeech(tagged, { audioNames: eDock.audios.map((a) => a.name) });")
+  && RI.includes("const ms = eProf.mapping ? vs.formatSpeech(tagged, { audioNames: eDock.audios.map((a) => a.name) }) : { text: tagged, changes: [] };")
   && RI.includes("const ms = vs.formatSpeech(prompt, { audioNames: auNames });")
   && RI.includes('if (speechNote) try { job.log.push("[bitgen-studio] " + speechNote); } catch {}')
   && V.ENHANCE_RULE.includes("<d>[English] Thank you!</d>") && V.ENHANCE_RULE.includes("never write speech as plain quotes"));

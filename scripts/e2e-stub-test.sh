@@ -5328,6 +5328,39 @@ assert '<Picture 1>' in m and 'ava_face.png>' not in m, m
   && ok "chat: the reference dock rides by tag (<Picture 1..2> subject 1, <Video 1>, <Audio 1>); a reply writing file names / <sound 1> is retagged before it is stored" \
   || { bad "chat: the reference dock / retag is wrong"; tail -3 /tmp/rd354.log; }
 rm -f /tmp/ava_face.png /tmp/ava_body.png /tmp/rd354.log
+# ---- 2.899.0 (Tim: "fix the way the llm returns a picture name for different video types and image models. it is returning
+# the filename instead of picture 1 or image 1"): the stub writes file names (bare, in ( ), <Picture 1>); the reply comes back
+# in the SELECTED model's words - FLUX Klein image 1, Qwen Image 2.1 <image1>, LTX picture 1, H3 <Picture 1>
+SID() { curl -sf http://127.0.0.1:8311/api/styles | python3 -c "import json,sys;n=sys.argv[1];print(next((s['id'] for s in json.load(sys.stdin)['styles'] if s.get('name')==n),''))" "$1"; }
+KLEIN=$(SID "FLUX.2 Klein 9B"); Q21=$(SID "qwen2_1"); LTXS=$(SID "LTX 2.5")
+rt899() {   # $1 = context JSON, $2 = what the reply must say, $3 = the model's words for pictures 1 and 2 (| separated)
+  curl -s --max-time 60 -X POST http://127.0.0.1:8311/api/chat -F "text=REFTAGS_TEST write the prompt" -F describe=0 \
+    -F "context=$1" -F "ref_images=@/tmp/ava_face.png" -F "ref_images=@/tmp/ava_body.png" | python3 -c "
+import json,sys; r=json.load(sys.stdin)['reply']; seen, a, b = sys.argv[1], *sys.argv[2].split('|')
+assert seen in r, r
+assert 'from ' + a + ' wearing' in r and 'dress in ' + b + ',' in r and a + ' smiling' in r, r
+assert '.png' not in r, r" "$2" "$3"
+}
+ffmpeg -y -loglevel error -f lavfi -i "color=c=blue:s=64x64" -frames:v 1 /tmp/ava_face.png
+ffmpeg -y -loglevel error -f lavfi -i "color=c=green:s=64x64" -frames:v 1 /tmp/ava_body.png
+REFS='"refs":[{"name":"ava_face.png","subject":1,"role":"person"},{"name":"ava_body.png","subject":1,"role":"clothing"}]'
+rt899 '{"gen_mode":"image","image_style_id":"'"$KLEIN"'",'"$REFS"'}' KLEIN-SEEN 'image 1|image 2' > /tmp/rt899.log 2>&1 \
+  && ok "chat, Image mode, FLUX Klein: the dock taught as image 1 / image 2; file names in the reply -> image 1 / image 2" \
+  || { bad "chat, Klein: the pictures not named image n"; tail -3 /tmp/rt899.log; }
+rt899 '{"gen_mode":"image","image_style_id":"'"$Q21"'",'"$REFS"'}' QWEN21-SEEN '<image1>|<image2>' > /tmp/rt899.log 2>&1 \
+  && ok "chat, Image mode, Qwen Image 2.1: <image1> / <image2>" || { bad "chat, Qwen 2.1: the pictures not named <imageN>"; tail -3 /tmp/rt899.log; }
+rt899 '{"gen_mode":"video","video_style_id":"'"$LTXS"'",'"$REFS"'}' LTX-SEEN 'picture 1|picture 2' > /tmp/rt899.log 2>&1 \
+  && ok "chat, Video mode, LTX 2.5: picture 1 / picture 2 (frames, no tags)" || { bad "chat, LTX: the pictures not named picture n"; tail -3 /tmp/rt899.log; }
+rt899 '{"gen_mode":"video",'"$REFS"'}' H3-SEEN '<Picture 1>|<Picture 2>' > /tmp/rt899.log 2>&1 \
+  && ok "chat, Video mode, MiniMax H3: <Picture 1> / <Picture 2> (bare file names too)" || { bad "chat, H3: the pictures not named <Picture n>"; tail -3 /tmp/rt899.log; }
+curl -s --max-time 60 -X POST http://127.0.0.1:8311/api/enhance -H 'Content-Type: application/json' \
+  -d '{"prompt":"REFTAGS_TEST the woman in the dress","mode":"ref2va","gen_mode":"image","image_style_id":"'"$KLEIN"'","refs":[{"subject":1,"picture":1,"name":"ava_face.png"},{"subject":1,"picture":2,"name":"ava_body.png"}]}' \
+  | python3 -c "
+import json,sys; t=json.load(sys.stdin)['text']
+assert 'KLEIN-SEEN' in t and 'from image 1 wearing' in t and 'dress in image 2,' in t and '.png' not in t and '<d>' not in t, t" > /tmp/rt899.log 2>&1 \
+  && ok "✨ Enhance, Image mode, FLUX Klein: its own system (image 1 / image 2), file names -> image n, no H3 dialogue markup" \
+  || { bad "Enhance, Klein: wrong words"; tail -3 /tmp/rt899.log; }
+rm -f /tmp/ava_face.png /tmp/ava_body.png /tmp/rt899.log
 curl -s --max-time 30 -X POST http://127.0.0.1:8311/api/chat -H 'Content-Type: application/json' \
   -d '{"message":"write me a pony prompt","context":{"gen_mode":"image","image_style_id":"'"$(curl -sf http://127.0.0.1:8311/api/styles | python3 -c "import json,sys;st=[s for s in json.load(sys.stdin)['styles'] if s.get('arch')=='sdxl'];print(st[0]['id'] if st else '')")"'"}}' > /dev/null 2>&1 || true
 PG=$(curl -sf "http://127.0.0.1:8311/api/prompt-guides?kind=image&arch=sdxl&model=ponyDiffusionV6XL.safetensors")
@@ -14686,6 +14719,13 @@ node scripts/test-898-live.js > /tmp/t898l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui898-ui.js > /tmp/ui898.log 2>&1 \
   && ok "2.898.0 browser test: drag picture 3 onto picture 1 (tags + prompt follow, on screen too) and back, video 1 onto video 3, two sounds swapped, a description still types" \
   || { bad "2.898.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui898.log | head -12; }
+# ---- 2.899.0 (the LLM names the reference pictures the SELECTED model's way, never by file name: lib/refTags.js - H3 <Picture 1>, LTX / Wan / PAN 2 picture 1, FLUX Klein image 1, Qwen 2.1 <image1>, Fibo <image_1>, Qwen Image Edit Picture 1)
+node scripts/test-899.js > /tmp/t899.log 2>&1 \
+  && ok "2.899.0 units: the profile per model, a file name bare / quoted / in brackets / with a path -> the model's word, numbered forms, the blocks, retag, genimage's Klein prompt, Enhance's own system, the wiring" \
+  || { bad "2.899.0 units"; grep -a "^FAIL" -A1 /tmp/t899.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui899-ui.js > /tmp/ui899.log 2>&1 \
+  && ok "2.899.0 browser test: the chat and ✨ Enhance in Image mode send the References docker's pictures (tray order, names, the style), Video mode as before" \
+  || { bad "2.899.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui899.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

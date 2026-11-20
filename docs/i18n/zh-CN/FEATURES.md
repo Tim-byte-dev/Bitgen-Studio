@@ -215,6 +215,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **保存、加载和清除对话** — 对话以“主题 - 日期”的形式保存，并按从新到旧排列；清除会清空窗口和模型的记忆。 *Where:* Prompt chat。 *Since:* 2.370.0
 - **LLM 能看到你的参考图** — 按托盘顺序排列的图片（附带本地视觉模型生成的一行描述）、视频和声音，让它写出带有正确标签的提示词。 *Where:* Prompt chat。 *Since:* 2.354.0
 - **针对模型编写提示词** — 选择 LTX 或 Wan 风格后，LLM 会专门为该模型编写提示词。 *Where:* Prompt chat。 *Since:* 2.419.0
+- **按模型的方式称呼图片** — 提示词聊天和 ✨ Enhance 用所选模型读取的方式称呼参考图片：MiniMax H3 用 <Picture 1>，LTX / Wan / PAN 2 用 picture 1，FLUX Klein 用 image 1，Qwen Image 2.1 用 <image1>，Fibo 用 <image_1>，Qwen Image Edit 用 Picture 1；回复中的文件名会换成图片编号；Image 模式也会发送图片。 *Where:* 提示词聊天；Prompt docker ▸ ✨ Enhance。 *Since:* 2.899.0
 - **为 MiniMax H3 调整的语音提示词** — 台词会被转换为 H3 的对白语法，并带上语言和音色；多余的指令会被清理掉。 *Where:* 每次提示词渲染
 - **朗读回复** — 用所选声音朗读每条回答。 *Where:* Prompt chat。 *Since:* 2.87.0
 - **长篇镜头列表** — 当要求的内容比一个片段更长时，LLM 会编写一份可依次衔接的编号镜头列表。 *Where:* Prompt chat。 *Since:* 2.126.0

@@ -40,6 +40,7 @@ const comfy = require("../lib/comfy");
 const comfyPaths = require("../lib/comfyPaths");
 const autostart = require("../lib/autostart");
 const refContext = require("../lib/refContext");   // 2.354.0: the reference dock for the prompt LLM
+const refTags = require("../lib/refTags");         // 2.899.0: the selected model's own words for the pictures (image 1, <image1>, <Picture 1>)
 const dockers = require("../lib/dockers");
 const extensions = require("../lib/extensions");   // 2.217.0: dockers are ext/<id>/ extensions
 const frames = require("../lib/frames");
@@ -2114,6 +2115,11 @@ function mount(app) {
       const q = qwenRefs.prompt(p.prompt, (p.images || []).length, Array.isArray(b.image_roles) ? b.image_roles.map(String) : [], refFmt);
       p.prompt = q.prompt;
       if (q.note) p.workflow_note = [p.workflow_note, q.note].filter(Boolean).join(" · ");
+    } else if ((p.images || []).length) {
+      // 2.899.0: FLUX Klein reads its pictures as "image 1", the edit graphs as "Picture 1" - not <Picture 1> (lib/refTags.js)
+      const q = refTags.imagePrompt(p.prompt, styled, core.BASE, p.images.length);
+      p.prompt = q.prompt;
+      if (q.note) p.workflow_note = [p.workflow_note, q.note].filter(Boolean).join(" · ");
     }
     // ONE PRESS = ONE FRESH SEED, decided HERE (2.83.0).
     // The worker can roll its own -1 and still does, but a number drawn down
@@ -3152,12 +3158,15 @@ const trap = require("../lib/trap");
     const { prompt, refs } = req.body || {};
     let { mode } = req.body || {};
     if (!prompt || !prompt.trim()) return res.status(400).json({ error: "prompt is required" });
+    // 2.899.0 (Tim: "fix the way the llm returns a picture name for different video types and image models"): the
+    // selected model's words for the pictures - an image model or LTX / Wan / PAN 2 gets its own system (lib/refTags.js)
+    const eProf = refTags.profile(core.STYLES_DIR, core.BASE, req.body || {});
     // 2.395.0: an Append / Prepend video = fl2va: <Picture 1> its frame (described), <Picture 2> the dock's picture
-    const eop = refContext.opOf(req.body || {});
+    const eop = eProf.mapping ? refContext.opOf(req.body || {}) : null;
     if (eop) mode = "fl2va (" + eop.op + " " + eop.name + ")";
     // picture number is the slot order the UI sends; one subject may appear in
     // several pictures (face / body / clothing of the same character)
-    const mapping = eop ? "" : (refs || [])
+    const mapping = eop || !eProf.mapping ? "" : (refs || [])
       .map((r, i) => {
         const role = (r.role || "person").trim();
         const what = (role === "person" || role === "subject") ? "" : role + " ";
@@ -3166,7 +3175,7 @@ const trap = require("../lib/trap");
       }).join("\n");
     // 2.104.0: the H3 guide (lib/promptGuides.json) is the teaching; the
     // mapping lines are the app's own convention and stay verbatim.
-    const system = [
+    const system = !eProf.mapping ? refTags.enhanceSystem(core.STYLES_DIR, eProf, req.body || {}, prompt) + loraWords.systemNote(eLoras) : [
       "You rewrite rough video-generation prompts into detailed prompts for MiniMax H3, an audio-video model.",
       "Rules:",
       "- Keep every <Subject n>, <Picture n>, <Video n> and <Audio n> tag exactly as given; do not invent new ones; never write a file name as a tag.",
@@ -3194,8 +3203,9 @@ const trap = require("../lib/trap");
     let eFrame = "";
     if (eop) try { eFrame = (await refContext.frameDesc(core, chatDir(), eop, core.pDir("video"), true)).desc; } catch { eFrame = ""; }
     const eDock = refContext.dock({ refs: (refs || []).map((r) => ({ name: r.name, subject: r.subject, role: r.role, note: r.note })),
-                                    ref_videos: eb.ref_videos, ref_audios: eb.ref_audios, ref_video_op: eb.ref_video_op, ref_notes: eb.ref_notes }, [], eFrame);
+                                    ref_videos: eb.ref_videos, ref_audios: eb.ref_audios, ref_video_op: eop ? eb.ref_video_op : undefined, ref_notes: eb.ref_notes }, [], eFrame);
     const avLines = eop ? refContext.block(eDock).trim()
+      : !eProf.mapping ? refContext.block(eDock, eProf).trim()
       : eDock.videos.map((v) => `<Video ${v.n}> is the reference video (its motion / action)${v.desc ? ": " + v.desc : ""}`)
         .concat(eDock.audios.map((a) => `<Audio ${a.n}> is the reference sound (a voice or sound)${a.desc ? ": " + a.desc : ""}`)).join("\n");
     const user = (mapping ? mapping + "\n" : "") + (avLines ? avLines + "\n" : "") + (mapping || avLines ? "\n" : "")
@@ -3209,13 +3219,14 @@ const trap = require("../lib/trap");
     if (!out.ok) return res.status(out.status || 502).json({ error: out.error });
     /* 2.364.0 (Tim: "i think the llm is not following directions" - the reply wrote speech as plain quotes):
        whatever the model wrote, every spoken line comes back as H3 dialogue (lib/voiceStyle.markSpeech) */
-    const tagged = refContext.retag(out.text, eDock).text;
+    const rt = refContext.retag(out.text, eDock, eProf), tagged = rt.text;
     const vs = require("../lib/voiceStyle");
-    // 2.365.0: the whole H3 shape, not only the quotes (lib/voiceStyle.formatSpeech)
-    const ms = vs.formatSpeech(tagged, { audioNames: eDock.audios.map((a) => a.name) });
+    // 2.365.0: the whole H3 shape, not only the quotes (lib/voiceStyle.formatSpeech) - 2.899.0: H3 only
+    const ms = eProf.mapping ? vs.formatSpeech(tagged, { audioNames: eDock.audios.map((a) => a.name) }) : { text: tagged, changes: [] };
+    if (!eProf.mapping && rt.changed.length) ms.changes.push("the pictures named for " + eProf.label + ": " + rt.changed.join(", "));
     // 2.581.0: a LoRA keyword the LLM left out goes in anyway - the LoRA only works with it
     const lw = loraWords.ensure(ms.text, eLoras);
-    const notes = ms.changes.length ? ["formatted for MiniMax H3: " + ms.changes.join("; ")] : [];
+    const notes = ms.changes.length ? [(eProf.mapping ? "formatted for MiniMax H3: " : "") + ms.changes.join("; ")] : [];
     if (lw.added.length) notes.push("LoRA keywords added: " + lw.added.join(", "));
     res.json({ text: lw.text, ...(notes.length ? { note: notes.join(" · ") } : {}),
                ...(eLoras.length ? { loras: eLoras.map((l) => ({ title: l.title, words: l.words })) } : {}) });
@@ -3433,14 +3444,15 @@ const trap = require("../lib/trap");
     // tags, subjects, descriptions, videos, sounds - and the rule for writing with them (lib/refContext.js)
     let refDock = null, refBlock = "";
     const rctx = b.context || {};
-    const rop = refContext.opOf(rctx);           // 2.395.0: an Append / Prepend video = fl2va, its frame <Picture 1>
+    const rProf = refTags.profile(core.STYLES_DIR, core.BASE, rctx);   // 2.899.0: the selected model's words for the pictures
+    const rop = rProf.mapping ? refContext.opOf(rctx) : null;           // 2.395.0: an Append / Prepend video = fl2va, its frame <Picture 1>
     if (rop || (rctx.refs || []).length || (rctx.ref_videos || []).length || (rctx.ref_audios || []).length) {
       const describe = String(b.describe || "1") !== "0";
       const dsc = await refContext.describePictures(core, dir, ((req.files || {}).ref_images) || [], describe);
       const fd = rop ? await refContext.frameDesc(core, dir, rop, core.pDir("video"), describe) : { desc: "", note: "" };
-      refDock = refContext.dock(rctx, dsc.descs, fd.desc);
+      refDock = refContext.dock(rop ? rctx : Object.assign({}, rctx, { ref_video_op: undefined }), dsc.descs, fd.desc);
       const notes = [dsc.note, fd.note].filter(Boolean).join("; ");
-      refBlock = refContext.block(refDock) + (notes ? "\n(" + notes + ")" : "");
+      refBlock = refContext.block(refDock, rProf) + (notes ? "\n(" + notes + ")" : "");
     }
     const messages = [{ role: "system",
       content: llmChat.CHAT_SYSTEM + llmChat.selectionContext(core.STYLES_DIR, b.context,
@@ -3471,7 +3483,7 @@ const trap = require("../lib/trap");
       return res.status(out.status || 502).json({ error: out.error, session });
     }
     // 2.354.0: a file name written as a tag -> its <Picture n> / <Video n> / <Audio n>; <sound n> -> <Audio n>
-    out.text = refContext.retag(out.text, refDock).text;
+    out.text = refContext.retag(out.text, refDock, rProf).text;
     // a song ask whose reply parses carries the song; one that does not is
     // a chat reply like any other — never an error
     const song = songAsk ? songwriter.parse(out.text) : null;

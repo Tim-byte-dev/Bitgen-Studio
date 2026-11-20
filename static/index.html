@@ -6510,16 +6510,18 @@ async function enhancePrompt() {
   } catch {}
   if (typeof logLine === "function") logLine(needsBoot ? "[enhance] starting the LLM server…" : "[enhance] working…");
   try {
+    const imgMode = !!($("genModeSel") && $("genModeSel").value === "image");   // 2.899.0: the image model's words
     const res = await fetch("/api/enhance", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         prompt: rough, mode,
         llm_file: $("llmSel").value || undefined,
         // 2.395.0: an Append / Prepend video = fl2va - the picture used is <Picture 2>, the video's frame <Picture 1>
-        ...(curFrameOp() ? { ref_video_op: curFrameOp().op } : {}),
-        refs: curFrameOp() ? curFrameOp().refs.map((r) => ({ subject: r.subject, role: roleOf(r), picture: 2, name: (r.file && r.file.name) || "", note: r.desc || "" }))
-          : mode === "ref2va"
-          ? refs.map((r, i) => ({ subject: r.subject, role: roleOf(r), picture: i + 1, name: (r.file && r.file.name) || "", note: r.desc || "" }))
+        ...(curFrameOp() && !imgMode ? { ref_video_op: curFrameOp().op } : {}),
+        refs: curFrameOp() && !imgMode ? curFrameOp().refs.map((r) => ({ subject: r.subject, role: roleOf(r), picture: 2, name: (r.file && r.file.name) || "", note: r.desc || "" }))
+          // 2.899.0: in Image mode too - the image model's own word for them (image 1, <image1>, Picture 1 - lib/refTags.js)
+          : mode === "ref2va" || imgMode
+          ? refs.slice(0, 9).map((r, i) => ({ subject: r.subject, role: roleOf(r), picture: i + 1, name: (r.file && r.file.name) || "", note: r.desc || "" }))
           : [],
         ref_notes: window.RefInfo ? RefInfo.notesFor(refVids, refAuds, refNotes) : undefined,   // 2.539.0
         // 2.354.0: the dock's videos + sounds -> <Video n> / <Audio n> (lib/refContext.js)
@@ -9870,8 +9872,11 @@ async function chatPost(t, chatLlm, arena) {
      server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */
   // 2.395.0: an Append / Prepend video = fl2va - the server describes its frame (<Picture 1>), the picture used is <Picture 2>
   const chatFop = chatCtx.gen_mode === "video" ? curFrameOp() : null;
-  const dockPics = chatFop ? chatFop.refs.slice() : chatCtx.gen_mode === "video" && mode === "ref2va" ? refs.slice(0, 9) : [];
+  // 2.899.0 (Tim: "it is returning the filename instead of picture 1 or image 1"): Image mode sends the dock's pictures too,
+  // so the server can name them the image model's way (image 1 for FLUX Klein, <image1> for Qwen 2.1 - lib/refTags.js)
+  const dockPics = chatFop ? chatFop.refs.slice() : (chatCtx.gen_mode === "video" && mode === "ref2va") || chatCtx.gen_mode === "image" ? refs.slice(0, 9) : [];
   if (chatFop) chatCtx.ref_video_op = chatFop.op;
+  if (chatCtx.gen_mode === "image" && dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
   if (chatCtx.gen_mode === "video") {
     if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
     if (refVids.length) chatCtx.ref_videos = refVids.slice(0, 3);

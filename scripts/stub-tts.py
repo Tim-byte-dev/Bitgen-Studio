@@ -54,6 +54,16 @@ class H(BaseHTTPRequestHandler):
                               else "DOCK-MISSING"))
                 out = {"choices": [{"message": {"role": "assistant", "content": content}}]}
                 return self._send(200, json.dumps(out).encode(), "application/json")
+            # 2.899.0: the LLM writes FILE NAMES (bare, in ( ), <Picture 1>) - the server names them the selected model's way;
+            # the reply says which model's words the system prompt taught
+            if "REFTAGS_TEST" in alltext:
+                sysmsg = " ".join(str(m.get("content", "")) for m in req.get("messages", []) if m.get("role") == "system")
+                allm = " ".join(str(m.get("content", "")) for m in req.get("messages", []))
+                seen = ("KLEIN-SEEN" if "ONLY as image 1, image 2" in allm else "QWEN21-SEEN" if "ONLY as <image1>, <image2>" in allm
+                        else "LTX-SEEN" if "gets the pictures as frames" in allm else "H3-SEEN" if "<Picture 2> - subject 1" in sysmsg else "NONE-SEEN")
+                content = ("```image\nThe woman from ava_face.png wearing the dress in (ava_body.png), <Picture 1> smiling\n```\n" + seen)
+                out = {"choices": [{"message": {"role": "assistant", "content": content}}]}
+                return self._send(200, json.dumps(out).encode(), "application/json")
             n = _re.search(r"exactly (\d+) prompt", user)
             n = int(n.group(1)) if n else 1
             arr = [f"shot {i+1}: a wide cinematic shot, slow dolly in" for i in range(n)]

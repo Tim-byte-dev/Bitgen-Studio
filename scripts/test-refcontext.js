@@ -80,13 +80,13 @@ check("retag: a stem written as a tag (<ava_face>) too; the right tags untouched
   check("/api/chat: takes the dock's pictures (ref_images), describes them (the 🖼 Describe flag), puts the dock in the system context, retags the reply before it is stored",
     IDX.includes('upload.fields([{ name: "images", maxCount: 9 }, { name: "ref_images", maxCount: 9 }])')
     && IDX.includes("const dsc = await refContext.describePictures(core, dir, ((req.files || {}).ref_images) || [],")
-    && IDX.includes("        + refBlock\n") && IDX.indexOf("out.text = refContext.retag(out.text, refDock).text;") < IDX.indexOf('chatStore.append(dir, session, "assistant", out.text);'));
+    && IDX.includes("        + refBlock\n") && IDX.indexOf("out.text = refContext.retag(out.text, refDock, rProf).text;") < IDX.indexOf('chatStore.append(dir, session, "assistant", out.text);'));
   check("/api/enhance: the dock's videos + sounds as <Video n> / <Audio n> lines, the what-each-gives rule, the reply retagged",
     IDX.includes("<Video ${v.n}> is the reference video") && IDX.includes("<Audio ${a.n}> is the reference sound")
-    && IDX.includes("never write a file name as a tag") && IDX.includes("const tagged = refContext.retag(out.text, eDock).text;"));   // 2.364.0: then the speech is marked
+    && IDX.includes("never write a file name as a tag") && IDX.includes("const rt = refContext.retag(out.text, eDock, eProf), tagged = rt.text;"));   // 2.364.0: then the speech is marked
   check("the chat brief: <Video n> / <Audio n>, never a file name as a tag, the <subject n> mapping line (no longer 'never write <subject n>')",
-    CH.includes("Never write a FILE NAME as a tag") && CH.includes('\\"<Subject 1> is the woman in <Picture 1>.\\"') && !CH.includes("never write <subject n>")
-    && CAP.includes("never write a file name as a tag in a prompt"));
+    CH.includes("NEVER write a FILE NAME (not photo.png, not <photo.png>)") && CH.includes('\\"<Subject 1> is the woman in <Picture 1>.\\"') && !CH.includes("never write <subject n>")
+    && CAP.includes("never write a file name in a prompt"));
   check("the page: a video chat sends the tray (Reference mode) with names / subjects / roles + its pictures, and the dock's videos / sounds; ✨ Enhance sends them too",
     H.includes('if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));')   // 2.539.0: + note (its description)
     && H.includes('pdForm.append("ref_images", r.file, r.file.name || "picture.png")') && H.includes("ref_videos: refVids.slice(0, 3), ref_audios: refAuds.slice(0, 3),"));

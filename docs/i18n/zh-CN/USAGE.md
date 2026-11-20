@@ -6601,6 +6601,25 @@ BAS 数字是工作表：请通过 ATO 或你的税务代理申报。PAYG 预扣
 
 **企业数据库中的卡纸。** 当你的企业信息保存在数据库中时（💳 企业信息对话框 ▸ 🗄 保存位置…），你在 📇 名片拼版中保存的标签 / 卡纸也会保存到那里：与企业信息一起移过去，与你的其他电脑共享（每个名称一种卡纸），数据库没有响应时更改会在这台电脑上等待。保存卡纸时会说明保存在哪里。
 
+## 🏷 LLM 如何称呼你的参考图片 (2.899.0)
+<!-- en: how-the-llm-names-your-reference-pictures-2-899-0 36a6ab2535d3 -->
+
+提示词聊天和 **✨ Enhance** 现在按所选模型读取的方式来称呼参考停靠栏中的图片，绝不使用文件名：
+
+| 你要制作 | 使用 | 图片的称呼 |
+|---|---|---|
+| 视频 | MiniMax H3、H3 Long | **<Picture 1>**、**<Picture 2>** …（以及 <Video 1>、<Audio 1> 和 <Subject 1> 行） |
+| 视频 | LTX、Wan、PAN 2 | 普通文字 **picture 1**、**picture 2** … - 这些模型把图片当作帧来接收 |
+| 图片 | FLUX.2 Klein、FLUX 3 Klein | **image 1**、**image 2** … |
+| 图片 | Qwen Image 2.1 | **<image1>**、**<image2>** … |
+| 图片 | Fibo 2.0 | **<image_1>**、**<image_2>** … |
+| 图片 | Qwen Image Edit 2511 及其他编辑风格 | **Picture 1**、**Picture 2** … |
+| 图片 | 不接收参考图片的风格（SDXL、Krea 2 …） | 不编号 - LLM 用文字描述它们 |
+
+具体用哪一种，由 Generate 按钮的模式（Video 或 Image）以及为它选择的风格决定。在 **Image** 模式下，停靠栏的图片现在也会按托盘顺序发送给 LLM，所以它知道 image 1 和 image 2 是什么。如果 LLM 仍然写出文件名 - 直接写（ava_face.png）、放在引号或括号里、带或不带扩展名，或前面带有文件夹 - bitGen 会在你看到回复之前把它换成图片的编号；用其他写法写的图片编号（<Picture 1>、
+img 1、picture #2）也会改成模型的写法。✨ Enhance 也会为所选的图像模型或 LTX / Wan 来写 - 那里不使用 H3 的对白标签 - 而且
+FLUX Klein 的渲染现在在提示词中得到的是 image 1 / image 2，而不是 <Picture 1>。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
