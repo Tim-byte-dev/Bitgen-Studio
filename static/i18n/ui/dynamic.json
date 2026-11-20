@@ -13968,43 +13968,123 @@
   },
   {
    "s": "A4 (210 × 297 mm)",
-   "src": "ext/imageeditdock/pccardsheet.js:10"
+   "src": "ext/imageeditdock/pccardsheet.js:20"
   },
   {
    "s": "US Letter (8.5 × 11 in)",
-   "src": "ext/imageeditdock/pccardsheet.js:10"
+   "src": "ext/imageeditdock/pccardsheet.js:21"
+  },
+  {
+   "s": "A3 (297 × 420 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:22"
+  },
+  {
+   "s": "SRA4 (225 × 320 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:23"
+  },
+  {
+   "s": "SRA3 (320 × 450 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:24"
+  },
+  {
+   "s": "Tabloid (11 × 17 in)",
+   "src": "ext/imageeditdock/pccardsheet.js:25"
+  },
+  {
+   "s": "12 × 18 in (305 × 457 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:26"
+  },
+  {
+   "s": "13 × 19 in (330 × 483 mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:27"
+  },
+  {
+   "s": "Custom size",
+   "src": "ext/imageeditdock/pccardsheet.js:28"
+  },
+  {
+   "s": "Home printer sheet (A4 / Letter)",
+   "src": "ext/imageeditdock/pccardsheet.js:134"
+  },
+  {
+   "s": "Label / perforated card stock (your sizes)",
+   "src": "ext/imageeditdock/pccardsheet.js:134"
+  },
+  {
+   "s": "Print shop sheet (bleed + crop marks)",
+   "src": "ext/imageeditdock/pccardsheet.js:134"
+  },
+  {
+   "s": "Print shop: one card a page (bleed + crop marks)",
+   "src": "ext/imageeditdock/pccardsheet.js:134"
   },
   {
    "s": "The card",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
-  },
-  {
-   "s": "Front + Back (pages 1 and 2)",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
    "s": "Gap between cards",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
-  },
-  {
-   "s": "cut marks",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
-  },
-  {
-   "s": "backs on page 2 (mirrored for printing both sides)",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
    "s": "Bleed",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
-   "s": "one side",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
+   "s": "Your stock",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
-   "s": "none (one cut between cards)",
-   "src": "ext/imageeditdock/pccardsheet.js:92"
+   "s": "type its sizes —",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "Gap",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "registration marks",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "job line",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "cut marks",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "backs (mirrored for printing both sides)",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "Cards",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "Copies of each",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "name it (e.g. my 10-up card stock)",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "Keep these sizes under this name",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "Delete this stock",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
+  },
+  {
+   "s": "a card per row of a list (a team's names)",
+   "src": "ext/imageeditdock/pccardsheet.js:285"
+  },
+  {
+   "s": "crop marks",
+   "src": "ext/imageeditdock/pccardsheet.js:299"
   },
   {
    "s": "Drag: to another place in the column, or out of it (it floats again)",
@@ -15312,10 +15392,6 @@
   },
   {
    "s": "Paragraph text flows around this layer",
-   "src": "ext/imageeditdock/pcflow.js:300"
-  },
-  {
-   "s": "Gap",
    "src": "ext/imageeditdock/pcflow.js:300"
   },
   {
@@ -31754,15 +31830,15 @@
   },
   {
    "p": "{0} × {1} mm",
-   "src": "ext/imageeditdock/pccardsheet.js:90"
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
-   "p": "{0} mm (cut each side)",
-   "src": "ext/imageeditdock/pccardsheet.js:92"
+   "p": "{0} pages",
+   "src": "ext/imageeditdock/pccardsheet.js:262"
   },
   {
-   "p": "{0} mm (with a gap)",
-   "src": "ext/imageeditdock/pccardsheet.js:94"
+   "p": "{0} ({1} × {2}, {3} × {4} mm)",
+   "src": "ext/imageeditdock/pccardsheet.js:293"
   },
   {
    "p": "The picked dimension ({0} px) measures",

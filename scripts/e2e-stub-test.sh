@@ -14659,6 +14659,13 @@ node scripts/test-895.js > /tmp/t895.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui895-ui.js > /tmp/ui895.log 2>&1 \
   && ok "2.895.0 browser test: ✨ Auto edit with 👁 (no vision model: said) + 🔊 - the sounds made in the project on ✨ SFX A / B, the flash on ✨ Flash, ⚙ Compile with the riser heard, \"auto edit …\" from the prompt docker" \
   || { bad "2.895.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui895.log | head -12; }
+# ---- 2.896.0 (📇 card sheet extras: print shop sheets + single cards with bleed / crop marks, your label / card stocks, a card per row of a list: ext/imageeditdock/pccardsheet.js + pccardlist.js, lib/cardStocks.js)
+node scripts/test-896.js > /tmp/t896.log 2>&1 \
+  && ok "2.896.0 units: print shop sheets (SRA3 21-up with 3 mm bleed, gap two bleeds, crop marks outside the bleed, registration targets), one card a page (trim / bleed boxes), your stock (cells, fit, mirrored backs, checks, kept by name), the list (CSV / TSV, columns guessed, words swapped, copies), sheets in order, wiring" \
+  || { bad "2.896.0 units"; grep -a "^FAIL" -A1 /tmp/t896.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui896-ui.js > /tmp/ui896.log 2>&1 \
+  && ok "2.896.0 browser test: 📇 the print shop sheet (SRA3, the bleed is the card's own red), one card a page (TrimBox / BleedBox read back), your stock kept + listed + deleted, a card per row of a list (each person's words on their cards, read back)" \
+  || { bad "2.896.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui896.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

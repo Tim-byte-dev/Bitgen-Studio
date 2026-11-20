@@ -137,6 +137,7 @@ function mount(app) {
   // 2.876.0: business details (a logo is often over 100 KB - 2.875.0's upload was refused by the parser below) + 📒 the
   // accounting docker (receipts / bills uploaded as pictures or PDFs) - both before the 100 KB json parser
   require("./businessProfiles").mount(app);
+  require("./cardStocks").mount(app);    // 2.896.0: 📇 your label / card stocks for the Business Card Sheet (lib/cardStocks.js)
   require("./accounting").mount(app);   // 2.877.0: 📒 Accounts - journals, ledger, balance sheet, BAS (lib/accounting.js)
   require("./layoutRescue").mount(app); // 2.891.0: the dockers reset with a backup - the page's whole storage comes along (lib/layoutRescue.js)
   app.use(express.json());

@@ -68319,6 +68319,249 @@
    "where": [
     "2.895.0"
    ]
+  },
+  {
+   "s": "one side",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "pages 1 + 2 = front + back",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "each page is a different card (one side)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "none (one cut between cards)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "two bleeds",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "this card",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "a whole sheet",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Paper width",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Paper height",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Card width",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Card height",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Top margin",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Left margin",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Across pitch",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Down pitch",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "All in mm, measured on your sheet or read off its packet. The pitch is from one card's left (top) edge to the next card's left (top) edge.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Each card on its own page, trim and bleed boxes set - what most print shops ask for.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Paste the list above - each column then replaces some words on the card.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "— not used —",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "how many cards (copies)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Print one sheet on plain paper first and hold it over the stock to check it lines up.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "The print shop cuts on the crop marks.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "For the backs print the next page on the back of the sheet, flipped on the long edge (or long-edge duplex).",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "No column replaces any words yet - pick what each column replaces above.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Make the PDF",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "Business Card Sheet",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
+  },
+  {
+   "s": "paste the list (the first row the column names, then a row per card)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.896.0"
+   ]
   }
  ]
 }

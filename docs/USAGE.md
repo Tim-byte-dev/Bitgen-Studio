@@ -10143,6 +10143,33 @@ change anything afterwards and ⚙ Compile renders exactly what the preview show
 - **From the prompt docker** - "auto edit these clips to the music", "cut my videos to the beat", "make a promo edit of …"
   opens ✨ Auto edit with your words and plans; check the storyboard, then ✔ Build.
 
+## 📇 More ways to print business cards (2.896.0)
+
+File ▸ 📇 **Business Card Sheet…** in the image editor now has a **Layout** dropdown:
+
+- **🖨 Home printer sheet (A4 / Letter)** - as before: as many cards as fit, centred, cut marks, the backs mirrored on the next
+  page. A bleed (with a gap) is now made from the card's own edge pixels, so nothing is stretched.
+- **🏷 Label / perforated card stock (your sizes)** - type your stock's sizes in mm, measured on the sheet or read off its
+  packet: the paper, how many across and down, one card's width and height, the top and left margins and the pitch (from one
+  card's left / top edge to the next card's). Name it and press **💾 Keep** - it is kept for every project and picked again
+  next time (🗑 deletes it). bitGen copies no maker's templates. A card of another size is fitted inside each label (said in
+  the box). Print one sheet on plain paper first and hold it over the stock to check it lines up.
+- **🏭 Print shop sheet (bleed + crop marks)** - SRA3, SRA4, A3, 12 × 18 in, 13 × 19 in, Tabloid or your own size; every card
+  gets a 2, 3 or 5 mm bleed from its own edges, the cards at least two bleeds apart (or 8 / 10 / 15 mm), a margin for the
+  press (5 - 15 mm), crop marks in registration colour outside the bleed, registration targets in the middle of each side
+  and a job line (what it is, the sheet, the size, the bleed). 21 Australian 90 × 55 mm cards fit on SRA3.
+- **✂ Print shop: one card a page (bleed + crop marks)** - what most print shops ask for: each card on a page the size of the
+  card plus its bleed (plus room for crop marks when ticked), with the PDF's trim and bleed boxes set; front and back pages.
+
+**Cards ▾ 📋 a card per row of a list (a team's names)** - paste the list from a spreadsheet or type it (the first row the
+column names: Name, Role, Mobile, Email, Copies …). Under it each column says which words on the card it replaces: guessed
+from the business details the card was made with (💳), or from the line's look (an email, a phone number, a website), and
+changed by hand. Every person gets their own card - front and back - with their words drawn by the card's own text layers
+(the card itself is left as it was). A **Copies** column says how many of each; otherwise **Copies of each** (1 - 50, or a
+whole sheet each). As many sheets as it takes, each person's cards together; the preview colours and names them.
+
+A document of more pages can also print **each page as a different card** (one side each) - pick it beside the card's size.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
