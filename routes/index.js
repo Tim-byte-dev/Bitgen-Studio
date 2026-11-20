@@ -200,6 +200,7 @@ function mount(app) {
   require("./mogrt").mount(app);        // 2.417.0: 🧩 motion graphics templates
   require("./tlrender").mount(app, core); // 2.418.0: ⚡ render previews (real-time playback)
   require("./tlai").mount(app);          // 2.420.0: 🤖 AI inside the timeline
+  require("./autoEdit").mount(app);      // 2.894.0: ✨ Auto edit on the timeline (lib/autoEdit.js + static/autoedit.js)
   require("./interchange").mount(app);  // 2.407.0: FCP XML / EDL / OTIO out, XML / EDL in
   require("./effects").mount(app);      // 2.409.0: the adjustment layer's placeholder picture
   require("./textedit").mount(app);     // 2.408.0: edit by transcript (a clip's words) + scene-cut detection

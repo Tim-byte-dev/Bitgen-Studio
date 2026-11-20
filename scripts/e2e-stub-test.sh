@@ -14645,6 +14645,13 @@ node scripts/test-893.js > /tmp/t893.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui893-ui.js > /tmp/ui893.log 2>&1 \
   && ok "2.893.0 browser test: the 860 px business details box with nothing past its frame, the front / back backgrounds made from the descriptions under the words, ☐ Backgrounds; 👷 Pay summary… (years, people, 🖨 one person's page)" \
   || { bad "2.893.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui893.log | head -12; }
+# ---- 2.894.0 (✨ Auto edit on the timeline - video-shotcraft's editing craft with the timeline's own keyframes: static/autoedit.js, lib/autoEdit.js, routes/autoEdit.js, ext/timelinedock/tlautoedit.js)
+node scripts/test-894.js > /tmp/t894.log 2>&1 \
+  && ok "2.894.0 units: the beat grid, the recipes, bitGen's own plan, a plan made valid, the build (layers, keyframes, seams, titles, music), the check, the LLM's plan + the fallback, route, credit" \
+  || { bad "2.894.0 units"; grep -a "^FAIL" -A1 /tmp/t894.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui894-ui.js > /tmp/ui894.log 2>&1 \
+  && ok "2.894.0 browser test: ✨ Auto edit - assets + a click track, ✨ Plan, the storyboard, ✔ Build into a new timeline, every cut on a beat, ⚙ Compile of it (16 s, the picture at its shot)" \
+  || { bad "2.894.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui894.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

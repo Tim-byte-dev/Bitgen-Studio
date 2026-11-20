@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7318,
+ "count": 7325,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -68219,6 +68219,69 @@
    ],
    "where": [
     "2.893.0"
+   ]
+  },
+  {
+   "s": "✨ Auto edit",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "Auto edit: cut your pictures and videos to the music - the LLM plans the shots, moves, seams and words, every cut on a beat",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "The editing craft of video-shotcraft (Vincentwei1021, Apache-2.0): music first - every cut on a beat; a held opening, one hero shot, a climb of high and low shots with title cards between, a peak finale and a held sign-off; one move per shot; each seam by the energy on both sides. Built with the timeline's own keyframes.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "What is it for? e.g. A 30 s promo for Rosie's Bakery - fresh sourdough every morning, open 7am, come visit",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "✨ Plan",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "✔ Build",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
+   ]
+  },
+  {
+   "s": "no words",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.894.0"
    ]
   }
  ]

@@ -517,6 +517,12 @@
         {
           "name": "Everyone who tests bitGen Studio",
           "what": "and reports what to fix"
+        },
+        {
+          "name": "video-shotcraft",
+          "by": "Vincentwei1021",
+          "url": "https://github.com/Vincentwei1021/video-shotcraft",
+          "what": "the editing craft of ✨ Auto edit on the timeline - music first with every cut on a beat, the promo energy arc, one move per shot, each seam picked by the energy on both sides and the shot recipes (Apache-2.0; its rules re-made with the timeline's own keyframes, no code or Remotion)"
         }
       ]
     }

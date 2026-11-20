@@ -10097,6 +10097,32 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   **🖼 Backgrounds** to keep the plain colours. A side with no description keeps its colour.
 - The business details box is wider (860 px, never past the window) and every box stays inside its frame; a tall box scrolls.
 
+## ✨ Auto edit on the timeline (2.894.0)
+
+**✨** on the timeline's bar cuts your pictures and videos to the music for you. It edits the way video-shotcraft (by
+Vincentwei1021, Apache-2.0) teaches a promo editor to: the music first, every cut on a beat, a shape for the whole film, one
+move per shot and each seam picked by the energy either side. bitGen builds it with the timeline's own keyframes, so you can
+change anything afterwards and ⚙ Compile renders exactly what the preview shows.
+
+1. **Edit** - the clips already on this timeline, or the pictures and videos you tick from Assets.
+2. **Music** - a sound on this timeline or in the project. Its beats are found and every cut lands on one. With no music the
+   cuts follow a steady pace (beats a minute).
+3. **Length** - empty = the whole song (30 s without one); it is always whole bars of 4 beats. **Feel**: Calm (longer shots),
+   Promo, Hype (short, punchy). **Words on screen** and **title cards** on or off. Write what it is for in the box (the
+   prompt docker's words are put there to start with).
+4. **✨ Plan** - the LLM plans the edit: a held opening, one hero shot, a climb where busy and calm shots take turns with a
+   title card every shot or two, a peak finale and a sign-off held at least a second. Each shot gets a move (slow push, pull
+   out, pans, rise, Ken Burns, drift, crash zoom, step zoom on the beats, pulse on every beat - never the same twice in a row)
+   and a seam into it (cut, dissolve, push, whip pan, zoom through). With **no LLM** ticked (or no LLM running) bitGen fills
+   the same shape itself. A video is never asked for more seconds than it has.
+5. The **storyboard** lists every shot - its beats, the picture or video, the move, the seam, its words and how they show
+   (a title rising in, a lower third, a title card). Change any of them, or ✕ a shot; the beats are made to add up again.
+6. **✔ Build** puts it on a **new timeline** "Auto edit 1" (the one you had stays), or on this one with the tick off (↶ undoes
+   it). Videos go on ✨ Video A / B and pictures on ✨ Pictures A / B taking turns, so a dissolve or push can overlap them; the
+   titles go on ✨ Titles on top; the song goes on ✨ Music, faded out over the last beats, with the clips' own sound off. V1
+   gets a black base clip so the timeline can be compiled. Then the edit is checked - a cut off the beat, a title on screen
+   too short to read, a video asked for past its end - and anything found is listed under the storyboard.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10237,6 +10263,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **The Sketcher's furniture library** - the furniture, people and materials - first made for the House builder of earlier versions
 - **The professional creative tools** - the photo editors, vector and drawing programs, video editors, motion-graphics tools, 3D modellers and parametric CAD programs whose ways of working the image editor, the timeline, the CAD tools and the Sketcher follow
 - **Everyone who tests bitGen Studio** - and reports what to fix
+- **[video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft)** (Vincentwei1021) - the editing craft of ✨ Auto edit on the timeline - music first with every cut on a beat, the promo energy arc, one move per shot, each seam picked by the energy on both sides and the shot recipes (Apache-2.0; its rules re-made with the timeline's own keyframes, no code or Remotion)
 
 bitGen Studio is MIT licensed. Each project above keeps its own licence - misc/NOTICE.md lists what ships, what is downloaded, and the model licences. Model weights are downloaded by you and carry their makers' terms.
 <!-- credits:end -->
