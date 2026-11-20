@@ -14652,6 +14652,13 @@ node scripts/test-894.js > /tmp/t894.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui894-ui.js > /tmp/ui894.log 2>&1 \
   && ok "2.894.0 browser test: ✨ Auto edit - assets + a click track, ✨ Plan, the storyboard, ✔ Build into a new timeline, every cut on a beat, ⚙ Compile of it (16 s, the picture at its shot)" \
   || { bad "2.894.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui894.log | head -12; }
+# ---- 2.895.0 (✨ Auto edit part 2: sound effects pinned to the picture, flash cuts, freeze / slow motion, the vision look, the prompt docker route: static/autoedit.js, lib/autoEditMedia.js, tlautoedit.js)
+node scripts/test-895.js > /tmp/t895.log 2>&1 \
+  && ok "2.895.0 units: SFX on seams / crash / steps / cards, the riser -> impact -> sparkle close, no machine gun, the flash cut, freeze + slow motion remaps, bitGen's plan using them, the synthesized sounds' recipes, the vision look + cache, routes, the box, the prompt docker words" \
+  || { bad "2.895.0 units"; grep -a "^FAIL" -A1 /tmp/t895.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui895-ui.js > /tmp/ui895.log 2>&1 \
+  && ok "2.895.0 browser test: ✨ Auto edit with 👁 (no vision model: said) + 🔊 - the sounds made in the project on ✨ SFX A / B, the flash on ✨ Flash, ⚙ Compile with the riser heard, \"auto edit …\" from the prompt docker" \
+  || { bad "2.895.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui895.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

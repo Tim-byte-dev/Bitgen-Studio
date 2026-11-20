@@ -23,7 +23,7 @@ check("...no song: a steady grid (100 beats a minute = 0.6 s), 32 beats in whole
 
 /* ---- the recipes */
 check("the recipes: 11 moves, 5 seams, 3 title styles, the 4-part arc adding to 100 %; each says which video-shotcraft card it comes from",
-  Object.keys(AE.MOVES).length === 11 && Object.keys(AE.ENTERS).join() === "cut,dissolve,push,whip,zoom" && Object.keys(AE.TITLES).length === 3 && Math.abs(AE.ARC.reduce((s, a) => s + a.share, 0) - 1) < 1e-9
+  Object.keys(AE.MOVES).length >= 11 && ["cut", "dissolve", "push", "whip", "zoom"].every((k) => AE.ENTERS[k]) && Object.keys(AE.TITLES).length === 3 && Math.abs(AE.ARC.reduce((s, a) => s + a.share, 0) - 1) < 1e-9
   && Object.values(AE.MOVES).every((m) => m.credit) && Object.values(AE.ENTERS).every((m) => m.credit) && /crash-zoom-punch/.test(AE.MOVES.crash.credit));
 check("...the catalogue for the LLM names every move with its energy and the arc", /- crash: Crash zoom/.test(AE.catalogue()) && /needs 3.2 s/.test(AE.catalogue()) && /- climb 61 %/.test(AE.catalogue()));
 const ck = AE.MOVES.crash.keys(4, 1.5, 1920, 1080, 1.5);

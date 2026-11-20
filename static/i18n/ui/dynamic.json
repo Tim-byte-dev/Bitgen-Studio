@@ -1864,119 +1864,143 @@
   },
   {
    "s": "Hold (still)",
-   "src": "static/autoedit.js:55"
-  },
-  {
-   "s": "Slow push in",
-   "src": "static/autoedit.js:57"
-  },
-  {
-   "s": "Pull out (reveal)",
-   "src": "static/autoedit.js:59"
-  },
-  {
-   "s": "Pan left",
-   "src": "static/autoedit.js:61"
-  },
-  {
-   "s": "Pan right",
    "src": "static/autoedit.js:63"
   },
   {
-   "s": "Rise (tilt up)",
+   "s": "Slow push in",
    "src": "static/autoedit.js:65"
   },
   {
-   "s": "Ken Burns (zoom + drift)",
+   "s": "Pull out (reveal)",
    "src": "static/autoedit.js:67"
   },
   {
-   "s": "Drift (turn + float)",
+   "s": "Pan left",
    "src": "static/autoedit.js:69"
   },
   {
-   "s": "Crash zoom (a punch in on a beat)",
+   "s": "Pan right",
    "src": "static/autoedit.js:71"
   },
   {
+   "s": "Rise (tilt up)",
+   "src": "static/autoedit.js:73"
+  },
+  {
+   "s": "Ken Burns (zoom + drift)",
+   "src": "static/autoedit.js:75"
+  },
+  {
+   "s": "Drift (turn + float)",
+   "src": "static/autoedit.js:77"
+  },
+  {
+   "s": "Crash zoom (a punch in on a beat)",
+   "src": "static/autoedit.js:79"
+  },
+  {
    "s": "Step zoom on the beats (1x - 1.4x - 1.9x)",
-   "src": "static/autoedit.js:74"
+   "src": "static/autoedit.js:82"
+  },
+  {
+   "s": "Freeze then catch up (speed ramp)",
+   "src": "static/autoedit.js:89"
+  },
+  {
+   "s": "Slow motion",
+   "src": "static/autoedit.js:91"
   },
   {
    "s": "Pulse on every beat",
-   "src": "static/autoedit.js:81"
-  },
-  {
-   "s": "Cut",
-   "src": "static/autoedit.js:92"
-  },
-  {
-   "s": "Dissolve",
    "src": "static/autoedit.js:93"
   },
   {
-   "s": "Push (slide)",
-   "src": "static/autoedit.js:94"
-  },
-  {
-   "s": "Whip pan",
-   "src": "static/autoedit.js:96"
-  },
-  {
-   "s": "Zoom through",
-   "src": "static/autoedit.js:98"
-  },
-  {
-   "s": "Title - rises in, centre",
-   "src": "static/autoedit.js:102"
-  },
-  {
-   "s": "Lower third - near the bottom",
-   "src": "static/autoedit.js:103"
-  },
-  {
-   "s": "Title card - big, on its own",
+   "s": "Cut",
    "src": "static/autoedit.js:104"
   },
   {
-   "s": "Opening (low, held)",
-   "src": "static/autoedit.js:107"
+   "s": "Dissolve",
+   "src": "static/autoedit.js:105"
   },
   {
-   "s": "Hero shot (medium, slow)",
+   "s": "Push (slide)",
+   "src": "static/autoedit.js:106"
+  },
+  {
+   "s": "Whip pan",
    "src": "static/autoedit.js:108"
   },
   {
-   "s": "The climb (high and low taking turns, title cards between)",
-   "src": "static/autoedit.js:109"
-  },
-  {
-   "s": "Finale (the peak, then the sign-off held)",
+   "s": "Zoom through",
    "src": "static/autoedit.js:110"
   },
   {
+   "s": "Flash cut",
+   "src": "static/autoedit.js:112"
+  },
+  {
+   "s": "Title - rises in, centre",
+   "src": "static/autoedit.js:115"
+  },
+  {
+   "s": "Lower third - near the bottom",
+   "src": "static/autoedit.js:116"
+  },
+  {
+   "s": "Title card - big, on its own",
+   "src": "static/autoedit.js:117"
+  },
+  {
+   "s": "Opening (low, held)",
+   "src": "static/autoedit.js:120"
+  },
+  {
+   "s": "Hero shot (medium, slow)",
+   "src": "static/autoedit.js:121"
+  },
+  {
+   "s": "The climb (high and low taking turns, title cards between)",
+   "src": "static/autoedit.js:122"
+  },
+  {
+   "s": "Finale (the peak, then the sign-off held)",
+   "src": "static/autoedit.js:123"
+  },
+  {
    "s": "card",
-   "src": "static/autoedit.js:156"
+   "src": "static/autoedit.js:183"
   },
   {
    "s": "Video A",
-   "src": "static/autoedit.js:207"
+   "src": "static/autoedit.js:275"
   },
   {
    "s": "Video B",
-   "src": "static/autoedit.js:207"
+   "src": "static/autoedit.js:275"
   },
   {
    "s": "Pictures A",
-   "src": "static/autoedit.js:207"
+   "src": "static/autoedit.js:275"
   },
   {
    "s": "Pictures B",
-   "src": "static/autoedit.js:207"
+   "src": "static/autoedit.js:275"
   },
   {
    "s": "Titles",
-   "src": "static/autoedit.js:207"
+   "src": "static/autoedit.js:275"
+  },
+  {
+   "s": "Flash",
+   "src": "static/autoedit.js:350"
+  },
+  {
+   "s": "SFX A",
+   "src": "static/autoedit.js:365"
+  },
+  {
+   "s": "SFX B",
+   "src": "static/autoedit.js:365"
   },
   {
    "s": "Off: each style's own settings",
@@ -25888,115 +25912,123 @@
   },
   {
    "s": "At",
-   "src": "ext/timelinedock/tlautoedit.js:85"
-  },
-  {
-   "s": "Beats",
-   "src": "ext/timelinedock/tlautoedit.js:85"
-  },
-  {
-   "s": "Picture / video",
-   "src": "ext/timelinedock/tlautoedit.js:85"
-  },
-  {
-   "s": "Into it",
-   "src": "ext/timelinedock/tlautoedit.js:85"
-  },
-  {
-   "s": "Shown as",
-   "src": "ext/timelinedock/tlautoedit.js:85"
-  },
-  {
-   "s": "title card",
    "src": "ext/timelinedock/tlautoedit.js:89"
   },
   {
+   "s": "Beats",
+   "src": "ext/timelinedock/tlautoedit.js:89"
+  },
+  {
+   "s": "Picture / video",
+   "src": "ext/timelinedock/tlautoedit.js:89"
+  },
+  {
+   "s": "Into it",
+   "src": "ext/timelinedock/tlautoedit.js:89"
+  },
+  {
+   "s": "Shown as",
+   "src": "ext/timelinedock/tlautoedit.js:89"
+  },
+  {
+   "s": "title card",
+   "src": "ext/timelinedock/tlautoedit.js:93"
+  },
+  {
    "s": "Take this shot out",
-   "src": "ext/timelinedock/tlautoedit.js:92"
+   "src": "ext/timelinedock/tlautoedit.js:96"
   },
   {
    "s": "reading Assets",
-   "src": "ext/timelinedock/tlautoedit.js:117"
-  },
-  {
-   "s": "no pictures or videos in Assets",
    "src": "ext/timelinedock/tlautoedit.js:121"
   },
   {
+   "s": "no pictures or videos in Assets",
+   "src": "ext/timelinedock/tlautoedit.js:125"
+  },
+  {
    "s": "no music (a steady pace) —",
-   "src": "ext/timelinedock/tlautoedit.js:128"
+   "src": "ext/timelinedock/tlautoedit.js:132"
   },
   {
    "s": "Auto edit",
-   "src": "ext/timelinedock/tlautoedit.js:201"
+   "src": "ext/timelinedock/tlautoedit.js:222"
   },
   {
    "s": "the clips on this timeline",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "pictures and videos from Assets",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "pace",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "beats a minute",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Feel",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Calm - longer shots",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Promo",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Hype - short, punchy",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "words on screen",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "title cards",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "no LLM",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
+  },
+  {
+   "s": "look at them first",
+   "src": "ext/timelinedock/tlautoedit.js:230"
+  },
+  {
+   "s": "sound effects",
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Plan",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "into a new timeline (this one kept)",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "the song",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Seconds - empty = the whole song (30 s without one); always whole bars",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Plan without the LLM - bitGen fills the arc itself",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Off = the edit replaces this timeline (↶ undoes it)",
-   "src": "ext/timelinedock/tlautoedit.js:209"
+   "src": "ext/timelinedock/tlautoedit.js:230"
   },
   {
    "s": "Overlay",
@@ -33274,11 +33306,11 @@
   },
   {
    "p": "{0} shots · {1} of {2} beats · {3} s at {4} BPM · planned by the LLM",
-   "src": "ext/timelinedock/tlautoedit.js:108"
+   "src": "ext/timelinedock/tlautoedit.js:112"
   },
   {
    "p": "{0} shots · {1} of {2} beats · {3} s at {4} BPM · bitGen's own plan",
-   "src": "ext/timelinedock/tlautoedit.js:108"
+   "src": "ext/timelinedock/tlautoedit.js:112"
   },
   {
    "p": "installing SAM 2… {0} · {1} s",

@@ -22,7 +22,15 @@
  *                                         two video layers and pictures on two picture layers taking turns (so a seam can
  *                                         overlap), titles on their own layer on top, the song on a music layer faded at the end
  *   qa(built, plan, g)                   -> the problems found (a cut off the beat, a video past its end, a title too short ...)
- * Pure; Node: scripts/test-894.js. */
+ * 2.895.0 (part 2 - Tim: "continue with part 2"): SOUND DESIGN - SFX (bitGen's own synthesized whoosh / swish / impact / hit /
+ * riser / sparkle / tick, lib/autoEditMedia.js) pinned to the picture: a whoosh on a push / zoom seam peaking on its beat, a
+ * swish on a whip, an impact on a crash zoom's punch and a flash cut, hits on step zooms, a tick on a title card, the closing
+ * phrase riser -> impact -> sparkle into the sign-off (video-shotcraft sound-design 4.3), never a machine gun (one sound in
+ * 0.2 s, the same sound taking turns between its variants and quieter when it comes again soon); the FLASH CUT seam (a white
+ * frame 0.95 -> 0 over 4 frames over a hard cut - shot-transitions A); SPEED moves on a video - a freeze on the key moment then
+ * thawing to catch up (speed-ramp-freeze) and slow motion (time remapping, fx.remap); the vision model's description of each
+ * picture / video for the LLM (lib/autoEditMedia.js describe).
+ * Pure; Node: scripts/test-894.js, scripts/test-895.js. */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory(require("./keyframes.js"));
   else root.H3AutoEdit = factory(root.H3Keyframes);
@@ -78,6 +86,10 @@
         for (var i = 0; i < Math.min(2, b.length); i++) out.push({ at: b[i], p: "scale", v: s * z[i] * 1.03, e: "out" }, { at: b[i] + 6 / FPS, p: "scale", v: s * z[i], e: "hold" });
         return out;
       } },
+    freeze: { label: "Freeze then catch up (speed ramp)", energy: 3, credit: "rhythm / speed-ramp-freeze", use: "stop on the key moment of a VIDEO, then race on - once in a film", min: 2, video: true,
+      keys: function (d, s) { return [{ at: 0, p: "scale", v: s, e: "inout" }, { at: d, p: "scale", v: s * 1.06 }]; } },
+    slowmo: { label: "Slow motion", energy: 1, credit: "rhythm / sakuga-timing-shift", use: "a VIDEO at half speed - grace, detail, a hero moment", video: true,
+      keys: function (d, s) { return [{ at: 0, p: "scale", v: s * 1.03 }]; } },
     pulse: { label: "Pulse on every beat", energy: 3, credit: "rhythm / type-rhythm-sync", use: "a fast montage - the picture bumps on each beat",
       keys: function (d, s, W, H, hit, beats) {
         var out = [{ at: 0, p: "scale", v: s * 1.04, e: "out" }];
@@ -97,6 +109,7 @@
       inn: function (o, W) { return [{ at: 0, p: "x", dv: W * 1.1, e: "brake" }, { at: o, p: "x", dv: 0 }]; }, outk: function (o, W) { return [{ at: -o, p: "x", dv: 0, e: "whipIn" }, { at: 0, p: "x", dv: -W * 1.1 }]; } },
     zoom: { label: "Zoom through", energy: 3, credit: "transition / transition-travel", use: "into a climax, a reveal", o: function () { return 8 / FPS; }, fade: true,
       innScale: [1.5, 1], outScale: [1, 1.6] },
+    flash: { label: "Flash cut", energy: 3, credit: "transition / shot-transitions (A, the flash cut)", use: "a hard cut under a white flash - pages of the same energy, a punch", o: function () { return 0; }, flash: true },
   };
   var TITLES = {
     rise: { label: "Title - rises in, centre", credit: "typography / type-entrance-moves", size: 0.085, y: 0 },
@@ -110,6 +123,19 @@
     { id: "finale", label: "Finale (the peak, then the sign-off held)", share: 0.15, energy: 3 }];
   var FEEL = { calm: 2, promo: 1, hype: 0.5 };          // beats per shot x this
 
+  /* 2.895.0: the sound effects bitGen makes (lib/autoEditMedia.js SFX_RECIPES): how long each is and where its hit is (seconds) */
+  var SFX = { whoosh: { dur: 0.6, peak: 0.48, gain: 0.95, pri: 2 }, swish: { dur: 0.3, peak: 0.22, gain: 0.9, pri: 2 }, impact: { dur: 0.8, peak: 0.02, gain: 0.9, pri: 3 },
+    hit: { dur: 0.25, peak: 0.01, gain: 0.7, pri: 3 }, riser: { dur: 2, peak: 2, gain: 0.55, pri: 4 }, sparkle: { dur: 1, peak: 0.02, gain: 0.5, pri: 4 }, tick: { dur: 0.08, peak: 0.005, gain: 0.5, pri: 1 } };
+  /** a video's time remap for a speed move over len seconds (fx.remap [{t, q}] - static/clipfx.js), and how much of the source it uses */
+  function speedOf(mv, len) {
+    if (mv === "slowmo") return { remap: [{ t: 0, q: 0 }, { t: r4(len), q: r4(len * 0.5) }], src: r4(len * 0.5) };
+    if (mv === "freeze") {
+      var a = r4(len * 0.35), h = r4(Math.min(45 / FPS, len * 0.3));
+      if (len - a - h < 0.1 || (len - a) / (len - a - h) > 10) return null;
+      return { remap: [{ t: 0, q: 0 }, { t: a, q: a }, { t: r4(a + h), q: a }, { t: r4(len), q: r4(len) }], src: r4(len), at: a, hold: h };
+    }
+    return null;
+  }
   function catalogue() {
     var L = ["MOVES (one per shot - never the same twice in a row; energy 1 calm .. 3 punchy):"];
     Object.keys(MOVES).forEach(function (k) { var m = MOVES[k]; L.push("- " + k + ": " + m.label + " - " + m.use + " (energy " + m.energy + (m.min ? ", needs " + m.min + " s or more" : "") + ")"); });
@@ -141,12 +167,13 @@
     secB[2] = Math.max(BAR, n - secB[0] - secB[1] - secB[3]);
     if (secB[0] + secB[1] + secB[2] + secB[3] !== n) secB[2] += n - (secB[0] + secB[1] + secB[2] + secB[3]);
     var words = String(o.brief || "").split(/\n+|(?<=[.!?])\s+/).map(function (s) { return s.trim(); }).filter(Boolean);
-    var climbMoves = ["panL", "crash", "kenburns", "pulse", "panR", "steps", "rise"], ci = 0, shotN = 0;
+    var climbMoves = ["panL", "crash", "kenburns", "pulse", "freeze", "panR", "steps", "rise"], ci = 0, shotN = 0, froze = false;
     ARC.forEach(function (sec, si) {
       var per = Math.max(1, Math.round((si === 0 ? 8 : si === 1 ? 8 : si === 2 ? 4 : 4) * f));
       split(secB[si], si < 2 ? secB[si] : per).forEach(function (b, k) {
-        var a = next(), mv = si === 0 ? "push" : si === 1 ? (a.kind === "picture" ? "kenburns" : "panR") : si === 2 ? climbMoves[ci++ % climbMoves.length] : "pulse";
-        var en = shotN === 0 ? "cut" : si === 0 ? "dissolve" : si === 2 ? (k % 2 ? "push" : "cut") : si === 3 ? "whip" : "dissolve";
+        var a = next(), mv = si === 0 ? "push" : si === 1 ? (a.kind === "picture" ? "kenburns" : "slowmo") : si === 2 ? climbMoves[ci++ % climbMoves.length] : "pulse";
+        if (mv === "freeze") { if (froze || a.kind !== "video") mv = "drift"; else froze = true; }   // a freeze once in a film, on a video
+        var en = shotN === 0 ? "cut" : si === 0 ? "dissolve" : si === 2 ? ["cut", "push", "flash"][k % 3] : si === 3 ? "whip" : "dissolve";
         var sh = { asset: a.name, beats: b, move: mv, enter: en, section: sec.id, text: "", title: "rise" };
         if (titles && si === 0 && words[0]) sh.text = words[0].slice(0, 80);
         shots.push(sh); shotN++;
@@ -173,22 +200,24 @@
     // a video never asked for more than it has (its beats cut down; the next shot takes the time)
     shots.forEach(function (s) {
       var a = findAsset(assets, s.asset); if (!a || a.kind !== "video") return;
-      var max = Math.floor((room(a) - 0.75 * g.spb) / g.spb); if (max < 1) max = 1;
+      var k = s.move === "slowmo" ? 0.5 : 1, max = Math.floor((room(a) - 0.75 * g.spb * k) / (g.spb * k)); if (max < 1) max = 1;   // slow motion uses half
       if (s.beats > max) { notes.push(a.name + " is " + room(a).toFixed(1) + " s - its shot cut to " + max + " beat(s)"); s.beats = max; }
     });
     // the beats add up to the length: short = the shots that can grow take beats in turn (pictures / cards first); long = taken from the end
     var sum = function () { return shots.reduce(function (t, s) { return t + s.beats; }, 0); };
     var guard = 0;
     while (sum() < g.n && guard++ < 10000) {
-      var grow = shots.filter(function (s) { var a = findAsset(assets, s.asset); return s.card || !a || a.kind !== "video" || (s.beats + 1) * g.spb + 0.75 * g.spb <= room(a); });
+      var grow = shots.filter(function (s) { var a = findAsset(assets, s.asset), k = s.move === "slowmo" ? 0.5 : 1; return s.card || !a || a.kind !== "video" || ((s.beats + 1) * g.spb + 0.75 * g.spb) * k <= room(a); });
       if (!grow.length) { var a0 = assets[shots.length % assets.length]; shots.splice(shots.length - 1, 0, { asset: a0.name, card: false, beats: Math.min(g.n - sum(), a0.kind === "video" ? Math.max(1, Math.floor(room(a0) / g.spb) - 1) : 4), move: a0.kind === "picture" ? "kenburns" : "panL", enter: "cut", text: "", title: "rise", section: "climb" }); continue; }
       grow.sort(function (x, y) { return x.beats - y.beats; })[0].beats++;
     }
     while (sum() > g.n) { var big = shots.slice().sort(function (x, y) { return y.beats - x.beats; })[0]; if (big.beats <= 1) { shots.pop(); continue; } big.beats--; }
     // the craft rules
     shots[0].enter = "cut";
+    // a speed move is for videos; a picture gets a move it can do
+    shots.forEach(function (s) { var a = findAsset(assets, s.asset); if (MOVES[s.move] && MOVES[s.move].video && (!a || a.kind !== "video")) s.move = s.move === "slowmo" ? "push" : "kenburns"; });
     // a move that needs more time than the shot has gives way first (crash zoom 3.2 s: the 30-frame wide + the 45-frame close-up)
-    shots.forEach(function (s) { var m = MOVES[s.move]; if (m && m.min && s.beats * g.spb < m.min) { notes.push("shot " + (shots.indexOf(s) + 1) + ": " + s.move + " needs " + m.min + " s - " + (s.move === "crash" ? "push" : "pulse")); s.move = s.move === "crash" ? "push" : "pulse"; } });
+    shots.forEach(function (s) { var m = MOVES[s.move]; if (m && m.min && s.beats * g.spb < m.min) { var to = s.move === "crash" || s.move === "freeze" ? "push" : "pulse"; notes.push("shot " + (shots.indexOf(s) + 1) + ": " + s.move + " needs " + m.min + " s - " + to); s.move = to; } });
     for (var i = 1; i < shots.length; i++) {
       if (shots[i].move === shots[i - 1].move && shots[i].move !== "hold") { var alt = shots[i].move === "panL" ? "panR" : shots[i].move === "panR" ? "panL" : shots[i].move === "push" ? "pull" : "drift"; notes.push("shot " + (i + 1) + ": " + shots[i].move + " twice in a row - " + alt); shots[i].move = alt; }
     }
@@ -202,6 +231,45 @@
   /** the move's keys for a shot of d seconds (its beats inside it, seconds from its start) */
   function moveKeys(mv, d, s, W, H, beats) { var m = MOVES[mv] || MOVES.hold; return m.keys(d, s, W, H, beats && beats.length ? beats[Math.floor(beats.length / 2)] : null, beats); }
   function valueAt(keys, p, t, fb) { var kf = []; keys.filter(function (k) { return k.p === p; }).forEach(function (k) { addK(kf, k.at, p, k.v, k.e); }); return kf.length ? KF.value(kf, t, p, fb) : fb; }
+  /** 2.895.0: the sound effects pinned to the picture: [{kind, at (where its hit lands), why}] -> anti machine-gun -> audio clips.
+   *  files = {kind: [{name, dur}]} (the variants lib/autoEditMedia.js made) */
+  function sfxEvents(out, g, files) {
+    var ev = [], n = out.length;
+    out.forEach(function (r, i) {
+      var s = r.shot;
+      if (i && s.enter === "push" || i && s.enter === "zoom") ev.push({ kind: "whoosh", at: r.t0, why: "seam " + (i + 1) });
+      if (i && s.enter === "whip") ev.push({ kind: "swish", at: r.t0, why: "seam " + (i + 1) });
+      if (i && s.enter === "flash") ev.push({ kind: "hit", at: r.t0, why: "flash " + (i + 1) });
+      if (s.card) ev.push({ kind: "tick", at: r.t0, why: "card " + (i + 1) });
+      if (r.clip && s.move === "crash") { var ck = r.clip.kf && r.clip.kf.filter(function (k) { return k.scale != null; }); var big = ck && ck.reduce(function (m, k) { return k.scale > m.scale ? k : m; }, ck[0]); if (big) ev.push({ kind: "impact", at: r4(r.clip.start + big.at), why: "crash zoom " + (i + 1) }); }
+      if (r.clip && s.move === "steps") r.beatsIn.slice(0, 2).forEach(function (t) { ev.push({ kind: "hit", at: r4(r.t0 + t), why: "step " + (i + 1) }); });
+      if (r.freezeAt != null) ev.push({ kind: "hit", at: r.freezeAt, why: "freeze " + (i + 1) });
+    });
+    // the closing phrase: riser -> impact -> sparkle into the sign-off
+    if (n >= 3) {
+      var last = out[n - 1];
+      ev = ev.filter(function (e) { return Math.abs(e.at - last.t0) > 0.05; });
+      ev.push({ kind: "riser", at: last.t0, why: "into the sign-off" }, { kind: "impact", at: last.t0, why: "the sign-off" }, { kind: "sparkle", at: r4(last.t0 + 0.12), why: "the sign-off" });
+    }
+    ev.sort(function (a, b) { return a.at - b.at || SFX[b.kind].pri - SFX[a.kind].pri; });
+    // never a machine gun: one sound in 0.2 s (the stronger kept - the closing phrase always), the same sound in turn from its
+    // variants and quieter when it came less than 2 s before
+    var kept = [];
+    ev.forEach(function (e) {
+      var near = kept.filter(function (k) { return Math.abs(k.at - e.at) < 0.2 && !(SFX[k.kind].pri === 4 || SFX[e.kind].pri === 4); });
+      if (near.some(function (k) { return SFX[k.kind].pri >= SFX[e.kind].pri; })) return;
+      kept = kept.filter(function (k) { return near.indexOf(k) < 0; }); kept.push(e);
+    });
+    var turn = {}, lastAt = {}, clips = [];
+    kept.forEach(function (e) {
+      var vs = (files && files[e.kind]) || []; if (!vs.length) return;
+      var t = turn[e.kind] || 0, f = vs[t % vs.length]; turn[e.kind] = t + 1;
+      var sx = SFX[e.kind], dur = +f.dur || sx.dur, start = e.at - sx.peak, cut = start < 0 ? -start : 0;
+      var vol = sx.gain * (lastAt[e.kind] != null && e.at - lastAt[e.kind] < 2 ? 0.75 : 1); lastAt[e.kind] = e.at;
+      clips.push({ name: f.name, start: r4(Math.max(0, start)), in: r4(cut), out: r4(dur), dur: r4(dur), kf: [{ at: 0, vol: r4(vol) }], ae: { sfx: e.kind, why: e.why } });
+    });
+    return clips;
+  }
   function build(plan, assets, g, frame, o0) {
     var o = o0 || {}, W = +((frame || {}).W) || 1920, H = +((frame || {}).H) || 1080;
     var layers = { vA: { name: "✨ Video A", clips: [] }, vB: { name: "✨ Video B", clips: [] }, iA: { name: "✨ Pictures A", clips: [] }, iB: { name: "✨ Pictures B", clips: [] }, txt: { name: "✨ Titles", clips: [] } };
@@ -222,10 +290,12 @@
         var keys = moveKeys(s.move, d + o, cover, W, H, inBeats.map(function (t) { return t + o; })).map(function (k) { return Object.assign({}, k); });
         var len = r4(d + o), clip;
         if (kind === "video") {
-          var u = uses[a.name] || 0, span = room(a), from = (a.in || 0) + Math.max(0, Math.min(span - len, u * len * 0.9));   // a second use takes the next stretch
-          if (u && from + len > (a.in || 0) + span) from = a.in || 0;
+          var sp = speedOf(s.move, len), need = sp ? sp.src : len;                                 // 2.895.0: a speed move uses its own share of the source
+          var u = uses[a.name] || 0, span = room(a), from = (a.in || 0) + Math.max(0, Math.min(span - need, u * need * 0.9));   // a second use takes the next stretch
+          if (u && from + need > (a.in || 0) + span) from = a.in || 0;
           uses[a.name] = u + 1;
-          clip = { name: a.name, src: a.src || "video", in: r4(from), out: r4(from + len), dur: a.dur, start: r4(t0 - o), opacity: 1, tf: { x: 0, y: 0, scale: cover, rot: 0 }, kf: [], ae: { shot: i + 1, move: s.move } };
+          clip = { name: a.name, src: a.src || "video", in: r4(from), out: r4(from + need), dur: a.dur, start: r4(t0 - o), opacity: 1, tf: { x: 0, y: 0, scale: cover, rot: 0 }, kf: [], ae: { shot: i + 1, move: s.move } };
+          if (sp) { clip.fx = { remap: sp.remap }; rec.freezeAt = sp.at != null ? r4(t0 - o + sp.at) : null; }
         } else clip = { name: a.name, start: r4(t0 - o), len: len, opacity: 1, tf: { x: 0, y: 0, scale: cover, rot: 0 }, kf: [], ae: { shot: i + 1, move: s.move } };
         rec.clip = clip; rec.layer = lk; rec.keys = keys; rec.cover = cover;
         layers[lk].clips.push(clip);
@@ -276,14 +346,26 @@
       c.kf.sort(function (a, b) { return a.at - b.at; });
       layers.txt.clips.push(c);
     });
+    // 2.895.0: the flash cuts - a white frame over the cut, 0.95 -> 0 in 4 frames (needs the white picture, o.white)
+    var flash = { name: "✨ Flash", clips: [] };
+    out.forEach(function (r) {
+      if (!r.i || r.shot.enter !== "flash" || !o.white) return;
+      var fw = Math.min(+o.white.w || W, W), fh = (+o.white.h || H) * fw / (+o.white.w || W), c = { name: o.white.name, start: r4(r.t0), len: r4(5 / FPS), opacity: 1, tf: { x: 0, y: 0, scale: r4(Math.max(W / fw, H / fh)), rot: 0 }, kf: [], ae: { flash: r.i + 1 } };
+      addK(c.kf, 0, "op", 0.95, "out"); addK(c.kf, 4 / FPS, "op", 0);
+      flash.clips.push(c);
+    });
+    var sfx = o.sfx ? sfxEvents(out, g, o.sfx) : [];
     var music = null;
     if (o.song) {
       var total = g.at(g.n), fade = r4(Math.min(1.5, 2 * g.spb)), sin = r4((+o.song.in || 0) + g.offset);
       music = { name: "✨ Music", clips: [{ name: o.song.name, start: 0, in: sin, out: r4(sin + total), dur: o.song.dur || total, kf: [{ at: r4(total - fade), vol: 1, ease: "linear" }, { at: r4(total), vol: 0 }], ae: { music: true } }] };
     }
-    var vl = [layers.vA, layers.vB].filter(function (L) { return L.clips.length; }), im = [layers.iA, layers.iB, layers.txt].filter(function (L) { return L.clips.length; });
+    var vl = [layers.vA, layers.vB].filter(function (L) { return L.clips.length; }), im = [layers.iA, layers.iB, flash, layers.txt].filter(function (L) { return L.clips.length; });
     if (music) vl.forEach(function (L) { L.muted = true; });      // the song carries the sound
-    return { vlayers: vl, images: im, audio: music ? [music] : [], cuts: cuts, shots: out.map(function (r) { return { i: r.i + 1, t0: r.t0, t1: r.t1, o: r.o, asset: r.shot.asset, card: r.shot.card, move: r.shot.move, enter: r.shot.enter, text: r.shot.text, layer: r.layer }; }), total: g.at(g.n) };
+    var sA = { name: "✨ SFX A", clips: [], volume: 1 }, sB = { name: "✨ SFX B", clips: [], volume: 1 };
+    sfx.forEach(function (c, i) { (i % 2 ? sB : sA).clips.push(c); });  // two layers taking turns - two sounds may overlap
+    var aud = (music ? [music] : []).concat([sA, sB].filter(function (L) { return L.clips.length; }));
+    return { vlayers: vl, images: im, audio: aud, sfx: sfx.map(function (c) { return { kind: c.ae.sfx, at: r4(c.start + SFX[c.ae.sfx].peak - (c.in || 0)) }; }), cuts: cuts, shots: out.map(function (r) { return { i: r.i + 1, t0: r.t0, t1: r.t1, o: r.o, asset: r.shot.asset, card: r.shot.card, move: r.shot.move, enter: r.shot.enter, text: r.shot.text, layer: r.layer }; }), total: g.at(g.n) };
   }
 
   /* ------------------------------------------------------------------ check */
@@ -303,5 +385,5 @@
     if (Math.abs(built.total - g.at(g.n)) > tol) issues.push("the edit is not the length asked for");
     return issues;
   }
-  return { FPS: FPS, BAR: BAR, EASE: EASE, MOVES: MOVES, ENTERS: ENTERS, TITLES: TITLES, ARC: ARC, FEEL: FEEL, grid: grid, catalogue: catalogue, findAsset: findAsset, fallback: fallback, clean: clean, build: build, qa: qa, moveKeys: moveKeys };
+  return { SFX: SFX, speedOf: speedOf, sfxEvents: sfxEvents, FPS: FPS, BAR: BAR, EASE: EASE, MOVES: MOVES, ENTERS: ENTERS, TITLES: TITLES, ARC: ARC, FEEL: FEEL, grid: grid, catalogue: catalogue, findAsset: findAsset, fallback: fallback, clean: clean, build: build, qa: qa, moveKeys: moveKeys };
 });

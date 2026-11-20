@@ -10123,6 +10123,26 @@ change anything afterwards and ⚙ Compile renders exactly what the preview show
    gets a black base clip so the timeline can be compiled. Then the edit is checked - a cut off the beat, a title on screen
    too short to read, a video asked for past its end - and anything found is listed under the storyboard.
 
+## ✨ Auto edit part 2: sound effects, flash cuts, speed and a look first (2.895.0)
+
+- **🔊 sound effects** (ticked) - bitGen makes its own sounds (ffmpeg's tones and noise, in the project's sound folder - no
+  sample library) and pins them to the picture on ✨ SFX A / B: a **whoosh** that swells to its peak exactly on a push or zoom
+  seam's beat, a **swish** on a whip pan, an **impact** on a crash zoom's punch, a **hit** on a flash cut, each step of a step
+  zoom and the moment a freeze lands, a **tick** when a title card comes, and the closing phrase **riser → impact → sparkle**
+  into the sign-off. Never a machine gun: only one sound in any 0.2 s (the stronger one), the same sound takes turns between
+  its two variants and is quieter when it comes again within 2 s. Each is a clip you can move, change or delete.
+- **Flash cut** (a seam in the storyboard) - a hard cut under a white frame that fades from 0.95 to nothing in 4 frames, on
+  ✨ Flash above the pictures.
+- **Freeze then catch up** and **Slow motion** (moves for a video) - the video stops on its key moment for about two seconds
+  and then plays faster to catch up, or plays at half speed (it uses half as much of the video). Both are the clip's own time
+  remapping, so ⚙ Compile plays them the same.
+- **👁 look at them first** (ticked) - before ✨ Plan the vision model looks at each picture and a video's middle frame and
+  says what is in it; the LLM then picks shots by what is in them (the widest, most striking one to open, the main subject for
+  the hero shot, the brand for the sign-off). Each file is asked once. With no vision model the plan goes on and says so; a
+  picture / video's description shows when you point at it in the storyboard.
+- **From the prompt docker** - "auto edit these clips to the music", "cut my videos to the beat", "make a promo edit of …"
+  opens ✨ Auto edit with your words and plans; check the storyboard, then ✔ Build.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

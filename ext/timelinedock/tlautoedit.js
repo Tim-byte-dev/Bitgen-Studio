@@ -14,6 +14,10 @@
  *                      video layers and pictures on two picture layers taking turns, titles on top, the song on ✨ Music
  *                      (the clips' own sound off, faded out at the end) - every move and seam as keyframes, so the
  *                      preview and ⚙ Compile show the same; then the check (a cut off the beat, a title too short …)
+ * 2.895.0 (part 2): ☑ 👁 look at them first (the vision model describes each one - /api/autoedit/describe - and the LLM picks
+ * shots by what is in them), ☑ 🔊 sound effects (bitGen's own whooshes / impacts / riser -> impact -> sparkle, pinned to the
+ * picture - /api/autoedit/media makes them with the white flash picture and the black base), the new moves and the flash cut
+ * in the storyboard, and "auto edit …" / "cut these to the music" in the prompt docker opens the box with the words and plans.
  * The maths: static/autoedit.js (H3AutoEdit). */
 (function () {
   "use strict";
@@ -79,7 +83,7 @@
   /* ---------------------------------------------------------------- the box */
   function board() {
     var p = st.plan, g = st.grid, A = AE(); if (!p) return "";
-    var assetOpts = function (sel) { return st.assets.map(function (a, i) { return '<option value="' + esc(a.name) + '"' + (a.name === sel ? " selected" : "") + ">" + (a.kind === "video" ? "🎞 " : "🖼 ") + esc(a.name) + "</option>"; }).join(""); };
+    var assetOpts = function (sel) { return st.assets.map(function (a, i) { return '<option value="' + esc(a.name) + '"' + (a.name === sel ? " selected" : "") + (a.note ? ' title="' + esc(a.note) + '"' : "") + ">" + (a.kind === "video" ? "🎞 " : "🖼 ") + esc(a.name) + "</option>"; }).join(""); };
     var opts = function (O, sel) { return Object.keys(O).map(function (k) { return '<option value="' + k + '"' + (k === sel ? " selected" : "") + ">" + esc(O[k].label) + "</option>"; }).join(""); };
     var b = 0;
     return '<table class="aetab"><tr><th>#</th><th>At</th><th>Beats</th><th>Picture / video</th><th>Move</th><th>Into it</th><th>Words</th><th>Shown as</th><th></th></tr>'
@@ -139,8 +143,16 @@
     st.busy = true; $("aePlan").disabled = true;
     var sid = $("aeSong").value, song = sid ? songs().find(function (s) { return s.id === sid; }) : null, want = +$("aeLen").value || 0;
     say("measuring " + list.length + " picture(s) / video(s)…");
-    measure(list).then(function (assets) {
+    return measure(list).then(function (assets) {
       st.assets = assets; st.song = song || null;
+      if (!$("aeLook").checked) return null;
+      say("👁 the vision model is looking at " + Math.min(40, assets.length) + " picture(s) / video(s)…");
+      return post("/api/autoedit/describe", { assets: assets }).then(function (r) {
+        assets.forEach(function (a) { if (r.notes && r.notes[a.name]) a.note = r.notes[a.name]; });
+        st.lookNotes = (r.errors || []).slice(0, 3);
+      }).catch(function (e) { st.lookNotes = ["👁 " + e.message]; });
+    }).then(function () {
+      var song = st.song;
       if (!song) return { beats: [], tempo: +$("aeTempo").value || 120 };
       say("finding the beats of " + song.name + "…");
       return post("/api/tlai/beats", { name: song.name, start: song.in, dur: song.len || 0 }).then(function (r) { return { beats: r.beats || [], tempo: r.tempo }; });
@@ -151,6 +163,7 @@
         titles: $("aeTitles").checked, cards: $("aeCards").checked, llm: !$("aeNoLlm").checked });
     }).then(function (r) {
       st.plan = r.plan; st.grid = r.grid;
+      if (st.lookNotes && st.lookNotes.length) st.plan.notes = st.plan.notes.concat(st.lookNotes.map(function (x) { return "👁 not looked at - " + x; }));
       paintBoard(); say("✔ " + r.plan.shots.length + " shots planned" + (r.by === "llm" ? " by the LLM" : " by bitGen") + " - change anything in the storyboard, then ✔ Build");
     }).catch(function (e) { say("✗ " + e.message, true); })
       .then(function () { st.busy = false; $("aePlan").disabled = false; });
@@ -178,7 +191,15 @@
       try { TlCanvas.mark(); TlCanvas.paintLayers(); TlCanvas.go(0); } catch (e) { /* closed */ }
     };
     st.busy = true;
-    var go0 = post("/api/autoedit/base", { W: frame.W, H: frame.H, dur: built.total })
+    var wantSfx = $("aeSfx").checked;
+    var go0 = post("/api/autoedit/media", { W: frame.W, H: frame.H, dur: built.total, sfx: wantSfx, white: true })
+      .then(function (m) {
+        // built again with the sound effects and the white flash picture now that they are on disk
+        built = A.build(p, st.assets, g, frame, { song: st.song ? { name: st.song.name, in: st.song.in, dur: st.song.dur } : null, sfx: wantSfx ? m.sfx : null, white: m.white || null });
+        issues = A.qa(built, p, g, st.assets);
+        if (m.sfxError) issues.push("the sound effects were not made: " + m.sfxError);
+        return m.base;
+      })
       .then(function (r) { baseClip = { name: r.name, src: "video", in: 0, out: Math.round(built.total * 1e4) / 1e4, dur: r.dur, start: 0, opacity: 1, ae: { base: true } }; })
       .catch(function (e) { say("the black base for V1 was not made (" + e.message + ") - ⚙ Compile needs a V1 clip", true); });
     var go = go0.then(function () { return $("aeNewTl").checked && typeof tlSaveNamed === "function" && typeof EMPTY_TL === "function"
@@ -192,7 +213,7 @@
     go.then(function (name) {
       var notes = (p.notes || []).concat(issues.map(function (x) { return "⚠ " + x; }));
       paintBoard(notes);
-      say("✔ built on \"" + name + "\": " + built.shots.length + " shots, " + built.total.toFixed(1) + " s, every cut on a beat" + (issues.length ? " - " + issues.length + " thing(s) to look at below" : " - the check found nothing") + ". ↶ undoes it.");
+      say("✔ built on \"" + name + "\": " + built.shots.length + " shots, " + built.total.toFixed(1) + " s, every cut on a beat" + (built.sfx && built.sfx.length ? ", " + built.sfx.length + " sound effects" : "") + (issues.length ? " - " + issues.length + " thing(s) to look at below" : " - the check found nothing") + ". ↶ undoes it.");
     }).catch(function (e) { say("✗ " + e.message, true); }).then(function () { st.busy = false; });
     return built;
   }
@@ -212,7 +233,9 @@
         + '<div class="aerow"><span>Length</span><input type="number" id="aeLen" min="4" max="600" placeholder="the song" style="width:80px" title="Seconds - empty = the whole song (30 s without one); always whole bars">s'
         + '<span>Feel</span><select id="aeFeel"><option value="calm">Calm - longer shots</option><option value="promo" selected>Promo</option><option value="hype">Hype - short, punchy</option></select>'
         + '<label><input type="checkbox" id="aeTitles" checked> words on screen</label><label><input type="checkbox" id="aeCards" checked> title cards</label>'
-        + '<label title="Plan without the LLM - bitGen fills the arc itself"><input type="checkbox" id="aeNoLlm"> no LLM</label></div>'
+        + '<label title="Plan without the LLM - bitGen fills the arc itself"><input type="checkbox" id="aeNoLlm"> no LLM</label>'
+        + '<label title="The vision model looks at each picture and a video\'s middle frame first, so the LLM picks shots by what is in them (asked once per file)"><input type="checkbox" id="aeLook" checked> 👁 look at them first</label>'
+        + '<label title="Whooshes on the pushes, an impact on a crash zoom, a riser into the sign-off - bitGen\'s own sounds, pinned to the picture"><input type="checkbox" id="aeSfx" checked> 🔊 sound effects</label></div>'
         + '<div class="aerow"><textarea id="aeBrief" rows="2" style="flex:1;min-width:300px" placeholder="What is it for? e.g. A 30 s promo for Rosie\'s Bakery - fresh sourdough every morning, open 7am, come visit"></textarea></div>'
         + '<div class="aerow"><button type="button" id="aePlan">✨ Plan</button><button type="button" id="aeBuild" disabled>✔ Build</button>'
         + '<label title="Off = the edit replaces this timeline (↶ undoes it)"><input type="checkbox" id="aeNewTl" checked> into a new timeline (this one kept)</label><span id="aeSum"></span></div>'
@@ -236,10 +259,30 @@
     loadPassets().catch(function () { /* the timeline's sounds only */ }).then(paintSongs);
     dlg.open();
   }
+  /* 2.895.0: the prompt docker - "auto edit …", "cut these to the music", "make a promo edit of …" opens the box with the words
+     and plans (the storyboard to check, then ✔ Build) */
+  var ASK = /\b(auto[- ]?edit|edit (?:my|these|the|our) (?:clips|videos|photos|pictures|footage)|cut (?:it|them|these|this|my \w+|the \w+)? ?to the (?:music|beat|beats|song)|make (?:a |an )?(?:promo |music |quick )?(?:edit|montage|video edit|sizzle reel|highlight reel) (?:of|from|with|for))\b/i;
+  function wants(t) { return ASK.test(String(t || "")); }
+  function route(text) {
+    if (!wants(text) || !ready()) return Promise.resolve(null);
+    var d = $("timelinedock"); if (d && d.classList.contains("dockgone") && typeof toggleDockGone === "function") { try { toggleDockGone("timelinedock"); } catch (e) { /* stays */ } }
+    open();
+    $("aeBrief").value = String(text).trim();
+    if ($("aeSrc").value === "assets") return loadPassets().then(function () { paintSources(); return new Promise(function (ok) { setTimeout(ok, 400); }); }).then(go);
+    return go();
+    function go() {
+      return Promise.resolve(plan()).then(function () {
+        var p = st.plan;
+        return p ? "✨ Auto edit is open on the timeline with your words: " + p.shots.length + " shots planned to " + (st.song ? st.song.name : "a steady pace") + " - check the storyboard (change any shot), then ✔ Build."
+          : "✨ Auto edit is open on the timeline - " + ($("aeMsg").textContent || "pick what to edit, then ✨ Plan");
+      });
+    }
+  }
+  window.H3ChatRoutes = (window.H3ChatRoutes || []).concat([route]);
   function boot() {
     if (!ready()) { setTimeout(boot, 300); return; }
     TlDlg.button("tlAutoEditBtn", "✨", "Auto edit: cut your pictures and videos to the music - the LLM plans the shots, moves, seams and words, every cut on a beat", open);
   }
-  window.TlAutoEdit = { open: open, plan: plan, build: build, fromTimeline: fromTimeline, state: st };
+  window.TlAutoEdit = { open: open, plan: plan, build: build, fromTimeline: fromTimeline, state: st, wants: wants, route: route };
   boot();
 })();

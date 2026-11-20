@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7325,
+ "count": 7329,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -68282,6 +68282,42 @@
    ],
    "where": [
     "2.894.0"
+   ]
+  },
+  {
+   "s": "The vision model looks at each picture and a video's middle frame first, so the LLM picks shots by what is in them (asked once per file)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.895.0"
+   ]
+  },
+  {
+   "s": "Whooshes on the pushes, an impact on a crash zoom, a riser into the sign-off - bitGen's own sounds, pinned to the picture",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.895.0"
+   ]
+  },
+  {
+   "s": "👁 look at them first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.895.0"
+   ]
+  },
+  {
+   "s": "🔊 sound effects",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.895.0"
    ]
   }
  ]
