@@ -199,6 +199,7 @@ WAN_SCHEMAS = {
     "EmptyHunyuanLatentVideo": {"input": {"required": {"width": ["INT", {"default": 848}], "height": ["INT", {"default": 480}],
                                                        "length": ["INT", {"default": 25}], "batch_size": ["INT", {"default": 1}]}}},
     "ModelSamplingSD3": {"input": {"required": {"model": ["MODEL"], "shift": ["FLOAT", {"default": 3.0}]}}},
+    "ModelSamplingAuraFlow": {"input": {"required": {"model": ["MODEL"], "shift": ["FLOAT", {"default": 1.73}]}}},
     "CLIPVisionLoader": {"input": {"required": {"clip_name": [["clip_vision_h.safetensors"]]}}},
     "CLIPVisionEncode": {"input": {"required": {"clip_vision": ["CLIP_VISION"], "image": ["IMAGE"],
                                                 "crop": [["center", "none"]]}}},

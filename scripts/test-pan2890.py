@@ -2,7 +2,7 @@
 """bitGen Studio — 2.890.0: PAN 2 (MBZUAI's world model) in ComfyUI's own nodes.
 Tim (verbatim): "can you add this to our video models https://huggingface.co/Comfy-Org/PAN2"
   1. scripts/pan2_graph.py: the graph wired as ComfyUI's PAN 2 support needs it (CLIPLoader type pan2, the Wan 2.2 VAE,
-     Wan22ImageToVideoLatent with / without the start picture, ModelSamplingSD3 shift 9, KSampler euler / simple 50 steps
+     Wan22ImageToVideoLatent with / without the start picture, ModelSamplingAuraFlow shift 9, KSampler euler / simple 50 steps
      cfg 2.5, CreateVideo 24 fps), the files picked from what ComfyUI lists (int8 before bf16, missing ones named with the
      add-on), 4n+1 frames, 32-px sizes;
   2. LIVE on the stub ComfyUI: text to video and image to video render at the size and length asked, the reference sound
@@ -45,10 +45,12 @@ encs = [k for k, c in ct.items() if c == "CLIPTextEncode"]
 check("graph: the caption -> positive, the negative -> negative, both on the pan2 CLIPLoader",
       len(encs) == 2 and I("KSampler")["positive"] == [encs[0], 0] and I("KSampler")["negative"] == [encs[1], 0]
       and g[encs[0]]["inputs"]["text"] == CAP and g[encs[1]]["inputs"]["text"].startswith("{") and all(g[e]["inputs"]["clip"] == [inv["CLIPLoader"], 0] for e in encs))
-check("graph: PAN 2's defaults - 50 steps, cfg 2.5, euler / simple, denoise 1, shift 9 on ModelSamplingSD3, the seed",
+check("2.899.1: the shift node is ModelSamplingAuraFlow (multiplier 1.0, like PAN 2's own config) - never ModelSamplingSD3 (multiplier 1000: every step read as t = 1, a WHITE take)",
+      not any(v["class_type"] == "ModelSamplingSD3" for v in g.values()) and "ModelSamplingAuraFlow" in PG.REQUIRED and "ModelSamplingSD3" not in PG.REQUIRED)
+check("graph: PAN 2's defaults - 50 steps, cfg 2.5, euler / simple, denoise 1, shift 9 on ModelSamplingAuraFlow, the seed",
       I("KSampler")["steps"] == 50 and I("KSampler")["cfg"] == 2.5 and I("KSampler")["sampler_name"] == "euler"
-      and I("KSampler")["scheduler"] == "simple" and I("KSampler")["denoise"] == 1.0 and I("ModelSamplingSD3")["shift"] == 9.0
-      and I("KSampler")["seed"] == 5 and I("KSampler")["model"] == [inv["ModelSamplingSD3"], 0])
+      and I("KSampler")["scheduler"] == "simple" and I("KSampler")["denoise"] == 1.0 and I("ModelSamplingAuraFlow")["shift"] == 9.0
+      and I("KSampler")["seed"] == 5 and I("KSampler")["model"] == [inv["ModelSamplingAuraFlow"], 0])
 check("graph: Wan22ImageToVideoLatent 1248x704x241 on the VAE -> the sampler's latent; decode -> CreateVideo 24 fps -> SaveVideo",
       I("Wan22ImageToVideoLatent") == {"vae": [inv["VAELoader"], 0], "width": 1248, "height": 704, "length": 241, "batch_size": 1}
       and I("KSampler")["latent_image"] == [inv["Wan22ImageToVideoLatent"], 0] and I("CreateVideo")["fps"] == 24.0
@@ -60,8 +62,8 @@ check("graph: image to video - LoadImage -> start_image; size snapped down to 32
       g2[c2["Wan22ImageToVideoLatent"]]["inputs"]["start_image"] == [c2["LoadImage"], 0] and g2[c2["LoadImage"]]["inputs"]["image"] == "first.png"
       and g2[c2["Wan22ImageToVideoLatent"]]["inputs"]["width"] == 992 and g2[c2["Wan22ImageToVideoLatent"]]["inputs"]["height"] == 704
       and g2[c2["Wan22ImageToVideoLatent"]]["inputs"]["length"] == 97 and g2[c2["KSampler"]]["inputs"]["steps"] == 30
-      and g2[c2["KSampler"]]["inputs"]["cfg"] == 3.0 and g2[c2["ModelSamplingSD3"]]["inputs"]["shift"] == 7.0
-      and g2[c2["ModelSamplingSD3"]]["inputs"]["model"] == [c2["LoraLoaderModelOnly"], 0] and any("32-px" in n for n in n2), g2)
+      and g2[c2["KSampler"]]["inputs"]["cfg"] == 3.0 and g2[c2["ModelSamplingAuraFlow"]]["inputs"]["shift"] == 7.0
+      and g2[c2["ModelSamplingAuraFlow"]]["inputs"]["model"] == [c2["LoraLoaderModelOnly"], 0] and any("32-px" in n for n in n2), g2)
 try:
     PG.build({"model": "m", "te": "t", "vae": "v", "prompt": " "})
     bad = False

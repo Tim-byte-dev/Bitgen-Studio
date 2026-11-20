@@ -3,19 +3,23 @@
 
 Tim (verbatim): "can you add this to our video models https://huggingface.co/Comfy-Org/PAN2"
 
-    UNETLoader (pan2_*) -> [LoraLoaderModelOnly ...] -> ModelSamplingSD3 (shift 9) ---------------\
+    UNETLoader (pan2_*) -> [LoraLoaderModelOnly ...] -> ModelSamplingAuraFlow (shift 9) ----------\
     CLIPLoader (qwen3.5_9b, type "pan2") -> CLIPTextEncode (the caption) / CLIPTextEncode (the negative) -> KSampler
     VAELoader (wan2.2_vae) -> Wan22ImageToVideoLatent (width, height, length = 4n+1, [start_image]) ----/
     KSampler (euler / simple, 50 steps, cfg 2.5) -> VAEDecode -> CreateVideo (24 fps) -> SaveVideo
 
 With no start picture Wan22ImageToVideoLatent hands back an empty latent (text to video); with one, its first latent
 frame is the encoded picture and the noise mask keeps it (PAN 2's model reads that mask - comfy/model_base.PAN2.concat_cond).
+2.899.1 (Tim: "pan 2 only renders a white screen"): the shift node is ModelSamplingAuraFlow, NOT ModelSamplingSD3.
+ModelSamplingSD3 sets the timestep multiplier to 1000 (SD3's scale); PAN 2's own config is multiplier 1.0 and its model
+clamps the timestep to 0..1 (comfy/ldm/pan2/model.py time_embedding) - so with SD3's node every step read as t = 1, pure
+noise, and the take came out white. ModelSamplingAuraFlow is the same flow shift with multiplier 1.0.
 Pure: pick(), settings() and build() take lists and dicts - scripts/test-pan2890.py checks them without ComfyUI.
 """
 import re
 
 FPS = 24
-REQUIRED = ["UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode", "Wan22ImageToVideoLatent", "ModelSamplingSD3",
+REQUIRED = ["UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode", "Wan22ImageToVideoLatent", "ModelSamplingAuraFlow",
             "KSampler", "VAEDecode", "CreateVideo", "SaveVideo"]
 DEFAULTS = {"steps": 50, "cfg": 2.5, "shift": 9.0, "sampler": "euler", "scheduler": "simple"}
 MODEL_HINT = "pan2_int8_convrot.safetensors"
@@ -110,7 +114,8 @@ def build(o):
         name = str((lo or {}).get("name") or "")
         if name:
             k = add("LoraLoaderModelOnly", {"model": [k, 0], "lora_name": name, "strength_model": float(lo.get("strength", 1.0) or 1.0)})
-    k = add("ModelSamplingSD3", {"model": [k, 0], "shift": s["shift"]})
+    # multiplier 1.0 like PAN 2's own sampling settings (ModelSamplingSD3's 1000 = a white take - see the top)
+    k = add("ModelSamplingAuraFlow", {"model": [k, 0], "shift": s["shift"]})
     clip = add("CLIPLoader", {"clip_name": o["te"], "type": "pan2", "device": "default"})
     vae = add("VAELoader", {"vae_name": o["vae"]})
     pos = add("CLIPTextEncode", {"text": str(o["prompt"]), "clip": [clip, 0]})
