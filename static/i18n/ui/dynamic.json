@@ -6771,6 +6771,10 @@
    "src": "static/refmodmgr.js:159"
   },
   {
+   "s": "drag onto another to change the order",
+   "src": "static/refreorder.js:97"
+  },
+  {
    "s": "Reference video",
    "src": "static/refselect.js:152"
   },
@@ -13187,7 +13191,7 @@
    "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
-   "s": "Your details stay on this computer as well, so invoices and cards work when the database does not answer; changes made then go to the database when it answers",
+   "s": "Your details - and your card stocks of 📇 Business Card Sheet - stay on this computer as well, so invoices and cards work when the database does not answer; changes made then go to the database when it answers",
    "src": "ext/imageeditdock/pcbizinfo.js:58"
   },
   {
@@ -30989,6 +30993,22 @@
    "src": "static/refmodmgr.js:159"
   },
   {
+   "p": "Picture {0} is now picture {1}",
+   "src": "static/refreorder.js:92"
+  },
+  {
+   "p": "Video {0} is now video {1}",
+   "src": "static/refreorder.js:92"
+  },
+  {
+   "p": "Sound {0} is now sound {1}",
+   "src": "static/refreorder.js:92"
+  },
+  {
+   "p": "{0} - drag onto another to change the order",
+   "src": "static/refreorder.js:97"
+  },
+  {
    "p": "Select the part of {0} to use",
    "src": "static/refselect.js:151"
   },
@@ -31797,7 +31817,23 @@
    "src": "ext/imageeditdock/pcbizinfo.js:143"
   },
   {
+   "p": "kept {0} now - {1} sent from this computer, {2} were there already (+ {3} card stocks)",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
+  },
+  {
+   "p": "kept {0} now - {1} sent from this computer, {2} were there already (+ {3} card stock)",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
+  },
+  {
    "p": "kept {0} now - {1} sent from this computer, {2} were there already",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
+  },
+  {
+   "p": "kept {0} now - {1} sent from this computer (+ {2} card stocks)",
+   "src": "ext/imageeditdock/pcbizinfo.js:159"
+  },
+  {
+   "p": "kept {0} now - {1} sent from this computer (+ {2} card stock)",
    "src": "ext/imageeditdock/pcbizinfo.js:159"
   },
   {

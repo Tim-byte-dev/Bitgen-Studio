@@ -81,7 +81,7 @@
           <label><input type="radio" name="pcbzWhereR" value="global"> 🗄 In bitGen's own database (MariaDB on this computer)</label>
           <label><input type="radio" name="pcbzWhereR" value="external"> 🌐 On your database server - shared with your other computers (set it up in 🗄 Database on the top bar)</label>
           <div class="kxrow"><span>Database</span><input id="pcbzDbName" value="bitgen_business" style="width:180px" autocomplete="off"><button class="ghost" id="pcbzMove" type="button">✔ Keep them there</button></div>
-          <div class="pcbz-dim" id="pcbzStoreMsg">Your details stay on this computer as well, so invoices and cards work when the database does not answer; changes made then go to the database when it answers.</div>
+          <div class="pcbz-dim" id="pcbzStoreMsg">Your details - and your card stocks of 📇 Business Card Sheet - stay on this computer as well, so invoices and cards work when the database does not answer; changes made then go to the database when it answers.</div>
         </div>
         <div class="pcbz-dim">The LLM writes the words around them; your details are used exactly.</div>
       </div>`;
@@ -156,7 +156,7 @@
           v("pcbzMove").disabled = true; m.textContent = pick === "file" ? "📁 bringing them back to this computer…" : "🗄 starting the database and moving them there…";
           win.fetch("/api/business/store", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
             .then((r) => r.json().then((j) => { if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; }))
-            .then((j) => { m.textContent = j.moved === "file" ? "📁 kept on this computer only now (the database keeps its copy)." : `🗄 kept ${j.where} now - ${j.sent} sent from this computer${j.had ? `, ${j.had} were there already` : ""}.`; cache = null; return load().then(keepSel); })
+            .then((j) => { m.textContent = j.moved === "file" ? "📁 kept on this computer only now (the database keeps its copy)." : `🗄 kept ${j.where} now - ${j.sent} sent from this computer${j.had ? `, ${j.had} were there already` : ""}${j.stocksSent ? ` (+ ${j.stocksSent} card stock${j.stocksSent > 1 ? "s" : ""})` : ""}.`; cache = null; return load().then(keepSel); })
             .then(() => say("🗄 " + m.textContent.replace(/^\S+ /, "")))
             .catch((e) => { m.textContent = "⚠ " + e.message; say("🗄 " + e.message); }).finally(() => { v("pcbzMove").disabled = false; });
         };

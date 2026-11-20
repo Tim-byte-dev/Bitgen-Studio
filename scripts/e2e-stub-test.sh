@@ -14676,6 +14676,16 @@ node scripts/test-897-live.js > /tmp/t897l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui897-ui.js > /tmp/ui897.log 2>&1 \
   && ok "2.897.0 browser test: 💳 🗄 Where they are kept… - to bitGen's own database (the line + ⟳ Sync), another computer's profile after ⟳ Sync, a save in the database at once, 📁 back on this computer" \
   || { bad "2.897.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui897.log | head -12; }
+# ---- 2.898.0 (📇 the card stocks in the business database: lib/businessDb.js + lib/cardStocks.js + routes/cardStocks.js; drag the References docker's pictures / videos / sounds to change their order: static/refreorder.js)
+node scripts/test-898.js > /tmp/t898.log 2>&1 \
+  && ok "2.898.0 units: move / positions / retag (picture 6 onto 1 = picture 1, the prompt's tags follow), the page wiring; business_card_stocks, a stock's change waiting, routes syncing first" \
+  || { bad "2.898.0 units"; grep -a "^FAIL" -A1 /tmp/t898.log | head -12; }
+node scripts/test-898-live.js > /tmp/t898l.log 2>&1 \
+  && ok "2.898.0 LIVE (real MariaDB; SKIPs without): the card stocks go to the database with the details, the other computer has them, changes / one name one stock / waiting / deletes" \
+  || { bad "2.898.0 LIVE"; grep -a "^FAIL" -A1 /tmp/t898l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui898-ui.js > /tmp/ui898.log 2>&1 \
+  && ok "2.898.0 browser test: drag picture 3 onto picture 1 (tags + prompt follow, on screen too) and back, video 1 onto video 3, two sounds swapped, a description still types" \
+  || { bad "2.898.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui898.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

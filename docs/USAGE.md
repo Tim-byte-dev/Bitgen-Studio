@@ -10191,6 +10191,20 @@ waits - the line says how many - and goes there when it answers. If another comp
 copy wins and the line says so. Accounts, invoices and cards always read the copy on this computer, so they work without the
 database. **📁 On this computer only** + ✔ brings them back to the file; the database is left as it is.
 
+## 🖼 Reference order and card stocks in the business database (2.898.0)
+
+**Drag the references into order.** In the 🖼 References docker drag a picture, a video or a sound onto another of its own kind:
+it takes that place and the ones between move along - picture 6 dropped on picture 1 becomes picture 1, pictures 1 - 5 become
+2 - 6. Dropped after the last one it goes to the end. A line shows where it will land while you drag. The prompt's
+**<Picture n>**, **<Video n>** and **<Audio n>** tags follow the move, so each still names the same reference (<Picture 6>
+becomes <Picture 1>). The order is kept with the project. Several pictures picked with Ctrl / Shift still drag onto the
+timeline together, and a single picture dragged onto the timeline or the image editor works as before.
+
+**Card stocks in the business database.** When your business details are kept in a database (💳 the business details box ▸
+🗄 Where they are kept…), the label / card stocks you keep in 📇 Business Card Sheet go there too: moved with the details,
+shared with your other computers (one stock per name), a change waiting on this computer when the database does not answer.
+Saving a stock says where it was kept.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

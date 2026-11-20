@@ -328,7 +328,10 @@
           e.preventDefault(); const v = read(d, st), s = Object.assign({ name: q("pccsStName").value.trim() }, v.stock);
           if (!s.name) { q("pccsStName").focus(); return say("📇 give the stock a name first"); }
           try { const r = await win.fetch("/api/cardstocks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ stock: s }) }); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText);
-            await loadStocks(); paintStocks(j.id); say(`📇 kept the stock "${j.name}"`); paint(); } catch (er) { say("📇 " + er.message); }
+            await loadStocks(); paintStocks(j.id);
+            // 2.898.0: with the business details in a database the stocks go there too (lib/businessDb.js)
+            const where = j.store && j.store.mode === "db" ? (j.store.offline ? " on this computer (the database did not answer - it goes there when it does)" : " - in the business database") : "";
+            say(`📇 kept the stock "${j.name}"${where}`); paint(); } catch (er) { say("📇 " + er.message); }
         };
         q("pccsStDel").onclick = async (e) => {
           e.preventDefault(); const id = q("pccsStock").value; if (!id) return say("📇 pick one of your stocks to delete");

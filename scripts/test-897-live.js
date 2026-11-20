@@ -16,7 +16,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "t897l-")), A = path.join(tmp, "pcA", "business"), B = path.join(tmp, "pcB", "business");
   D.setBase(tmp, path.join(tmp, "projdb")); BD.setDb(D);
   const png = "data:image/png;base64," + Buffer.from("89504e470d0a1a0a0000000d4948445200000001000000010806000000" + "1f15c4890000000d49444154789c6360f80f0000010101005b5cba5e0000000049454e44ae426082", "hex").toString("base64");
-  const on = (dir) => BP.setRoot(dir);
+  const CS = require(path.join(ROOT, "lib/cardStocks.js"));
+  const on = (dir) => { BP.setRoot(dir); CS._setRoot(dir); };   // 2.898.0: the card stocks live beside them
   try {
     on(A);
     const p1 = BP.save({ company: "Rosie's Bakery", name: "Rosie Smith", role: "Owner", phone: "0412 345 678", email: "rosie@example.com", services: ["Sourdough", "Cakes"], colours: ["#aa3300", "#ffffff"], card_size: "au", abn: "51 824 753 556", front: "warm\ncream" }, { logoDataUrl: png });
@@ -26,7 +27,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("🗄 A moves its details to bitGen's own MariaDB: the database + 4 tables made, both sent", mv.moved === "db" && mv.sent === 2 && mv.had === 0 && mv.mode === "db" && /bitgen_business on bitGen's own database/.test(mv.where), mv);
     const q = async (sql) => (await D.run("global", "bitgen_business", sql)).results[0].rows;
     const tabs = (await q("SHOW TABLES")).map((r) => Object.values(r)[0]).sort();
-    check("...the tables business_colours, business_meta, business_profiles, business_services (schema 1)", tabs.join() === "business_colours,business_meta,business_profiles,business_services" && (await q("SELECT v FROM business_meta WHERE k = 'schema'"))[0].v === "1", tabs);
+    check("...the tables business_colours, business_meta, business_profiles, business_services (schema 1; 2.898.0 + business_card_stocks)", ["business_colours", "business_meta", "business_profiles", "business_services"].every((t) => tabs.includes(t)) && (await q("SELECT v FROM business_meta WHERE k = 'schema'"))[0].v === "1", tabs);
     const row = (await q(`SELECT company, abn, card_size, front, logo_name, logo_type, LENGTH(logo) AS n, updated_by FROM business_profiles WHERE id = '${p1.id}'`))[0];
     check("...a profile's row: the fields (ABN, card size, a two-line front), the logo itself (PNG bytes), who saved it", row.company === "Rosie's Bakery" && row.abn === "51 824 753 556" && row.card_size === "au" && row.front === "warm\ncream" && row.logo_type === "image/png" && +row.n > 60 && row.logo_name === p1.id + ".png" && row.updated_by === os.hostname().slice(0, 64), row);
     const sv = (await q(`SELECT service FROM business_services WHERE profile_id = '${p1.id}' ORDER BY pos`)).map((r) => r.service), co = (await q(`SELECT colour FROM business_colours WHERE profile_id = '${p1.id}' ORDER BY pos`)).map((r) => r.colour);

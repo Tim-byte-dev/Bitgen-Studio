@@ -12,7 +12,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 (async () => {
   const BP = require("../lib/businessProfiles"), BD = require("../lib/businessDb");
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "t897-")); BP.setRoot(tmp);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "t897-")); BP.setRoot(tmp); require("../lib/cardStocks")._setRoot(tmp);
   let calls = 0;
   const fake = (o) => Object.assign({ find: () => ({ bin: "mariadbd" }), externalCfg: () => ({ host: "db.example.com", port: 3306, user: "tim" }), createDb: async () => { calls++; throw new Error("connect ECONNREFUSED"); }, conn: async () => { throw new Error("no"); } }, o || {});
   BD.setDb(fake());
