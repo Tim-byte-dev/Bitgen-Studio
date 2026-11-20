@@ -71,7 +71,10 @@
   function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
   function localNow() { return pickLocal(ls.keys().map(function (k) { return [k, ls.get(k)]; })); }
   function themeNow(name) { try { return root.H3Theme && root.H3Theme.snapshot ? root.H3Theme.snapshot(name) : null; } catch (e) { return null; } }
-  function flush() { try { if (typeof root.saveLayout === "function") root.saveLayout(); if (typeof root.flushLayout === "function") root.flushLayout(); } catch (e) { /* fine */ } }
+  function flush() {
+    try { if (typeof root.saveLayout === "function") root.saveLayout(); if (typeof root.flushLayout === "function") root.flushLayout(); } catch (e) { /* fine */ }
+    try { if (root.H3Panels && root.H3Panels.flush) root.H3Panels.flush(); } catch (e) { /* 2.891.0: the named dockers' places now, not in 300 ms */ }
+  }
   function save(name) {
     flush();
     return new Promise(function (ok) { setTimeout(ok, 700); }).then(function () { return jpost("/api/layouts/save", { name: name, local: localNow(), theme: themeNow(name) }); });
@@ -120,6 +123,7 @@
       + '<div class="r"><input type="text" id="lyName" placeholder="a name, e.g. Editing 1440p" style="min-width:200px"><button type="button" id="lySave" title="layouts/<name>.json in the install folder">💾 Save layout</button>'
       + '<button class="ghost" type="button" id="lyDefault" title="Save the dockers and the theme as they are now as layouts/default.json - copy it into the repo (with themes/default.json) to make it the default">★ Save as the default</button>'
       + '<button class="ghost" type="button" id="lyImport">⤒ Import…</button><input type="file" id="lyFile" accept=".json,application/json" class="hidden"></div>'
+      + '<div class="r"><button class="ghost" type="button" id="lyReset" title="When the window goes black, freezes or crashes: the dockers back to the default and the desktop app\'s cache cleared - the layout files and this window\'s storage are kept in backups\\layout-auto-… first">🧯 Reset the dockers and the cache…</button></div>'
       + '<div id="lyList"></div><div class="k" id="lyMsg" role="status" style="margin-top:4px"></div>'
       + '<div class="k" style="margin-top:4px">A layout is layouts/&lt;name&gt;.json; a theme is themes/&lt;name&gt;.json (Settings ▸ Themes ▸ 💾 Save theme, ⤓ Export, ⤒ Import). '
       + "Copy <b>layouts/default.json</b> and <b>themes/default.json</b> into the repo: a fresh install starts with that layout, and a browser that never picked a theme takes that one.</div>";
@@ -132,6 +136,11 @@
         var th = themeNow("default"), p = th && root.fetch ? jpost("/api/themes/save", { name: "default", theme: th }) : Promise.resolve(null);
         p.then(function () { say("★ saved as layouts/default.json + themes/default.json - copy both into the repo to make them the default"); paint(); });
       });
+    };
+    // 2.891.0 (Tim: "bitgen crashed again until i reset the dockers and cache"): what misc\reset-layout.bat did by hand
+    $("lyReset").onclick = function () {
+      var c = root.appConfirm ? root.appConfirm("Reset every docker to the default and clear the cache? The layout files and this window's storage are kept in backups\\layout-auto-… first - your projects, styles and settings are not touched.") : Promise.resolve(root.confirm("Reset the dockers and the cache?"));
+      Promise.resolve(c).then(function (ok) { if (ok && root.H3SafeLayout && root.H3SafeLayout.reset) { say("resetting…"); root.H3SafeLayout.reset(); } });
     };
     $("lyImport").onclick = function () { $("lyFile").value = ""; $("lyFile").click(); };
     $("lyFile").onchange = function () {

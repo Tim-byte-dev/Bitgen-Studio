@@ -1,7 +1,8 @@
 // routes/pan2.js — 2.890.0: PAN 2 from the prompt docker (lib/pan2.js writes the caption + the job, misc/pan2_worker.py
 // renders it, lib/pan2Addon.js installs the files). Mounted from routes/index.js (never server.js).
 //   GET  /api/pan2           {installed, note, items, comfy: {online, nodes}, max_seconds, defaults}
-//   POST /api/pan2/caption   {prompt, seconds} -> {caption, how, notes} - the caption PAN 2 would get (nothing queued)
+//   POST /api/pan2/caption   {prompt, seconds, pretty} (+ multipart first) -> {caption, how, notes, seconds, pretty} - the
+//                            caption PAN 2 would get (nothing queued); the prompt docker's { } JSON puts it in the prompt box
 //   POST /api/pan2           multipart: first (the first picture - image to video); fields prompt, seconds, width, height,
 //                            seed, steps, cfg, negative, video_style_id, ref_audio (a project sound's name - laid under the take)
 //                            -> a pan2 job + {notes, caption_how} | 400 / 409 {error, needs} / 503
@@ -44,10 +45,16 @@ function mount(app) {
     return Object.assign({}, st, { comfy, max_seconds: L().MAX_SECONDS, defaults: L().DEFAULTS, update: L().UPDATE });
   }));
 
-  app.post("/api/pan2/caption", wrap(async (req) => {
+  // 2.891.0 (Tim: "pan 2 is meant to submit the prompt in json format, can we format the prompt automatically"): JSON or
+  // multipart (a `first` picture = image to video - the vision model describes it for the writer); `pretty` = indented
+  app.post("/api/pan2/caption", upload.fields([{ name: "first", maxCount: 1 }]), wrap(async (req) => {
     const b = req.body || {};
+    const files = req.files || {};
     const seconds = L().secondsOf(L().framesFor(parseFloat(b.seconds) || L().DEFAULT_SECONDS));
-    return L().caption({ prompt: String(b.prompt || ""), seconds });
+    const image = files.first && files.first[0] ? keep(core, files.first[0], "pan2-first") : "";
+    const r = await L().caption({ prompt: String(b.prompt || ""), seconds, image });
+    const truthy = (v) => v === true || v === "1" || v === "true";
+    return Object.assign(r, { seconds, pretty: truthy(b.pretty) ? JSON.stringify(JSON.parse(r.caption), null, 2) : undefined });
   }));
 
   app.post("/api/pan2", upload.fields([{ name: "first", maxCount: 1 }]), wrap(async (req) => {

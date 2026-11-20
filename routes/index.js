@@ -138,6 +138,7 @@ function mount(app) {
   // accounting docker (receipts / bills uploaded as pictures or PDFs) - both before the 100 KB json parser
   require("./businessProfiles").mount(app);
   require("./accounting").mount(app);   // 2.877.0: 📒 Accounts - journals, ledger, balance sheet, BAS (lib/accounting.js)
+  require("./layoutRescue").mount(app); // 2.891.0: the dockers reset with a backup - the page's whole storage comes along (lib/layoutRescue.js)
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);

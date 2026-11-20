@@ -73,6 +73,35 @@
     return { docks: out, scale: ks, wscale: kw };
   }
 
+  /** 2.891.0 (Tim: "when saving a layout, save the size position and status (minimized, maximized and normal) of all
+   *  dockers"): a docker's status from its classes (pure) - hidden / minimized (collapsed to its title) / maximized / normal */
+  function statusOf(cls) {
+    var c = " " + String(cls || "") + " ";
+    if (/ dockgone /.test(c)) return "hidden";
+    if (/ maxed /.test(c)) return "maximized";
+    if (/ (collapsed|minned) /.test(c)) return "minimized";
+    return "normal";
+  }
+  /** a floating window's status (pure): not shown = hidden, sf-max = maximized, sf-min = minimized, else normal */
+  function floatStatus(shown, cls) {
+    if (!shown) return "hidden";
+    var c = " " + String(cls || "") + " ";
+    return / sf-max /.test(c) ? "maximized" : / sf-min /.test(c) ? "minimized" : "normal";
+  }
+  /** what a docker must do to reach a status: [] = nothing, else steps "show" | "hide" | "collapse" | "open" | "max" |
+   *  "unmax", in order (pure; the page runs them with toggleDockGone / toggleCollapse / toggleMax) */
+  function stepsTo(cur, want) {
+    if (!want || want === cur) return [];
+    if (want === "hidden") return ["hide"];
+    var out = [];
+    if (cur === "hidden") { out.push("show"); cur = "normal"; }     // showing opens a collapsed docker (toggleDockGone)
+    if (want === "maximized") { if (cur !== "maximized") out.push("max"); return out; }
+    if (cur === "maximized") { out.push("unmax"); cur = "normal"; }
+    if (want === "minimized" && cur !== "minimized") out.push("collapse");
+    if (want === "normal" && cur === "minimized") out.push("open");
+    return out;
+  }
+
   /* ================================ the page ================================ */
   function start() {
     if (typeof document === "undefined" || DockCfg.started) return;
@@ -116,6 +145,8 @@
           if (root.PFloat && root.PFloat.restore) root.PFloat.restore();
         }
         applyPanels(p.variant);
+        // 2.891.0: loaded by hand = every docker's status as saved too (an automatic load only sizes the set it opened)
+        if (/by hand/.test(String(why || "")) && p.variant.all) applyAll(p.variant.all);
         if (typeof root.reflowSoon === "function") root.reflowSoon();
         if (typeof root.saveLayout === "function") setTimeout(root.saveLayout, 50);
       } finally { setTimeout(function () { applying = false; }, 300); }
@@ -158,8 +189,61 @@
       var panels = {}, cols = {}, T = root.TlStageDock;
       if (T && T.panels) Object.keys(T.panels).forEach(function (id) { var P = T.panels[id]; if (P && P.state) panels[id] = P.state(); });
       if (T && T.colW) { cols.L = T.colW("L"); cols.R = T.colW("R"); }
-      return { open: openIds(), window: winSize(), col: { h: colH() }, docks: docks, vis: vis, floats: floats, panels: panels, cols: cols,
+      return { open: openIds(), window: winSize(), col: { h: colH() }, docks: docks, vis: vis, floats: floats, panels: panels, cols: cols, all: allNow(),
                prompt: { floating: e.floating, x: e.x, y: e.y, float_w: e.float_w, float_h: e.float_h, dock_to: e.dock_to || "", dock_side: e.dock_side || "", dock_w: e.dock_w || 0 } };
+    }
+    /** 2.891.0: EVERY docker - the column's (the extensions' and ▣ dockers' too), the floating windows, the named dockers
+     *  and the panels in them - with its size, place and status */
+    function allNow() {
+      var docks = {}, floats = {}, named = null;
+      document.querySelectorAll(".bdock[id]").forEach(function (el) {
+        if (!/^[A-Za-z][\w-]{0,40}$/.test(el.id)) return;
+        var r = el.getBoundingClientRect();
+        docks[el.id] = { status: statusOf(el.className), h: Math.round(r.height || 0), w: Math.round(r.width || 0) };
+      });
+      var SF = root.SecFloat;
+      if (SF && SF.windows) Object.keys(SF.windows).forEach(function (id) {
+        var w = SF.windows[id], st = SF.state ? SF.state(id) : {};
+        if (!w || !w.el || !/^[A-Za-z][\w-]{0,40}$/.test(id)) return;
+        var b = w.el.getBoundingClientRect();
+        floats[id] = { status: floatStatus(!!st.shown, w.el.className), x: Math.round(b.left), y: Math.round(b.top), w: Math.round(b.width), h: Math.round(b.height) };
+      });
+      try { if (root.H3Panels && root.H3Panels.snapshot) named = root.H3Panels.snapshot(); } catch (e) { named = null; }
+      return { docks: docks, floats: floats, named: named };
+    }
+    /** a saved `all` put back (a layout loaded by hand): each docker shown / hidden / minimized / maximized as saved, the
+     *  floating windows the same, the named dockers and panels where they were; one that is not here now is skipped */
+    function applyAll(all) {
+      if (!all || typeof all !== "object") return 0;
+      var n = 0, G = root.H3GoneDocks || {}, maxId = null;
+      var btnOf = function (id) { return Object.keys(G).find(function (b) { return G[b] === id; }) || null; };
+      Object.keys(all.docks || {}).forEach(function (id) {
+        var el = $(id), want = (all.docks[id] || {}).status; if (!el || !want) return;
+        if (root.H3DGDock && root.H3DGDock.holds && root.H3DGDock.holds("pf." + id)) return;   // in a ▣ docker: the named dockers below
+        if (want === "maximized") { maxId = id; want = "normal"; }
+        stepsTo(statusOf(el.className), want).forEach(function (st) {
+          try {
+            if (st === "hide" || st === "show") { if (typeof root.toggleDockGone === "function") root.toggleDockGone(id, btnOf(id)); }
+            else if (st === "collapse" || st === "open") { if (typeof root.toggleCollapse === "function") root.toggleCollapse(id); }
+            else if (st === "unmax" && typeof root.toggleMax === "function") root.toggleMax(id, false);
+          } catch (e) { console.warn("docker layout:", id, e); }
+        });
+        n++;
+      });
+      if (maxId && typeof root.toggleMax === "function") try { root.toggleMax(maxId, true); } catch (e) { console.warn("docker layout max:", e); }
+      var SF = root.SecFloat;
+      if (SF && SF.windows) Object.keys(all.floats || {}).forEach(function (id) {
+        var f = all.floats[id], w = SF.windows[id]; if (!w || !f) return;
+        try {
+          if (f.status === "hidden") { if ((SF.state(id) || {}).shown) SF.show(id, false); return; }
+          if (!(SF.state(id) || {}).shown) SF.show(id, true);
+          if (f.status === "maximized") SF.maximize(id, true);
+          else { if (w.max) SF.maximize(id, false); SF.minimize(id, f.status === "minimized"); }
+          n++;
+        } catch (e) { console.warn("docker layout float:", id, e); }
+      });
+      try { if (all.named && root.H3Panels && root.H3Panels.applySnapshot) n += root.H3Panels.applySnapshot(all.named); } catch (e) { console.warn("docker layout named dockers:", e); }
+      return n;
     }
     function post(url, body, method) {
       return fetch(url, { method: method || "POST", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined })
@@ -167,12 +251,23 @@
     }
     function save() {
       var s = snapshot();
-      if (!s.open.length) { say("open the dockers you want first"); return Promise.resolve(null); }
+      if (!s.open.length) { say("open at least one of the column's dockers first (the Preview, Timeline, StoryBoard, Prompt …) - a layout is saved for the dockers open together"); flash(true); return Promise.resolve(null); }
       return post("/api/docker-cfg/save", s).then(function (j) {
         CFG = j.cfg || CFG; lastKey = keyOf(s.open);
-        say("saved: " + namesOf(lastKey).join(" + ") + " at " + s.window.w + "×" + s.window.h + " - which dockers are shown, their sizes and the floating panels' places; they open like this whenever they are open together");
-        paint(); return j;
-      }).catch(function (e) { say("could not save: " + e.message); });
+        // 2.891.0 (Tim: "please fix the save docker layout button"): the panel is painted FIRST - painting it after the
+        // message wiped the message, so a save looked like it did nothing
+        paint();
+        var a = s.all || {}, nd = Object.keys(a.docks || {}).length, nf = Object.keys(a.floats || {}).length, nn = a.named ? Object.keys(a.named.dockers || {}).length + Object.keys(a.named.panels || {}).length : 0;
+        say("💾 saved: " + namesOf(lastKey).join(" + ") + " at " + s.window.w + "×" + s.window.h + " - " + nd + " dockers, " + nf + " floating windows" + (nn ? ", " + nn + " named dockers / panels" : "")
+          + ": where they are, their size and status (normal / minimized / maximized / hidden). Load puts them all back; opening these dockers together sizes them like this");
+        flash();
+        return j;
+      }).catch(function (e) { say("could not save: " + e.message); flash(true); });
+    }
+    function flash(bad) {
+      var b = $("dockCfgSave"); if (!b) return;
+      b.textContent = bad ? "✕ Not saved" : "✓ Saved"; b.classList.toggle("bad", !!bad);
+      setTimeout(function () { var c = $("dockCfgSave"); if (c) { c.textContent = "💾 Save layout"; c.classList.remove("bad"); } }, 1800);
     }
     function remove(key, w, h) {
       return post("/api/docker-cfg/delete", { key: key, w: w, h: h }).then(function (j) { CFG = j.cfg || CFG; say("layout removed"); paint(); })
@@ -206,8 +301,8 @@
       panel.innerHTML = '<div class="dchead"><b class="dct">Docker layout</b> · open now: <b>' + esc(key ? namesOf(key).join(" + ") : "no docker") + "</b>"
         + '<div class="dcsub">' + (mine ? (mine.exact ? "a layout is saved for these at this window size" : "a layout is saved for these at " + mine.variant.window.w + "×" + mine.variant.window.h + " - it is fitted to this window")
           : "no layout saved for these yet") + " · this window " + ws.w + "×" + ws.h + "</div></div>"
-        + '<div class="dcbtns"><button class="ghost" id="dockCfgSave" type="button" title="Keep which dockers are shown, every docker\'s size and the floating panels\' places for these dockers at this window size">💾 Save layout</button>'
-        + (mine ? '<button class="ghost" id="dockCfgLoad" type="button">↺ Load it again</button>' : "") + "</div>"
+        + '<div class="dcbtns"><button class="ghost" id="dockCfgSave" type="button" title="Keep EVERY docker as it is now - where it is, its size and its status (normal, minimized, maximized, hidden), the floating windows and the named dockers too - for these dockers at this window size">💾 Save layout</button>'
+        + (mine ? '<button class="ghost" id="dockCfgLoad" type="button" title="Put every docker back as this layout has it">↺ Load it again</button>' : "") + "</div>"
         // 2.438.0: empty named dockers (static/floatpanels.js) - any floating docker docks in them
         + (root.H3Panels ? '<div class="dcbtns"><button class="ghost" id="dockCfgNew" type="button" title="An empty floating docker with a name - drag floating dockers into it; ⚙ on it: main docker or confined to a docker">▣ New docker…</button>'
           + root.H3Panels.list().filter(function (d) { return d.kind === "docker"; }).map(function (d) { return '<button class="ghost" data-fpshow="' + esc(d.id) + '" title="Show it">▣ ' + esc(d.title) + "</button>"; }).join("") + "</div>" : "")
@@ -269,9 +364,11 @@
     check("at start");
     DockCfg.save = save; DockCfg.apply = apply; DockCfg.openSet = openSet; DockCfg.state = function () { return CFG; };
     DockCfg.openKey = function () { return keyOf(openIds()); }; DockCfg.check = check; DockCfg.paint = paint;
+    DockCfg.snapshot = snapshot; DockCfg.allNow = allNow; DockCfg.applyAll = applyAll;   // 2.891.0
   }
 
-  var DockCfg = { BOTTOM: BOTTOM, SIDE: SIDE, NAMES: NAMES, keyOf: keyOf, namesOf: namesOf, pick: pick, scaled: scaled, start: start, started: false };
+  var DockCfg = { BOTTOM: BOTTOM, SIDE: SIDE, NAMES: NAMES, keyOf: keyOf, namesOf: namesOf, pick: pick, scaled: scaled, start: start, started: false,
+                  statusOf: statusOf, floatStatus: floatStatus, stepsTo: stepsTo };   // 2.891.0
   if (typeof module !== "undefined" && module.exports) module.exports = DockCfg;
   else root.DockCfg = DockCfg;
 })(typeof window !== "undefined" ? window : globalThis);

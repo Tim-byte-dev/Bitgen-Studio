@@ -14624,6 +14624,13 @@ python3 scripts/test-pan2890.py > /tmp/tp890.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui890-ui.js > /tmp/ui890.log 2>&1 \
   && ok "2.890.0 browser test: the PAN 2 style's hint, Generate -> /api/pan2 (words, seconds, size, seed, first picture, sound, ⊖ negative), the Download / Cancel box, GET /api/pan2, /api/pan2/caption, wrong style refused, /api/generate turns it away" \
   || { bad "2.890.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui890.log | head -12; }
+# ---- 2.891.0 (🧩 PAN 2's JSON in the prompt box, ⊞ Save layout keeps every docker, the desktop window puts itself right: static/dockcfg.js, electron/recover.js, static/safelayout.js, lib/layoutRescue.js)
+node scripts/test-891.js > /tmp/t891.log 2>&1 \
+  && ok "2.891.0 units: docker statuses + the steps to them, docker.cfg keeping every docker, the Save message kept; recover.plan (version / not booted / twice / Reset / GPU), caches cleared, layout files moved with a backup, storage kept; the wiring; PAN 2's JSON formatting" \
+  || { bad "2.891.0 units"; grep -a "^FAIL" -A1 /tmp/t891.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui891-ui.js > /tmp/ui891.log 2>&1 \
+  && ok "2.891.0 browser test: 💾 Save layout says ✓ Saved and keeps every docker (an extension's, Basic Settings maximized), Load puts the statuses back; PAN 2 { } JSON into the prompt box, Generate formats then sends JSON; ?safe-layout=1 backs up + clears the storage and reloads clean" \
+  || { bad "2.891.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui891.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

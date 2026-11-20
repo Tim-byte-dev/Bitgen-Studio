@@ -10044,6 +10044,23 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   **own nodes since 0.46.0** - update ComfyUI first (Settings ▸ ComfyUI ▸ ⤓ Update ComfyUI) and restart it after the download.
   If the files are missing, Generate offers the Download / Cancel box.
 
+## 🧩 PAN 2's JSON prompt, every docker in a saved layout, and a window that puts itself right (2.891.0)
+
+- **PAN 2 takes its prompt as JSON.** With the PAN 2 video style picked, **{ } JSON** (beside the style) has your LLM turn the
+  words in the prompt box into PAN 2's JSON caption - written into the prompt box, indented, so you can read and edit it.
+  **Generate** does the same by itself when the prompt is not JSON yet, then sends the JSON. A first picture in the reference
+  dock is described for the writer.
+- **⊞ Docker layout ▸ 💾 Save layout** now says it saved (the button shows ✓ Saved, the message stays) and keeps **every
+  docker**: the column's dockers (the extensions' too), the floating windows and the named ▣ dockers - **where each is, its
+  size and its status: normal, minimized, maximized or hidden**. **Load** on a saved row (or **↺ Load it again**) puts them all
+  back. Opening the same dockers together still only sizes them like the saved layout.
+- **When the desktop app's window crashes or freezes**, a box offers **Reload**, **Reset the dockers and the cache, then
+  restart** or **Quit**. The app also puts itself right on its own: a new version, or a start whose window never came up,
+  clears its caches; a second start in a row that does not come up also resets the dockers. Nothing is deleted - the layout
+  files and the window's storage go to **backups\layout-auto-…** (copy them back with bitGen Studio closed to undo), and
+  what happened is written to **logs\electron-crash.log**. **Settings ▸ Dockers ▸ 🧯 Reset the dockers and the cache…** does
+  the same reset by hand, without misc\reset-layout.bat. In a browser, open the app's address with **?safe-layout=1**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

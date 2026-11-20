@@ -23,6 +23,12 @@ try {
 } catch (e) { console.error("[electron] runtime PATH: " + e.message); }
 let server = null;
 let win = null;
+/* 2.891.0 (Tim: "bitgen crashed again until i reset the dockers and cache"): before the app is ready - a new version, or a
+   start that never came up, clears the caches; two in a row also reset the dockers (electron/recover.js) */
+const recover = require("./recover");
+let RECOVER = { safe: false };
+try { RECOVER = recover.start(app, ROOT, require(path.join(ROOT, "package.json")).version, (t) => console.log(t)); }
+catch (e) { console.error("[electron] recover: " + e.message); }
 
 function startServer() {
   // If something is already serving (a start.bat window, say), reuse it rather
@@ -104,7 +110,13 @@ function createWindow() {
   });
   win.on("maximize", () => win.webContents.send("h3:maximized", true));
   win.on("unmaximize", () => win.webContents.send("h3:maximized", false));
-  win.loadURL(`http://127.0.0.1:${PORT}/`);
+  // 2.891.0: a crashed / frozen window asks Reload / Reset / Quit (electron/recover.js); a reset start opens ?safe-layout=1
+  try {
+    recover.watch({ app, win, dialog, root: ROOT, reload: () => { if (!win.isDestroyed()) win.webContents.reload(); },
+      resetAndRestart: () => { recover.requestReset(app); app.relaunch(); app.quit(); } });
+  } catch (e) { console.error("[electron] recover watch: " + e.message); }
+  try { recover.arm(app); } catch (e) { /* read-only profile */ }
+  win.loadURL(`http://127.0.0.1:${PORT}/` + (RECOVER.safe ? "?safe-layout=1" : ""));
 }
 
 /* ------------------------------------------------------------- SETUP window
@@ -200,6 +212,14 @@ ipcMain.handle("h3:win", (_e, action) => {
 // 2.540.5: ⟳ Restart now after an update (Settings ▸ General ▸ Updates) - relaunch is set first, then the normal
 // quit runs (before-quit asks the server to shut down cleanly), and Electron starts the app again
 ipcMain.handle("h3:relaunch", () => { app.relaunch(); app.quit(); return true; });
+// 2.891.0: the page came up (static/safelayout.js, once the dockers are restored) - the next start is a normal one; and
+// Settings ▸ Dockers ▸ 🧯 Reset the dockers and the cache (no restart: the caches + layout files now, then ?safe-layout=1)
+ipcMain.handle("h3:booted", () => { recover.booted(app); return true; });
+ipcMain.handle("h3:resetLayout", async () => {
+  const m = await recover.resetNow(session, ROOT);
+  if (win && !win.isDestroyed()) win.loadURL(`http://127.0.0.1:${PORT}/?safe-layout=1`);
+  return m;
+});
 
 app.whenReady().then(async () => {
   // 2.220.0: first-run setup comes before the app — same gate as start.bat's

@@ -1,5 +1,5 @@
 {
- "made": "2026-11-19",
+ "made": "2026-11-20",
  "scope": "all",
  "strings": [
   {
@@ -2515,40 +2515,52 @@
    "src": "static/dlss5panel.js:115"
   },
   {
-   "s": "Docker configs - save the sizes of the dockers open now; they open the same way whenever they are open together again (docker.cfg)",
-   "src": "static/dockcfg.js:189"
-  },
-  {
-   "s": "Docker configs",
-   "src": "static/dockcfg.js:189"
-  },
-  {
-   "s": "Docker layout",
-   "src": "static/dockcfg.js:206"
-  },
-  {
-   "s": "open now",
-   "src": "static/dockcfg.js:206"
+   "s": "Not saved",
+   "src": "static/dockcfg.js:269"
   },
   {
    "s": "Save layout",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:270"
+  },
+  {
+   "s": "Docker configs - save the sizes of the dockers open now; they open the same way whenever they are open together again (docker.cfg)",
+   "src": "static/dockcfg.js:284"
+  },
+  {
+   "s": "Docker configs",
+   "src": "static/dockcfg.js:284"
+  },
+  {
+   "s": "Docker layout",
+   "src": "static/dockcfg.js:301"
+  },
+  {
+   "s": "open now",
+   "src": "static/dockcfg.js:301"
   },
   {
    "s": "Load it again",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:301"
   },
   {
    "s": "New docker",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:301"
   },
   {
    "s": "Load saved layouts automatically",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:301"
+  },
+  {
+   "s": "Keep EVERY docker as it is now - where it is, its size and its status (normal, minimized, maximized, hidden), the floating windows and the named dockers too - for these dockers at this window size",
+   "src": "static/dockcfg.js:301"
+  },
+  {
+   "s": "Put every docker back as this layout has it",
+   "src": "static/dockcfg.js:301"
   },
   {
    "s": "Nothing saved yet. Open the dockers you work with together, size them, then 💾 Save",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:301"
   },
   {
    "s": "Drag to set its height",
@@ -3908,71 +3920,75 @@
   },
   {
    "s": "Layout",
-   "src": "static/layouts.js:98"
+   "src": "static/layouts.js:101"
   },
   {
    "s": "Has",
-   "src": "static/layouts.js:98"
+   "src": "static/layouts.js:101"
   },
   {
    "s": "No layouts saved yet",
-   "src": "static/layouts.js:98"
+   "src": "static/layouts.js:101"
   },
   {
    "s": "Layouts - the dockers (where, how big, shown / hidden / off) + the theme",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "json in the install folder\">💾 Save layout",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "Save as the default",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
+  },
+  {
+   "s": "Reset the dockers and the cache",
+   "src": "static/layouts.js:122"
   },
   {
    "s": "A layout is layouts/",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "name",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "json; a theme is themes/",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "json (Settings ▸ Themes ▸ 💾 Save theme, ⤓ Export, ⤒ Import). Copy",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "layouts/default.json",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "and",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "themes/default.json",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "into the repo: a fresh install starts with that layout, and a browser that never picked a theme takes that one",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "a name, e.g. Editing 1440p",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "Save the dockers and the theme as they are now as layouts/default.json - copy it into the repo (with themes/default.json) to make it the default",
-   "src": "static/layouts.js:119"
+   "src": "static/layouts.js:122"
   },
   {
    "s": "json (Settings ▸ Themes ▸ 💾 Save theme, ⤓ Export, ⤒ Import)",
-   "src": "static/layouts.js:124"
+   "src": "static/layouts.js:128"
   },
   {
    "s": "Another visualization",
@@ -5793,6 +5809,14 @@
   {
    "s": "Guide section",
    "src": "static/palette.js:256"
+  },
+  {
+   "s": "JSON",
+   "src": "static/pan2gen.js:77"
+  },
+  {
+   "s": "Format the prompt as PAN 2's JSON caption: the LLM writes it from your words (and the first picture) into the prompt box, to read or edit. Generate does this by itself when the prompt is not JSON yet",
+   "src": "static/pan2gen.js:123"
   },
   {
    "s": "Text to speech",
@@ -29534,7 +29558,7 @@
   },
   {
    "p": "a layout is saved for these at this window size · this window {0}×{1}",
-   "src": "static/dockcfg.js:206"
+   "src": "static/dockcfg.js:301"
   },
   {
    "p": "Show {0}",

@@ -9,7 +9,12 @@
  *   form(text, o)    the FormData sent (o = {refs, seconds, width, height, seed, steps, styleId, sound, negative})
  *   submit(text)     -> the job id (or null): ComfyUI up, the form sent, the Queue shows the job. PAN 2's files missing =
  *                    the Download / Cancel box (H3NeedInstall "pan2"), then it goes on by itself.
- *   paint()          the "PAN 2" hint beside the video style select, only for a PAN 2 style
+ *   paint()          the "PAN 2" hint + the { } JSON button beside the video style select, only for a PAN 2 style
+ *   isJson(text)     the prompt is already a PAN 2 JSON caption (an object with events)
+ *   format(text)     2.891.0 (Tim: "pan 2 is meant to submit the prompt in json format, can we format the prompt
+ *                    automatically"): POST /api/pan2/caption - the LLM writes PAN 2's JSON caption from the words (and the
+ *                    first picture) and it is PUT IN THE PROMPT BOX, indented, to read or edit -> the JSON | null. Generate
+ *                    does this by itself when the prompt is not JSON yet, then sends the JSON.
  */
 (function (root) {
   "use strict";
@@ -43,12 +48,41 @@
     if (!(s > 0)) { try { if (typeof root.framesFromSeconds === "function") s = (parseInt(root.framesFromSeconds(), 10) || 240) / 24; } catch (e) { /* no helper */ } }
     return s > 0 ? Math.min(20, s) : 10;
   }
+  function isJson(text) {
+    var t = String(text || "").trim(); if (t.charAt(0) !== "{") return false;
+    try { var o = JSON.parse(t); if (o && typeof o.refined_prompt === "string") o = JSON.parse(o.refined_prompt); return !!(o && Array.isArray(o.events)); } catch (e) { return false; }
+  }
+  var formatting = false;
+  async function format(text) {
+    var words = String(text == null ? (val("prompt") || "") : text);
+    if (!words.trim()) { root.alert("write what happens in the video first - PAN 2's JSON is written from it"); return null; }
+    if (isJson(words)) return words;
+    if (formatting) return null;
+    formatting = true;
+    var btn = $("pan2Fmt"); if (btn) { btn.disabled = true; btn.textContent = "{ } …"; }
+    log("writing PAN 2's JSON caption from your words (the LLM) - it goes into the prompt box");
+    try {
+      var fd = new FormData(), f = first(refsNow());
+      fd.append("prompt", words); fd.append("seconds", String(secondsNow())); fd.append("pretty", "1");
+      if (f) fd.append("first", f.file, f.file.name || "first.png");
+      var res = await fetch("/api/pan2/caption", { method: "POST", body: fd });
+      var j = await res.json().catch(function () { return {}; });
+      if (!res.ok || !j.caption) { root.alert(j.error || "PAN 2's caption could not be written"); return null; }
+      (j.notes || []).forEach(log);
+      var out = j.pretty || j.caption, box = $("prompt");
+      if (box) { box.value = out; try { box.dispatchEvent(new Event("input", { bubbles: true })); } catch (e) { /* old browser */ } }
+      if (j.how === "wrapped") log("no LLM wrote it - bitGen's simple one-event caption is in the prompt box (start an LLM for a better one)");
+      return out;
+    } catch (e) { root.alert("PAN 2's caption could not be written: " + (e && e.message || e)); return null; }
+    finally { formatting = false; if (btn) { btn.disabled = false; btn.textContent = "{ } JSON"; } }
+  }
   function log(t) { try { if (typeof root.logLine === "function") root.logLine("[pan2] " + t); } catch (e) { /* no console */ } }
   async function submit(text) {
     var st = style(); if (!st) return null;
     if (typeof root.ensureComfyReady === "function" && !(await root.ensureComfyReady({ need: true }))) return null;
+    // 2.891.0: the prompt goes as PAN 2's JSON - written into the prompt box first when it is plain words
+    if (!isJson(text)) { text = await format(text); if (!text) return null; }
     for (var tries = 0; tries < 2; tries++) {
-      log("writing PAN 2's caption from your words (the LLM) - then it renders");
       var fd = form(text, { refs: refsNow(), seconds: secondsNow(), width: val("width"), height: val("height"), seed: val("seed"),
         steps: val("steps"), styleId: st.id, sound: soundNow(), negative: negNow() });
       var res = await fetch("/api/pan2", { method: "POST", body: fd });
@@ -76,13 +110,22 @@
       tip = doc.createElement("span"); tip.id = "pan2Tip"; tip.className = "muted";
       tip.style.cssText = "margin-left:6px;font-size:11px;cursor:help";
       tip.textContent = "ⓘ PAN 2";
-      tip.title = "PAN 2: write what happens in plain words - the LLM turns them into PAN 2's own caption before it renders. "
+      tip.title = "PAN 2 takes its prompt as JSON: write what happens in plain words and { } JSON (or Generate) has the LLM write PAN 2's JSON caption into the prompt box. "
         + "A picture in the reference dock (or F/L's first frame) starts the video. Up to 20 s at 24 fps; trained at 1248 x 704.";
       sel.parentNode.insertBefore(tip, sel.nextSibling);
       sel.addEventListener("change", function () { paint(); });
     }
-    tip.hidden = !style();
+    var fb = $("pan2Fmt");
+    if (!fb) {
+      fb = doc.createElement("button"); fb.type = "button"; fb.id = "pan2Fmt"; fb.className = "ghost";
+      fb.style.cssText = "margin-left:4px;padding:0 6px;font-size:11px";
+      fb.textContent = "{ } JSON";
+      fb.title = "Format the prompt as PAN 2's JSON caption: the LLM writes it from your words (and the first picture) into the prompt box, to read or edit. Generate does this by itself when the prompt is not JSON yet.";
+      fb.addEventListener("click", function () { format(); });
+      tip.parentNode.insertBefore(fb, tip.nextSibling);
+    }
+    tip.hidden = !style(); fb.hidden = !style();
   }
-  root.H3Pan2Gen = { style: style, first: first, form: form, submit: submit, paint: paint };
+  root.H3Pan2Gen = { style: style, first: first, form: form, submit: submit, paint: paint, isJson: isJson, format: format };
   if (doc && doc.readyState !== "loading") setTimeout(paint, 0); else if (doc) doc.addEventListener("DOMContentLoaded", paint);
 })(typeof window !== "undefined" ? window : globalThis);

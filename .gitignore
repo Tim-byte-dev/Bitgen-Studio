@@ -110,6 +110,7 @@ docker_status.json.tmp
 /bug-reports/
 # 2.540.5: ⟳ Update - copies of the app files you changed (lib/updater.js)
 /backups/
+/logs/
 # 2.526.0: workspaces.json is this machine's workspace memory (the Workspace dropdown) - user state
 workspaces.json
 workspaces.json.tmp

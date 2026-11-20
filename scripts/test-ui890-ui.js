@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.890.0 in a REAL browser: the prompt docker with the "PAN 2" video style - the ⓘ PAN 2 hint shows beside
- * the video style select only for it, Generate goes to POST /api/pan2 (not /api/generate) with the words as written, the
+ * the video style select only for it, Generate goes to POST /api/pan2 (not /api/generate) with PAN 2's JSON caption (2.891.0:
+ * plain words are formatted into the prompt box first - here by the test app without an LLM: bitGen's one-event caption), the
  * seconds / size / seed, the picture typed First frame as `first`, the reference dock's first sound and the ⊖ negative; a 409
  * needs pan2 opens the Download / Cancel box. Then the real server: GET /api/pan2 (Settings ▸ Add-ons' status, ComfyUI's
  * support), POST /api/pan2/caption (no LLM in the test app = bitGen's own one-event caption, checked), POST /api/pan2 with a
@@ -57,7 +58,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const body = sent[0] || "";
     const field = (k) => { const m = body.match(new RegExp(`name="${k}"\\r\\n\\r\\n([\\s\\S]*?)\\r\\n--`)); return m ? m[1] : null; };
     check("Generate went to /api/pan2, not /api/generate", sent.length === 1 && generic.length === 0, { sent: sent.length, generic: generic.length });
-    check("...the words as written (the server's LLM writes the caption)", field("prompt") === "A brown terrier runs along the beach, then shakes off the water.", field("prompt"));
+    const sentCap = (() => { try { return JSON.parse(field("prompt")); } catch (e) { return null; } })();
+    check("...the prompt sent as PAN 2's JSON caption, written from the words (2.891.0)", sentCap && Array.isArray(sentCap.events) && /brown terrier/.test(JSON.stringify(sentCap)), String(field("prompt")).slice(0, 200));
     check("...seconds / size / seed / the style / the first sound / the ⊖ negative", field("seconds") === "12" && field("width") === "1248" && field("height") === "704"
       && field("seed") === "9" && field("video_style_id") === id && field("ref_audio") === "song.wav" && field("negative") === "cartoon look",
       ["seconds", "width", "height", "seed", "ref_audio", "negative"].map(field));

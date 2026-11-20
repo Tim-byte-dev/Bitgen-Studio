@@ -618,6 +618,38 @@
     for (const k of Object.keys(LAY.panels || {})) if (!o.panels[k]) o.panels[k] = LAY.panels[k];
     return o;
   }
+  /** 2.891.0 (Tim: "when saving a layout, save the size position and status ... of all dockers"): a snapshot() put back
+   *  live (⊞ Docker layout ▸ Load): the named dockers floating where they were and shown / hidden, then every panel / docker
+   *  back where it was - floating, in a docker, in a zone, home. Ones not on this page are skipped. -> how many */
+  function applySnapshot(o) {
+    if (!o || typeof o !== "object") return 0;
+    let n = 0;
+    const num = (v) => (Number.isFinite(+v) ? +v : undefined);
+    const box = (q) => ({ x: num(q.x), y: num(q.y), w: num(q.w), h: num(q.h) });
+    restoring++;
+    try {
+      const put = (id, q) => {
+        const r = R[id]; if (!r || !q || typeof q !== "object") return;
+        try {
+          // only what CHANGED is moved - a member already home / in its docker / in its zone is left alone (moving it home
+          // again tells its owner it came home, and a side docker taken into a ▣ docker would show itself)
+          if (q.state === "float") float(id, box(q));
+          else if (q.state === "in" && q.docker && R[q.docker] && r.docker !== q.docker) dockInto(id, q.docker);
+          else if (q.state === "zone" && q.zone && q.zone.host && !(r.state === "zone" && r.zone && r.zone.host === q.zone.host)) zoneInto(id, q.zone.host, q.zone.key);
+          else if (q.state === "home" && r.kind === "panel" && r.state !== "home") home(id);
+          if (r.kind === "docker" && typeof q.shown === "boolean" && r.win) show(id, q.shown);
+          n++;
+        } catch (e) { root.console && root.console.warn("named docker layout:", id, e); }
+      };
+      const D = o.dockers || {}, Pn = o.panels || {};
+      // the dockers that float on their own first, then the ones confined to / docked in another, then the panels
+      Object.keys(D).filter((k) => !D[k].docker).forEach((k) => put(k, D[k]));
+      Object.keys(D).filter((k) => D[k].docker).forEach((k) => put(k, D[k]));
+      Object.keys(Pn).forEach((k) => put(k, Pn[k]));
+    } finally { restoring--; }
+    save();
+    return n;
+  }
   function save() {
     if (!loaded) return;
     clearTimeout(saveT);
@@ -668,7 +700,7 @@
 
   const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), dockerAt, edgeIn, stackWith, zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     restoring: () => restoring > 0, keepTabs, flush,   // 2.575.0
-    get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
+    applySnapshot, get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;
   else {
     root.H3Panels = H3Panels; if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start();

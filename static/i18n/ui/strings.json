@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7287,
+ "count": 7294,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -67940,6 +67940,69 @@
    ],
    "where": [
     "span#pan2Tip"
+   ]
+  },
+  {
+   "s": "PAN 2 takes its prompt as JSON: write what happens in plain words and { } JSON (or Generate) has the LLM write PAN 2's JSON caption into the prompt box. A picture in the reference dock (or F/L's first frame) starts the video. Up to 20 s at 24 fps; trained at 1248 x 704.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "{ } JSON",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "When the window goes black, freezes or crashes: the dockers back to the default and the desktop app's cache cleared - the layout files and this window's storage are kept in backups\\layout-auto-… first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "🧯 Reset the dockers and the cache…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "✓ Saved",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "✕ Not saved",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
+   ]
+  },
+  {
+   "s": "Format the prompt as PAN 2's JSON caption: the LLM writes it from your words (and the first picture) into the prompt box, to read or edit. Generate does this by itself when the prompt is not JSON yet.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "2.891.0"
    ]
   }
  ]
