@@ -119,7 +119,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🧩 发送到模型… / Ctrl+↓ 设为缩略图** — 查看器可将图片 / 视频 / 歌曲连同其元数据发送到某个模型的文件中；Ctrl+↓ 将图片设为该模型的缩略图。 *Where:* 查看器；🧩 Model manager ▸ ⓘ。 *Since:* 2.576.0
 - **🖼 参考排序 + 企业数据库中的卡纸** — 在参考停靠栏中把图片、视频或声音拖到同类的另一项上即可调整顺序（图片 6 拖到图片 1 上 = 图片 1，其余依次移动；提示词中的 <Picture n> / <Video n> / <Audio n> 标签随之更新；随项目保存）；企业信息保存在数据库中时，📇 卡纸也保存到那里（在电脑之间共享，每个名称一种，数据库无响应时等待）。*Where:* 参考停靠栏；📇 名片拼版。*Since:* 2.898.0
 - **预览中的歌曲：可视化效果，Next 播放下一首** — 在预览中对歌曲或声音按 ▶，会开始一个随机选择的可视化效果（条形、镜像、波形、圆环、星空、涟漪；🎲 换一个）；Next / Prev 跳到所点击面板中的下一首 / 上一首并播放。 *Where:* 预览（在 Gallery、Assets 或 References 中点击歌曲）。 *Since:* 2.725.0
-- **在预览中逐帧查看视频 + 📷 截取当前帧** — ⏴ 后退一帧，⏵ 前进一帧（按键 , 和 .），中间显示帧号，按视频真实帧率准确停在每一帧；📷 Capture frame 把屏幕上的这一帧从文件本身截取为视频原始尺寸的 PNG 保存（素材 + 图库，<视频>_frame<n>.png），Shift+点击同时放入参考。 *Where:* 显示视频时预览对话框的工具栏。 *Since:* 2.903.0
+- **在预览中逐帧查看视频 + 📷 截取当前帧** — ⏴ 后退一帧，⏵ 前进一帧（按键 , 和 .），中间显示帧号，按视频真实帧率准确停在每一帧；📷 Capture frame 把屏幕上的这一帧从文件本身截取为视频原始尺寸的 PNG 保存（素材 + 图库，<视频>_frame<n>.png），Shift+点击同时放入参考。（2.908.0：图库切换到图片标签并高亮该帧的缩略图） *Where:* 显示视频时预览对话框的工具栏。 *Since:* 2.903.0
 
 ### 文件对话框与另存为
 
@@ -518,6 +518,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **💲 RunPod 停靠窗 + 你自己的停靠窗里的停靠窗** — 一个独立的停靠窗，显示 RunPod 余额、当前支出和余额还能用多久、支出上限、Pod 的费用（正在运行、今天、本月、每个 Pod）以及 RunPod 的 GPU 价格（Secure / Community、显存、每小时价格、空闲数量；可搜索、排序）；Basic Settings 的 💲 费用行移到了这里；用 ▣ New docker… 创建的停靠窗（浮动的或限定在某个停靠窗内的）可以放入 PODS、💲 RunPod、Basic Settings 等停靠窗口和主停靠窗 - 可以放多个；浮动对话框始终在所有停靠窗前面（限定的停靠窗不再盖住它们）；自定义节点一次打包一个文件，并在日志里显示进度（不含 venv，权重原样存放，上限 2 GB）。 *Where:* Basic Settings ▸ GPU 和 🖥 PODS 里的 💲 RunPod；⊞ Docker configs ▸ ▣ New docker…。 *Since:* 2.763.5
 - **💲 Costs 停靠窗** — RunPod 停靠窗变成了 💲 Costs：所有费用在一个列表中 - 这台电脑的电费和供电费、RunPod（Pod + Serverless）、OpenRouter、Settings ▸ API 的每个服务和远程 GPU，各占一行并有合计 - 可选今天、7 天、本月、上月或全部；点击一行打开其详细列表（按天、任务、Pod、模型、调用）。 *Where:* 🖥 GPU 停靠窗；PODS；设置 ▸ 常规 ▸ 电费；System stats 的 💲。 *Since:* 2.771.0
 - **📊 Statistics** — 一个对话框，显示每次生成的启动时间（启动或准备 Pod、文件、节点包、更新或重启 ComfyUI）、生成时间和合计，每次 Pod 准备及其阶段，按位置和按模式的平均值，以及 CSV。 *Where:* 💲 Costs ▸ 📊 Statistics；设置 ▸ 常规 ▸ 电费。 *Since:* 2.771.0
+- **⏱ 耗时估计** — 在提示词停靠窗的 Generate 按钮底部的一行小字：根据本机同一风格已完成的渲染（📊 Statistics）估计这次渲染需要多久，按所选的尺寸、时长、步数和 CFG 换算（CFG 大于 1 = 两遍），再加上启动时间（模型仍在加载中时更短）；有三次渲染后显示范围，提示框说明依据；某风格首次渲染前参考同类的其他风格，否则显示“还没有时间”。*Where:* 提示词停靠窗的 Generate 按钮（🎬 视频和 🖼 图片）。*Since:* 2.908.0
 - **多块显卡：Local - <card>** — 有两块或更多 NVIDIA 显卡时，☁ Runs on ▸ Image / Video / Music 可以选择每块显卡；选中的显卡有专属的 ComfyUI（--cuda-device、独立端口和日志），在该类工作第一次渲染时启动并保持运行——图片在一块显卡上，视频在另一块上。*Where:* 🖥 GPU. *Since:* 2.791.0
 - **LLM 和语音使用专属显卡；卸载到 CPU / 内存** — 有两块或更多 NVIDIA 显卡时，☁ Runs on ▸ LLM / Vision LLM / Text to speech / Speech to text / Song separation 也提供 Local - <card>；LLM 会把显卡空闲显存放得下的层都放到显卡上（其余放在内存），语音只在那块显卡上运行。Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit（默认开启）——关闭后全部留在显卡上，放不下的 LLM 会被拒绝并说明原因。*Where:* 🖥 GPU, Settings ▸ General. *Since:* 2.794.0
 

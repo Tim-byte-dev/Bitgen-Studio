@@ -13515,8 +13515,8 @@
   "frame {0} / {1}": "帧 {0} / {1}",
   "{0} fps · {1} × {2}": "{0} fps · {1} × {2}",
   "{0} fps": "{0} fps",
-  "frame {0} saved as {1} (Assets + Gallery)": "第 {0} 帧已保存为 {1}（素材 + 图库）",
-  "frame {0} saved as {1} (Assets + Gallery) + References": "第 {0} 帧已保存为 {1}（素材 + 图库）+ 参考",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images)": "第 {0} 帧已保存为 {1}（素材 + 图库 ▸ 图片）",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images) + References": "第 {0} 帧已保存为 {1}（素材 + 图库 ▸ 图片）+ 参考",
   "not saved - {0}": "未保存 - {0}"
  }
 }

@@ -52,7 +52,7 @@ const rgbMd5 = (args) => { const r = spawnSync("ffmpeg", ["-v", "error"].concat(
     await p.click("#lb_fcap");
     await p.waitForFunction(() => /saved as/.test(document.getElementById("lb_fmsg").textContent) || /not saved/.test(document.getElementById("lb_fmsg").textContent), null, { timeout: 20000 });
     const msg = await ev(() => document.getElementById("lb_fmsg").textContent);
-    check("📷 Capture frame: saved as <video>_frame3.png in Assets + the Gallery", msg === "📷 frame 3 saved as " + tag + "_frame2.png (Assets + Gallery)", msg);
+    check("📷 Capture frame: saved as <video>_frame3.png in Assets + the Gallery", msg === "📷 frame 3 saved as " + tag + "_frame2.png (Assets + Gallery ▸ Images)", msg);
     const png = await ev(async (n) => { const a = await fetch("/passets/images/" + n); const g = await fetch("/outputs/" + n); return { a: a.ok, g: g.ok, bytes: [...new Uint8Array(await a.arrayBuffer())] }; }, tag + "_frame2.png");
     const out = path.join(dir, "cap.png"); fs.writeFileSync(out, Buffer.from(png.bytes));
     const dims = spawnSync("ffprobe", ["-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0", out], { encoding: "utf8" }).stdout.trim();

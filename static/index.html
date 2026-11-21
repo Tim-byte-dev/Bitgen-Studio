@@ -901,6 +901,7 @@
      2.362.0 (Tim: "change the save as button in gallery thumbnail to icon only minimal style"): the icon
      alone - no box, no border; a faint backdrop only while hovered, full strength on the tile's hover */
   .thumb { position: relative; }
+  .thumb.lbJustSaved { outline: 2px solid var(--tiger); outline-offset: 1px; }   /* 2.908.0: a 📷 captured frame just landed */
   .thumb .gsave { position: absolute; top: 3px; left: 3px; z-index: 2; padding: 0 2px; font-size: .72rem;
     line-height: 1; border: none; border-radius: 3px; background: none; color: var(--fg, #ddd);
     cursor: pointer; opacity: .55; text-shadow: 0 0 3px rgba(0,0,0,.8); }
@@ -3646,6 +3647,7 @@
 <script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
 <script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
 <script src="/static/modelswap.js"></script>  <!-- 2.680.0: ⇄ beside the image / video style dropdowns - the previous settings back (model_settings.tmp) -->
+<script src="/static/timeest.js"></script>  <!-- 2.908.0: ⏱ the time estimate under Generate, from this computer's own renders (H3TimeEst, lib/timeEstimate.js) -->
 <script src="/static/lbframe.js"></script>  <!-- 2.903.0: a video in the preview - ⏴ ⏵ one frame, the frame number, 📷 Capture frame (H3LbFrame) -->
 <script src="/static/lbrestyle.js"></script>  <!-- 2.676.0: the image preview's 🎨 Style ▾ - Photoreal, Pixar, 2.5D, Anime, Cartoon (H3Restyle) -->
 <script src="/static/pinmenu.js"></script>  <!-- 2.675.0: right-click a 📌 pin ▸ ↺ Reset pin / 📌 Pin at this size (H3PinMenu) -->

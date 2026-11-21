@@ -30321,16 +30321,16 @@
    "src": "static/lbframe.js:64"
   },
   {
-   "p": "frame {0} saved as {1} (Assets + Gallery) + References",
-   "src": "static/lbframe.js:129"
+   "p": "frame {0} saved as {1} (Assets + Gallery ▸ Images) + References",
+   "src": "static/lbframe.js:159"
   },
   {
-   "p": "frame {0} saved as {1} (Assets + Gallery)",
-   "src": "static/lbframe.js:129"
+   "p": "frame {0} saved as {1} (Assets + Gallery ▸ Images)",
+   "src": "static/lbframe.js:159"
   },
   {
    "p": "not saved - {0}",
-   "src": "static/lbframe.js:135"
+   "src": "static/lbframe.js:165"
   },
   {
    "p": "With {0} + its Basic Settings",

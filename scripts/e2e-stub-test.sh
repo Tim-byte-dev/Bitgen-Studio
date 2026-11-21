@@ -14803,6 +14803,13 @@ node scripts/test-907.js > /tmp/t907.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui907-ui.js > /tmp/ui907.log 2>&1 \
   && ok "2.907.0 browser test: Format 16:9 then Aspect 9:16 -> 'its own shape' (544x960); Override ON keeps 9:16 on a 720p 16:9 style; the server keeps a 544x960 render's shape with the old Format 16:9" \
   || { bad "2.907.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui907.log | head -12; }
+# ---- 2.908.0 (⏱ the time estimate under Generate, from this computer's own renders; 📷 a captured frame shown in the Gallery)
+node scripts/test-908.js > /tmp/t908.log 2>&1 \
+  && ok "2.908.0 units: timeEstimate features / ratio / estimate (same style, warm start, other styles, before-2.908 lines) / words, the page's request, genStats est, lbframe's Gallery tab" \
+  || { bad "2.908.0 units"; grep -a "^FAIL" -A1 /tmp/t908.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui908-ui.js > /tmp/ui908.log 2>&1 \
+  && ok "2.908.0 browser test: a FastH3 Omni render on the real worker -> '⏱ about …' naming the style, 4x the pixels = 4x the generation, Chat hides it; 📷 Capture frame -> the Gallery's Images tab with the frame lit" \
+  || { bad "2.908.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui908.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

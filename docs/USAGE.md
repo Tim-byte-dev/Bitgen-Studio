@@ -10266,6 +10266,23 @@ video's real frame rate.
 **📷 Capture frame** saves the frame on screen as a PNG picture at the video's own size - cut from the file itself, not
 the scaled picture on screen - into Assets and the Gallery, named after the video and the frame (*take_frame11.png*).
 **Shift+click** puts it in the References docker too, ready to start the next video from it.
+Since 2.908.0 the Gallery turns to its **Images** tab and lights the frame's tile for a moment, so you see where it went.
+
+## ⏱ How long a render will take (2.908.0)
+
+At the foot of the prompt docker's **Generate** button a small line says how long the render will take **on this computer** -
+*⏱ about 6 min* - worked out from your own finished renders of the same style (the ones in 📊 Statistics). The last eight
+renders of that style are scaled to what you ask for now: the size (pixels), the length (frames), the steps and the CFG
+(above 1 is a second pass at every step, about twice the time), plus the startup - quicker when the same style ran in the
+last 20 minutes and its model is likely still loaded. With three renders or more it gives a range (*5 min – 8½ min*). Hover
+the button to see what it is from.
+
+- A style never rendered here yet takes the renders of **other styles of the same kind** (and says so); with none at all
+  the line says *no time yet* - the first render sets it.
+- It follows 🎬 Video and 🖼 Image (with Override style on, a picture's size, steps and CFG; off, the style's own), and
+  updates when you change the style, size, seconds, steps or CFG, and when a render finishes.
+- It is an estimate: a model's time is not exactly in step with the frames, and a pod or another graphics card is a
+  different machine. Renders from before 2.908.0 have no size recorded and are taken as they were.
 
 ## Tips
 

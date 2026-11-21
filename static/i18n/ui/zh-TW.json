@@ -13515,8 +13515,8 @@
   "{0}×{1} → {2}×{3} (RelayVSR {4})": "{0}×{1} → {2}×{3}（RelayVSR {4}）",
   "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6}": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}",
   "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（邊緣已裁切）",
-  "frame {0} saved as {1} (Assets + Gallery)": "第 {0} 格已儲存為 {1}（素材 + 相簿）",
-  "frame {0} saved as {1} (Assets + Gallery) + References": "第 {0} 格已儲存為 {1}（素材 + 相簿）+ 參考",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images)": "第 {0} 格已儲存為 {1}（素材 + 相簿 ▸ 圖片）",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images) + References": "第 {0} 格已儲存為 {1}（素材 + 相簿 ▸ 圖片）+ 參考",
   "not saved - {0}": "未儲存 - {0}"
  }
 }

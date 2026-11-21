@@ -88,8 +88,38 @@
       label();
     });
   }
-  function refresh() {
-    try { if (typeof refreshGallery === "function") refreshGallery(); } catch (e) { /* the docks only */ }   // eslint-disable-line no-undef
+  /** 2.908.0 (Tim: "add the saved captured frame from video preview dialog to the gallery"): the PNG was in the Gallery's
+   *  output folder, but the Gallery stayed on its Video tab and showed nothing new - now it opens its Images tab and the
+   *  frame's tile is scrolled to and lit for a moment. -> a promise of the tile (null when the Gallery is not on screen) */
+  function showInGallery(name) {
+    var tabBtn = doc.querySelector('.gtabs button[data-gtab="images"]');
+    try {
+      if (tabBtn && !tabBtn.classList.contains("active")) tabBtn.click();          /* its own handler refreshes the Gallery */
+      else if (typeof refreshGallery === "function") refreshGallery();              // eslint-disable-line no-undef
+    } catch (e) { /* the docks only */ }
+    if (!name) return Promise.resolve(null);
+    // the Gallery may paint more than once (its tab's refresh, its own poll) - the tile is looked for, scrolled to once
+    // and kept lit on every paint for 2.5 s
+    return new Promise(function (ok) {
+      var t0 = Date.now(), found = null;
+      (function look() {
+        var hit = null;
+        [].forEach.call(doc.querySelectorAll("#gallery .thumb"), function (t) {
+          var n = t.querySelector(".gname"); if (!hit && n && String(n.textContent || "").trim() === name) hit = t;
+        });
+        if (hit && !hit.classList.contains("lbJustSaved")) {
+          hit.classList.add("lbJustSaved");
+          if (!found) { try { hit.scrollIntoView({ block: "nearest" }); } catch (e) { /* an old browser */ } }
+        }
+        if (hit && !found) { found = hit; ok(hit); }
+        if (Date.now() - t0 < (found ? 2500 : 3000)) return void root.setTimeout(look, 100);
+        [].forEach.call(doc.querySelectorAll("#gallery .thumb.lbJustSaved"), function (t) { t.classList.remove("lbJustSaved"); });
+        if (!found) ok(null);
+      })();
+    });
+  }
+  function refresh(name) {
+    showInGallery(name);
     try { if (typeof refreshAssets === "function") refreshAssets(); } catch (e) { /* as above */ }          // eslint-disable-line no-undef
   }
   function toRefs(name) {
@@ -126,9 +156,9 @@
       return job.then(function (j) {
         if (!j || j.error) throw new Error((j && j.error) || "not saved");
         var no = f + 1, nm = j.name, box = $("lb_fmsg") || doc.createElement("span");
-        box.textContent = alsoRefs ? "📷 frame " + no + " saved as " + nm + " (Assets + Gallery) + References" : "📷 frame " + no + " saved as " + nm + " (Assets + Gallery)";
+        box.textContent = alsoRefs ? "📷 frame " + no + " saved as " + nm + " (Assets + Gallery ▸ Images) + References" : "📷 frame " + no + " saved as " + nm + " (Assets + Gallery ▸ Images)";
         box.title = box.textContent;
-        refresh(); if (alsoRefs) toRefs(nm);
+        refresh(j.gallery || nm); if (alsoRefs) toRefs(nm);
         log(box.textContent);
         return j;
       });
@@ -148,6 +178,6 @@
     if (d && root.MutationObserver) new root.MutationObserver(function () { setTimeout(paint, 0); }).observe(d, { attributes: true, attributeFilter: ["open"] });
     paint();
   }
-  root.H3LbFrame = { frameOf: frameOf, timeOf: timeOf, step: step, capture: capture, paint: paint, info: infoOf };
+  root.H3LbFrame = { showInGallery: showInGallery, frameOf: frameOf, timeOf: timeOf, step: step, capture: capture, paint: paint, info: infoOf };
   if (doc.readyState !== "loading") start(); else doc.addEventListener("DOMContentLoaded", start);
 })(typeof window !== "undefined" ? window : globalThis);

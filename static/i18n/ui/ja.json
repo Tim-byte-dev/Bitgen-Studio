@@ -13515,8 +13515,8 @@
   "frame {0} / {1}": "フレーム {0} / {1}",
   "{0} fps · {1} × {2}": "{0} fps · {1} × {2}",
   "{0} fps": "{0} fps",
-  "frame {0} saved as {1} (Assets + Gallery)": "フレーム {0} を {1} として保存しました（アセット + ギャラリー）",
-  "frame {0} saved as {1} (Assets + Gallery) + References": "フレーム {0} を {1} として保存しました（アセット + ギャラリー）+ リファレンス",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images)": "フレーム {0} を {1} として保存しました（アセット + ギャラリー ▸ 画像）",
+  "frame {0} saved as {1} (Assets + Gallery ▸ Images) + References": "フレーム {0} を {1} として保存しました（アセット + ギャラリー ▸ 画像）+ リファレンス",
   "not saved - {0}": "保存できませんでした - {0}"
  }
 }

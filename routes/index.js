@@ -295,6 +295,7 @@ function mount(app) {
   require("./langPacks").mount(app);    // 2.715.0: language packs - Settings ▸ Languages (lib/langPacks.js)
   require("./usage").mount(app);        // 2.520.0: 📊 the usage log (lib/usageLog.js)
   require("./costs").mount(app);        // 2.771.0: 💲 the Costs docker - this computer + every platform (lib/costs.js)
+  require("./timeEstimate").mount(app);  // 2.908.0: ⏱ the time estimate beside Generate (lib/timeEstimate.js)
   require("./genStats").mount(app);     // 2.771.0: 📊 the Statistics dialog - startup / generation / total, pod preparations (lib/genStats.js)
   require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote generation (lib/remoteGpu.js)
   require("./runpodServerless").mount(app);   // 2.743.0: a RunPod Serverless endpoint behind a ComfyUI-shaped /rpsl (lib/runpodServerless.js)

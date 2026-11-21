@@ -67,7 +67,9 @@ function mount(app) {
       first, refs, memory: String(b.memory || ""), shotLength: String(b.shot_length || "fixed"), upscale2k: truthy(b.upscale2k),
       prefix: "h3long", name: "H3 Long Video" });
     if (p.error) throw err(p.needs ? 409 : 503, p.error, { needs: p.needs || "comfy", missing: p.missing });
-    const job = core.makeJob(Object.assign({}, p.params, { video_style_id: b.video_style_id || null, seed_random: ov.seed == null }));
+    const job = core.makeJob(Object.assign({}, p.params, { video_style_id: b.video_style_id || null, seed_random: ov.seed == null,
+      // 2.908.0: what ⏱ the time estimate needs (the size and steps live in the graph here) - lib/timeEstimate.js features
+      est: { style: b.video_style_id || "", kind: "video", w: +b.width || 0, h: +b.height || 0, steps: +ov.steps || 8, cfg: ov.cfg != null ? +ov.cfg : 1 } }));
     job.chunk = { i: 0, n: 1 };
     const bn = ov.bo ? require("../lib/basicOverride").note(ov.bo, "H3 Long Video") : "";
     if (bn) try { job.log.push("[bitgen-studio] " + bn); } catch { /* a log line */ }
