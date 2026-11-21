@@ -1,8 +1,8 @@
 {
  "lang": "ja",
  "v": "8388ce325a63",
- "count": 12108,
- "patternCount": 1389,
+ "count": 12117,
+ "patternCount": 1395,
  "strings": {
   "'Total price includes GST'": "「Total price includes GST」",
   "(Select all)": "(すべて選択)",
@@ -12111,7 +12111,16 @@
   "－ Figure Smaller": "－ 図を小さく",
   "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "bitGen Studio pod イメージから作成 - ComfyUI、ComfyUI-Manager、よく使うノードパックが入っています：約 3 分で使えます。スタイルが使うカスタムノードとそのファイルを追加します（/workspace に保持）",
   "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "bitGen Studio pod テンプレートから作成 - ComfyUI、ComfyUI-Manager、よく使うノードパックが入っています：約 3 分で使えます。スタイルが使うカスタムノードとそのファイルを追加します（/workspace に保持）",
-  "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)": "bitGen pod イメージに入っています（初回起動時に /workspace へコピーされ、bitGen が起動します）"
+  "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)": "bitGen pod イメージに入っています（初回起動時に /workspace へコピーされ、bitGen が起動します）",
+  "frame –": "フレーム –",
+  "Capture frame": "フレームをキャプチャ",
+  "📷 Capture frame": "📷 フレームをキャプチャ",
+  "One frame back (key: comma)": "1 フレーム戻る（キー: カンマ）",
+  "One frame back": "1 フレーム戻る",
+  "One frame on (key: full stop)": "1 フレーム進む（キー: ピリオド）",
+  "One frame on": "1 フレーム進む",
+  "Save this frame as a picture (Assets + Gallery) at the video's own size. Shift+click: also put it in the References docker": "このフレームを動画本来のサイズの画像として保存します（アセット + ギャラリー）。Shift+クリック：リファレンスドッカーにも入れます",
+  "📷 saving the frame…": "📷 フレームを保存しています…"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",
@@ -13502,6 +13511,12 @@
   "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3}（×{4}） · フレーム生成 {5}",
   "{0}×{1} → {2}×{3} (RelayVSR {4})": "{0}×{1} → {2}×{3}（RelayVSR {4}）",
   "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6}": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}",
-  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（端をトリミング）"
+  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（端をトリミング）",
+  "frame {0} / {1}": "フレーム {0} / {1}",
+  "{0} fps · {1} × {2}": "{0} fps · {1} × {2}",
+  "{0} fps": "{0} fps",
+  "frame {0} saved as {1} (Assets + Gallery)": "フレーム {0} を {1} として保存しました（アセット + ギャラリー）",
+  "frame {0} saved as {1} (Assets + Gallery) + References": "フレーム {0} を {1} として保存しました（アセット + ギャラリー）+ リファレンス",
+  "not saved - {0}": "保存できませんでした - {0}"
  }
 }

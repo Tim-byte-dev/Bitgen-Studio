@@ -10256,6 +10256,17 @@ The template works without bitGen too: ComfyUI starts on port 8188 (its log is /
 variables BITGEN_NO_COMFY=1 (do not start it) and BITGEN_COMFY_ARGS (other arguments, e.g. --lowvram) change that.
 misc/pod-image/README.md has the details.
 
+## 🎞 A video in the preview one frame at a time + 📷 Capture frame (2.903.0)
+
+When a video is open in the preview (a click on a video in the Gallery, Assets or References), the bar under it has
+**⏴** one frame back and **⏵** one frame on, with the frame number between them (*frame 12 / 241*). The keys **,** and **.**
+do the same (← and → still go to the previous / next file). Stepping pauses the video and stops on exact frames, using the
+video's real frame rate.
+
+**📷 Capture frame** saves the frame on screen as a PNG picture at the video's own size - cut from the file itself, not
+the scaled picture on screen - into Assets and the Gallery, named after the video and the frame (*take_frame11.png*).
+**Shift+click** puts it in the References docker too, ready to start the next video from it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

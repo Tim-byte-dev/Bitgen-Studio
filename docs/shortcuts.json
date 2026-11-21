@@ -92,6 +92,10 @@
         [
           "0",
           "Fit again"
+        ],
+        [
+          ", / .",
+          "One frame back / one frame on (a video - the frame number between ⏴ and ⏵)"
         ]
       ]
     },

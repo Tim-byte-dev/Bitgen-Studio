@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7363,
+ "count": 7372,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -68624,6 +68624,87 @@
    ],
    "where": [
     "#pdSum"
+   ]
+  },
+  {
+   "s": "frame –",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "Capture frame",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "📷 Capture frame",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "One frame back (key: comma)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "One frame back",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "One frame on (key: full stop)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "One frame on",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "Save this frame as a picture (Assets + Gallery) at the video's own size. Shift+click: also put it in the References docker",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
+   ]
+  },
+  {
+   "s": "📷 saving the frame…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#lb_fgrp"
    ]
   }
  ]

@@ -14747,6 +14747,13 @@ node scripts/test-902.js > /tmp/t902.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui902-ui.js > /tmp/ui902.log 2>&1 \
   && ok "2.902.0 browser test: PAN 2 -> H3 puts your words back, back to PAN 2 the JSON, H3 sends only the new words, the server strips a caption" \
   || { bad "2.902.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui902.log | head -12; }
+# ---- 2.903.0 (the preview's ⏴ ⏵ one frame + 📷 Capture frame - lib/videoFrame.js, routes/videoFrame.js, static/lbframe.js)
+node scripts/test-903.js > /tmp/t903.log 2>&1 \
+  && ok "2.903.0 units: frame rate / frame at t / names, only the project's videos, half a frame before n for ffmpeg, the page's maths, the wiring" \
+  || { bad "2.903.0 units"; grep -a "^FAIL" -A1 /tmp/t903.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui903-ui.js > /tmp/ui903.log 2>&1 \
+  && ok "2.903.0 browser test: a real 24 fps video - ⏴ ⏵ and , . land on exact frames, 📷 saves THAT frame pixel for pixel at its size (Assets + Gallery), Shift+📷 into References" \
+  || { bad "2.903.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui903.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -6646,6 +6646,13 @@ Pod 磁盘上的一切 - 包括模型、节点包和更新。
 不用 bitGen 也能使用这个模板: ComfyUI 在端口 8188 启动 (日志为 /workspace/.bitgen_comfy.log)。环境变量 BITGEN_NO_COMFY=1
 (不启动) 和 BITGEN_COMFY_ARGS (其他参数, 例如 --lowvram) 可以改变这一点。详情见 misc/pod-image/README.md。
 
+## 🎞 在预览中逐帧查看视频 + 📷 截取当前帧 (2.903.0)
+<!-- en: a-video-in-the-preview-one-frame-at-a-time-capture-frame-2-903-0 b6fc4ccccd89 -->
+
+在预览中打开视频时（点击图库、素材或参考中的视频），下方的工具栏有 **⏴**（后退一帧）和 **⏵**（前进一帧），中间显示帧号（*frame 12 / 241*）。按键 **,** 和 **.** 效果相同（← 和 → 仍然切换到上一个 / 下一个文件）。逐帧会暂停视频，并按视频的真实帧率准确停在每一帧。
+
+**📷 Capture frame** 把屏幕上的这一帧保存为视频原始尺寸的 PNG 图片——从文件本身截取，而不是屏幕上缩放后的画面——保存到素材和图库，按视频和帧命名（*take_frame11.png*）。**Shift+点击**同时放入参考停靠窗，可以直接从它开始下一个视频。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

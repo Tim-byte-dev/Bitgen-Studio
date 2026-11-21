@@ -4139,6 +4139,30 @@
    "src": "static/lbfollow.js:37"
   },
   {
+   "s": "frame –",
+   "src": "static/lbframe.js:45"
+  },
+  {
+   "s": "Capture frame",
+   "src": "static/lbframe.js:45"
+  },
+  {
+   "s": "One frame back (key: comma)",
+   "src": "static/lbframe.js:45"
+  },
+  {
+   "s": "One frame back",
+   "src": "static/lbframe.js:45"
+  },
+  {
+   "s": "One frame on (key: full stop)",
+   "src": "static/lbframe.js:45"
+  },
+  {
+   "s": "One frame on",
+   "src": "static/lbframe.js:45"
+  },
+  {
    "s": "Photoreal",
    "src": "static/lbrestyle.js:47"
   },
@@ -30283,6 +30307,30 @@
   {
    "p": "{0} new",
    "src": "static/lbfollow.js:57"
+  },
+  {
+   "p": "frame {0} / {1}",
+   "src": "static/lbframe.js:63"
+  },
+  {
+   "p": "{0} fps · {1} × {2}",
+   "src": "static/lbframe.js:64"
+  },
+  {
+   "p": "{0} fps",
+   "src": "static/lbframe.js:64"
+  },
+  {
+   "p": "frame {0} saved as {1} (Assets + Gallery) + References",
+   "src": "static/lbframe.js:129"
+  },
+  {
+   "p": "frame {0} saved as {1} (Assets + Gallery)",
+   "src": "static/lbframe.js:129"
+  },
+  {
+   "p": "not saved - {0}",
+   "src": "static/lbframe.js:135"
   },
   {
    "p": "With {0} + its Basic Settings",

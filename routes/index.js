@@ -279,6 +279,7 @@ function mount(app) {
   require("./vram16").mount(app);       // 2.708.0: Settings ▸ ComfyUI ▸ 16 GB mode - its status (lib/vram16.js)
   require("./community").mount(app);    // 2.710.0: 💬 the bitGen Community - chat, friends, the Help room (lib/community.js)
   require("./llamaEngine").mount(app);  // 2.596.0: Settings ▸ LLM ▸ llama.cpp version, Install / ⟳ Update with progress (lib/llamaEngine.js)
+  require("./videoFrame").mount(app);   // 2.903.0: the preview's ⏴ ⏵ one frame + 📷 capture the frame (lib/videoFrame.js)
   require("./imageSave").mount(app);    // 2.604.0: the image editor's 💾 Save to Images - a temp copy, then the format picked, Assets + Gallery
   require("./to3d").mount(app);         // 2.594.0: 🧊 Convert to 3D a picture the page sends (reference dock, image editor) - lib/to3d.js
   require("./features").mount(app);     // 2.593.0: Settings ▸ General ▸ Face fix / ControlNet on + their downloads (lib/featureAddons.js)
