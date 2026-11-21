@@ -15,6 +15,8 @@
  *                    automatically"): POST /api/pan2/caption - the LLM writes PAN 2's JSON caption from the words (and the
  *                    first picture) and it is PUT IN THE PROMPT BOX, indented, to read or edit -> the JSON | null. Generate
  *                    does this by itself when the prompt is not JSON yet, then sends the JSON.
+ *   follow()         2.902.0: the prompt box follows the style - leaving PAN 2 puts your words back in place of the JSON
+ *   captionWords(t)  a caption as plain words
  */
 (function (root) {
   "use strict";
@@ -70,6 +72,7 @@
       if (!res.ok || !j.caption) { root.alert(j.error || "PAN 2's caption could not be written"); return null; }
       (j.notes || []).forEach(log);
       var out = j.pretty || j.caption, box = $("prompt");
+      remember(out, words);                                       // 2.902.0: your words, put back when you leave PAN 2
       if (box) { box.value = out; try { box.dispatchEvent(new Event("input", { bubbles: true })); } catch (e) { /* old browser */ } }
       if (j.how === "wrapped") log("no LLM wrote it - bitGen's simple one-event caption is in the prompt box (start an LLM for a better one)");
       return out;
@@ -103,6 +106,44 @@
     }
     return null;
   }
+  /* 2.902.0 (Tim: "new videos are getting old video prompts mixed with the new prompt" - "it happened after a render with
+     pan 2. maybe it is loading the json prompt as well?"): the JSON caption written into the prompt box stayed there after
+     a PAN 2 render, and the next video for another style sent it along with the new words. Now the words the caption was
+     written from are kept with it, and the box follows the style: leaving PAN 2 (another video style, or the Image / Music
+     mode) puts YOUR WORDS back in place of the JSON (a caption with no words kept becomes its own words); going back to
+     PAN 2 with the words unchanged puts the same JSON back (no new LLM call). The server takes a caption out of any other
+     model's prompt too (lib/pan2.js stripCaption). */
+  var KEY = "h3.pan2.words";
+  function remember(caption, words) { try { root.localStorage.setItem(KEY, JSON.stringify({ caption: String(caption), words: String(words) })); } catch (e) { /* private mode */ } }
+  function recalled() { try { return JSON.parse(root.localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function capOf(text) { try { var o = JSON.parse(String(text || "").trim()); if (o && typeof o.refined_prompt === "string") o = JSON.parse(o.refined_prompt); return o && Array.isArray(o.events) ? o : null; } catch (e) { return null; } }
+  /** a caption as plain words (as lib/pan2.js captionWords): the look, the first frame, each event in order */
+  function captionWords(text) {
+    var c = capOf(text); if (!c) return "";
+    return [c.video_style, c.init_frame_visual_description].concat((c.events || []).map(function (e) { return e && e.event_description; }))
+      .filter(function (x) { return typeof x === "string" && x.trim(); }).map(function (x) { return x.trim().replace(/\s+/g, " "); }).join(" ");
+  }
+  function modeNow() { var m = $("genModeSel"); return m ? m.value : "video"; }
+  function setBox(box, text, why) {
+    box.value = text;
+    try { box.dispatchEvent(new Event("input", { bubbles: true })); } catch (e) { /* old browser */ }
+    log(why);
+  }
+  var wasPan = null;
+  /** the prompt box follows the style: called on every video style / mode change */
+  function follow() {
+    var box = $("prompt"); if (!box) return;
+    var pan = !!style() && modeNow() === "video";
+    if (wasPan === null) { wasPan = pan; if (pan) return; }
+    var t = box.value, r = recalled();
+    if (!pan && isJson(t)) {
+      if (r && r.caption.trim() === t.trim() && r.words.trim()) setBox(box, r.words, "PAN 2's JSON caption taken out of the prompt box - your words are back (it is for PAN 2 only; going back to PAN 2 puts it back)");
+      else { var w = captionWords(t); if (w) setBox(box, w, "PAN 2's JSON caption turned back into plain words in the prompt box (it is for PAN 2 only)"); }
+    } else if (pan && !wasPan && r && t.trim() && t.trim() === r.words.trim() && isJson(r.caption)) {
+      setBox(box, r.caption, "PAN 2: the JSON caption written from these words is back in the prompt box");
+    }
+    wasPan = pan;
+  }
   function paint() {
     var sel = $("videoStyleSel"); if (!sel || !sel.parentNode) return;
     var tip = $("pan2Tip");
@@ -113,7 +154,9 @@
       tip.title = "PAN 2 takes its prompt as JSON: write what happens in plain words and { } JSON (or Generate) has the LLM write PAN 2's JSON caption into the prompt box. "
         + "A picture in the reference dock (or F/L's first frame) starts the video. Up to 20 s at 24 fps; trained at 1248 x 704.";
       sel.parentNode.insertBefore(tip, sel.nextSibling);
-      sel.addEventListener("change", function () { paint(); });
+      sel.addEventListener("change", function () { paint(); follow(); });
+      var gm = $("genModeSel"); if (gm) gm.addEventListener("change", follow);
+      follow();
     }
     var fb = $("pan2Fmt");
     if (!fb) {
@@ -126,6 +169,6 @@
     }
     tip.hidden = !style(); fb.hidden = !style();
   }
-  root.H3Pan2Gen = { style: style, first: first, form: form, submit: submit, paint: paint, isJson: isJson, format: format };
+  root.H3Pan2Gen = { style: style, first: first, form: form, submit: submit, paint: paint, isJson: isJson, format: format, follow: follow, captionWords: captionWords };
   if (doc && doc.readyState !== "loading") setTimeout(paint, 0); else if (doc) doc.addEventListener("DOMContentLoaded", paint);
 })(typeof window !== "undefined" ? window : globalThis);

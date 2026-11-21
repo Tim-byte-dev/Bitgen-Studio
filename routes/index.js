@@ -508,6 +508,11 @@ function mount(app) {
     const f = req.body || {};
     let mode = f.mode || "ref2va";
     let prompt = (f.prompt || "").trim();
+    // 2.902.0: PAN 2's JSON caption (left in the prompt box after a PAN 2 render - the OLD video's events) never goes to
+    // another video model: taken out, or the prompt's own words when it was only the caption (lib/pan2.js stripCaption)
+    let pan2Note = "";
+    { const sc = require("../lib/pan2").stripCaption(prompt);
+      if (sc.removed) { prompt = sc.text.trim(); pan2Note = sc.converted ? "PAN 2's JSON caption was the whole prompt - its words were used (PAN 2's JSON is for PAN 2 only)" : "PAN 2's JSON caption taken out of the prompt (left from a PAN 2 render - it is for PAN 2 only)"; } }
     const files = req.files || [];
     /* 2.399.0 (Tim: "can we add camera movement to follow a 3d path, pan,roll and dolly, height and angle to the tools
        in timeline docker. will we be able to tell mmh3 , wan and ltx to follow these paths"): the timeline's 🎥 camera
@@ -765,11 +770,12 @@ function mount(app) {
     job.chunk = { i: 0, n: plan.chunks.length };
     if (modeNote) try { job.log.push("[bitgen-studio] " + modeNote); } catch {}
     if (speechNote) try { job.log.push("[bitgen-studio] " + speechNote); } catch {}
+    if (pan2Note) try { job.log.push("[bitgen-studio] " + pan2Note); } catch {}
     if (frameOp) try { job.log.push("[bitgen-studio] " + frameOp.note); } catch {}
     for (const n of camNotes) try { job.log.push("[camera] " + n); } catch {}      // 2.399.0
     if (bo) try { job.log.push("[bitgen-studio] " + basicOverride.note(bo, "MiniMax H3")); } catch {}   // 2.409.0
     for (const n of libNotes) try { job.log.push("[refmod] " + n); } catch {}     // 2.588.0
-    const notes = [modeNote, speechNote, frameOp && frameOp.note, ...camNotes, ...libNotes].filter(Boolean).join(" · ");
+    const notes = [pan2Note, modeNote, speechNote, frameOp && frameOp.note, ...camNotes, ...libNotes].filter(Boolean).join(" · ");
     res.json({ ...core.jobDict(job), ...(notes ? { note: notes } : {}) });
   });
 
@@ -1956,7 +1962,7 @@ function mount(app) {
   require("./mossGuard").mount(app);                                    // 2.668.0: MOSS-Image refused on a ComfyUI that renders it as noise
   app.post("/api/genimage", (req, res) => {
     const b = req.body || {};
-    const prompt = String(b.prompt || "").trim();
+    const prompt = require("../lib/pan2").stripCaption(String(b.prompt || "")).text.trim();   // 2.902.0: never PAN 2's JSON caption
     if (!prompt) return res.status(400).json({ error: "prompt is required" });
     const style = styles.byId(core.STYLES_DIR, String(b.style_id || ""));
     if (!style) return res.status(400).json({

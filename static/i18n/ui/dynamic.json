@@ -5952,11 +5952,11 @@
   },
   {
    "s": "JSON",
-   "src": "static/pan2gen.js:77"
+   "src": "static/pan2gen.js:80"
   },
   {
    "s": "Format the prompt as PAN 2's JSON caption: the LLM writes it from your words (and the first picture) into the prompt box, to read or edit. Generate does this by itself when the prompt is not JSON yet",
-   "src": "static/pan2gen.js:123"
+   "src": "static/pan2gen.js:166"
   },
   {
    "s": "Text to speech",

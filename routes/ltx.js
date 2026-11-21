@@ -68,7 +68,7 @@ function mount(app) {
        timeline's 🎥 camera (lib/camPlan.forLtx) - the path in words, the LTX-2 camera LoRA for its main move
        (ltx_worker.py finds it in ComfyUI's loras), and the exact path: the DEPTH guide through the style-transfer
        mode (v2v - the union-control IC-LoRA reads depth) with the first picture as its first frame */
-    let prompt = b.prompt, ltxMode = String(b.ltx_mode || "auto"), vid = v0 ? { path: path.join(core.pDir("video"), path.basename(v0)), start: +b.video_start || 0 } : null;
+    let prompt = require("../lib/pan2").stripCaption(String(b.prompt || "")).text, ltxMode   // 2.902.0: never PAN 2's JSON caption = String(b.ltx_mode || "auto"), vid = v0 ? { path: path.join(core.pDir("video"), path.basename(v0)), start: +b.video_start || 0 } : null;
     let cam = null;
     const pk = require("../lib/camPlan").parse(b.camera);
     if (pk) {

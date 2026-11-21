@@ -14726,6 +14726,27 @@ node scripts/test-899.js > /tmp/t899.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui899-ui.js > /tmp/ui899.log 2>&1 \
   && ok "2.899.0 browser test: the chat and ✨ Enhance in Image mode send the References docker's pictures (tray order, names, the style), Video mode as before" \
   || { bad "2.899.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui899.log | head -12; }
+# ---- 2.900.0 (the bitGen pod template: ghcr.io/tim-byte-dev/bitgen-pod with ComfyUI + its venv + ComfyUI-Manager + the node packs baked in - misc/pod-image, lib/podImage.js)
+node scripts/test-900.js > /tmp/t900.log 2>&1 \
+  && ok "2.900.0 units: the template found by its image (set id, published, the account's own, public), picked before RunPod's PyTorch one, a pod from it made with bitGen's install job + BITGEN_MADE + CUDA 12.8, the scripts agree with podInstall" \
+  || { bad "2.900.0 units"; grep -a "^FAIL" -A1 /tmp/t900.log | head -12; }
+python3 scripts/test-podimage900.py > /tmp/tpi900.log 2>&1 \
+  && ok "2.900.0 pod image scripts against stand-ins: bake (venv, pins, markers, packs, left-out packs), first start copies ComfyUI in / later starts keep it / a non-ComfyUI folder moved aside, ComfyUI started with bitGen's arguments, left to bitGen on its pods" \
+  || { bad "2.900.0 pod image scripts"; grep -a "^FAIL" -A1 /tmp/tpi900.log | head -12; }
+# ---- 2.901.0 (every new pod is a bitGen pod: made from the bitGen pod IMAGE when no template of ours is found - lib/podImage.js imageView, lib/pods.js createBody image)
+node scripts/test-901.js > /tmp/t901.log 2>&1 \
+  && ok "2.901.0 units: the image pod (no template, RunPod v2 image), only bitGen's image without a template, a template still first, bitgen_image false = the old way, presets without a template" \
+  || { bad "2.901.0 units"; grep -a "^FAIL" -A1 /tmp/t901.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui901-ui.js > /tmp/ui901.log 2>&1 \
+  && ok "2.901.0 browser test: ＋ Create pod says the bitGen Studio pod image (about 3 minutes, CUDA 12.8) and sends no template" \
+  || { bad "2.901.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui901.log | head -12; }
+# ---- 2.902.0 (PAN 2's JSON caption never reaches another model - lib/pan2.js stripCaption, static/pan2gen.js follow)
+node scripts/test-902.js > /tmp/t902.log 2>&1 \
+  && ok "2.902.0 units: a PAN 2 caption taken out of another model's prompt (words kept, a caption alone = its words, other braces left), the routes, the box follows the style" \
+  || { bad "2.902.0 units"; grep -a "^FAIL" -A1 /tmp/t902.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui902-ui.js > /tmp/ui902.log 2>&1 \
+  && ok "2.902.0 browser test: PAN 2 -> H3 puts your words back, back to PAN 2 the JSON, H3 sends only the new words, the server strips a caption" \
+  || { bad "2.902.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui902.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
