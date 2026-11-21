@@ -14795,6 +14795,14 @@ python3 scripts/test-906.py > /tmp/t906py.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui906-ui.js > /tmp/ui906.log 2>&1 \
   && ok "2.906.0 browser test: FastH3 Omni with 9:16 / 16:9 in Basic Settings -> the real worker gives its H3 node 544x960 / 960x544 (said in the job's log)" \
   || { bad "2.906.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui906.log | head -12; }
+# ---- 2.907.0 ("every video i tried only renders 16:9": a social Format of another shape no longer cuts the take; Aspect by hand
+# moves a fixed social Format to "the render's own shape"; Override style ON keeps the size on a style pick)
+node scripts/test-907.js > /tmp/t907.log 2>&1 \
+  && ok "2.907.0 units: socialFormat.shapeFor (another orientation = its own shape), socialfmt afterAspect, inheritVideoStyle under Override, gallery contain, social.py's frames" \
+  || { bad "2.907.0 units"; grep -a "^FAIL" -A1 /tmp/t907.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui907-ui.js > /tmp/ui907.log 2>&1 \
+  && ok "2.907.0 browser test: Format 16:9 then Aspect 9:16 -> 'its own shape' (544x960); Override ON keeps 9:16 on a 720p 16:9 style; the server keeps a 544x960 render's shape with the old Format 16:9" \
+  || { bad "2.907.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui907.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

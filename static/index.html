@@ -892,7 +892,7 @@
 
   /* gallery */
   .thumb { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel-2); margin-bottom: 9px; }
-  .thumb video { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; cursor: pointer; }
+  .thumb video { width: 100%; aspect-ratio: 16/9; object-fit: contain; background: #000; display: block; cursor: pointer; }   /* 2.907.0: a 9:16 take shows 9:16 (cover cut it to a 16:9 band) */
   .thumb .gmeta { display: flex; align-items: center; gap: 4px; padding: 4px 7px; }
   .thumb .gname { font-family: var(--mono); font-size: .62rem; color: var(--dim); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .thumb .gdel { background: none; border: none; color: var(--dim); cursor: pointer; font-size: .72rem; }
@@ -5781,7 +5781,10 @@ async function submitJob(promptText) {
   if (window.H3Neg && H3Neg.get()) fd.append("negative", H3Neg.get());   // 2.419.0: ⊖ the negative prompt docker
   for (const k of ["width", "height", "steps", "cfg", "seed", "format"]) fd.append(k, $(k).value);
   // 2.375.1: say what Basic Settings sent, so the job's "steps=N" line can be checked against it
-  logLine(`[generate] Basic Settings: steps ${+$("steps").value > 0 ? $("steps").value : "auto (the workflow's own)"}, cfg ${$("cfg").value}`);
+  // 2.907.0: + the size sent and its shape (Tim: "every video i tried only renders 16:9") - and a social Format's shape
+  logLine(`[generate] Basic Settings: ${$("width").value}x${$("height").value} (${$("resSel").value === "custom" ? "custom" : $("resSel").value + "p " + $("arSel").value}), `
+    + `steps ${+$("steps").value > 0 ? $("steps").value : "auto (the workflow's own)"}, cfg ${$("cfg").value}`
+    + (/^social/.test($("format").value) ? `, Format ${$("format").selectedOptions[0] ? $("format").selectedOptions[0].textContent : $("format").value}` : ""));
   fd.append("frames", framesFromSeconds());
   if ($("videoStyleSel") && $("videoStyleSel").value) fd.append("video_style_id", $("videoStyleSel").value);   // 2.110.0
   { const extra = ovrStyleOn() && useTL("video") ? tempLoras("video") : [];               // 2.256.0: OFF = the style's own chain rules
@@ -13580,6 +13583,13 @@ async function refreshVideoStyles(selectId) {
    then the authority for the render — edit freely per render. */
 function inheritVideoStyle(st) {
   if (!st) return;
+  // 2.907.0 (Tim: "size, aspect ratio,seed,cfg,sampler,scheduler will still overide style" / "every video i tried only
+  // renders 16:9"): Override style ON = Basic Settings' Resolution, Aspect, Steps and CFG stay - a style saved at 16:9
+  // no longer puts its 16:9 back on every pick
+  if (typeof ovrStyleOn === "function" && $("ovrStyle") && ovrStyleOn()) {
+    logLine(`[style] "${st.name}": Override style is on - Basic Settings keeps its size (${$("width").value}x${$("height").value}), steps and cfg`);
+    return;
+  }
   if (st.res && $("resSel")) $("resSel").value = st.res;
   if (st.aspect && $("arSel")) $("arSel").value = st.aspect;
   if ((st.res || st.aspect) && typeof updateWH === "function") updateWH();
