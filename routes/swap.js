@@ -110,7 +110,9 @@ function mount(app) {
     }
     const rs = require("../lib/renderSettings").read(core.projDir(project || core.getProject()));
     const d = core.getConfig().defaults || {};
-    const size = require("../lib/renderSettings").dims(rs.res, rs.aspect) || { width: d.width, height: d.height };
+    // 2.906.0: whose size - Override style ON = Basic Settings' (lib/renderSettings.sizeFor), else the ⚙, else the default
+    const sz = require("../lib/renderSettings").sizeFor(rs);
+    const size = sz.source === "default" ? { width: d.width, height: d.height } : { width: sz.width, height: sz.height };
     const ps = pickStyle(b.video_style_id);
     // 2.905.0: the board's kept Override style (lib/renderSettings) - steps / cfg / model / its temporary video LoRAs;
     // the seed: lib/sceneSeed.js (the scene's own, else Override's)

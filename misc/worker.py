@@ -3403,6 +3403,7 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                                       if params.get("cfg_override") is not None else None),
                             upscale=bool(params.get("upscale", True)) or bool(params.get("upscale_stage")))
         g = _apply_refmods(g, params.get("refmods"))   # 2.225.0: cast identity mods
+        say("[comfy] " + _size_words(g, params))             # 2.906.0: the size the H3 node(s) render at, said
         if _f3 is not None and _f3.detect(g):  # 2.573.0: FastH3 Omni - its recipe, whatever graph carries it
             g, f3notes = _f3.apply(g, explicit_steps=int(params.get("steps", 0) or 0),
                                    kitchen=None if rp else _kitchen_attn(base), keep_cfg=cfg_kept)
@@ -4003,6 +4004,34 @@ def enc_args(fmt: str, crf=None) -> list:
                 "-c:a", "aac"]
     return ["-c:v", "libvpx-vp9", "-crf", "30", "-b:v", "0",
             "-pix_fmt", "yuv420p", "-row-mt", "1", "-c:a", "libopus"]
+
+
+def probe_take_wh(p: Path):
+    """2.906.0: a video's (width, height), or None"""
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+                        "-of", "csv=p=0", str(p)], capture_output=True, text=True)
+    try:
+        w, h = [int(x) for x in r.stdout.strip().split(",")[:2]]
+        return (w, h)
+    except (ValueError, TypeError):
+        return None
+
+
+def _size_words(g, params):
+    """2.906.0 (Tim: "h3 omni is still not changing aspect ratio"): what size the graph's MiniMax H3 node(s) were given,
+    against the size asked (Basic Settings / the StoryBoard) - one log line, so a wrong aspect shows where it came from"""
+    got = []
+    for k, v in (g or {}).items():
+        if not isinstance(v, dict) or "MiniMaxH3" not in str(v.get("class_type", "")):
+            continue
+        ins = v.get("inputs") or {}
+        w, h = ins.get("width"), ins.get("height")
+        if isinstance(w, (int, float)) and isinstance(h, (int, float)):
+            got.append(f"{int(w)}x{int(h)} ({k} {v.get('class_type')})")
+        elif "width" in ins or "height" in ins:
+            got.append(f"linked ({k} {v.get('class_type')} - the graph / the plan sets it)")
+    asked = f"{params.get('_req_w') or params.get('width')}x{params.get('_req_h') or params.get('height')}"
+    return f"render size asked {asked}: " + ("; ".join(dict.fromkeys(got)) if got else "no MiniMax H3 node takes a size in this graph")
 
 
 def probe_frames(p: Path) -> int:
@@ -6390,7 +6419,8 @@ def main() -> None:
         except Exception as e:                    # noqa: BLE001
             fail(f"could not {fop.get('op')} the new part to {Path(str(fop.get('video'))).name}: {e} (the part is {part.name})")
     _tail_pngs(params, cfg, final, raw_dir)       # 2.313.0
-    say(f"[worker] {'chained' if n > 1 else 'single'} render complete: {final.name}")
+    _wh = probe_take_wh(final)                          # 2.906.0: the take's own size in the log (Tim: "not changing aspect ratio")
+    say(f"[worker] {'chained' if n > 1 else 'single'} render complete: {final.name}" + (f" ({_wh[0]}x{_wh[1]})" if _wh else ""))
     sys.exit(0)
 
 

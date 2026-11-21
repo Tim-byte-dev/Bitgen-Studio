@@ -14785,6 +14785,16 @@ python3 scripts/test-905.py > /tmp/t905py.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui905-ui.js > /tmp/ui905.log 2>&1 \
   && ok "2.905.0 browser test: FastH3 Omni, H3 Long Video and Swap send Override + the sampler header (boxes off = no model / LoRAs, on = both, Override off = none); the server renders FastH3 Omni at Override's CFG 3.5" \
   || { bad "2.905.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui905.log | head -12; }
+# ---- 2.906.0 (the aspect ratio: Override style's size beats the StoryBoard's ⚙; the job's log says the size asked / given / made)
+node scripts/test-906.js > /tmp/t906.log 2>&1 \
+  && ok "2.906.0 units: sizeFor (Override ON = Basic Settings' size over the ⚙), jobOverrides + a scene's swap use it, the worker's size lines" \
+  || { bad "2.906.0 units"; grep -a "^FAIL" -A1 /tmp/t906.log | head -12; }
+python3 scripts/test-906.py > /tmp/t906py.log 2>&1 \
+  && ok "2.906.0 python: the size asked vs each MiniMax H3 node's (linked as exported, 544x960 after the patch), the take's own size" \
+  || { bad "2.906.0 python"; grep -a "^FAIL" -A1 /tmp/t906py.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui906-ui.js > /tmp/ui906.log 2>&1 \
+  && ok "2.906.0 browser test: FastH3 Omni with 9:16 / 16:9 in Basic Settings -> the real worker gives its H3 node 544x960 / 960x544 (said in the job's log)" \
+  || { bad "2.906.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui906.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
