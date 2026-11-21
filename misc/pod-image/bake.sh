@@ -45,7 +45,15 @@ say "ComfyUI ${VER:-?} ($HEAD)"
 # ---- its Python environment (the image's PyTorch reused - no second multi-GB download)
 $PY -m venv --system-site-packages "$D/venv"
 VPY="$D/venv/bin/python"
-"$VPY" -m pip install --no-cache-dir --progress-bar off -r "$D/requirements.txt"
+# the image's PyTorch kept: every install is held to its torch / torchaudio / torchvision / xformers / triton. Without this a
+# requirement with no version (ComfyUI's torchvision - RunPod's 1.0.3 images have none) pulls the newest one, which drags
+# torch up to a CUDA 13 build in the venv: no good on a CUDA 12.8 host, and the image's torchaudio no longer loads
+PIN="$D/.bitgen_pins.txt"
+$PY -m pip list --format=freeze 2>/dev/null | grep -iE '^(torch|torchaudio|torchvision|xformers|triton)==' > "$PIN" || true
+say "kept from the image: $(tr '\n' ' ' < "$PIN")"
+pipi() { "$VPY" -m pip install --no-cache-dir --progress-bar off -c "$PIN" "$@"; }
+pipi -r "$D/requirements.txt"
+"$VPY" -c 'import torch; print("[bitgen-pod] venv PyTorch", torch.__version__, "CUDA", torch.version.cuda)' || true
 echo "$HEAD" > "$D/.bitgen_pip_ok"
 
 # ---- the node packs (each on its own: one that will not install is noted, the rest go on - bitGen installs a missing one
@@ -67,7 +75,7 @@ PYEOF
   say "pack $id: $folder from $url"
   if ! git clone --depth 1 "$url" "$D/custom_nodes/$folder"; then say "pack $id: the clone did not work"; PACKS_FAILED+=("$id"); continue; fi
   if [ -f "$D/custom_nodes/$folder/requirements.txt" ]; then
-    if ! "$VPY" -m pip install --no-cache-dir --progress-bar off -r "$D/custom_nodes/$folder/requirements.txt"; then
+    if ! pipi -r "$D/custom_nodes/$folder/requirements.txt"; then
       say "pack $id: its requirements did not install"; PACKS_FAILED+=("$id"); continue
     fi
   fi

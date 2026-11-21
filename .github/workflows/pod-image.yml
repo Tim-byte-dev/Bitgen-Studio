@@ -66,7 +66,13 @@ jobs:
             test -d /workspace/ComfyUI/custom_nodes/ComfyUI-Manager
             python3 -c "import json; j = json.load(open(\"/workspace/ComfyUI/.bitgen_install.json\")); print(j); assert j[\"by\"] == \"bitGen\"; assert j[\"python\"] == \"/workspace/ComfyUI/venv/bin/python\""
             bash /pre_start.sh | grep -q "already on the pod"
-            cd /workspace/ComfyUI && venv/bin/python main.py --cpu --quick-test-for-ci 2>&1 | tail -40
+            sys_t="$(python3 -c "import torch; print(torch.__version__)")"
+            venv_t="$(/workspace/ComfyUI/venv/bin/python -c "import torch; print(torch.__version__)")"
+            echo "image PyTorch $sys_t, ComfyUI venv PyTorch $venv_t"
+            test "$sys_t" = "$venv_t"
+            cd /workspace/ComfyUI && venv/bin/python main.py --cpu --quick-test-for-ci > /tmp/qt.log 2>&1 || { tail -60 /tmp/qt.log; exit 1; }
+            tail -40 /tmp/qt.log
+            if grep -q "IMPORT FAILED" /tmp/qt.log; then echo "a node pack did not load:"; grep -B30 "IMPORT FAILED" /tmp/qt.log | grep -iE "error|cannot import|IMPORT FAILED" | head -20; exit 1; fi
           '
       - name: Publish (latest + the day's tag)
         if: github.ref == 'refs/heads/main'
@@ -74,6 +80,13 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           day="$(date -u +%Y%m%d)"
           docker tag "$IMAGE:latest" "$IMAGE:$day"
-          docker push "$IMAGE:latest"
-          docker push "$IMAGE:$day"
+          # ghcr can answer "unknown blob" to Docker's own push of a big image: tried 3 times, then skopeo (reads the image
+          # from Docker and uploads each layer itself)
+          push() {
+            for i in 1 2 3; do docker push "$1" && return 0; echo "push $1 failed ($i) - again in 20 s"; sleep 20; done
+            sudo mkdir -p /mnt/tmp && sudo chmod 1777 /mnt/tmp
+            TMPDIR=/mnt/tmp skopeo copy --retry-times 3 --dest-creds "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" "docker-daemon:$1" "docker://$1"
+          }
+          push "$IMAGE:latest"
+          push "$IMAGE:$day"
           echo "published $IMAGE:latest and $IMAGE:$day (from ${{ steps.base.outputs.base }})" >> "$GITHUB_STEP_SUMMARY"

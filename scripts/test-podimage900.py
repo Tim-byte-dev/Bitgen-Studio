@@ -97,6 +97,9 @@ try:
     check(".bitgen_install.json by bitGen, its version, the python at /workspace", j.get("by") == "bitGen" and j.get("version") == "0.9.1"
           and j.get("python") == os.path.join(R, "workspace", "ComfyUI", "venv", "bin", "python") and j.get("image") == "ghcr.io/tim-byte-dev/bitgen-pod:test", str(j))
     check("every pack baked in (none left out)", len(j.get("packs", [])) == len(want) and not j.get("packs_left_out"), str(j))
+    bk = open(os.path.join(PI, "bake.sh")).read()
+    check("the image's torch / torchaudio / torchvision held for EVERY install (-c .bitgen_pins.txt)", os.path.isfile(os.path.join(seed, ".bitgen_pins.txt"))
+          and bk.count("pip install") == 1 and bk.count("pipi -r") == 2 and "-c \"$PIN\"" in bk, bk.count("pip install"))
     check("the venv reuses the image's PyTorch (--system-site-packages)",
           "include-system-site-packages = true" in open(os.path.join(seed, "venv", "pyvenv.cfg")).read())
     folders = {p["id"]: p["folder"] for p in packs}
@@ -175,6 +178,9 @@ try:
     pi = open(os.path.join(REPO, "lib", "podInstall.js")).read()
     check("the markers are lib/podInstall.js's own", ".bitgen_pip_ok" in pi and ".bitgen_install.json" in pi and "'ComfyUI-Manager'" in pi and ".bitgen_comfy.log" in pi)
     bases = [l.strip() for l in open(os.path.join(PI, "bases.txt")) if l.strip() and not l.startswith("#")]
+    check("the workflow refuses an image whose venv PyTorch differs or a node pack that did not load", 'test "$sys_t" = "$venv_t"' in wf and "IMPORT FAILED" in wf)
+    check("the workflow's push tries again, then skopeo (ghcr's 'unknown blob')", "skopeo copy" in wf and "for i in 1 2 3" in wf)
+    check("lib/podInstall.js holds a blank pod's PyTorch the same way", "'.bitgen_pins.txt'" in pi and pi.count("+ pins + ['-r'") == 3)
     check("bases.txt: RunPod PyTorch images with CUDA 12.8", bases and all(b.startswith("runpod/pytorch:") and ("cu1281" in b or "cuda12.8" in b) for b in bases), str(bases))
 finally:
     subprocess.run(["pkill", "-f", os.path.join(T, "root")], stderr=subprocess.DEVNULL)
