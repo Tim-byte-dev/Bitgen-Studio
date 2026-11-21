@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 7329,
+ "count": 7363,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -68597,6 +68597,33 @@
    ],
    "where": [
     "2.897.0"
+   ]
+  },
+  {
+   "s": "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdTplLine"
+   ]
+  },
+  {
+   "s": "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdTplLine"
+   ]
+  },
+  {
+   "s": "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdSum"
    ]
   }
  ]

@@ -155,12 +155,12 @@ bitGen Studio can rent what your computer lacks and still run everything else at
 
 - **[RunPod](https://runpod.io?ref=gbj9zxqh)** - render on a GPU you rent by the hour. Pick a style and press Generate: bitGen
   makes the pod, installs ComfyUI on it, puts the style's models and node packs there, and your render starts by itself
-  when the pod is ready. **The first time, a new pod takes about 10-15 minutes to create and set up, plus the time to transfer
+  when the pod is ready. **A new pod is ready in about 3 minutes (ComfyUI is already in the bitGen pod image), plus the time to transfer
   your models to it** (a 20 GB checkpoint downloads in a few minutes on the pod; files sent from your computer go at your
   upload speed). Stop the pod when you are done. (The link is bitGen's referral link - signing up with it helps fund
-  bitGen Studio.) **Faster:** make the *bitGen Studio pod* template once on runpod.io (image
-  `ghcr.io/tim-byte-dev/bitgen-pod:latest` - ComfyUI and the node packs already in it, see
-  [misc/pod-image/README.md](misc/pod-image/README.md)) and bitGen uses it by itself: a new pod is ready in a few minutes.
+  bitGen Studio.) Every pod bitGen makes uses the bitGen pod image (`ghcr.io/tim-byte-dev/bitgen-pod`, ComfyUI and the
+  common node packs already in it) - nothing to set up; a template of your own is optional
+  ([misc/pod-image/README.md](misc/pod-image/README.md)).
 - **[OpenRouter](https://openrouter.ai)** - run the language model (screenplays, ✨ Enhance, the prompt chat, picture
   descriptions) on OpenRouter instead of your card. One key, hundreds of models, many of them free. Its paid picture and
   video models work too: pick the ones you want in 🖥 GPU ▸ OpenRouter models… - bitGen shows the price

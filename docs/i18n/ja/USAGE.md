@@ -5203,9 +5203,9 @@ PODS ドッカーは RunPod のテンプレートを一覧しなくなりまし�
 Jupyter がまだ起動中のポッド（bitGen がカーネルを頼むと HTTP 404 になる）は、レンダリングを失敗させずに待つようになりました。
 
 ## 新しいポッドの初回起動には時間がかかる・新しい ComfyUI でのモデル (2.781.1)
-<!-- en: a-new-pod-s-first-start-takes-time-models-on-a-newer-comfyui-2-781-1 af8241abe61b -->
+<!-- en: a-new-pod-s-first-start-takes-time-models-on-a-newer-comfyui-2-781-1 763cdc8af468 -->
 
-**初回の起動には時間がかかります。** 新しいポッドの作成とセットアップには 10〜15 分ほどかかり、さらにモデルをポッドへ転送する時間が加わります。ポッド自身がダウンロードするファイル（Hugging Face、Civitai）はすぐに届きますが、あなたのコンピューターから送るファイルはアップロード速度次第です。その後は、ポッドは数分で起動します。
+**初回の起動には少し時間がかかります。** 新しい bitGen ポッドは約 3 分で使えます（2.901.0 - ComfyUI がイメージに入っています）。さらにモデルをポッドへ転送する時間が加わります。ポッド自身がダウンロードするファイル（Hugging Face、Civitai）はすぐに届きますが、あなたのコンピューターから送るファイルはアップロード速度次第です。その後はポッドは数分で起動します。
 
 **新しいポッドの checkpoints フォルダーにあるチェックポイント。** 新しいポッドには最新の ComfyUI が入り、モデルの一覧を新しい形式で返します。bitGen はその形式も読めるようになったので、models/checkpoints にある Basic Settings のモデル（たとえば Civitai のオールインワンのチェックポイント）は、スタイルのワークフローが拡散モデルを求めるときに Load Checkpoint で読み込まれます。あなたのコンピューターではすでにそうなっていた動作です。
 
@@ -6389,27 +6389,28 @@ BAS の数字はワークシートです。提出は ATO または税理士を�
 Klein のレンダーのプロンプトには <Picture 1> ではなく image 1 / image 2 が入るようになりました。
 
 ## 🚀 bitGen ポッドテンプレート - 新しいポッドで ComfyUI がすぐ使える (2.900.0)
-<!-- en: the-bitgen-pod-template-comfyui-ready-on-a-new-pod-2-900-0 a27459da8a93 -->
+<!-- en: the-bitgen-pod-template-comfyui-ready-on-a-new-pod-2-900-0 06591a8b572c -->
 
 これまで bitGen が作るポッドは RunPod の素の PyTorch テンプレートから始まり、bitGen がその上に ComfyUI、その Python 環境、
-ComfyUI-Manager、ノードパックをインストールしていました - 最初のレンダーまで 10〜15 分かかります。**bitGen ポッドイメージ**
-(ghcr.io/tim-byte-dev/bitgen-pod) にはそれがすべて最初から入っています: GitHub が bitGen のリポジトリから毎週最新の ComfyUI でビルドし、無料で公開します。
+ComfyUI-Manager、ノードパックをインストールしていました - 最初のレンダーまで 10〜15 分かかります。今は新しいポッドはすべて
+**bitGen ポッドイメージ** (ghcr.io/tim-byte-dev/bitgen-pod) から作られ、それがすべて最初から入っているので、約 3 分で使えます
+(2.901.0)。GitHub が bitGen のリポジトリから毎週最新の ComfyUI でイメージをビルドし、無料で公開します。
 
-**テンプレートを一度だけ作ります** (runpod.io ▸ My Templates ▸ New Template):
+**設定は不要です。** **PODS ▸ Create pod…** と、スタイルをどのポッドで描くか尋ねるボックスは、自動でこのイメージからポッドを作ります。最初の起動でポッドは ComfyUI を自分のディスクにコピーします (約 1 分)。そのあと bitGen のインストールの各段階はすべて
+*既にあります* となり、ComfyUI を GPU メモリの設定どおりに起動するだけです。以後の起動ではポッドのディスクにすべて残ります -
+モデル、ノードパック、更新も含めて。
+
+**自分のテンプレート (任意)。** RunPod アカウントでこのイメージから作ったテンプレートがあれば、イメージの代わりにそれが使われます -
+bitGen が自動で見つけます (runpod.io ▸ My Templates ▸ New Template):
 
 | 項目 | 値 |
 |---|---|
-| Name | bitGen Studio pod |
+| Template type / Compute type | Pod / Nvidia GPU |
 | Container image | ghcr.io/tim-byte-dev/bitgen-pod:latest |
 | Container disk | 50 GB |
-| Volume disk / mount path | 50 GB 以上、/workspace |
+| Persistent storage | 50 GB 以上、/workspace にマウント |
 | HTTP ports / TCP ports | 8188, 8888 / 22 |
-| 環境変数 | JUPYTER_PASSWORD - 任意のパスワード |
-
-公開でも非公開でも構いません: bitGen は自分の RunPod アカウントにあるこのイメージから作ったテンプレートを自動で見つけます -
-bitGen に何も入力する必要はありません。以後 **PODS ▸ Create pod…** と、スタイルをどのポッドで描くか尋ねるボックスは、RunPod の
-PyTorch テンプレートより先にこれを使います。最初の起動でポッドは ComfyUI を自分のディスクにコピーします (約 1 分)。そのあと
-bitGen のインストールの各段階はすべて *既にあります* となり、ComfyUI を GPU メモリの設定どおりに起動するだけです。以後の起動ではポッドのディスクにすべて残ります - モデル、ノードパック、更新も含めて。テンプレートがなければ何も変わりません: bitGen はこれまでどおり RunPod の PyTorch テンプレートに ComfyUI をインストールします。
+| 環境変数 | JUPYTER_PASSWORD - 任意のパスワード、引用符なし |
 
 このテンプレートは bitGen なしでも使えます: ComfyUI がポート 8188 で起動します (ログは /workspace/.bitgen_comfy.log)。環境変数 BITGEN_NO_COMFY=1 (起動しない) と BITGEN_COMFY_ARGS (別の引数、例えば --lowvram) でこれを変えられます。詳しくは misc/pod-image/README.md にあります。
 

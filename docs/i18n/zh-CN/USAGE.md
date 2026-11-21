@@ -5437,9 +5437,9 @@ PODS 停靠窗不再列出 RunPod 的模板。它有三个标签：
 Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会被等待，而不会让渲染失败。
 
 ## 新 Pod 首次启动需要时间；较新 ComfyUI 上的模型 (2.781.1)
-<!-- en: a-new-pod-s-first-start-takes-time-models-on-a-newer-comfyui-2-781-1 af8241abe61b -->
+<!-- en: a-new-pod-s-first-start-takes-time-models-on-a-newer-comfyui-2-781-1 763cdc8af468 -->
 
-**首次启动需要些时间。** 创建并设置一个新 Pod 大约需要 10–15 分钟，另加把模型传到 Pod 上的时间。Pod 自己下载的文件（Hugging Face、Civitai）很快就到；从你的电脑发送的文件则取决于你的上传速度。之后 Pod 几分钟就能启动。
+**首次启动需要些时间。** 新的 bitGen Pod 大约 3 分钟就能使用（2.901.0 - ComfyUI 已在它的镜像里），另加把模型传到 Pod 上的时间。Pod 自己下载的文件（Hugging Face、Civitai）很快就到；从你的电脑发送的文件则取决于你的上传速度。之后 Pod 几分钟就能启动。
 
 **新 Pod 上 checkpoints 文件夹里的检查点。** 新 Pod 会装上最新的 ComfyUI，它用一种较新的方式列出模型。bitGen 现在也能读取这种方式，所以放在 models/checkpoints 里的 Basic Settings 模型（例如 Civitai 上的一体化检查点），在风格工作流需要扩散模型时会用 Load Checkpoint 加载——和在你自己的电脑上一样。
 
@@ -6621,25 +6621,27 @@ img 1、picture #2）也会改成模型的写法。✨ Enhance 也会为所选�
 FLUX Klein 的渲染现在在提示词中得到的是 image 1 / image 2，而不是 <Picture 1>。
 
 ## 🚀 bitGen Pod 模板 - 新 Pod 上的 ComfyUI 开箱即用 (2.900.0)
-<!-- en: the-bitgen-pod-template-comfyui-ready-on-a-new-pod-2-900-0 a27459da8a93 -->
+<!-- en: the-bitgen-pod-template-comfyui-ready-on-a-new-pod-2-900-0 06591a8b572c -->
 
 以前 bitGen 创建的 Pod 从 RunPod 的普通 PyTorch 模板开始, 然后由 bitGen 在上面安装 ComfyUI、它的 Python 环境、
-ComfyUI-Manager 和节点包 - 第一次渲染前要等 10 到 15 分钟。**bitGen Pod 镜像** (ghcr.io/tim-byte-dev/bitgen-pod) 已经包含这一切: GitHub 每周用最新的 ComfyUI 从 bitGen 的仓库构建它, 并免费发布。
+ComfyUI-Manager 和节点包 - 第一次渲染前要等 10 到 15 分钟。现在每个新 Pod 都由 **bitGen Pod 镜像** (ghcr.io/tim-byte-dev/bitgen-pod)
+创建, 这一切都已包含在里面: Pod 大约 3 分钟就能使用 (2.901.0)。GitHub 每周用最新的 ComfyUI 从 bitGen 的仓库构建这个镜像, 并免费发布。
 
-**只需创建一次模板** (runpod.io ▸ My Templates ▸ New Template):
+**无需任何设置。** **PODS ▸ Create pod…** 以及询问用哪个 Pod 渲染风格的对话框会自动用这个镜像创建 Pod。第一次启动时 Pod 会把
+ComfyUI 复制到自己的磁盘 (约一分钟); 之后 bitGen 的每个安装步骤都显示 *已存在*, 它只按你的显存设置启动 ComfyUI。以后的启动会保留
+Pod 磁盘上的一切 - 包括模型、节点包和更新。
+
+**你自己的模板 (可选)。** 如果你的 RunPod 账户里有用此镜像创建的模板, 就会用它代替镜像 - bitGen 会自动找到它
+(runpod.io ▸ My Templates ▸ New Template):
 
 | 字段 | 值 |
 |---|---|
-| Name | bitGen Studio pod |
+| Template type / Compute type | Pod / Nvidia GPU |
 | Container image | ghcr.io/tim-byte-dev/bitgen-pod:latest |
 | Container disk | 50 GB |
-| Volume disk / mount path | 50 GB 或更多, /workspace |
+| Persistent storage | 50 GB 或更多, 挂载到 /workspace |
 | HTTP ports / TCP ports | 8188, 8888 / 22 |
-| 环境变量 | JUPYTER_PASSWORD - 任意密码 |
-
-公开或私有均可: bitGen 会自动在你自己的 RunPod 账户中找到用此镜像创建的模板 - 无需在 bitGen 中输入任何内容。此后
-**PODS ▸ Create pod…** 以及询问用哪个 Pod 渲染风格的对话框会先使用它, 再考虑 RunPod 的 PyTorch 模板。第一次启动时 Pod 会把
-ComfyUI 复制到自己的磁盘 (约一分钟); 之后 bitGen 的每个安装步骤都显示 *已存在*, 它只按你的显存设置启动 ComfyUI。以后的启动会保留 Pod 磁盘上的一切 - 包括模型、节点包和更新。没有这个模板时一切照旧: bitGen 仍像以前一样在 RunPod 的 PyTorch 模板上安装 ComfyUI。
+| 环境变量 | JUPYTER_PASSWORD - 任意密码, 不加引号 |
 
 不用 bitGen 也能使用这个模板: ComfyUI 在端口 8188 启动 (日志为 /workspace/.bitgen_comfy.log)。环境变量 BITGEN_NO_COMFY=1
 (不启动) 和 BITGEN_COMFY_ARGS (其他参数, 例如 --lowvram) 可以改变这一点。详情见 misc/pod-image/README.md。

@@ -121,7 +121,7 @@
   /* 2.780.0 (Tim: "i think with using our clean pod template and uploading others we don't need to show any other pods except
      for our pods" … "i think we drop the template browser completely. it will make it less complicated"): no RunPod template
      browser (All / Official / Verified / Community / ★ Shortcuts, the search, the kind, ComfyUI only, For style) - a pod is a
-     bitGen pod, made from the one template bitGen picks (RunPod's PyTorch one; bitGen installs ComfyUI, the nodes and the files -
+     bitGen pod, made from the one template bitGen picks (2.901.0: the bitGen pod image - ComfyUI already in it; else RunPod's PyTorch one, bitGen installing ComfyUI, the nodes and the files -
      GET /api/pods/bitgen-template, lib/pods.js bitgenTemplate). Tabs: 🖥 My pods (bitGen's pods; the others on the account in
      one line), 📦 Presets, ＋ Create pod. */
   function body() {
@@ -217,7 +217,7 @@
     c.dataset.tpl = key;
     // 2.780.0: the bitGen pod - what it is made from is one line (no template to pick)
     c.innerHTML = '<div class="pdNew"><div class="rowbtns" style="align-items:center"><span style="flex:1">Create a <b>bitGen pod</b></span></div>'
-      + '<div class="hint" id="pdTplLine" style="margin:0 0 4px">' + (S.tplB ? "Made from RunPod's " + esc(t.name) + (t.install ? " - bitGen installs ComfyUI, the custom nodes your styles use and their files on it (a few minutes the first time, then kept in /workspace)" : " - its ComfyUI is updated and your styles made ready on it") : S.tplErr ? '<span style="color:#e66">' + esc(S.tplErr) + "</span>" : "asking RunPod which template to use…") + "</div>"
+      + '<div class="hint" id="pdTplLine" style="margin:0 0 4px">' + (S.tplB ? t.ours ? (t.id ? "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)" : "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)") : "Made from RunPod's " + esc(t.name) + (t.install ? " - bitGen installs ComfyUI, the custom nodes your styles use and their files on it (a few minutes the first time, then kept in /workspace)" : " - its ComfyUI is updated and your styles made ready on it") : S.tplErr ? '<span style="color:#e66">' + esc(S.tplErr) + "</span>" : "asking RunPod which template to use…") + "</div>"
       + formHtml(t) + "</div>";
     wireForm();
     gpus(S.form.cloud);
@@ -292,9 +292,9 @@
     var rows = [["Template", (t.name || "?") + (t.image ? " (" + t.image + ")" : "")], ["GPU", g ? n + " × " + g.name + " · " + g.memory + " GB each" + (n > 1 ? " (" + (g.memory * n) + " GB in all)" : "") : "pick one"],
       ["Price", g ? money(g.price * n, "/h") + " while it runs (RunPod's price now) + storage" : "-"], ["Cloud", S.form.cloud === "COMMUNITY" ? "Community" : "Secure"],
       ["Container disk", (+(($("pdDisk") || {}).value) || 0) + " GB (wiped when it stops)"], ["/workspace", (+(($("pdVol") || {}).value) || 0) + " GB (kept while stopped)"],
-      ["Host", cu ? "CUDA 13 or newer only" : cuOf(t.image) && !t.comfy ? "CUDA " + cuOf(t.image) + " or newer" : "any"], ["Ports", (web || "-") + (t.comfy ? "" : " + 8188 (ComfyUI)") + " + Jupyter (bitGen's own password)"],
+      ["Host", cu ? "CUDA 13 or newer only" : t.ours && t.cuda ? "CUDA " + t.cuda + " or newer" : cuOf(t.image) && !t.comfy ? "CUDA " + cuOf(t.image) + " or newer" : "any"], ["Ports", (web || "-") + (t.comfy ? "" : " + 8188 (ComfyUI)") + " + Jupyter (bitGen's own password)"],
       // 2.772.0: a template without ComfyUI (RunPod's PyTorch) - bitGen installs it there
-      ["ComfyUI", t.comfy ? "the template's own" : "bitGen installs it on the pod - the newest ComfyUI from GitHub + ComfyUI-Manager, reusing the template's PyTorch (a few minutes the first time; kept in /workspace)"],
+      ["ComfyUI", t.ours ? "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)" : t.comfy ? "the template's own" : "bitGen installs it on the pod - the newest ComfyUI from GitHub + ComfyUI-Manager, reusing the template's PyTorch (a few minutes the first time; kept in /workspace)"],
       ["Style", sty ? sty.name + (ks.length ? " · this pod renders " + ks.join(", ") + " styles with no pod of their own" : "") : (ks.length ? "renders " + ks.join(", ") + " styles with no pod of their own" : "none")],
       ["Audio", (function () { var a = []; doc.querySelectorAll("#pdForm [data-pdaudio]").forEach(function (c) { if (c.checked) a.push(c.parentNode.textContent.trim()); });
         return a.length ? a.join(", ") + " installed on it (in remote mode those jobs run on the pod)" : "none - text to speech, speech to text and song separation stay on this computer"; })()],

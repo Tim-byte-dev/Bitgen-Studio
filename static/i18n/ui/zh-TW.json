@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "aa6805cd296c",
- "count": 12105,
+ "v": "93cc6da1ea6f",
+ "count": 12108,
  "patternCount": 1389,
  "strings": {
   "'Total price includes GST'": "“Total price includes GST”",
@@ -4513,6 +4513,8 @@
   "Machine": "機器",
   "Machines run by RunPod's community hosts - usually cheaper": "由 RunPod 社群主機運營的機器 - 通常更便宜",
   "Macro 100mm f/8 - close-ups": "微距 100mm f/8 - 特寫",
+  "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "由 bitGen Studio pod 鏡像建立 - 已包含 ComfyUI、ComfyUI-Manager 和常用節點包：約 3 分鐘即可使用；再新增你的風格用到的自訂節點及其檔案（儲存在 /workspace）",
+  "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "由 bitGen Studio pod 範本建立 - 已包含 ComfyUI、ComfyUI-Manager 和常用節點包：約 3 分鐘即可使用；再新增你的風格用到的自訂節點及其檔案（儲存在 /workspace）",
   "Magenta": "洋紅",
   "Magic Eraser": "魔術橡皮擦",
   "Magic Eraser Tool": "魔術橡皮擦工具",
@@ -9549,6 +9551,7 @@
   "all time": "全部時間",
   "along the path": "沿路徑",
   "alpha is inverted (a solid background where it should be clear)": "Alpha 反轉（本應透明的地方變成了實色背景）",
+  "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)": "已在 bitGen pod 鏡像中（首次啟動時複製到 /workspace，然後由 bitGen 啟動）",
   "already used by another picture": "已被另一張圖片使用",
   "already your friend": "已經是你的好友",
   "also close other Unreal windows (they may hold the bridge's port)": "同時關閉其他 Unreal 視窗（它們可能佔用橋接埠）",

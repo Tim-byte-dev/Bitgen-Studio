@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
  "v": "27f732974825",
- "count": 12105,
+ "count": 12108,
  "patternCount": 1389,
  "strings": {
   "'Total price includes GST'": "“Total price includes GST”",
@@ -12108,7 +12108,10 @@
   "＋ 📤 Invoice we sent": "＋ 📤 已开发票",
   "＋ 📥 Bill to pay": "＋ 📥 待付账单",
   "＋ 🧾 Receipt": "＋ 🧾 收据",
-  "－ Figure Smaller": "－ 图缩小"
+  "－ Figure Smaller": "－ 图缩小",
+  "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "由 bitGen Studio pod 镜像创建 - 已包含 ComfyUI、ComfyUI-Manager 和常用节点包：约 3 分钟即可使用；再添加你的风格用到的自定义节点及其文件（保存在 /workspace）",
+  "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "由 bitGen Studio pod 模板创建 - 已包含 ComfyUI、ComfyUI-Manager 和常用节点包：约 3 分钟即可使用；再添加你的风格用到的自定义节点及其文件（保存在 /workspace）",
+  "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)": "已在 bitGen pod 镜像中（首次启动时复制到 /workspace，然后由 bitGen 启动）"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",

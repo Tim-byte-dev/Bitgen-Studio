@@ -213,7 +213,7 @@
     var n = "Preset " + (S.list.length + 1), taken = S.list.map(function (p) { return p.name; }), k = S.list.length + 1;
     while (taken.indexOf(n) >= 0) n = "Preset " + (++k);
     Promise.all([loadAux(), gpusOf("SECURE")]).then(function (a) {
-      // 2.780.0: the bitGen pod's template (lib/pods.js bitgenTemplate - RunPod's PyTorch one; bitGen installs ComfyUI on it)
+      // 2.780.0: the bitGen pod's template (lib/pods.js bitgenTemplate); 2.901.0 the bitGen pod image - id "" = made from the image itself
       var t = a[0][0] || {};
       var g = a[1].filter(function (x) { return x.offered && x.memory >= 24; }).sort(function (x, y) { return x.price - y.price; })[0] || {};
       return send("POST", "/api/podpresets", { preset: { name: n, template_id: t.id || "", template_name: t.name || "", gpu: g.id || "", gpu_name: g.name || "", count: 1, cloud: "SECURE", disk: 50, volume: 100, cuda: t.cuda || "", kinds: [], styles: [] } });

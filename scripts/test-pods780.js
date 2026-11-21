@@ -10,7 +10,7 @@ const fs = require("fs"), os = require("os"), path = require("path"), Module = r
 const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 900))); } };
-let CFG = { rgpu: { runpod: { key: "rpa_TEST" } } };
+let CFG = { rgpu: { runpod: { key: "rpa_TEST" }, bitgen_image: false } };   // 2.901.0: the PyTorch path (no image pod) is what this tests
 const coreP = require.resolve("../lib/core"); const fake = new Module(coreP); fake.filename = coreP; fake.loaded = true;
 fake.exports = { getConfig: () => CFG, setConfig: (c) => { CFG = c; }, BASE: ROOT, STYLES_DIR: os.tmpdir() };
 require.cache[coreP] = fake;

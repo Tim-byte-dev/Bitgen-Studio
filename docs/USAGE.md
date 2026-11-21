@@ -8902,7 +8902,7 @@ A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel
 
 ## A new pod's first start takes time; models on a newer ComfyUI (2.781.1)
 
-**Allow time for the first start.** Creating a new pod and setting it up takes about 10-15 minutes, plus the time to transfer your models to it. Files the pod downloads itself (Hugging Face, Civitai) arrive quickly; files sent from your computer go at your upload speed. After that the pod starts in a few minutes.
+**Allow time for the first start.** A new bitGen pod is ready in about 3 minutes (2.901.0 - ComfyUI is already in its image), plus the time to transfer your models to it. Files the pod downloads itself (Hugging Face, Civitai) arrive quickly; files sent from your computer go at your upload speed. After that the pod starts in a few minutes.
 
 **A checkpoint in the checkpoints folder on a new pod.** A new pod gets the latest ComfyUI, which lists its models in a newer way. bitGen now reads that too, so a Basic Settings model (for example an all-in-one checkpoint from Civitai) that sits in models/checkpoints is loaded with Load Checkpoint when the style's workflow asks for a diffusion model, as it already was on your own computer.
 
@@ -10230,27 +10230,27 @@ Klein render now gets image 1 / image 2 in its prompt instead of <Picture 1>.
 ## 🚀 The bitGen pod template - ComfyUI ready on a new pod (2.900.0)
 
 A pod bitGen makes used to start from RunPod's plain PyTorch template, and bitGen then installed ComfyUI, its Python
-environment, ComfyUI-Manager and the node packs on it - 10 to 15 minutes before the first render. The **bitGen pod image**
-(ghcr.io/tim-byte-dev/bitgen-pod) has all of that already in it: GitHub builds it from bitGen's repository every week with the
-newest ComfyUI, and publishes it for free.
+environment, ComfyUI-Manager and the node packs on it - 10 to 15 minutes before the first render. Every new pod is now made
+from the **bitGen pod image** (ghcr.io/tim-byte-dev/bitgen-pod), which has all of that already in it: the pod is ready in
+about 3 minutes (2.901.0). GitHub builds the image from bitGen's repository every week with the newest ComfyUI, and
+publishes it for free.
 
-**Make the template once** (runpod.io ▸ My Templates ▸ New Template):
+**Nothing to set up.** **PODS ▸ Create pod…** and the box that asks which pod renders a style make the pod from the image by
+themselves. On its first start the pod copies ComfyUI to its disk (about a minute); bitGen's install steps then all say
+*already there* and it only starts ComfyUI, with your GPU-memory setting. Later starts keep everything on the pod's disk -
+models, node packs and updates included.
+
+**A template of your own (optional).** A template made from the image in your RunPod account is used in the image's place -
+bitGen finds it by itself (runpod.io ▸ My Templates ▸ New Template):
 
 | Field | Value |
 |---|---|
-| Name | bitGen Studio pod |
+| Template type / Compute type | Pod / Nvidia GPU |
 | Container image | ghcr.io/tim-byte-dev/bitgen-pod:latest |
 | Container disk | 50 GB |
-| Volume disk / mount path | 50 GB or more, /workspace |
+| Persistent storage | 50 GB or more, mounted at /workspace |
 | HTTP ports / TCP ports | 8188, 8888 / 22 |
-| Environment variable | JUPYTER_PASSWORD - any password |
-
-Public or private: bitGen finds a template made from the image in your own RunPod account by itself - nothing to type in
-bitGen. From then on **PODS ▸ Create pod…** and the box that asks which pod renders a style use it before RunPod's PyTorch
-template. On its first start the pod copies ComfyUI to its disk (about a minute); bitGen's install steps then all say
-*already there* and it only starts ComfyUI, with your GPU-memory setting. Later starts keep everything on the pod's disk -
-models, node packs and updates included. Without the template nothing changes: bitGen installs ComfyUI on RunPod's PyTorch
-template as before.
+| Environment variable | JUPYTER_PASSWORD - any password, without quotes |
 
 The template works without bitGen too: ComfyUI starts on port 8188 (its log is /workspace/.bitgen_comfy.log). The environment
 variables BITGEN_NO_COMFY=1 (do not start it) and BITGEN_COMFY_ARGS (other arguments, e.g. --lowvram) change that.

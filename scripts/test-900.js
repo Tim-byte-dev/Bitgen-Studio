@@ -42,10 +42,10 @@ const PI = require("../lib/podImage"), P = require("../lib/pods");
 
   // ---- live: find
   CAT = [T("pt", "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404", { source: "official" })];
-  check("find: nothing of ours anywhere = null", (await PI.find({ refresh: true })) === null);
+  check("find: no template of ours anywhere = the image itself (2.901.0)", ((await PI.find({ refresh: true })) || {}).source === "image");
   check("…it asked RunPod for the account's own templates and the public lists", calls.includes("own") && calls.some((c) => c.startsWith("cat:")), calls);
   OWN = [{ id: "tim1", name: "bitGen Studio pod", imageName: "ghcr.io/tim-byte-dev/bitgen-pod:latest", ports: ["8188/http", "8888/http", "22/tcp"] }];
-  check("find: cached for 10 minutes (no new answer without refresh)", (await PI.find()) === null);
+  check("find: cached for 10 minutes (no new answer without refresh)", ((await PI.find()) || {}).source === "image");
   PI.forget();
   const f1 = await PI.find();
   check("find: the account's own template (Tim makes it on runpod.io - nothing to type into bitGen)", f1 && f1.id === "tim1" && f1.source === "own", f1);
@@ -57,16 +57,17 @@ const PI = require("../lib/podImage"), P = require("../lib/pods");
   check("find: an id RunPod does not know is passed over", (await PI.find({ refresh: true })).id === "tim1");
   delete CFG.rgpu.bitgen_template;
   A.myTemplates = async () => { throw Object.assign(new Error("RunPod refused the API key"), { status: 401 }); };
-  check("find: RunPod refusing a list = that list passed over (no error)", (await PI.find({ refresh: true })) === null);
+  check("find: RunPod refusing a list = that list passed over (no error)", ((await PI.find({ refresh: true })) || {}).source === "image");
   A.myTemplates = async () => { calls.push("own"); return OWN; };
 
   // ---- live: lib/pods.js uses it
   PI.forget();
   const bt = await P.bitgenTemplate();
   check("bitgenTemplate: the bitGen pod template before RunPod's PyTorch one", bt.id === "tim1" && bt.install === true && bt.cuda === "12.8", bt);
-  OWN = []; PI.forget();
+  OWN = []; PI.forget(); CFG.rgpu.bitgen_image = false;
   const bt2 = await P.bitgenTemplate();
-  check("bitgenTemplate: without it, RunPod's PyTorch template as before", bt2.id === "pt" && bt2.install === true, bt2);
+  check("bitgenTemplate: rgpu.bitgen_image = false - RunPod's PyTorch template as before", bt2.id === "pt" && bt2.install === true, bt2);
+  delete CFG.rgpu.bitgen_image;
   OWN = [{ id: "tim1", name: "bitGen Studio pod", imageName: "ghcr.io/tim-byte-dev/bitgen-pod:latest", ports: ["8188/http", "8888/http", "22/tcp"] }]; PI.forget();
   require("../lib/podModels").setJupyter = () => {};
   const made = await P.create({ gpu: "NVIDIA GeForce RTX 4090", count: 1, cloud: "SECURE", disk: 50, volume: 50 });

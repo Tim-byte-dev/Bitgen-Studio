@@ -1,7 +1,7 @@
 {
  "lang": "ja",
  "v": "8388ce325a63",
- "count": 12105,
+ "count": 12108,
  "patternCount": 1389,
  "strings": {
   "'Total price includes GST'": "「Total price includes GST」",
@@ -12108,7 +12108,10 @@
   "＋ 📤 Invoice we sent": "＋ 📤 送った請求書",
   "＋ 📥 Bill to pay": "＋ 📥 支払う請求書",
   "＋ 🧾 Receipt": "＋ 🧾 領収書",
-  "－ Figure Smaller": "－ 図を小さく"
+  "－ Figure Smaller": "－ 図を小さく",
+  "Made from the bitGen Studio pod image - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "bitGen Studio pod イメージから作成 - ComfyUI、ComfyUI-Manager、よく使うノードパックが入っています：約 3 分で使えます。スタイルが使うカスタムノードとそのファイルを追加します（/workspace に保持）",
+  "Made from the bitGen Studio pod template - ComfyUI, ComfyUI-Manager and the common node packs already in it: ready in about 3 minutes; the custom nodes your styles use and their files are added (kept in /workspace)": "bitGen Studio pod テンプレートから作成 - ComfyUI、ComfyUI-Manager、よく使うノードパックが入っています：約 3 分で使えます。スタイルが使うカスタムノードとそのファイルを追加します（/workspace に保持）",
+  "already in the bitGen pod image (copied to /workspace on the first start, then started by bitGen)": "bitGen pod イメージに入っています（初回起動時に /workspace へコピーされ、bitGen が起動します）"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",
