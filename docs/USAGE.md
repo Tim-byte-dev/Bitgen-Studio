@@ -10227,6 +10227,35 @@ picture's number before you see the reply; a picture number written another way 
 the model's way too. ✨ Enhance writes for the picked image model or LTX / Wan as well - no H3 dialogue tags there - and a FLUX
 Klein render now gets image 1 / image 2 in its prompt instead of <Picture 1>.
 
+## 🚀 The bitGen pod template - ComfyUI ready on a new pod (2.900.0)
+
+A pod bitGen makes used to start from RunPod's plain PyTorch template, and bitGen then installed ComfyUI, its Python
+environment, ComfyUI-Manager and the node packs on it - 10 to 15 minutes before the first render. The **bitGen pod image**
+(ghcr.io/tim-byte-dev/bitgen-pod) has all of that already in it: GitHub builds it from bitGen's repository every week with the
+newest ComfyUI, and publishes it for free.
+
+**Make the template once** (runpod.io ▸ My Templates ▸ New Template):
+
+| Field | Value |
+|---|---|
+| Name | bitGen Studio pod |
+| Container image | ghcr.io/tim-byte-dev/bitgen-pod:latest |
+| Container disk | 50 GB |
+| Volume disk / mount path | 50 GB or more, /workspace |
+| HTTP ports / TCP ports | 8188, 8888 / 22 |
+| Environment variable | JUPYTER_PASSWORD - any password |
+
+Public or private: bitGen finds a template made from the image in your own RunPod account by itself - nothing to type in
+bitGen. From then on **PODS ▸ Create pod…** and the box that asks which pod renders a style use it before RunPod's PyTorch
+template. On its first start the pod copies ComfyUI to its disk (about a minute); bitGen's install steps then all say
+*already there* and it only starts ComfyUI, with your GPU-memory setting. Later starts keep everything on the pod's disk -
+models, node packs and updates included. Without the template nothing changes: bitGen installs ComfyUI on RunPod's PyTorch
+template as before.
+
+The template works without bitGen too: ComfyUI starts on port 8188 (its log is /workspace/.bitgen_comfy.log). The environment
+variables BITGEN_NO_COMFY=1 (do not start it) and BITGEN_COMFY_ARGS (other arguments, e.g. --lowvram) change that.
+misc/pod-image/README.md has the details.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

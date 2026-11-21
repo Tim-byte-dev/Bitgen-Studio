@@ -158,7 +158,9 @@ bitGen Studio can rent what your computer lacks and still run everything else at
   when the pod is ready. **The first time, a new pod takes about 10-15 minutes to create and set up, plus the time to transfer
   your models to it** (a 20 GB checkpoint downloads in a few minutes on the pod; files sent from your computer go at your
   upload speed). Stop the pod when you are done. (The link is bitGen's referral link - signing up with it helps fund
-  bitGen Studio.)
+  bitGen Studio.) **Faster:** make the *bitGen Studio pod* template once on runpod.io (image
+  `ghcr.io/tim-byte-dev/bitgen-pod:latest` - ComfyUI and the node packs already in it, see
+  [misc/pod-image/README.md](misc/pod-image/README.md)) and bitGen uses it by itself: a new pod is ready in a few minutes.
 - **[OpenRouter](https://openrouter.ai)** - run the language model (screenplays, ✨ Enhance, the prompt chat, picture
   descriptions) on OpenRouter instead of your card. One key, hundreds of models, many of them free. Its paid picture and
   video models work too: pick the ones you want in 🖥 GPU ▸ OpenRouter models… - bitGen shows the price

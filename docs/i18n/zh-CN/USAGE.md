@@ -6620,6 +6620,30 @@ BAS 数字是工作表：请通过 ATO 或你的税务代理申报。PAYG 预扣
 img 1、picture #2）也会改成模型的写法。✨ Enhance 也会为所选的图像模型或 LTX / Wan 来写 - 那里不使用 H3 的对白标签 - 而且
 FLUX Klein 的渲染现在在提示词中得到的是 image 1 / image 2，而不是 <Picture 1>。
 
+## 🚀 bitGen Pod 模板 - 新 Pod 上的 ComfyUI 开箱即用 (2.900.0)
+<!-- en: the-bitgen-pod-template-comfyui-ready-on-a-new-pod-2-900-0 a27459da8a93 -->
+
+以前 bitGen 创建的 Pod 从 RunPod 的普通 PyTorch 模板开始, 然后由 bitGen 在上面安装 ComfyUI、它的 Python 环境、
+ComfyUI-Manager 和节点包 - 第一次渲染前要等 10 到 15 分钟。**bitGen Pod 镜像** (ghcr.io/tim-byte-dev/bitgen-pod) 已经包含这一切: GitHub 每周用最新的 ComfyUI 从 bitGen 的仓库构建它, 并免费发布。
+
+**只需创建一次模板** (runpod.io ▸ My Templates ▸ New Template):
+
+| 字段 | 值 |
+|---|---|
+| Name | bitGen Studio pod |
+| Container image | ghcr.io/tim-byte-dev/bitgen-pod:latest |
+| Container disk | 50 GB |
+| Volume disk / mount path | 50 GB 或更多, /workspace |
+| HTTP ports / TCP ports | 8188, 8888 / 22 |
+| 环境变量 | JUPYTER_PASSWORD - 任意密码 |
+
+公开或私有均可: bitGen 会自动在你自己的 RunPod 账户中找到用此镜像创建的模板 - 无需在 bitGen 中输入任何内容。此后
+**PODS ▸ Create pod…** 以及询问用哪个 Pod 渲染风格的对话框会先使用它, 再考虑 RunPod 的 PyTorch 模板。第一次启动时 Pod 会把
+ComfyUI 复制到自己的磁盘 (约一分钟); 之后 bitGen 的每个安装步骤都显示 *已存在*, 它只按你的显存设置启动 ComfyUI。以后的启动会保留 Pod 磁盘上的一切 - 包括模型、节点包和更新。没有这个模板时一切照旧: bitGen 仍像以前一样在 RunPod 的 PyTorch 模板上安装 ComfyUI。
+
+不用 bitGen 也能使用这个模板: ComfyUI 在端口 8188 启动 (日志为 /workspace/.bitgen_comfy.log)。环境变量 BITGEN_NO_COMFY=1
+(不启动) 和 BITGEN_COMFY_ARGS (其他参数, 例如 --lowvram) 可以改变这一点。详情见 misc/pod-image/README.md。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

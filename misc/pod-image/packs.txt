@@ -1,0 +1,14 @@
+# The node packs baked into the bitGen pod image (2.900.0) - ids from lib/nodePacks.json (their addresses come from there).
+# Picked by how many of bitGen's built-in workflows use them (comfy_workflows/*.json): RunningHub's MiniMax H3 nodes 89,
+# the context loop 32, KJNodes 23, VideoHelperSuite 20, the MMH3 upscaler 12, GGUF 4, rgthree 3 - plus ComfyUI-Manager
+# (bitGen installs / restarts through it) and Spectrum (bitGen's speed-up adds it to MiniMax H3 renders).
+# Anything else a style needs is still installed on the pod when it is needed (lib/podPrep.js, lib/podNodes.js).
+manager
+rh
+contexloop
+kjnodes
+vhs
+upscale
+gguf
+rgthree
+spectrum

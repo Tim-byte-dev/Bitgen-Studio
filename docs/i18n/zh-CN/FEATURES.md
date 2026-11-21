@@ -505,6 +505,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **把 NO_Pod 文件放到你已有的 Pod 上** — 选择已终止 Pod 的文件时，会指出你的哪个 Pod 上已经有它（Start that pod / Use that pod），并列出其他所有 Pod（正在运行的在前），说明每个 Pod 上已有什么、要发送什么（空间不足或模型可能放不进显卡时会警告）；只发送 Pod 上没有的文件——模型会连同 VAE 和文本编码器一起转移——所选项在所有保存的地方都变成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
 - **缺少的模型：下载到本机或发送到 Pod** — 渲染缺少的模型 / LoRA 按名称在网上查找并下载到本机，或（在 RunPod Pod 上）询问后 ⬆ Send to <pod>。*Where:* Models not found 对话框。*Since:* 2.806.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
+- **bitGen Pod 模板: ComfyUI 已经装在 Pod 上** — 一个 RunPod 模板, 其镜像 (ghcr.io/tim-byte-dev/bitgen-pod, 由 GitHub 每周构建) 已包含 ComfyUI、它的 Python 环境、ComfyUI-Manager 以及 bitGen 风格最常用的节点包: 新 Pod 在第一次启动时把它复制到自己的磁盘, 几分钟即可使用, 而不是 10–15 分钟; bitGen 会先选它, 再考虑 RunPod 的 PyTorch 模板 (你的 RunPod 账户中用此镜像创建的模板、公开模板或你设置的 ID), 安装的每一步都显示已存在。不用 bitGen 也能使用该模板: ComfyUI 在端口 8188 启动。 *Where:* PODS ▸ Create pod…; 询问用哪个 Pod 渲染风格的对话框; runpod.io ▸ My Templates (misc/pod-image/README.md)。 *Since:* 2.900.0
 
 ### 显卡、能耗和费用
 

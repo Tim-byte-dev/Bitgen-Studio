@@ -505,6 +505,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **NO_Pod のファイルを手持ちの Pod へ** — 終了した Pod のファイルを選ぶと、そのファイルを持っている自分の Pod を示し（Start that pod / Use that pod）、ほかのすべての Pod を動いているものから順に、すでにあるものと送られるものを添えて提案します（空き容量不足やモデルがカードに収まらないおそれは警告）。送るのは Pod にないものだけで、モデルは VAE とテキストエンコーダーと一緒に移り、選んだものは保存されているすべての場所で <pod name>/<file> になります。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
 - **足りないモデル: ここにダウンロード、または Pod に送信** — レンダリングに足りないモデル / LoRA を名前でオンライン検索してここにダウンロード、または（RunPod の Pod では）確認のうえ ⬆ Send to <pod>。*Where:* Models not found ボックス。*Since:* 2.806.0
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
+- **bitGen ポッドテンプレート: ComfyUI がポッドに入っている** — イメージ (ghcr.io/tim-byte-dev/bitgen-pod、GitHub が毎週ビルド) に ComfyUI、その Python 環境、ComfyUI-Manager、bitGen のスタイルがよく使うノードパックが入っている RunPod テンプレート: 新しいポッドは最初の起動でそれを自分のディスクにコピーし、10〜15 分ではなく数分で使えます。bitGen は RunPod の PyTorch テンプレートより先にこれを選び (RunPod アカウントでこのイメージから作ったテンプレート、公開テンプレート、または設定した ID)、インストールの各段階はすべて「既にあります」になります。bitGen なしでも使えます: ComfyUI がポート 8188 で起動します。 *Where:* PODS ▸ Create pod…; スタイルをどのポッドで描くか尋ねるボックス; runpod.io ▸ My Templates (misc/pod-image/README.md)。 *Since:* 2.900.0
 
 ### グラフィックカード、電力、コスト
 

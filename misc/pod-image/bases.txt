@@ -1,0 +1,8 @@
+# The bitGen pod image's starting point (2.900.0): RunPod's own PyTorch images - their /start.sh runs SSH, Jupyter (the
+# JUPYTER_PASSWORD bitGen sets) and our /pre_start.sh + /post_start.sh. The FIRST one Docker Hub has is used
+# (.github/workflows/pod-image.yml checks each). CUDA 12.8: it runs on every RunPod host driver bitGen asks for (lib/pods.js).
+# A host that already has the RunPod image's layers does not download them again (Docker keeps layers by their digest).
+runpod/pytorch:1.0.3-cu1281-torch291-ubuntu2404
+runpod/pytorch:1.0.3-cu1281-torch280-ubuntu2404
+runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404
+runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
