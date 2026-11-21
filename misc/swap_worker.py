@@ -190,6 +190,41 @@ def swap_quality(base, graph, quality):
     return graph
 
 
+def swap_basic(graph, params):
+    """2.905.0 (Tim: "make sure it works with all video models"): Basic Settings' Override style on a swap - its steps
+    on every scheduler with a typed count (over the quality preset), cfg above 1 = true CFG like H3 (scripts/truecfg.py).
+    params["basic"] = {steps, cfg} only while Override style is on."""
+    bs = params.get("basic") if isinstance(params.get("basic"), dict) else None
+    if not bs:
+        return graph
+    st = int(bs.get("steps") or 0)
+    if st > 0:
+        hit = []
+        for k, v in graph.items():
+            ins = (v or {}).get("inputs") or {} if isinstance(v, dict) else {}
+            if v.get("class_type") == "BasicScheduler" and isinstance(ins.get("steps"), (int, float)) \
+                    and float(ins.get("denoise", 1) or 1) >= 0.99:
+                ins["steps"] = st
+                hit.append(str(k))
+        say(f"[worker] Basic Settings (Override style): {st} steps" + (f" (node {', '.join(hit)})" if hit
+            else " - this swap graph has no scheduler with a typed count"))
+    cf = bs.get("cfg")
+    try:
+        cf = float(cf) if cf is not None else None
+    except (TypeError, ValueError):
+        cf = None
+    if cf is not None and cf > 1:
+        tc = getattr(_W, "_tc", None) if _W is not None else None
+        if tc is None:
+            say(f"[worker] cfg {cf:g} (Basic Settings) not used - scripts/truecfg.py did not load")
+        else:
+            graph, notes = tc.apply(graph, cf, use_lora=str(params.get("quality") or "fast") == "fast",
+                                    negative=str(params.get("negative_prompt") or ""))
+            for n in notes:
+                say(f"[worker] {n}")
+    return graph
+
+
 def params_short_side(vr):
     return int(vr.get("_short_side") or 544)
 
@@ -360,6 +395,7 @@ def main() -> None:
     # 2.336.0: QUALITY - the swap LoRA was tested without the turbo LoRA at
     # 28 steps; Full / Best switch the turbo row off (scripts/swap_graph.py)
     graph = swap_quality(base, graph, params.get("quality"))
+    graph = swap_basic(graph, params)                       # 2.905.0: Override style's steps / cfg over the preset
     if params.get("upscale_stage"):
         if _us is None:
             fail(f"scripts/upscalestage.py did not load ({_us_err}) - the segment cannot be upscaled")

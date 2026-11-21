@@ -751,6 +751,9 @@ function mount(app) {
       // value (distilled); absent means exactly that, so old clients change
       // nothing. numOr, not ||: a numeric field never goes through truthiness.
       cfg: Math.max(0.5, Math.min(15, bo && bo.cfg != null ? bo.cfg : styles.numOr(f.cfg, 1))),
+      // 2.905.0 (Tim: "it is not overiding with fast h3 omni"): Override style's cfg - FastH3 / 16 GB mode keep it
+      // (misc/worker.py cfg_kept); false = Override on with the cfg left blank (its steps still win in 16 GB mode)
+      ...(bo ? { cfg_override: bo.cfg != null } : {}),
       seed: seedPick.pick(bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1), videoStyle, { override: !!bo, max: 2 ** 31 - 1 }),   // 2.598.0: + the style's fixed seed (lib/seedPick.js)
       // 2.102.1: mp4 is the default (webm does not share over Messenger)
       ...socialFormat.forJob(f.format),   // 2.600.0: mp4 | webm | avi, or a social choice (mp4 + social: made ready for the sites when done)

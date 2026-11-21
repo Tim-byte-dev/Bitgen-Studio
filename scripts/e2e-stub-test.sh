@@ -14774,6 +14774,17 @@ node scripts/test-904.js > /tmp/t904.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui904-ui.js > /tmp/ui904.log 2>&1 \
   && ok "2.904.0 browser test: Override on with Use model / Use temporary LoRAs unticked - H3, a picture and PAN 2 still send size / steps / CFG / seed / sampler / scheduler, only the model and LoRAs stay the style's; ticked = all; off = none" \
   || { bad "2.904.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui904.log | head -12; }
+# ---- 2.905.0 (Override style on EVERY video model - FastH3 Omni keeps Override's CFG, 16 GB mode its steps, chain styles' plans,
+# Viggle's steps, H3 Long Video and Swap mode take it; LTX 2.3's second pass gets the seed)
+node scripts/test-905.js > /tmp/t905.log 2>&1 \
+  && ok "2.905.0 units: cfg_override on the jobs, H3 Long Video withBasic + graph (cfg / model / LoRAs), Swap withBasic + jobParams, the board's Viggle / long scenes, the header on /api/h3long + /api/swap" \
+  || { bad "2.905.0 units"; grep -a "^FAIL" -A1 /tmp/t905.log | head -12; }
+python3 scripts/test-905.py > /tmp/t905py.log 2>&1 \
+  && ok "2.905.0 python: FastH3 keeps Override's cfg, 16 GB mode's pass-1 steps, chain plans take size / steps / seed, swap_basic, LTX's second seed" \
+  || { bad "2.905.0 python"; grep -a "^FAIL" -A1 /tmp/t905py.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui905-ui.js > /tmp/ui905.log 2>&1 \
+  && ok "2.905.0 browser test: FastH3 Omni, H3 Long Video and Swap send Override + the sampler header (boxes off = no model / LoRAs, on = both, Override off = none); the server renders FastH3 Omni at Override's CFG 3.5" \
+  || { bad "2.905.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui905.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

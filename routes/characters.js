@@ -1048,8 +1048,12 @@ function queueScene(project, n, opts) {
       const others = imgMeta.filter((m) => m && m.kind !== "sheet" && m.kind !== "frame" && m.file && fs.existsSync(m.file));
       const refs = sheets.concat(others).slice(0, 4);
       const memory = H3L.memory(sheets.map((m) => ({ name: m.label || m.tag || "" })), !!first);
+      // 2.905.0: Override style (the board's kept Basic Settings) - its steps / cfg / seed and the model Use model sent
+      const ovb = rsAll.basic_override ? { steps: rsAll.basic_steps || 0, cfg: rsAll.basic_cfg, model: rsAll.basic_model || "",
+        seed: rsAll.basic_seed >= 0 ? rsAll.basic_seed : null } : null;
       const p3 = H3L.params({ prompt: jobPrompt, seconds: secs3 || frames / 24, width: rs.width, height: rs.height,
-        seed: upExport && Number.isFinite(shotSeed) ? shotSeed : null, steps: 0, first, refs: refs.map((m) => m.file), memory,
+        seed: upExport && Number.isFinite(shotSeed) ? shotSeed : ovb && ovb.seed != null ? ovb.seed : null,
+        steps: ovb ? ovb.steps : 0, cfg: ovb ? ovb.cfg : null, model: ovb ? ovb.model : "", first, refs: refs.map((m) => m.file), memory,
         shotLength: "fixed", upscale2k: false, prefix: `scene_${r.n}`, name: `StoryBoard scene ${r.n} (H3 Long Video)` });
       if (p3.error) return { status: p3.needs ? 409 : 503, error: p3.error, notes: notes.concat(missing) };
       if (songPath) notes.push("H3 Long Video: the scene's song is not lip-synced (the node makes its own sound)");
@@ -1082,6 +1086,7 @@ function queueScene(project, n, opts) {
     audio_dur: audioWin && Number.isFinite(audioWin.dur) ? audioWin.dur : undefined,
     anchor: r.anchor || undefined,
     width: rs.width, height: rs.height, frames, steps: rs.steps, cfg: rs.cfg,
+    ...(rs.basic ? { cfg_override: rs.basic.cfg != null } : {}),   // 2.905.0: Override style's cfg (misc/worker.py cfg_kept)
     seed: upExport && Number.isFinite(shotSeed) ? shotSeed : -1,
     // 2.384.0: the plan's seed (a chain graph keeps it) - said in the log as the seed used (the job's metadata)
     ...(shot.seed !== undefined && shot.seed !== "" ? { plan_seed: String(shot.seed) } : {}),
@@ -1246,6 +1251,7 @@ function queueRefScene(project, st, r) {
     video_style: rs.video_style,   // pin every mode to ref2va.json (workflows: {})
     video_style_id: style.id || null, video_style_name: style.name,
     width: rs.width, height: rs.height, frames, steps: rs.steps, cfg: rs.cfg,
+    ...(rs.basic ? { cfg_override: rs.basic.cfg != null } : {}),   // 2.905.0: Override style's cfg (misc/worker.py cfg_kept)
     seed: -1,
     // 2.315.0: only with the ⚙'s "Upscale every render" - else ⏫ does it
     ...(rs.upscale_stage && rs.upscale_auto ? { upscale_stage: rs.upscale_stage } : {}),

@@ -6,6 +6,7 @@
 //   POST /api/swap                 the prompt docker's Swap mode: a picture
 //                                  (multipart "image") + a project video
 //                                  asset by name ("video") + text/start/dur
+//                                  + basic (2.905.0: Override style)
 //   POST /api/scenes/:n/swap       a rendered scene's take + a cast sheet
 //                                  ("character") or a dropped picture
 //                                  ("image"); the result is the scene's
@@ -74,9 +75,10 @@ function mount(app) {
       + "the reference dock's Video tab" });
     const s = stage(req.file);
     const ps = pickStyle(b.video_style_id);
-    const p = swap.jobParams({ workflow: ps.workflow, style: ps.style, video: path.join(core.pDir("video"), vname),
-      image: s.image, text: b.prompt, start: b.start, dur: b.dur,
-      width: b.width, height: b.height, seed: b.seed, cfg: core.getConfig(), quality: b.quality });
+    const ov = swap.withBasic(ps.style, b.basic, b.seed);   // 2.905.0: Override style (lib/swap.js withBasic)
+    const p = swap.jobParams({ workflow: ps.workflow, style: ov.style, video: path.join(core.pDir("video"), vname),
+      image: s.image, text: b.prompt, start: b.start, dur: b.dur, basic: ov.bo,
+      width: b.width, height: b.height, seed: ov.seed, cfg: core.getConfig(), quality: b.quality });
     if (p.error) { fs.rmSync(s.dir, { recursive: true, force: true }); return res.status(400).json({ error: p.error }); }
     if (!await comfyUp(res)) return;
     const job = core.makeJob(p, s.id, s.dir);
@@ -110,8 +112,13 @@ function mount(app) {
     const d = core.getConfig().defaults || {};
     const size = require("../lib/renderSettings").dims(rs.res, rs.aspect) || { width: d.width, height: d.height };
     const ps = pickStyle(b.video_style_id);
-    const p = swap.jobParams({ workflow: ps.workflow, style: ps.style, video, image: pic, text: b.prompt,
-      start: b.start, dur: b.dur, width: size.width, height: size.height, seed: b.seed,
+    // 2.905.0: the board's kept Override style (lib/renderSettings) - steps / cfg / model / its temporary video LoRAs;
+    // the seed: lib/sceneSeed.js (the scene's own, else Override's)
+    const bo = rs.basic_override ? { override: true, steps: rs.basic_steps || 0, cfg: rs.basic_cfg, seed: -1, model: rs.basic_model || "",
+      loras: require("../lib/basicUse").loras("video") ? require("../lib/tempLoras").read(core.projDir(project || core.getProject()), "video") : [] } : null;
+    const ov = swap.withBasic(ps.style, bo, b.seed);
+    const p = swap.jobParams({ workflow: ps.workflow, style: ov.style, video, image: pic, text: b.prompt, basic: ov.bo,
+      start: b.start, dur: b.dur, width: size.width, height: size.height, seed: ov.seed,
       cfg: core.getConfig(), quality: b.quality, scene: { n: r.n, chapter: r.chapter, swap: true } });
     if (p.error) { fs.rmSync(s.dir, { recursive: true, force: true }); return res.status(400).json({ error: p.error }); }
     if (!await comfyUp(res)) return;

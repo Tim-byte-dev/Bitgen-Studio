@@ -62,6 +62,8 @@
     for (var tries = 0; tries < 2; tries++) {
       var fd = form(text, { refs: refsNow(), seconds: val("seconds"), width: val("width"), height: val("height"), seed: val("seed"),
         steps: val("steps"), upscale2k: store(K2K) === "1", styleId: st.id });
+      // 2.905.0 (Tim: "make sure it works with all video models"): Basic Settings' Override style, as every video render sends it
+      if (root.H3Basic && root.H3Basic.json) fd.append("basic", root.H3Basic.json());
       var res = await fetch("/api/h3long", { method: "POST", body: fd });
       var j = await res.json().catch(function () { return {}; });
       if (res.ok) {

@@ -3,7 +3,8 @@
 // lib (routes/characters.js queueScene).
 //   GET  /api/h3long        {installed, note, items, comfy: {online, ok, missing, warnings} }
 //   POST /api/h3long        multipart: first (the first frame), refs (up to 4 reference pictures); fields prompt, seconds,
-//                           width, height, seed, steps, memory (character lines), shot_length, upscale2k, video_style_id
+//                           width, height, seed, steps, memory (character lines), shot_length, upscale2k, video_style_id,
+//                           basic (2.905.0 - Basic Settings' Override style, lib/h3LongVideo.js withBasic)
 //                           -> a graph job + {notes, shots, shot_seconds} | 400 / 409 {error, needs, missing} / 503
 "use strict";
 const fs = require("fs");
@@ -58,14 +59,19 @@ function mount(app) {
     const first = files.first && files.first[0] ? keep(core, files.first[0], "h3long-first") : "";
     const refs = (files.refs || []).slice(0, 4).map((f, i) => keep(core, f, "h3long-ref" + (i + 1)));
     const seconds = Math.max(1, Math.min(L().MAX_SECONDS, parseFloat(b.seconds) || 40));
+    // 2.905.0 (Tim: "make sure it works with all video models"): Override style - its steps / CFG / seed, the model and
+    // temporary LoRAs as Use model / Use temporary LoRAs send them (the sampler / scheduler ride in the X-Bitgen-Sampler header)
+    const ov = L().withBasic(b.basic, b);
     const p = L().params({ info, prompt, seconds, width: +b.width, height: +b.height,
-      seed: b.seed === undefined || b.seed === "" || +b.seed < 0 ? null : +b.seed, steps: +b.steps || 0,
+      seed: ov.seed, steps: ov.steps, cfg: ov.cfg, model: ov.model, loras: ov.loras,
       first, refs, memory: String(b.memory || ""), shotLength: String(b.shot_length || "fixed"), upscale2k: truthy(b.upscale2k),
       prefix: "h3long", name: "H3 Long Video" });
     if (p.error) throw err(p.needs ? 409 : 503, p.error, { needs: p.needs || "comfy", missing: p.missing });
-    const job = core.makeJob(Object.assign({}, p.params, { video_style_id: b.video_style_id || null, seed_random: b.seed === undefined || b.seed === "" || +b.seed < 0 }));
+    const job = core.makeJob(Object.assign({}, p.params, { video_style_id: b.video_style_id || null, seed_random: ov.seed == null }));
     job.chunk = { i: 0, n: 1 };
-    return Object.assign(core.jobDict(job), { notes: p.notes, shots: p.plan.shots, shot_seconds: p.plan.shotSeconds });
+    const bn = ov.bo ? require("../lib/basicOverride").note(ov.bo, "H3 Long Video") : "";
+    if (bn) try { job.log.push("[bitgen-studio] " + bn); } catch { /* a log line */ }
+    return Object.assign(core.jobDict(job), { notes: p.notes.concat(bn ? [bn] : []), shots: p.plan.shots, shot_seconds: p.plan.shotSeconds });
   }));
 }
 module.exports = { mount };

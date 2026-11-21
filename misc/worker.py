@@ -1795,9 +1795,47 @@ def _apply_refmods(g, names):
 
 
 
+def _chain_override(g, width, height, o):
+    """2.905.0: Override style's size / steps / fixed seed into every MiniMaxH3ChainPlan of `g` (in place) -> what was
+    written (words). o = {"steps": n, "seed": n | None}. The plan's own prompts and lengths are kept."""
+    done = []
+    for v in g.values():
+        if not isinstance(v, dict) or v.get("class_type") != "MiniMaxH3ChainPlan":
+            continue
+        ins = v.setdefault("inputs", {})
+        if width and height:
+            for k, val in (("width", int(width)), ("height", int(height))):
+                if k in ins and not (isinstance(ins[k], list)):
+                    ins[k] = type(ins[k])(val) if isinstance(ins[k], (str, int)) else val
+            done.append(f"size {int(width)}x{int(height)}")
+        st, sd = int(o.get("steps") or 0), o.get("seed")
+        if st > 0 and "default_steps" in ins and not isinstance(ins["default_steps"], list):
+            ins["default_steps"] = type(ins["default_steps"])(st) if isinstance(ins["default_steps"], (str, int)) else st
+        if sd is not None and "base_seed" in ins and not isinstance(ins["base_seed"], list):
+            ins["base_seed"] = str(int(sd)) if isinstance(ins["base_seed"], str) else int(sd)
+        try:
+            plan = json.loads(str(ins.get("plan_json") or ""))
+        except Exception:                      # noqa: BLE001 - no plan to change
+            plan = None
+        if isinstance(plan, dict) and isinstance(plan.get("shots"), list):
+            for sh in plan["shots"]:
+                if not isinstance(sh, dict):
+                    continue
+                if st > 0:
+                    sh["steps"] = st
+                if sd is not None:
+                    sh["seed"] = str(int(sd)) if isinstance(sh.get("seed"), str) else int(sd)
+            ins["plan_json"] = json.dumps(plan, indent=2, ensure_ascii=False)
+        if st > 0:
+            done.append(f"{st} steps a shot")
+        if sd is not None:
+            done.append(f"seed {int(sd)} for every shot")
+    return done
+
+
 def _patch_workflow(g, *, prompt, seed, frames, width, height, steps,
                     images, videos=(), audios=(), use_lora=False, cfg=1.0,
-                    clip_device="", upscale=True, force_seed=False, plan_seed=None):
+                    clip_device="", upscale=True, force_seed=False, plan_seed=None, override=None):
     """Set values by key presence on the pack's nodes; assign uploaded refs to
     loader slots in order; prune every unused loader + its reference node and
     rewire the chain, so the graph always matches the loaded ref counts.
@@ -1911,6 +1949,15 @@ def _patch_workflow(g, *, prompt, seed, frames, width, height, steps,
         say(f"[comfy] seed used: {seed} (set for this scene)")
     elif ("seed" in chain_kept or "noise_seed" in chain_kept) and plan_seed is not None:
         say(f"[comfy] seed used: {plan_seed} (the plan's, for this scene)")   # 2.384.0: the job's metadata
+    # 2.905.0 (Tim: "make sure it works with all video models"): Override style ON on a chain graph - Basic Settings'
+    # size, steps and a fixed seed go into the PLAN the chain reads (ChainPlan's width / height / default_steps /
+    # base_seed and every shot's steps / seed); the screenplay's prompts and shot lengths stay its own.
+    # override = {"steps": n or 0, "seed": n or None} (None = Override style off)
+    if chain_kept and isinstance(override, dict):
+        done = _chain_override(g, width, height, override)
+        if done:
+            say("[comfy] chain graph: Basic Settings (Override style) written into the plan - " + ", ".join(done))
+            chain_kept -= {"width", "height", "steps", "sigma_points"} | ({"seed", "noise_seed"} if override.get("seed") is not None else set())
     if chain_kept:
         say("[comfy] chain graph: " + ", ".join(sorted(chain_kept))
             + " ride the PLAN (ChainCurrent links kept) - Basic Settings' "
@@ -3172,7 +3219,11 @@ def _viggle_fill(g, params, seg_mode, refs, first_frame, frames, up, uploads, vs
             "seg_mode": seg_mode, "refs": refs, "first_frame": first_frame,
             "motion": vids[0] if vids else None, "offset": int(params.get("_chunk_offset") or 0),
             "frames": int(frames), "width": int(params["width"]), "height": int(params["height"]),
-            "seed": seed, "steps": int(params.get("viggle_steps") or 0) or _hv.STEPS,
+            # 2.905.0 (Tim: "make sure it works with all video models"): Override style's steps beat Viggle's 3
+            # (the sigmas interpolated - scripts/viggle_graph.sigmas_for)
+            "seed": seed, "steps": (int(params.get("steps") or 0) if params.get("cfg_override") is not None
+                                    and int(params.get("steps") or 0) > 0 else 0)
+                                   or int(params.get("viggle_steps") or 0) or _hv.STEPS,
             "loras": (vstyle or {}).get("loras") or [], "workdir": str(Path.cwd()),
             "prefix": f"bitgen_{Path.cwd().name}"}, _upl)
     except (ValueError, RuntimeError) as e:
@@ -3243,6 +3294,12 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
     if viggle:
         g, frames, up_vids, up_auds = _viggle_fill(g, params, seg_mode, refs, first_frame, frames,
                                                    _up, uploads, vstyle)
+        # 2.905.0: Override style's cfg cannot reach a Viggle take - it reads no prompt (a fixed text embedding), so
+        # there is no negative to guide against; said, never silently dropped
+        _vc = float(params.get("cfg") or 1)
+        if params.get("cfg_override") and _vc > 1:
+            say(f"[comfy] Viggle: cfg {_vc:g} (Basic Settings) not used - Viggle reads no prompt (a fixed text embedding), "
+                "so there is nothing to guide against; its steps, seed, size and sampler are Basic Settings'")
     else:
         # 2.379.2: H3 renders in 32-px steps - never ask it for the strip it cannot draw (the bottom "vignette")
         # 2.380.0: the size ASKED for stays in _req_w / _req_h (every chunk re-reads it); "up" renders the next
@@ -3319,6 +3376,9 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         steps, steps_note = resolve_steps(g, params.get("steps", 0), use_lora)
         say(f"[comfy] {steps_note}")
         cfg_val = params.get("cfg", 1.0)
+        # 2.905.0: Basic Settings' Override style sent this cfg (routes/index.js, routes/characters.js cfg_override) -
+        # FastH3 / 16 GB mode keep it instead of their distilled cfg 1
+        cfg_kept = bool(params.get("cfg_override"))
         if vstyle:
             # the style's phases (model/steps/cfg per sampler), te, vae, loras.
             # Phase 1's steps/cfg become THE steps/cfg the shared patch writes,
@@ -3337,23 +3397,34 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                             clip_device=_clip_device(cfg),
                             force_seed=bool(params.get("force_seed")) and seed >= 0,
                             plan_seed=params.get("plan_seed"),
+                            # 2.905.0: Override style on (cfg_override set) - a chain graph's plan takes its values
+                            override=({"steps": int(params.get("steps") or 0),
+                                       "seed": int(params["seed"]) if int(params.get("seed", -1)) >= 0 else None}
+                                      if params.get("cfg_override") is not None else None),
                             upscale=bool(params.get("upscale", True)) or bool(params.get("upscale_stage")))
         g = _apply_refmods(g, params.get("refmods"))   # 2.225.0: cast identity mods
         if _f3 is not None and _f3.detect(g):  # 2.573.0: FastH3 Omni - its recipe, whatever graph carries it
             g, f3notes = _f3.apply(g, explicit_steps=int(params.get("steps", 0) or 0),
-                                   kitchen=None if rp else _kitchen_attn(base))
+                                   kitchen=None if rp else _kitchen_attn(base), keep_cfg=cfg_kept)
             for n in f3notes:
                 say(f"[comfy] {n}")
-            if float(cfg_val or 1) > 1:
+            if float(cfg_val or 1) > 1 and cfg_kept:      # 2.905.0: Override style's cfg wins (Tim: "it is not overiding with fast h3 omni")
+                say(f"[comfy] FastH3: cfg {cfg_val} (Basic Settings - Override style) - the model is distilled for cfg 1; "
+                    "above 1 = true CFG, a negative pass per step (about 2x the time)")
+            elif float(cfg_val or 1) > 1:
                 say(f"[comfy] FastH3: cfg {cfg_val} -> 1 (the model is distilled with guidance built in)")
                 cfg_val = 1.0
         if not rp:                             # 2.708.0: 16 GB mode (Settings ▸ ComfyUI ▸ 16 GB mode)
             o16 = _vram16_opts(base, cfg, upscale_stage=bool(params.get("upscale_stage")))
+            if o16 is not None and int(params.get("steps", 0) or 0) > 0 and params.get("cfg_override") is not None:
+                o16["steps"] = int(params.get("steps"))       # 2.905.0: Override style's steps win in pass 1
             if o16 is not None:
                 g, n16 = _h16.apply(g, o16)
                 for n in n16:
                     say(f"[comfy] {n}")
-                if any(n.startswith("16 GB mode: pass 1 =") for n in n16) and float(cfg_val or 1) > 1:
+                if any(n.startswith("16 GB mode: pass 1 =") for n in n16) and float(cfg_val or 1) > 1 and cfg_kept:
+                    say(f"[comfy] 16 GB mode: cfg {cfg_val} (Basic Settings - Override style) kept - the 8-step LoRAs want 1")
+                elif any(n.startswith("16 GB mode: pass 1 =") for n in n16) and float(cfg_val or 1) > 1:
                     say(f"[comfy] 16 GB mode: cfg {cfg_val} -> 1 (the 8-step LoRAs are distilled with guidance built in)")
                     cfg_val = 1.0
         elif _vram16_cfg(cfg)["mode"] != "off":

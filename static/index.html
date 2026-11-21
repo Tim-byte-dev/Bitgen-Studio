@@ -5847,6 +5847,7 @@ async function submitSwap(text) {
   for (const k of ["width", "height", "seed"]) fd.append(k, $(k).value);
   // 2.328.0: the picked style when it is a swap style (else the server uses mmh3_chr_swap)
   if ($("videoStyleSel") && $("videoStyleSel").value) fd.append("video_style_id", $("videoStyleSel").value);
+  if (window.H3Basic) fd.append("basic", H3Basic.json());   // 2.905.0: Override style (lib/swap.js withBasic)
   const res = await fetch("/api/swap", { method: "POST", body: fd });
   const j = await res.json();
   if (!res.ok) { alert(j.error || "Swap request failed"); return null; }

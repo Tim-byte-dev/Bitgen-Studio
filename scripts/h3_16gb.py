@@ -167,12 +167,15 @@ def apply(g, opt=None):
     turbo = o.get("turbo", True) and files.get("acc") and ok("shift")
     if turbo:
         gin["model"] = chain(base, [(files["acc"], "acc")], "p1", False)
+        # 2.905.0 (Tim: "make sure it works with all video models"): Basic Settings' Override steps win over the 8
+        p1 = int(o.get("steps") or 0) if int(o.get("steps") or 0) > 0 else STEPS
         if f["scheduler"]:
-            g[f["scheduler"]]["inputs"]["steps"] = STEPS
+            g[f["scheduler"]]["inputs"]["steps"] = p1
         sl = samp["inputs"].get("sampler")
         if _is_link(sl) and (g.get(str(sl[0])) or {}).get("class_type") == "KSamplerSelect":
             g[str(sl[0])]["inputs"]["sampler_name"] = "euler"
-        notes.append(f"16 GB mode: pass 1 = {STEPS} steps with the Ref2VA Acc 8-step LoRA + sigma shift 12 / 3, euler"
+        notes.append(f"16 GB mode: pass 1 = {p1} steps" + (" (Basic Settings)" if p1 != STEPS else "")
+                     + " with the Ref2VA Acc 8-step LoRA + sigma shift 12 / 3, euler"
                      + (" (the graph's own turbo switch bypassed)" if switched else "")
                      + (", comfy kitchen attention" if kitchen else ""))
     elif o.get("turbo", True):

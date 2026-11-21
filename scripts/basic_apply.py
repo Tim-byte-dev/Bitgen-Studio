@@ -54,6 +54,24 @@ def apply(graph, basic):
     notes = []
     if not isinstance(basic, dict):
         return notes
+    # 2.905.0 (Tim: "make sure it works with all video models"): a seed set in Basic Settings reaches EVERY noise of
+    # the graph - LTX 2.3's template keeps a fixed 42 on its second pass; the first noise has the seed already
+    # (ltx_worker), the others get seed + 1, + 2 ... (a random seed, -1, leaves them as the template has them)
+    sd = basic.get("seed")
+    if _num(sd) and sd >= 0:
+        noises = [n for n in graph.values() if isinstance(n, dict) and n.get("class_type") == "RandomNoise"
+                  and _num((n.get("inputs") or {}).get("noise_seed"))]
+        first = next((n for n in noises if int(n["inputs"]["noise_seed"]) == int(sd)), noises[0] if noises else None)
+        if first is not None:
+            first["inputs"]["noise_seed"] = int(sd)
+        k = 1
+        for n in noises:
+            if n is first:
+                continue
+            if int(n["inputs"]["noise_seed"]) != int(sd) + k:
+                notes.append(f"seed {n['inputs']['noise_seed']} -> {int(sd) + k} (a second pass's noise, Basic Settings override)")
+                n["inputs"]["noise_seed"] = (int(sd) + k) & 0xFFFFFFFFFFFF
+            k += 1
     steps = basic.get("steps")
     steps = int(steps) if _num(steps) and steps >= 1 else 0
     cfg = basic.get("cfg")

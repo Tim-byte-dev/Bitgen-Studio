@@ -23,7 +23,7 @@
   function kindOfUrl(u) {
     var p = String(u || "").replace(/^https?:\/\/[^/]+/, "").split("?")[0];
     if (/^\/api\/(genimage|aiedit)(\/|$)/.test(p)) return "image";
-    if (/^\/api\/(generate|ltx)(\/|$)/.test(p) || /^\/api\/pan2$/.test(p)) return "video";   // 2.904.0: + PAN 2's render (not its caption)
+    if (/^\/api\/(generate|ltx)(\/|$)/.test(p) || /^\/api\/(pan2|h3long|swap)$/.test(p)) return "video";   // 2.904.0: + PAN 2's render (not its caption); 2.905.0: H3 Long Video + Swap
     return "";
   }
   /** the header's value for a pick (pure) - "" when both are the style's own */

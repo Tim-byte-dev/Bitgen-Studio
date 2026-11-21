@@ -91,9 +91,10 @@ def _final_edge(g):
     return None
 
 
-def apply(g, explicit_steps=0, kitchen=None):
+def apply(g, explicit_steps=0, kitchen=None, keep_cfg=False):
     """the FastH3 recipe on graph `g` (in place) -> (g, notes). kitchen: True/False when the caller knows whether
-    ComfyUI offers "comfy kitchen attention", None = leave the backend's value as it is"""
+    ComfyUI offers "comfy kitchen attention", None = leave the backend's value as it is. keep_cfg (2.905.0): Basic
+    Settings' Override style sent the cfg - a CFGGuider keeps it (the recipe's cfg 1 is only the default)"""
     notes = []
     if not isinstance(g, dict):
         return g, notes
@@ -106,7 +107,7 @@ def apply(g, explicit_steps=0, kitchen=None):
         notes.append("FastH3: WARNING - FastH3 Omni is a reference-to-video model and this is a first / last frame "
                      "(fl2va) graph; for First / Cont / Trans scenes use H3's own fl2va model or FastH3 8-step V2")
     notes.append(f"FastH3: {fname} - {R['label']}: shift {R['shift'][0]:g}/{R['shift'][1]:g}, VSA keep 10, "
-                 f"{R['steps']} steps {R['sampler']}, cfg 1")
+                 f"{R['steps']} steps {R['sampler']}, cfg " + ("Basic Settings'" if keep_cfg else "1"))
     # 1. the base model's turbo LoRAs out
     for nid in list(g):
         v = g.get(nid) or {}
@@ -180,6 +181,7 @@ def apply(g, explicit_steps=0, kitchen=None):
         notes.append(f"FastH3: {int(explicit_steps)} steps (Basic Settings) - the model is distilled for {R['steps']}")
     for nid in _of(g, "KSamplerSelect"):
         g[nid].setdefault("inputs", {})["sampler_name"] = R["sampler"]
-    for nid in _of(g, "CFGGuider"):
-        g[nid].setdefault("inputs", {})["cfg"] = 1.0
+    if not keep_cfg:
+        for nid in _of(g, "CFGGuider"):
+            g[nid].setdefault("inputs", {})["cfg"] = 1.0
     return g, notes

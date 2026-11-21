@@ -84,7 +84,7 @@ check("worker.py: a .gguf model on a UNETLoader -> UnetLoaderGGUF (said)", gg.cl
 check("wan_graph: a .gguf model gets UnetLoaderGGUF", /UnetLoaderGGUF/.test(read("scripts", "wan_graph.py")) && /basic_model/.test(read("misc/wan_worker.py")));
 const H = read("static", "index.html");
 check("the page: every video render sends `basic` (prompt docker + LTX), the Model box, the summary line, basicset.js loaded",
-  (H.match(/fd\.append\("basic", H3Basic\.json\(\)\)/g) || []).length === 2 && /id="vidModel" list="vidModelList"/.test(H) && /id="ovrSummary"/.test(H) && /<script src="\/static\/basicset\.js">/.test(H));
+  (H.match(/fd\.append\("basic", H3Basic\.json\(\)\)/g) || []).length === 3 /* 2.905.0: + Swap mode */ && /id="vidModel" list="vidModelList"/.test(H) && /id="ovrSummary"/.test(H) && /<script src="\/static\/basicset\.js">/.test(H));
 check("the page: Enhance's Generate goes through the same dispatch (LTX / Wan / swap / H3), not /api/generate", /\$\("enhGenerate"\)\.onclick = \(\) => \{[\s\S]{0,600}generateFrom\(gm, text\);/.test(H) && !/submitJob\(finalPrompt\(\$\("enhancedText"\)/.test(H));
 check("the board ▶ sends Basic Settings' model (2.777.0: while Use model is ticked)", /out\.model = md && !\(window\.H3OvrUse && !H3OvrUse\.model\("video"\)\) \? md\.value\.trim\(\) : ""/.test(read("ext", "videodock", "characters.js")));
 check("the routes read it: /api/generate (H3 + Wan), /api/ltx, the board's LTX scenes", /basicOverride\.parse\(f\.basic\)/.test(read("routes", "index.js")) && /basicOverride\.parse\(b\.basic\)/.test(read("routes", "ltx.js"))
