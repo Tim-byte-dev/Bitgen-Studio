@@ -4,7 +4,10 @@
 //   POST /api/pan2/caption   {prompt, seconds, pretty} (+ multipart first) -> {caption, how, notes, seconds, pretty} - the
 //                            caption PAN 2 would get (nothing queued); the prompt docker's { } JSON puts it in the prompt box
 //   POST /api/pan2           multipart: first (the first picture - image to video); fields prompt, seconds, width, height,
-//                            seed, steps, cfg, negative, video_style_id, ref_audio (a project sound's name - laid under the take)
+//                            seed, steps, cfg, negative, video_style_id, ref_audio (a project sound's name - laid under the take),
+//                            basic (2.904.0 - Basic Settings' Override style, lib/basicOverride.js: on = its steps / CFG / seed;
+//                            its model and temporary LoRAs only as Use model / Use temporary LoRAs send them; the sampler /
+//                            scheduler come in the X-Bitgen-Sampler header like every video render's)
 //                            -> a pan2 job + {notes, caption_how} | 400 / 409 {error, needs} / 503
 "use strict";
 const fs = require("fs");
@@ -78,14 +81,17 @@ function mount(app) {
     const frames = L().framesFor(parseFloat(b.seconds) || L().DEFAULT_SECONDS);
     const seconds = L().secondsOf(frames);
     const cap = await L().caption({ prompt, seconds, image });
-    const p = L().params({ style: st, caption: cap.caption, negative: L().negative(seconds, [st.negative, b.negative].filter(Boolean).join(", ")),
+    // 2.904.0 (Tim: "when overide is checked overide style settings even when loras and checkpoint are unchecked"): Override
+    // style on - Basic Settings' steps / CFG / seed beat the style; its model / LoRAs ride only when they were sent
+    const ov = L().withBasic(st, b.basic, b), bo = ov.bo;
+    const p = L().params({ style: ov.style, caption: cap.caption, negative: L().negative(seconds, [st.negative, b.negative].filter(Boolean).join(", ")),
       image, seconds, width: +b.width, height: +b.height,
-      seed: b.seed === undefined || b.seed === "" ? -1 : +b.seed, steps: +b.steps || 0, cfg: +b.cfg || 0,
+      seed: ov.seed, steps: ov.steps, cfg: ov.cfg,
       audio: sound && fs.existsSync(sound) ? { path: sound, start: 0 } : null });
     if (p.error) throw err(400, p.error);
     const job = core.makeJob(p);
     job.chunk = { i: 0, n: 1 };
-    const notes = [L().summary(p)].concat(cap.notes || []);
+    const notes = [L().summary(p)].concat(bo ? [require("../lib/basicOverride").note(bo, "PAN 2")] : [], cap.notes || []);
     for (const n of notes) try { job.log.push("[bitgen-studio] " + n); } catch { /* a log line */ }
     return Object.assign(core.jobDict(job), { notes, caption_how: cap.how });
   }));

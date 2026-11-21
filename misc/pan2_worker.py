@@ -14,6 +14,7 @@ frames (4n+1, up to 481), seconds, seed, steps, cfg, shift, model / te / vae (op
 audio {path, start} | null, output_name (optional stem), video_style.
 """
 import json
+import os
 import random
 import subprocess
 import sys
@@ -103,7 +104,10 @@ def main():
     for n in notes:
         say(f"[worker] {n}")
     st = PG.settings(params.get("steps"), params.get("cfg"), params.get("shift"))
-    say("[meta] " + json.dumps({"seed": seed, "steps": st["steps"], "cfg": st["cfg"], "sampler": "euler / simple",
+    # 2.904.0: Basic Settings' sampler / scheduler (Override style - comfy_client.queue writes them in) say so in the meta
+    smp = (os.environ.get("BITGEN_SAMPLER") or "").strip() or "euler"
+    sch = (os.environ.get("BITGEN_SCHEDULER") or "").strip() or "simple"
+    say("[meta] " + json.dumps({"seed": seed, "steps": st["steps"], "cfg": st["cfg"], "sampler": smp + " / " + sch,
                                 "shift": st["shift"], "models": [pk["model"], pk["te"], pk["vae"]]}))
     for nid, key, _old, new in _comfy.canonicalise_combos(base, graph):
         say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")

@@ -88,6 +88,10 @@
     for (var tries = 0; tries < 2; tries++) {
       var fd = form(text, { refs: refsNow(), seconds: secondsNow(), width: val("width"), height: val("height"), seed: val("seed"),
         steps: val("steps"), styleId: st.id, sound: soundNow(), negative: negNow() });
+      // 2.904.0 (Tim: "when overide is checked overide style settings even when loras and checkpoint are unchecked"): Basic
+      // Settings' Override style as every video render sends it (static/basicset.js - steps / CFG / seed always, the model
+      // and the temporary LoRAs as Use model / Use temporary LoRAs say); the sampler / scheduler go in the header
+      if (root.H3Basic && root.H3Basic.json) fd.append("basic", root.H3Basic.json());
       var res = await fetch("/api/pan2", { method: "POST", body: fd });
       var j = await res.json().catch(function () { return {}; });
       if (res.ok) {

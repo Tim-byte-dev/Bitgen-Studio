@@ -14754,6 +14754,26 @@ node scripts/test-903.js > /tmp/t903.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui903-ui.js > /tmp/ui903.log 2>&1 \
   && ok "2.903.0 browser test: a real 24 fps video - ⏴ ⏵ and , . land on exact frames, 📷 saves THAT frame pixel for pixel at its size (Assets + Gallery), Shift+📷 into References" \
   || { bad "2.903.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui903.log | head -12; }
+# ---- 2.904.0 (Override style is everything but what Use model / Use temporary LoRAs say - PAN 2 + the board take it too;
+# routes/ltx.js's ltxMode / vid back in code: 2.902.0's comment had swallowed them and every LTX render failed)
+L904=$(curl -s http://127.0.0.1:8311/api/ltx/modes | python3 -c "import json,sys; print(next((s['id'] for s in json.load(sys.stdin).get('styles',[]) if s.get('family')=='ltx25'),''))")
+LJ904=$(curl -s -X POST http://127.0.0.1:8311/api/ltx -H 'X-Bitgen-Sampler: {"sampler":"euler","scheduler":"karras"}' -F ltx_mode=t2v -F "video_style_id=$L904" \
+  -F 'basic={"override":true,"steps":9,"cfg":3.5,"seed":777,"model":"","loras":[]}' -F width=640 -F height=384 -F seconds=2 -F "prompt=a red cat walks" \
+  | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+LS904=$(qe_job "$LJ904")
+curl -s "http://127.0.0.1:8311/api/jobs/$LJ904" | python3 -c "
+import json,sys; L='\n'.join(json.load(sys.stdin).get('log',[]))
+for want in ('Basic Settings: sampler euler, scheduler karras', 'Basic Settings override (LTX): steps 9, cfg 3.5, seed 777, the style\'s model, the style\'s LoRAs', 'size 640x384', '-> 9 (', 'sampler euler'):
+    assert want in L, (want, L[-900:])
+" > /tmp/e904.log 2>&1 && [ "$LS904" = "done" ] \
+  && ok "2.904.0 LTX renders again (ltxMode / vid in code): Override on with no model / LoRAs sent - steps 9, cfg 3.5, seed 777, 640x384, sampler euler / karras, the style's model and LoRAs" \
+  || { bad "2.904.0 LTX with Override ($LS904)"; tail -3 /tmp/e904.log; }
+node scripts/test-904.js > /tmp/t904.log 2>&1 \
+  && ok "2.904.0 units: LTX's declarations are code, PAN 2 withBasic (boxes off = the style's model / LoRAs, the rest Basic Settings'), the header on /api/pan2, the board's seed + sampler kept and used, the pages' gating" \
+  || { bad "2.904.0 units"; grep -a "^FAIL" -A1 /tmp/t904.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui904-ui.js > /tmp/ui904.log 2>&1 \
+  && ok "2.904.0 browser test: Override on with Use model / Use temporary LoRAs unticked - H3, a picture and PAN 2 still send size / steps / CFG / seed / sampler / scheduler, only the model and LoRAs stay the style's; ticked = all; off = none" \
+  || { bad "2.904.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui904.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -43,10 +43,10 @@ check("the board ▶ sends Override style + Steps + CFG with the size",
 // 2
 check("basicPatch keeps override / steps / cfg (and the size)",
   JSON.stringify(rs.basicPatch({ width: 1280, height: 720, override: true, steps: 15, cfg: 1 }))
-  === JSON.stringify({ basic_width: 1280, basic_height: 720, basic_override: true, basic_steps: 15, basic_cfg: 1, basic_model: "" }));   // 2.409.0: + the model (none sent = cleared)
+  === JSON.stringify({ basic_width: 1280, basic_height: 720, basic_override: true, basic_steps: 15, basic_cfg: 1, basic_model: "", basic_seed: -1, basic_sampler: "", basic_scheduler: "" }));   // 2.409.0: + the model (none sent = cleared); 2.904.0: + seed / sampler / scheduler (the same)
 check("...a size out of range drops only the size; junk steps / cfg = auto",
   JSON.stringify(rs.basicPatch({ width: 100, height: 50, override: true, steps: "abc", cfg: 99 }))
-  === JSON.stringify({ basic_override: true, basic_steps: 0, basic_cfg: null, basic_model: "" }));
+  === JSON.stringify({ basic_override: true, basic_steps: 0, basic_cfg: null, basic_model: "", basic_seed: -1, basic_sampler: "", basic_scheduler: "" }));
 check("...an old page (size only) leaves the override fields alone", !("basic_override" in rs.basicPatch({ width: 1280, height: 720 })));
 const D = fs.mkdtempSync(path.join(os.tmpdir(), "bo375_"));
 rs.save(D, { steps: 6 });

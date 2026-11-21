@@ -6,7 +6,7 @@
  *   Pictures (#imgSampler / #imgScheduler) and video (#vidSampler / #vidScheduler), each "Style's own" first, then ComfyUI's
  *   own names (the ComfyUI renders go to; ComfyUI's standard names until it answers). With Override style on, a render of that
  *   kind carries the pick in the X-Bitgen-Sampler header (this file wraps fetch: /api/genimage, /api/aiedit… = pictures;
- *   /api/generate, /api/ltx = video); the server writes it into the workflow's sampler nodes (scripts/comfy_client.py). Kept
+ *   /api/generate, /api/ltx, /api/pan2 (2.904.0) = video; the board's renders keep it with their settings - lib/boardBasic.js); the server writes it into the workflow's sampler nodes (scripts/comfy_client.py). Kept
  *   here (localStorage h3.samplers) and by Basic Settings' own memory (basic.cfg, per style, per tab).
  * Pure (Node: scripts/test-samplers781.js): kindOfUrl, headerOf, merge.
  */
@@ -23,7 +23,7 @@
   function kindOfUrl(u) {
     var p = String(u || "").replace(/^https?:\/\/[^/]+/, "").split("?")[0];
     if (/^\/api\/(genimage|aiedit)(\/|$)/.test(p)) return "image";
-    if (/^\/api\/(generate|ltx)(\/|$)/.test(p)) return "video";
+    if (/^\/api\/(generate|ltx)(\/|$)/.test(p) || /^\/api\/pan2$/.test(p)) return "video";   // 2.904.0: + PAN 2's render (not its caption)
     return "";
   }
   /** the header's value for a pick (pure) - "" when both are the style's own */

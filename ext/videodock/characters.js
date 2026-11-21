@@ -1678,6 +1678,12 @@
       out.cfg = cf && cf.value !== "" ? parseFloat(cf.value) : null;
       var md = document.getElementById("vidModel");                    // 2.409.0: Basic Settings' model
       out.model = md && !(window.H3OvrUse && !H3OvrUse.model("video")) ? md.value.trim() : "";   // 2.777.0: Use model
+      // 2.904.0 (Tim: "...size, aspect ratio,seed,cfg,sampler,scheduler will still overide style"): the seed and the
+      // sampler / scheduler ride too (lib/renderSettings basic_seed / basic_sampler - lib/sceneSeed.js, lib/boardBasic.js)
+      var sd = document.getElementById("seed");
+      out.seed = sd && sd.value !== "" ? parseInt(sd.value, 10) : -1;
+      var W = typeof window !== "undefined" ? window : {}, sp = W.H3Samplers && W.H3Samplers.pick ? W.H3Samplers.pick("video") : null;
+      out.sampler = sp ? sp.sampler : ""; out.scheduler = sp ? sp.scheduler : "";
     }
     return Object.keys(out).length ? out : null;
   }

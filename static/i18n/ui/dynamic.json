@@ -5980,7 +5980,7 @@
   },
   {
    "s": "Format the prompt as PAN 2's JSON caption: the LLM writes it from your words (and the first picture) into the prompt box, to read or edit. Generate does this by itself when the prompt is not JSON yet",
-   "src": "static/pan2gen.js:166"
+   "src": "static/pan2gen.js:170"
   },
   {
    "s": "Text to speech",
@@ -27572,323 +27572,323 @@
   },
   {
    "s": "no pano",
-   "src": "ext/videodock/characters.js:1946"
+   "src": "ext/videodock/characters.js:1952"
   },
   {
    "s": "scenes",
-   "src": "ext/videodock/characters.js:1960"
+   "src": "ext/videodock/characters.js:1966"
   },
   {
    "s": "No environments. Add a location, upload its 360 pano, and its view rides every scene in its range",
-   "src": "ext/videodock/characters.js:1974"
+   "src": "ext/videodock/characters.js:1980"
   },
   {
    "s": "No environments. Add a location, upload its 360",
-   "src": "ext/videodock/characters.js:1975"
+   "src": "ext/videodock/characters.js:1981"
   },
   {
    "s": "all folders",
-   "src": "ext/videodock/characters.js:2055"
+   "src": "ext/videodock/characters.js:2061"
   },
   {
    "s": "top level",
-   "src": "ext/videodock/characters.js:2059"
+   "src": "ext/videodock/characters.js:2065"
   },
   {
    "s": "no loras in this folder",
-   "src": "ext/videodock/characters.js:2076"
+   "src": "ext/videodock/characters.js:2082"
   },
   {
    "s": "no loras found - check Settings → ComfyUI",
-   "src": "ext/videodock/characters.js:2076"
+   "src": "ext/videodock/characters.js:2082"
   },
   {
    "s": "name the location first",
-   "src": "ext/videodock/characters.js:2112"
+   "src": "ext/videodock/characters.js:2118"
   },
   {
    "s": "Click to select; 🌐 Use as location takes the selected image",
-   "src": "ext/videodock/characters.js:2168"
+   "src": "ext/videodock/characters.js:2174"
   },
   {
    "s": "pano set",
-   "src": "ext/videodock/characters.js:2207"
+   "src": "ext/videodock/characters.js:2213"
   },
   {
    "s": "load or generate a pano first",
-   "src": "ext/videodock/characters.js:2218"
+   "src": "ext/videodock/characters.js:2224"
   },
   {
    "s": "the 360° view needs WebGL",
-   "src": "ext/videodock/characters.js:2221"
-  },
-  {
-   "s": "style default",
    "src": "ext/videodock/characters.js:2227"
   },
   {
+   "s": "style default",
+   "src": "ext/videodock/characters.js:2233"
+  },
+  {
    "s": "write a prompt first",
-   "src": "ext/videodock/characters.js:2256"
+   "src": "ext/videodock/characters.js:2262"
   },
   {
    "s": "pick a style",
-   "src": "ext/videodock/characters.js:2257"
+   "src": "ext/videodock/characters.js:2263"
   },
   {
    "s": "queuing",
-   "src": "ext/videodock/characters.js:2267"
+   "src": "ext/videodock/characters.js:2273"
   },
   {
    "s": "done, but no image reported",
-   "src": "ext/videodock/characters.js:2286"
+   "src": "ext/videodock/characters.js:2292"
   },
   {
    "s": "done",
-   "src": "ext/videodock/characters.js:2287"
+   "src": "ext/videodock/characters.js:2293"
   },
   {
    "s": "select a generated image first",
-   "src": "ext/videodock/characters.js:2298"
+   "src": "ext/videodock/characters.js:2304"
   },
   {
    "s": "setting pano",
-   "src": "ext/videodock/characters.js:2301"
-  },
-  {
-   "s": "this location's pano is set",
    "src": "ext/videodock/characters.js:2307"
   },
   {
+   "s": "this location's pano is set",
+   "src": "ext/videodock/characters.js:2313"
+  },
+  {
    "s": "movies —",
-   "src": "ext/videodock/characters.js:2338"
+   "src": "ext/videodock/characters.js:2344"
   },
   {
    "s": "board cleared",
-   "src": "ext/videodock/characters.js:2350"
-  },
-  {
-   "s": "New movie clears the cast, chapters and scenes (files are stashed, renders stay) — press 🆕 again to confirm",
    "src": "ext/videodock/characters.js:2356"
   },
   {
-   "s": "name the movie first",
+   "s": "New movie clears the cast, chapters and scenes (files are stashed, renders stay) — press 🆕 again to confirm",
    "src": "ext/videodock/characters.js:2362"
   },
   {
+   "s": "name the movie first",
+   "src": "ext/videodock/characters.js:2368"
+  },
+  {
    "s": "pick one in the list first",
-   "src": "ext/videodock/characters.js:2382"
+   "src": "ext/videodock/characters.js:2388"
   },
   {
    "s": "pick a saved movie first",
-   "src": "ext/videodock/characters.js:2402"
+   "src": "ext/videodock/characters.js:2408"
   },
   {
    "s": "compiling every rendered take",
-   "src": "ext/videodock/characters.js:2414"
+   "src": "ext/videodock/characters.js:2420"
   },
   {
    "s": "rebuilding the render workflow",
-   "src": "ext/videodock/characters.js:2428"
+   "src": "ext/videodock/characters.js:2434"
   },
   {
    "s": "workflow reset failed",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "s": "tick at least one scene to delete",
-   "src": "ext/videodock/characters.js:2461"
+   "src": "ext/videodock/characters.js:2467"
   },
   {
    "s": "the board is already empty",
-   "src": "ext/videodock/characters.js:2478"
+   "src": "ext/videodock/characters.js:2484"
   },
   {
    "s": "the LLM decides how many scenes",
-   "src": "ext/videodock/characters.js:2550"
+   "src": "ext/videodock/characters.js:2556"
   },
   {
    "s": "Reference image",
-   "src": "ext/videodock/characters.js:2594"
-  },
-  {
-   "s": "chapter: (un-chaptered scenes)",
    "src": "ext/videodock/characters.js:2600"
   },
   {
+   "s": "chapter: (un-chaptered scenes)",
+   "src": "ext/videodock/characters.js:2606"
+  },
+  {
    "s": "reference updated — the writer and the next render see the new details",
-   "src": "ext/videodock/characters.js:2628"
+   "src": "ext/videodock/characters.js:2634"
   },
   {
    "s": "reference edit failed",
-   "src": "ext/videodock/characters.js:2630"
+   "src": "ext/videodock/characters.js:2636"
   },
   {
    "s": "pick a picture or sound file first — the reference IS the file",
-   "src": "ext/videodock/characters.js:2637"
+   "src": "ext/videodock/characters.js:2643"
   },
   {
    "s": "reference upload failed",
-   "src": "ext/videodock/characters.js:2656"
+   "src": "ext/videodock/characters.js:2662"
   },
   {
    "s": "tick at least one scene first",
-   "src": "ext/videodock/characters.js:2680"
+   "src": "ext/videodock/characters.js:2686"
   },
   {
    "s": "tick the rendered scenes to upscale first",
-   "src": "ext/videodock/characters.js:2695"
+   "src": "ext/videodock/characters.js:2701"
   },
   {
    "s": "shared prompt populated from the cast — press 💾 to keep it",
-   "src": "ext/videodock/characters.js:2720"
+   "src": "ext/videodock/characters.js:2726"
   },
   {
    "s": "chapter load failed",
-   "src": "ext/videodock/characters.js:2729"
+   "src": "ext/videodock/characters.js:2735"
   },
   {
    "s": "No cast sheets yet — drop a picture below",
-   "src": "ext/videodock/characters.js:2772"
+   "src": "ext/videodock/characters.js:2778"
   },
   {
    "s": "loading the cast",
-   "src": "ext/videodock/characters.js:2806"
+   "src": "ext/videodock/characters.js:2812"
   },
   {
    "s": "comfy_workflows/MiniMax_H3_Swap.json is missing — unzip the workflows zip at the install root",
-   "src": "ext/videodock/characters.js:2810"
+   "src": "ext/videodock/characters.js:2816"
   },
   {
    "s": "pick a cast character or drop a picture",
-   "src": "ext/videodock/characters.js:2823"
-  },
-  {
-   "s": "queueing the swap",
    "src": "ext/videodock/characters.js:2829"
   },
   {
+   "s": "queueing the swap",
+   "src": "ext/videodock/characters.js:2835"
+  },
+  {
    "s": "Open the keep-as-character preview",
-   "src": "ext/videodock/characters.js:2937"
+   "src": "ext/videodock/characters.js:2943"
   },
   {
    "s": "Tick for stitching — 🧵 joins the ticked takes into one file",
-   "src": "ext/videodock/characters.js:2947"
+   "src": "ext/videodock/characters.js:2953"
   },
   {
    "s": "Select this take for stitching",
-   "src": "ext/videodock/characters.js:2948"
+   "src": "ext/videodock/characters.js:2954"
   },
   {
    "s": "Use as the character sheet — opens the keep preview",
-   "src": "ext/videodock/characters.js:2956"
-  },
-  {
-   "s": "Use this take as the character sheet",
-   "src": "ext/videodock/characters.js:2957"
-  },
-  {
-   "s": "Save this picture into the project's Images assets",
-   "src": "ext/videodock/characters.js:2961"
-  },
-  {
-   "s": "Save this take to the Images assets",
    "src": "ext/videodock/characters.js:2962"
   },
   {
+   "s": "Use this take as the character sheet",
+   "src": "ext/videodock/characters.js:2963"
+  },
+  {
+   "s": "Save this picture into the project's Images assets",
+   "src": "ext/videodock/characters.js:2967"
+  },
+  {
+   "s": "Save this take to the Images assets",
+   "src": "ext/videodock/characters.js:2968"
+  },
+  {
    "s": "Delete this render",
-   "src": "ext/videodock/characters.js:2976"
+   "src": "ext/videodock/characters.js:2982"
   },
   {
    "s": "Delete this take",
-   "src": "ext/videodock/characters.js:2977"
+   "src": "ext/videodock/characters.js:2983"
   },
   {
    "s": "take failed — the Queue dock has the log",
-   "src": "ext/videodock/characters.js:2997"
+   "src": "ext/videodock/characters.js:3003"
   },
   {
    "s": "Remove this failed take from the strip",
-   "src": "ext/videodock/characters.js:3001"
+   "src": "ext/videodock/characters.js:3007"
   },
   {
    "s": "Remove this failed take",
-   "src": "ext/videodock/characters.js:3002"
+   "src": "ext/videodock/characters.js:3008"
   },
   {
    "s": "tick two or more takes to stitch",
-   "src": "ext/videodock/characters.js:3032"
+   "src": "ext/videodock/characters.js:3038"
   },
   {
    "s": "Click to select; the sheet button uses the selected image",
-   "src": "ext/videodock/characters.js:3319"
+   "src": "ext/videodock/characters.js:3325"
   },
   {
    "s": "Select for Auto Caption",
-   "src": "ext/videodock/characters.js:3679"
+   "src": "ext/videodock/characters.js:3685"
   },
   {
    "s": "Remove this image (and its caption)",
-   "src": "ext/videodock/characters.js:3684"
+   "src": "ext/videodock/characters.js:3690"
   },
   {
    "s": "caption",
-   "src": "ext/videodock/characters.js:3693"
+   "src": "ext/videodock/characters.js:3699"
   },
   {
    "s": "nobody selected — EVERYONE is in the scene",
-   "src": "ext/videodock/characters.js:3813"
+   "src": "ext/videodock/characters.js:3819"
   },
   {
    "s": "only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3899"
+   "src": "ext/videodock/characters.js:3905"
   },
   {
    "s": "queued the tray picture from the References tray",
-   "src": "ext/videodock/characters.js:3911"
+   "src": "ext/videodock/characters.js:3917"
   },
   {
    "s": "could not read that tray picture",
-   "src": "ext/videodock/characters.js:3913"
+   "src": "ext/videodock/characters.js:3919"
   },
   {
    "s": "that is not a picture — only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3918"
+   "src": "ext/videodock/characters.js:3924"
   },
   {
    "s": "a clothing entry needs a type (jacket, armor",
-   "src": "ext/videodock/characters.js:3953"
+   "src": "ext/videodock/characters.js:3959"
   },
   {
    "s": "pick a clothing picture first",
-   "src": "ext/videodock/characters.js:3954"
+   "src": "ext/videodock/characters.js:3960"
   },
   {
    "s": "save the character first — the RefMod extracts from their dataset folder",
-   "src": "ext/videodock/characters.js:3970"
+   "src": "ext/videodock/characters.js:3976"
   },
   {
    "s": "queuing RefMod extraction",
-   "src": "ext/videodock/characters.js:3974"
+   "src": "ext/videodock/characters.js:3980"
   },
   {
    "s": "extraction refused",
-   "src": "ext/videodock/characters.js:3978"
+   "src": "ext/videodock/characters.js:3984"
   },
   {
    "s": "the mod did not land — see the job log",
-   "src": "ext/videodock/characters.js:4006"
+   "src": "ext/videodock/characters.js:4012"
   },
   {
    "s": "save the character first — the dataset belongs to a saved character",
-   "src": "ext/videodock/characters.js:4020"
+   "src": "ext/videodock/characters.js:4026"
   },
   {
    "s": "nothing was added",
-   "src": "ext/videodock/characters.js:4041"
+   "src": "ext/videodock/characters.js:4047"
   },
   {
    "s": "could not create the dataset folder",
-   "src": "ext/videodock/characters.js:4050"
+   "src": "ext/videodock/characters.js:4056"
   },
   {
    "s": "Character sheet",
@@ -33902,227 +33902,227 @@
   },
   {
    "p": "render {0}",
-   "src": "ext/videodock/characters.js:2282"
+   "src": "ext/videodock/characters.js:2288"
   },
   {
    "p": "saved \"{0}\" — {1} cast file(s), {2} render(s) · missing: {3}",
-   "src": "ext/videodock/characters.js:2365"
+   "src": "ext/videodock/characters.js:2371"
   },
   {
    "p": "saved \"{0}\" — {1} cast file(s), {2} render(s)",
-   "src": "ext/videodock/characters.js:2365"
+   "src": "ext/videodock/characters.js:2371"
   },
   {
    "p": "loaded \"{0}\" — {1} character(s), {2} render(s) in the gallery · missing: {3}",
-   "src": "ext/videodock/characters.js:2405"
+   "src": "ext/videodock/characters.js:2411"
   },
   {
    "p": "loaded \"{0}\" — {1} character(s), {2} render(s) in the gallery",
-   "src": "ext/videodock/characters.js:2405"
+   "src": "ext/videodock/characters.js:2411"
   },
   {
    "p": "compiling {0} take(s) — the film lands in the gallery · {1}",
-   "src": "ext/videodock/characters.js:2417"
+   "src": "ext/videodock/characters.js:2423"
   },
   {
    "p": "compiling {0} take(s) — the film lands in the gallery",
-   "src": "ext/videodock/characters.js:2417"
+   "src": "ext/videodock/characters.js:2423"
   },
   {
    "p": "workflow rebuilt: {0} ({1} cast) · {2}",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "p": "workflow rebuilt: {0} ({1} cast)",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "p": "workflow rebuilt: {0} (0 cast) · {1}",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "p": "workflow rebuilt: {0} (0 cast)",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "p": "workflow reset failed: {0}",
-   "src": "ext/videodock/characters.js:2430"
+   "src": "ext/videodock/characters.js:2436"
   },
   {
    "p": "{0} scene(s) deleted — renders stay in the gallery",
-   "src": "ext/videodock/characters.js:2471"
+   "src": "ext/videodock/characters.js:2477"
   },
   {
    "p": "{0} scene(s) cleared — the board is empty",
-   "src": "ext/videodock/characters.js:2488"
+   "src": "ext/videodock/characters.js:2494"
   },
   {
    "p": "all {0} scene(s) set to ~{1}s — changed scenes are back to idle",
-   "src": "ext/videodock/characters.js:2511"
+   "src": "ext/videodock/characters.js:2517"
   },
   {
    "p": "default scene duration saved — new scenes start at ~{0}s",
-   "src": "ext/videodock/characters.js:2511"
+   "src": "ext/videodock/characters.js:2517"
   },
   {
    "p": "the writer makes {0} scene(s)",
-   "src": "ext/videodock/characters.js:2550"
+   "src": "ext/videodock/characters.js:2556"
   },
   {
    "p": "scenes.txt says {0} scene(s)",
-   "src": "ext/videodock/characters.js:2550"
+   "src": "ext/videodock/characters.js:2556"
   },
   {
    "p": "chapter: {0}",
-   "src": "ext/videodock/characters.js:2600"
+   "src": "ext/videodock/characters.js:2606"
   },
   {
    "p": "reference edit failed: {0}",
-   "src": "ext/videodock/characters.js:2633"
+   "src": "ext/videodock/characters.js:2639"
   },
   {
    "p": "{0} added to the un-chaptered scenes — the writer knows its type and description",
-   "src": "ext/videodock/characters.js:2653"
+   "src": "ext/videodock/characters.js:2659"
   },
   {
    "p": "{0} added to chapter “{1}” — the writer knows its type and description",
-   "src": "ext/videodock/characters.js:2653"
+   "src": "ext/videodock/characters.js:2659"
   },
   {
    "p": "reference upload failed: {0}",
-   "src": "ext/videodock/characters.js:2660"
+   "src": "ext/videodock/characters.js:2666"
   },
   {
    "p": "{0} scene(s) queued — they render one after another · {1}",
-   "src": "ext/videodock/characters.js:2684"
+   "src": "ext/videodock/characters.js:2690"
   },
   {
    "p": "{0} scene(s) queued — they render one after another",
-   "src": "ext/videodock/characters.js:2684"
+   "src": "ext/videodock/characters.js:2690"
   },
   {
    "p": "{0} scene(s) queued for upscale - they run one after another · {1}",
-   "src": "ext/videodock/characters.js:2699"
+   "src": "ext/videodock/characters.js:2705"
   },
   {
    "p": "{0} scene(s) queued for upscale - they run one after another",
-   "src": "ext/videodock/characters.js:2699"
+   "src": "ext/videodock/characters.js:2705"
   },
   {
    "p": "loaded {0} scene(s) from chapter “{1}”",
-   "src": "ext/videodock/characters.js:2729"
+   "src": "ext/videodock/characters.js:2735"
   },
   {
    "p": "loaded {0} scene(s) from the un-chaptered files",
-   "src": "ext/videodock/characters.js:2729"
+   "src": "ext/videodock/characters.js:2735"
   },
   {
    "p": "Swap in {0}",
-   "src": "ext/videodock/characters.js:2780"
+   "src": "ext/videodock/characters.js:2786"
   },
   {
    "p": "scene {0}: swap queued",
-   "src": "ext/videodock/characters.js:2834"
+   "src": "ext/videodock/characters.js:2840"
   },
   {
    "p": "saved: {0}",
-   "src": "ext/videodock/characters.js:2990"
+   "src": "ext/videodock/characters.js:2996"
   },
   {
    "p": "queued{0}",
-   "src": "ext/videodock/characters.js:3012"
+   "src": "ext/videodock/characters.js:3018"
   },
   {
    "p": "{0} takes ticked — 🧵 joins them side by side into one file",
-   "src": "ext/videodock/characters.js:3032"
+   "src": "ext/videodock/characters.js:3038"
   },
   {
    "p": "{0} picture(s) picked — they upload when you press Save",
-   "src": "ext/videodock/characters.js:3623"
+   "src": "ext/videodock/characters.js:3629"
   },
   {
    "p": "{0} picture(s) picked — they upload when you press Add character",
-   "src": "ext/videodock/characters.js:3623"
+   "src": "ext/videodock/characters.js:3629"
   },
   {
    "p": "The caption — saved to {0}.txt when you leave the field",
-   "src": "ext/videodock/characters.js:3694"
+   "src": "ext/videodock/characters.js:3700"
   },
   {
    "p": "In the scene — click to bench: {0}",
-   "src": "ext/videodock/characters.js:3789"
+   "src": "ext/videodock/characters.js:3795"
   },
   {
    "p": "Benched — click to cast: {0}",
-   "src": "ext/videodock/characters.js:3789"
+   "src": "ext/videodock/characters.js:3795"
   },
   {
    "p": "{0} actor(s) in the scene — the chain and the writer see only them",
-   "src": "ext/videodock/characters.js:3813"
+   "src": "ext/videodock/characters.js:3819"
   },
   {
    "p": "{0} picture(s) queued from your computer",
-   "src": "ext/videodock/characters.js:3899"
+   "src": "ext/videodock/characters.js:3905"
   },
   {
    "p": "queued {0} from the References tray",
-   "src": "ext/videodock/characters.js:3911"
+   "src": "ext/videodock/characters.js:3917"
   },
   {
    "p": "{0} is not a picture — only pictures can be character sheets",
-   "src": "ext/videodock/characters.js:3918"
+   "src": "ext/videodock/characters.js:3924"
   },
   {
    "p": "queued {0} from the Images assets",
-   "src": "ext/videodock/characters.js:3925"
+   "src": "ext/videodock/characters.js:3931"
   },
   {
    "p": "adopting {0} from the gallery",
-   "src": "ext/videodock/characters.js:3930"
+   "src": "ext/videodock/characters.js:3936"
   },
   {
    "p": "queued {0} (renamed — {1} was taken) from the gallery",
-   "src": "ext/videodock/characters.js:3935"
+   "src": "ext/videodock/characters.js:3941"
   },
   {
    "p": "queued {0} from the gallery",
-   "src": "ext/videodock/characters.js:3935"
+   "src": "ext/videodock/characters.js:3941"
   },
   {
    "p": "could not adopt {0}: {1}",
-   "src": "ext/videodock/characters.js:3940"
+   "src": "ext/videodock/characters.js:3946"
   },
   {
    "p": "extracting {0} from {1} dataset picture(s)… (job {2})",
-   "src": "ext/videodock/characters.js:3981"
+   "src": "ext/videodock/characters.js:3987"
   },
   {
    "p": "extracting {0} from {1} dataset picture(s) · step {2} of {3} (job {4})",
-   "src": "ext/videodock/characters.js:3988"
+   "src": "ext/videodock/characters.js:3994"
   },
   {
    "p": "extraction {0} — the Queue dock has the log",
-   "src": "ext/videodock/characters.js:3993"
+   "src": "ext/videodock/characters.js:3999"
   },
   {
    "p": "{0} extracted ({1}) — H3_Video_Ref renders now ride the mod",
-   "src": "ext/videodock/characters.js:4003"
+   "src": "ext/videodock/characters.js:4009"
   },
   {
    "p": "adding {0} file(s) to {1}'s dataset",
-   "src": "ext/videodock/characters.js:4031"
+   "src": "ext/videodock/characters.js:4037"
   },
   {
    "p": "{0} file(s) in {1}'s dataset — {2}",
-   "src": "ext/videodock/characters.js:4038"
+   "src": "ext/videodock/characters.js:4044"
   },
   {
    "p": "{0} file(s) in {1}'s dataset",
-   "src": "ext/videodock/characters.js:4038"
+   "src": "ext/videodock/characters.js:4044"
   },
   {
    "p": "dataset folder ready — {0} file(s) in it: {1}",
-   "src": "ext/videodock/characters.js:4050"
+   "src": "ext/videodock/characters.js:4056"
   },
   {
    "p": "{0} - click to change",
