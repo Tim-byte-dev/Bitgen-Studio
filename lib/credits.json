@@ -111,6 +111,18 @@
           "by": "the Institute of Foundation Models (IFM) at MBZUAI",
           "url": "https://github.com/ifm-ai/PAN2",
           "what": "the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files"
+        },
+        {
+          "name": "LongCat-Video-Avatar 1.6",
+          "by": "the Meituan LongCat Team",
+          "url": "https://github.com/meituan-longcat/LongCat-Video",
+          "what": "the audio-driven avatar video style (MIT weights)"
+        },
+        {
+          "name": "ComfyUI-LongCat-Avatar",
+          "by": "PedroMarinhoDev",
+          "url": "https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar",
+          "what": "LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)"
         }
       ]
     },

@@ -50,6 +50,10 @@
       "label": "Video - PAN 2 (MBZUAI's 29B world model, text / a first picture -> up to 20 s; Settings ▸ Add-ons ▸ PAN 2)"
     },
     {
+      "id": "longcat",
+      "label": "Video - LongCat Avatar 1.6 (Meituan: a person talking / singing to a sound, as long as the sound; Settings ▸ Add-ons ▸ LongCat Avatar 1.6)"
+    },
+    {
       "id": "fibo",
       "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
     },
@@ -1593,6 +1597,89 @@
       "dest": "comfy/vae",
       "size": 1400000000,
       "for": "the PAN 2 video style (2.890.0; ComfyUI 0.46.0 or newer) (PAN 2 draws its video with the Wan 2.2 VAE)"
+    },
+    {
+      "id": "longcat_int8",
+      "group": "longcat",
+      "label": "LongCat Avatar 1.6 DiT (int8 ConvRot, 16 GB)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "diffusion_models/longcat-video-avatar/longcat_video_avatar_1.6_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models/longcat-video-avatar",
+      "size": 15998753177,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - the one for a 24-32 GB card"
+    },
+    {
+      "id": "longcat_w4a8",
+      "group": "longcat",
+      "label": "LongCat Avatar 1.6 DiT (W4A8, 9.4 GB)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "diffusion_models/longcat-video-avatar/longcat_video_avatar_1.6_w4a8.safetensors",
+      "dest": "comfy/diffusion_models/longcat-video-avatar",
+      "size": 9448928051,
+      "for": "optional - the smallest DiT, for 12-16 GB cards (a little less exact)"
+    },
+    {
+      "id": "longcat_bf16",
+      "group": "longcat",
+      "label": "LongCat Avatar 1.6 DiT (bf16, 31.7 GB)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "diffusion_models/longcat-video-avatar/longcat_video_avatar_1.6_bf16.safetensors",
+      "dest": "comfy/diffusion_models/longcat-video-avatar",
+      "size": 31675383808,
+      "for": "optional - full precision (streams from about 30 GB of RAM on a 24-32 GB card); set it as the style's model"
+    },
+    {
+      "id": "longcat_dmd",
+      "group": "longcat",
+      "label": "LongCat Avatar 1.6 DMD LoRA (steps 1-4)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "loras/longcat-video-avatar/longcat_video_avatar_1.6_dmd_lora_bf16.safetensors",
+      "dest": "comfy/loras/longcat-video-avatar",
+      "size": 1664299827,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - the release's distilled first four steps"
+    },
+    {
+      "id": "longcat_opsd",
+      "group": "longcat",
+      "label": "LongCat Avatar 1.6 OPSD LoRA (steps 5-8)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "loras/longcat-video-avatar/longcat_video_avatar_1.6_opsd_lora_bf16.safetensors",
+      "dest": "comfy/loras/longcat-video-avatar",
+      "size": 1664299827,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - the release's last four steps (long videos hold up)"
+    },
+    {
+      "id": "longcat_whisper",
+      "group": "longcat",
+      "label": "Whisper large-v3 encoder (fp16)",
+      "repo": "PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI",
+      "file": "audio_encoders/whisper_large_v3_encoder_fp16.safetensors",
+      "as": "whisper_large_v3_encoder_fp16.safetensors",
+      "dest": "comfy/audio_encoders",
+      "size": 1277752770,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - hears the speech the lips follow"
+    },
+    {
+      "id": "longcat_te",
+      "group": "longcat",
+      "label": "umT5-XXL text encoder (fp8, Wan 2.1's)",
+      "repo": "Comfy-Org/Wan_2.1_ComfyUI_repackaged",
+      "file": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "as": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 6740000000,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - Wan 2.1's text encoder (skipped when ComfyUI has any umT5 already)"
+    },
+    {
+      "id": "longcat_vae",
+      "group": "longcat",
+      "label": "Wan 2.1 VAE",
+      "repo": "Comfy-Org/Wan_2.1_ComfyUI_repackaged",
+      "file": "split_files/vae/wan_2.1_vae.safetensors",
+      "as": "wan_2.1_vae.safetensors",
+      "dest": "comfy/vae",
+      "size": 254000000,
+      "for": "the LongCat Avatar 1.6 video style (2.918.0) - Wan 2.1's VAE, byte for byte LongCat's"
     },
     {
       "id": "fibo_edit_w4a8",

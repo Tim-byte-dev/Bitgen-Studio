@@ -256,3 +256,13 @@ Community License and are fetched by the user.
   environment (`<app>/searxng/`) and runs it unchanged on 127.0.0.1:8888 for bitGen's own LLM; its source is at the links above.
 - **Brave Search API** and **Wikipedia's API** are services the user chooses; bitGen sends them only the search words.
 
+## 🗣 LongCat-Video-Avatar 1.6 (2.918.0)
+
+No LongCat code or weights are shipped. Settings ▸ Add-ons ▸ LongCat Avatar 1.6 clones
+[PedroMarinhoDev/ComfyUI-LongCat-Avatar](https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar) (GPL-3.0, like ComfyUI)
+into your ComfyUI's custom_nodes and downloads
+[PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI](https://huggingface.co/PedroMarinhoDev/LongCat-Video-Avatar-1.6-ComfyUI)
+(single-file copies of [meituan-longcat/LongCat-Video-Avatar-1.6](https://huggingface.co/meituan-longcat/LongCat-Video-Avatar-1.6),
+MIT - Meituan LongCat Team; Whisper large-v3's encoder, MIT - OpenAI) and Wan 2.1's umT5 text encoder and VAE from
+Comfy-Org/Wan_2.1_ComfyUI_repackaged (Apache-2.0). bitGen Studio talks to the pack through ComfyUI's API only
+(misc/longcat_worker.py builds the graph).

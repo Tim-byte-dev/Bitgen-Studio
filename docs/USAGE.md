@@ -10408,6 +10408,29 @@ without it Android always asks you to tap **Install** - these three get the app 
   Store and the Play Store - turn it off for the install, on again after if you like. Also allow "Install unknown apps" for
   the browser / My Files / bitGen when Android asks.
 
+## 🗣 LongCat Avatar 1.6 - a person talking or singing to a sound (2.918.0)
+
+**LongCat Avatar 1.6** is Meituan LongCat's audio-driven avatar model as a video style: a picture of a person and a voice
+become a video of that person saying (or singing) it, lip-synced, **as long as the sound** - it holds up past 10 minutes.
+
+1. **Settings ▸ Add-ons ▸ LongCat Avatar 1.6 ▸ ⤓ Download ticked** (about 28 GB with int8): the ComfyUI-LongCat-Avatar
+   node pack, the model - **int8** for a 24-32 GB card, **W4A8** for 12-16 GB, **bf16** for full precision (it streams from
+   about 30 GB of RAM) - its two LoRAs (DMD + OPSD), Whisper large-v3, and Wan 2.1's text encoder + VAE (skipped when you
+   have them). **Restart ComfyUI once** so it loads the new nodes. Pressing Generate without them opens the same download.
+2. Pick the **LongCat Avatar 1.6** video style in the prompt docker (an **ⓘ LongCat** hint sits beside it).
+3. Put the **speech** in the References docker's sounds - clean speech works best; for a song, ✂ Separate it in the
+   Stems docker and use the vocals. The video is as long as this sound.
+4. Put the **person** in the References docker's pictures (the one typed **First frame** is used first, else the first
+   picture), framed as you want the video - chest up works well. No picture = the person is made from the prompt alone.
+5. Describe the person, how they move and where they are in the prompt (longer, detailed prompts work best) and press
+   **Generate**.
+
+The size: **480p**, or **720p** when Basic Settings' size is 720 or more on its short side; the release's size nearest the
+picture's shape (832x480, 768x512, 512x768, 1280x720, 720x1280 …). 25 fps, 8 distilled steps per 3.7 s segment (93 frames),
+each continuing from the last 13 frames of the one before - the queue says how many segments the sound needs. With Override
+style on, Basic Settings' seed is used (LongCat's 8 steps and cfg 1 are its own). The 📱 bitGen app renders it too: pick the
+style there, add the person (＋ Picture) and the speech (＋ Audio).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10452,6 +10475,8 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **Veda** - the optional sparse-attention accelerator for MiniMax H3
 - **[MiniMax-H3-NativeAudio-MusicVideo-Workflow](https://github.com/Shrek3OnVH5/MiniMax-H3-NativeAudio-MusicVideo-Workflow)** (Shrek3OnVH5) - the music-video lip-sync workflow the MMH3_NativeAudio_MV style is built from (MIT)
 - **[PAN 2](https://github.com/ifm-ai/PAN2)** (the Institute of Foundation Models (IFM) at MBZUAI) - the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files
+- **[LongCat-Video-Avatar 1.6](https://github.com/meituan-longcat/LongCat-Video)** (the Meituan LongCat Team) - the audio-driven avatar video style (MIT weights)
+- **[ComfyUI-LongCat-Avatar](https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar)** (PedroMarinhoDev) - LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)
 
 ### Image models
 

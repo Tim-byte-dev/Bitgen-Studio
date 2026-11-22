@@ -14871,6 +14871,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui917-ui.js > /tmp/ui917.log 2>&
   && ok "2.917.0 browser test: the editor ✕ closed from the start - ✏ Edit on the reference, 2 = Compose with both, 🧩 Compose with 1; not drawn (hidden) = closed; on screen with no picture = the references; a picture open = its layer" \
   || { bad "2.917.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui917.log | head -12; }
 
+# ---- 2.918.0 (🗣 LongCat Avatar 1.6 - a person talking / singing to a sound)
+node scripts/test-918.js > /tmp/t918.log 2>&1 \
+  && ok "2.918.0 units: the job params (the speech needed, the picture, Basic Settings' seed), the add-on (pack + DiT ticked + LoRAs / Whisper; umT5 / VAE skipped when there; remove keeps them), the catalog, the node pack, the starter + arch, families, routes (/api/longcat, /api/generate refusing), the page + the 📱 app" \
+  || { bad "2.918.0 units"; grep -a "^FAIL" -A1 /tmp/t918.log | head -12; }
+python3 scripts/test-longcat918.py > /tmp/tl918.log 2>&1 \
+  && ok "2.918.0 graph + LIVE worker on the stub: the pack's nodes wired (Whisper on the same LoadAudio, DMD + OPSD), the files picked (int8 first), the release's 480p / 720p buckets; the video as long as the speech with it, a start picture, the speech from a start; no pack / no files / no speech said" \
+  || { bad "2.918.0 graph + worker"; grep -a "^FAIL" -A1 /tmp/tl918.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui918-ui.js > /tmp/ui918.log 2>&1 \
+  && ok "2.918.0 browser test: the ⓘ LongCat hint; no sound = said; Generate -> /api/longcat with the speech + the First-frame picture; 409 -> the Download box; END TO END the real server -> longcat_worker.py -> the stub -> a _longcat.mp4 as long as the sound" \
+  || { bad "2.918.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui918.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

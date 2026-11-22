@@ -1,5 +1,5 @@
 {
-  "_comment": "2.870.0: - ComfyUI-H3LookSheets, + H3-Character-Sheet-Designer (the Character creator's sheet, lib/charSheetH3.js). 2.555.0: + comfyui-inpaint-nodes (Acly - the Krita AI plugin's fill helpers). 2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
+  "_comment": "2.918.0: + ComfyUI-LongCat-Avatar (PedroMarinhoDev - the LongCat Avatar 1.6 video style, lib/longcat.js). 2.870.0: - ComfyUI-H3LookSheets, + H3-Character-Sheet-Designer (the Character creator's sheet, lib/charSheetH3.js). 2.555.0: + comfyui-inpaint-nodes (Acly - the Krita AI plugin's fill helpers). 2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
   "packs": [
     { "id": "manager", "folder": "ComfyUI-Manager", "url": "https://github.com/Comfy-Org/ComfyUI-Manager",
       "for": "installing / updating node packs from inside ComfyUI", "provides": [] },
@@ -55,6 +55,9 @@
       "for": "the swap dialog's Viggle (H3) engine: Viggle-Animate conditioning + its text conditioning loader (2.344.0)", "provides": ["ViggleAnimateConditioning", "ViggleTextCondLoader"] },
     { "id": "inpaint", "folder": "comfyui-inpaint-nodes", "url": "https://github.com/Acly/comfyui-inpaint-nodes",
       "for": "filling a selection the Krita AI way (2.555.0): the Fooocus inpaint patch for SDXL / Pony, MAT / LaMa for Remove",
-      "provides": ["INPAINT_LoadFooocusInpaint", "INPAINT_ApplyFooocusInpaint", "INPAINT_VAEEncodeInpaintConditioning", "INPAINT_LoadInpaintModel", "INPAINT_InpaintWithModel"] }
+      "provides": ["INPAINT_LoadFooocusInpaint", "INPAINT_ApplyFooocusInpaint", "INPAINT_VAEEncodeInpaintConditioning", "INPAINT_LoadInpaintModel", "INPAINT_InpaintWithModel"] },
+    { "id": "longcat", "folder": "ComfyUI-LongCat-Avatar", "url": "https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar",
+      "for": "the LongCat Avatar 1.6 video style (2.918.0): Meituan's LongCat-Video-Avatar natively in ComfyUI (GPL-3.0 code, MIT weights)",
+      "provides": ["LongCatAvatarModelLoader", "LongCatAvatarAudioEncode", "LongCatAvatarVideo"] }
   ]
 }

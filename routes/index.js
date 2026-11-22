@@ -168,6 +168,7 @@ function mount(app) {
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run
   require("./pan2").mount(app);        // 2.890.0: PAN 2 (MBZUAI's world model) from the prompt docker (lib/pan2.js) - the LLM writes its caption
+  require("./longcat").mount(app);     // 2.918.0: LongCat-Video-Avatar 1.6 (a person talking / singing to a sound) from the prompt docker (lib/longcat.js)
   require("./sheetLibrary").mount(app);  // 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
   require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
@@ -692,6 +693,10 @@ function mount(app) {
       if (require("../lib/pan2").isPan2Style(vs))
         return res.status(400).json({ error: `"${vs.name}" is a PAN 2 style - it renders through PAN 2's own path `
           + "(the prompt docker sends it to /api/pan2; reload the page if this came from an old tab)." });
+      // 2.918.0: a LongCat Avatar style renders through POST /api/longcat (routes/longcat.js - the speech is the reference sound)
+      if (require("../lib/longcat").isLongcatStyle(vs))
+        return res.status(400).json({ error: `"${vs.name}" is a LongCat Avatar style - it renders through its own path `
+          + "(the prompt docker sends it to /api/longcat; reload the page if this came from an old tab)." });
       // 2.368.0 (Tim: "add a wan2.1 style so we can use wan as well, also wan2.2"): a Wan style renders through
       // wan_worker.py - the request's own pictures / sound / size / length (lib/wan.fromGenerate)
       { const wan = require("../lib/wan");

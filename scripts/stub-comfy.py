@@ -154,6 +154,22 @@ def core_schemas():
             "vae": ["VAE"], "width": ["INT", {"default": 1280, "min": 32, "step": 32}], "height": ["INT", {"default": 704, "min": 32, "step": 32}],
             "length": ["INT", {"default": 49, "min": 1, "step": 4}], "batch_size": ["INT", {"default": 1, "min": 1}]},
             "optional": {"start_image": ["IMAGE"]}}, "output": ["LATENT"]}}),
+        # 2.918.0: PedroMarinhoDev's ComfyUI-LongCat-Avatar (nodes.py define_schema - the inputs the worker sends) + ComfyUI's
+        # own audio encoder loader; STUB_LONGCAT_ABSENT=1 = a ComfyUI without the pack
+        **({} if os.environ.get("STUB_LONGCAT_ABSENT") else {
+            "LongCatAvatarModelLoader": {"input": {"required": {"unet_name": [_folder_combo(["diffusion_models"], [])]}}, "output": ["MODEL"]},
+            "LongCatAvatarAudioEncode": {"input": {"required": {"audio_encoder": ["AUDIO_ENCODER"], "audio": ["AUDIO"]}},
+                                         "output": ["LONGCAT_AUDIO_FEATURES", "INT"]},
+            "LongCatAvatarVideo": {"input": {"required": {
+                "model": ["MODEL"], "positive": ["CONDITIONING"], "vae": ["VAE"], "audio_features": ["LONGCAT_AUDIO_FEATURES"], "audio": ["AUDIO"],
+                "dmd_lora": [_folder_combo(["loras"], [])], "opsd_lora": [_folder_combo(["loras"], [])],
+                "seed": ["INT", {"default": 0, "min": 0}], "width": ["INT", {"default": 832, "min": 16, "step": 16}],
+                "height": ["INT", {"default": 480, "min": 16, "step": 16}], "max_segments": ["INT", {"default": 0, "min": 0}],
+                "sampler_name": [["euler", "res_multistep"], {"default": "euler"}], "mix_steps": ["INT", {"default": 4, "min": 0, "max": 8}],
+                "mix_alpha": ["FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0}], "ref_img_index": ["INT", {"default": 10}],
+                "encoder": [["auto", "libx264", "h264_nvenc"], {"default": "auto"}]},
+                "optional": {"start_image": ["IMAGE"]}}, "output": ["VIDEO"]}}),
+        "AudioEncoderLoader": {"input": {"required": {"audio_encoder_name": [_folder_combo(["audio_encoders"], [])]}}, "output": ["AUDIO_ENCODER"]},
         # 2.504.0: RunningHub's DLSS 5 pack (nodes.py INPUT_TYPES - all optional, as the pack declares them)
         **DLSS5_SCHEMAS,
         # 2.708.0: the DENO pack's RTX VFX finisher (STUB_RTXVFX_ABSENT=1 = a ComfyUI without the pack)
@@ -499,6 +515,74 @@ def render_seedvr2(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+def render_longcat(pid, g):
+    """2.918.0: a LongCat Avatar graph answered like the ComfyUI-LongCat-Avatar pack would: the video as long as the LoadAudio
+    file (25 fps, 93-frame segments, each continuing from 13), at LongCatAvatarVideo's width x height, the speech muxed in.
+    The wiring is checked the way the real nodes need it: the model from LongCatAvatarModelLoader, the prompt a
+    CLIPTextEncode on a CLIPLoader of type wan, the audio features LongCatAvatarAudioEncode's on an AudioEncoderLoader and the
+    SAME LoadAudio, the LoRAs DMD + OPSD files that exist, a start_image a LoadImage of an uploaded file, 16-px sizes."""
+    def node(link):
+        return g.get(str(link[0])) if isinstance(link, list) and link else None
+    def err(nid, msg):
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_start", {"prompt_id": pid, "timestamp": 1}],
+            ["execution_error", {"prompt_id": pid, "node_id": str(nid), "node_type": "LongCatAvatarVideo", "exception_type": "ValueError",
+                                 "exception_message": msg, "traceback": ["  File \"custom_nodes/ComfyUI-LongCat-Avatar/nodes.py\""]}]]},
+            "outputs": {}}
+    vid, v = next(((k, x) for k, x in g.items() if x.get("class_type") == "LongCatAvatarVideo"), (None, None))
+    vi = (v or {}).get("inputs") or {}
+    m = node(vi.get("model"))
+    if not m or m.get("class_type") != "LongCatAvatarModelLoader" or "longcat" not in str((m.get("inputs") or {}).get("unet_name", "")).lower():
+        return err(vid, "model must be LongCatAvatarModelLoader with a LongCat Avatar DiT")
+    enc = node(vi.get("positive"))
+    cl = node(((enc or {}).get("inputs") or {}).get("clip"))
+    if not enc or enc.get("class_type") != "CLIPTextEncode" or not cl or (cl.get("inputs") or {}).get("type") != "wan" \
+            or "umt5" not in str((cl.get("inputs") or {}).get("clip_name", "")).lower():
+        return err(vid, "positive must be a CLIPTextEncode on a CLIPLoader (umt5, type wan)")
+    af = node(vi.get("audio_features"))
+    if not af or af.get("class_type") != "LongCatAvatarAudioEncode":
+        return err(vid, "audio_features must be LongCatAvatarAudioEncode's")
+    ae = node((af.get("inputs") or {}).get("audio_encoder"))
+    if not ae or ae.get("class_type") != "AudioEncoderLoader" or "whisper" not in str((ae.get("inputs") or {}).get("audio_encoder_name", "")).lower():
+        return err(vid, "the audio encoder must be Whisper large-v3 (AudioEncoderLoader)")
+    la = node(vi.get("audio"))
+    if not la or la.get("class_type") != "LoadAudio" or node((af.get("inputs") or {}).get("audio")) is not la:
+        return err(vid, "audio and the encoder's audio must be the same LoadAudio")
+    fa = (la.get("inputs") or {}).get("audio")
+    if fa not in UPLOADED:
+        return err(vid, f"LoadAudio's file {fa} was not uploaded")
+    for k, want in (("dmd_lora", "dmd"), ("opsd_lora", "opsd")):
+        if want not in str(vi.get(k, "")).lower():
+            return err(vid, f"{k} must be the {want.upper()} LoRA (got {vi.get(k)})")
+    if vi.get("start_image") is not None:
+        ld = node(vi.get("start_image"))
+        f = ((ld or {}).get("inputs") or {}).get("image")
+        if not ld or ld.get("class_type") != "LoadImage" or f not in UPLOADED:
+            return err(vid, f"start_image must be a LoadImage of an uploaded picture (got {f})")
+    w, h = int(vi.get("width") or 0), int(vi.get("height") or 0)
+    if not w or not h or w % 16 or h % 16:
+        return err(vid, f"{w}x{h} is not in 16-px steps")
+    src = INPUTS / str(fa)
+    try:
+        r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", str(src)], capture_output=True, text=True, timeout=30)
+        secs = float((json.loads(r.stdout or "{}").get("format") or {}).get("duration") or 0)
+    except Exception:                                  # noqa: BLE001
+        secs = 0.0
+    n = max(1, int(round(secs * 25)))
+    seg = 1 + max(0, -(-(n - 93) // 80))
+    fn = f"longcat_{pid}.mp4"
+    sw, sh = max(32, w // 4 // 2 * 2), max(32, h // 4 // 2 * 2)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={sw}x{sh}:rate=25", "-i", str(src),
+                    "-t", f"{max(secs, 0.2):.3f}", "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "ultrafast", "-c:a", "aac",
+                    "-shortest", str(OUT / fn)], check=False)
+    rec = {"_longcat": {k: (x.get("inputs") or {}) for k, x in g.items()}, "_classes": sorted({str(x.get("class_type", "")) for x in g.values()}),
+           "_size": [w, h], "_seconds": secs, "_segments": seg}
+    Path(OUT / f"video_{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
+    sv = next((k for k, x in g.items() if x.get("class_type") == "SaveVideo"), "9")
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True},
+                 "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
+
+
 def render_img_upscale(pid, g):
     """2.733.0: a PICTURE upscale graph, answered like ComfyUI would: SeedVR2 - the LOADED picture times the Resize
     node's multiplier (SeedVR2 pads to 16, as the real one does: a size a few pixels over); an upscale model - the
@@ -793,6 +877,8 @@ def _render(pid, g):
     if any(v.get("class_type") == "Wan22ImageToVideoLatent" for v in g.values()) and \
             any((v.get("inputs") or {}).get("type") == "pan2" for v in g.values() if v.get("class_type") == "CLIPLoader"):
         return render_pan2(pid, g)                     # 2.890.0
+    if any(v.get("class_type") == "LongCatAvatarVideo" for v in g.values()):
+        return render_longcat(pid, g)                  # 2.918.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
         return render_dlss5(pid, g)                    # 2.504.0
     if any(v.get("class_type") == "DenoRTXVFXVideoFinisher" for v in g.values()):
@@ -1358,6 +1444,8 @@ class H(BaseHTTPRequestHandler):
             # pack this "ComfyUI" does not have - the worker steps over them
             if ct in ABSENT:
                 return self._j({})
+            if os.environ.get("STUB_LONGCAT_ABSENT") and ct.startswith("LongCatAvatar"):
+                return self._j({})                     # 2.918.0: a ComfyUI without the LongCat Avatar pack
             if ct and ct != "object_info":
                 sc = SCHEMA.get(ct)
                 if sc:
@@ -1403,7 +1491,7 @@ class H(BaseHTTPRequestHandler):
             base = (m.group(1).decode("utf-8", "replace") if m else "")
             base = os.path.basename(base).strip() or ("up_" + uuid.uuid4().hex[:6] + ".png")
             UPLOADED.add(base)
-            if re.search(r"\.(mp4|webm|mov|mkv|m4v|png|jpe?g|webp)$", base, re.I):     # 2.400.0 / 2.733.0 (pictures): read back
+            if re.search(r"\.(mp4|webm|mov|mkv|m4v|png|jpe?g|webp|wav|mp3|flac|m4a|ogg)$", base, re.I):     # 2.400.0 / 2.733.0 (pictures) / 2.918.0 (sounds): read back
                 _keep_upload(body, base)
             return self._j({"name": base, "subfolder": ""})
         if self.path == "/e2e/schema":        # e2e control, not a ComfyUI route

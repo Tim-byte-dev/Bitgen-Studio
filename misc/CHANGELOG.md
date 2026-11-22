@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.918.0** — 🗣 LongCat Avatar 1.6: a Person Talking or Singing to a Sound - Meituan LongCat's LongCat-Video-Avatar 1.6 as a Video Style: the References Docker's First Sound Is the Speech, Its First Picture the Person (or Just the Prompt), the Video as Long as the Sound (25 fps, 480p / 720p, 8 Distilled Steps a Segment, Past 10 Minutes); Settings ▸ Add-ons ▸ LongCat Avatar 1.6 Installs the ComfyUI-LongCat-Avatar Node Pack and the Files; the 📱 App Renders It Too
 - **2.917.0** — ✏ Edit / 🧩 Compose From the References Docker Whenever the Image Editor Is Closed - Any Way It Is Not on Screen (👁 Off, a Hidden Docker Group or Window, a Tab Behind Another) or Open With No Picture
 - **2.916.0** — 📱 The bitGen App's References: ＋ Picture, ＋ Video and ＋ Audio on Create - Each From the Camera (or a Recording), the Phone's Gallery / Files, or 💻 Your PC (Its Assets and the Gallery); a Video Render Takes Up to 9 Pictures, 3 Videos and 3 Sounds as References
 - **2.915.0** — 📱 The bitGen App Talks Back: 🎙 Talk Is a Conversation - It Hears When You Stop Talking, Your PC Answers, the Phone Says It Out Loud and Listens Again (Bye / That's All or Making Something Ends It); What You Generate Opens by Itself; the Viewer Is a Swipe Gallery - Left / Right Through Pictures, Videos and Songs, Up / Down Back to Create, Songs With a Random Moving Visualisation; in bitGen Studio the "Wants to Connect" Bar Shows Above the Settings Window and Goes as Soon as You Press Allow or Deny

@@ -242,6 +242,40 @@
    }
   },
   {
+   "id": "longcat_avatar",
+   "label": "LongCat Avatar 1.6 (Meituan - a person talking / singing to a sound, as long as the sound)",
+   "modes": [
+    "t2va",
+    "ref2va",
+    "fl2va"
+   ],
+   "workflow_hints": {},
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder (umT5-XXL, Wan 2.1's)",
+     "hint": "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "VAE",
+    "hint": "wan_2.1_vae.safetensors"
+   },
+   "defaults": {
+    "steps": 8,
+    "cfg": 1,
+    "width": 832,
+    "height": 480
+   },
+   "note": "2.918.0: LongCat-Video-Avatar 1.6 in the ComfyUI-LongCat-Avatar pack (lib/longcat.js + misc/longcat_worker.py). The References docker's first sound is the speech (needed) - the video is as long as it, 25 fps, 93-frame segments each continuing from the last 13; its first picture (the one typed first frame first) is the person, none = the person from the prompt. 8 distilled steps (DMD LoRA, then OPSD), cfg 1. 480p, or 720p when Basic Settings' size is 720 or more; the release's bucket nearest the picture's shape. Settings ▸ Add-ons ▸ LongCat Avatar 1.6 installs the pack and the files.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "LongCat's graph is built by its worker; the H3 accelerators do not apply."
+   }
+  },
+  {
    "id": "custom",
    "label": "Other (your own export)",
    "modes": [

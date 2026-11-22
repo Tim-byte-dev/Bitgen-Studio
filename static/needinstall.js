@@ -6,7 +6,7 @@
  *
  *   ensure(which, why) -> Promise<true = installed (now), false = not>   which = demucs | whisper (POST /api/audio/install
  *                 knows them) | h3sheet (2.870.0 - a Settings ▸ Add-ons add-on: /api/addons/h3sheet/install + /api/addons/job)
- *                 | h3long (2.872.0 - the same way);
+ *                 | h3long (2.872.0 - the same way) | longcat (2.918.0);
  *                 why = what it is needed for, said in the box. Installed already (GET its status) = true at
  *                 once - the box is never shown for nothing.
  *   THE MESSAGE BOX  the same as the models-not-found one (static/modelsfound.js): what is missing, what it does, its
@@ -37,6 +37,10 @@
     pan2: { name: "PAN 2", desc: "MBZUAI's world model: your words (or a first picture + words) become a video of up to 20 seconds.",
       hint: "about 38 GB: the int8 PAN 2 model, its Qwen3.5 9B text encoder and the Wan 2.2 VAE into ComfyUI's models; ComfyUI 0.46.0 or newer, restarted once afterwards",
       status: "/api/pan2", addon: "pan2" },
+    // 2.918.0: LongCat Avatar 1.6 (Settings ▸ Add-ons ▸ LongCat Avatar 1.6)
+    longcat: { name: "LongCat Avatar 1.6", desc: "Makes a person talk or sing to a sound: Meituan's LongCat-Video-Avatar in ComfyUI.",
+      hint: "about 28 GB: the LongCat Avatar node pack, the int8 model (16 GB), its two LoRAs, Whisper large-v3 and Wan 2.1's text encoder + VAE (skipped when you have them) into ComfyUI; ComfyUI restarted once afterwards",
+      status: "/api/longcat", addon: "longcat" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
