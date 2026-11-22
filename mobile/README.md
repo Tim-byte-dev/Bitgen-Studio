@@ -33,6 +33,12 @@ This first version talks to **your PC** ("My PC"). RunPod and OpenRouter directl
 Java 21 + SDK when they are there, or ⬇ downloads them; pair the phone once with Wireless debugging (its 6-digit code),
 then 🔨 Build + install builds the APK and installs it on the phone over Wi-Fi, no taps.
 
+**No Wireless debugging (2.912.0+):** 📲 Install with a QR (the phone's browser downloads the APK from the PC for 15 minutes;
+tap Install), or 📂 Show the APK and drag it into Windows Phone Link. Once installed, the app offers ⬆ Update itself when the
+PC has a newer build (`GET /api/app/update`, `GET /api/app/apk` -> `@capacitor-community/file-opener` opens Android's
+installer). Samsung's Auto Blocker must be off. Each build from bitGen stamps `www/lib/build.js` (its id) and passes
+`-PbgVersionCode` (minutes since 2026, always higher) / `-PbgVersionName`; a build by hand is "dev" (versionCode 1).
+
 **By hand:** you need **Node.js 20+** and **Android Studio** (it brings the Android SDK and JDK 21), or Anvil.
 
 ```

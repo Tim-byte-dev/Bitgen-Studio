@@ -10337,6 +10337,23 @@ on the phone over Wi-Fi and starts it - no taps (Wireless debugging must be on; 
 **⤓ Install on the phone** installs the last build; **⬇ APK file** gives you the file to copy by hand. (By hand instead:
 `mobile/README.md` - `npm install`, `npm run sync`, Android Studio's Build ▸ APK.)
 
+**No Wireless debugging? 📲 QR, 📂 Phone Link, ⬆ Update** (2.912.0). Installing without a tap needs Wireless debugging;
+without it Android always asks you to tap **Install** - these three get the app there:
+- **📲 Install with a QR** (Remote access must be on): a QR appears; point the phone's camera at it, its browser downloads
+  `bitGen.apk` from your PC over Wi-Fi, open it and tap **Install**. The link works for 15 minutes, only for that one file; a
+  new QR cancels the old one.
+- **📂 Show the APK** opens the folder with `bitGen.apk` selected: drag it onto the phone's screen in **Phone Link**
+  (or right-click ▸ Share ▸ Phone Link), then open it on the phone and tap **Install**. Phone Link only carries the file -
+  it cannot install it.
+- **⬆ Update** - once the app is on the phone you never need the QR again: after each 🔨 Build the app sees the newer build
+  on your PC (when it starts, when you come back to it, or ⚙ Settings ▸ **⬆ Check for an update**), shows **⬆ Update**, downloads
+  it and opens Android's installer - tap **Update**. The first time Android asks to allow bitGen to install apps - allow it.
+  Each build has its own id and a higher version number, so it installs over the old one; builds from the same PC share its
+  signing key (a build from another PC has to replace the app: uninstall it first).
+- **Samsung Auto Blocker** (Settings ▸ Security and privacy ▸ Auto Blocker) blocks every install from outside the Galaxy
+  Store and the Play Store - turn it off for the install, on again after if you like. Also allow "Install unknown apps" for
+  the browser / My Files / bitGen when Android asks.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

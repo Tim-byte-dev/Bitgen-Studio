@@ -1795,100 +1795,124 @@
    "src": "static/apkui.js:39"
   },
   {
+   "s": "Install with a QR",
+   "src": "static/apkui.js:40"
+  },
+  {
+   "s": "No Wireless debugging: a QR for the phone camera - the phone downloads the app from this PC over Wi-Fi and you tap Install (Remote access on)",
+   "src": "static/apkui.js:40"
+  },
+  {
+   "s": "Show the APK",
+   "src": "static/apkui.js:41"
+  },
+  {
+   "s": "Explorer with the APK selected - drag it onto the phone screen in Phone Link, or right-click ▸ Share ▸ Phone Link; on the phone tap it in Downloads",
+   "src": "static/apkui.js:41"
+  },
+  {
+   "s": "Scan it with the phone camera, open the link, and tap Install when the download finishes (the first time Android asks to allow the browser to install apps). Samsung Auto Blocker must be off for this: Settings ▸ Security and privacy ▸ Auto Blocker. The link works for 15 minutes",
+   "src": "static/apkui.js:46"
+  },
+  {
+   "s": "No Wireless debugging? Use 📲 Install with a QR, or 📂 Show the APK and send it with Phone Link. Once the app is on the phone, it offers ⬆ Update by itself when a newer build is on this PC",
+   "src": "static/apkui.js:47"
+  },
+  {
    "s": "Pair the phone (Wireless debugging - once)",
-   "src": "static/apkui.js:42"
-  },
-  {
-   "s": "On the phone: Settings ▸ About phone ▸ Software information ▸ tap",
-   "src": "static/apkui.js:43"
-  },
-  {
-   "s": "Build number",
-   "src": "static/apkui.js:43"
-  },
-  {
-   "s": "7 times (Developer options)",
-   "src": "static/apkui.js:43"
-  },
-  {
-   "s": "Settings ▸",
-   "src": "static/apkui.js:44"
-  },
-  {
-   "s": "Developer options",
-   "src": "static/apkui.js:44"
-  },
-  {
-   "s": "Wireless debugging",
-   "src": "static/apkui.js:44"
-  },
-  {
-   "s": "on (the phone on the same Wi-Fi as this PC)",
-   "src": "static/apkui.js:44"
-  },
-  {
-   "s": "Tap",
-   "src": "static/apkui.js:45"
-  },
-  {
-   "s": "Pair device with pairing code",
-   "src": "static/apkui.js:45"
-  },
-  {
-   "s": "type its IP address",
-   "src": "static/apkui.js:45"
-  },
-  {
-   "s": "port and the 6-digit code here, then Pair",
-   "src": "static/apkui.js:45"
-  },
-  {
-   "s": "Pair",
-   "src": "static/apkui.js:47"
-  },
-  {
-   "s": "6-digit code",
-   "src": "static/apkui.js:47"
-  },
-  {
-   "s": "IP address & port of Wireless debugging",
    "src": "static/apkui.js:48"
   },
   {
-   "s": "Connect",
+   "s": "On the phone: Settings ▸ About phone ▸ Software information ▸ tap",
    "src": "static/apkui.js:49"
   },
   {
-   "s": "Only when Pair did not connect by itself: the IP address & Port on the Wireless debugging screen (not the pairing one)",
+   "s": "Build number",
    "src": "static/apkui.js:49"
   },
   {
-   "s": "Java / Android SDK folders (optional - empty = find them)",
+   "s": "7 times (Developer options)",
+   "src": "static/apkui.js:49"
+  },
+  {
+   "s": "Settings ▸",
    "src": "static/apkui.js:50"
   },
   {
-   "s": "Java 21 folder (has bin\\java)",
+   "s": "Developer options",
+   "src": "static/apkui.js:50"
+  },
+  {
+   "s": "Wireless debugging",
+   "src": "static/apkui.js:50"
+  },
+  {
+   "s": "on (the phone on the same Wi-Fi as this PC)",
+   "src": "static/apkui.js:50"
+  },
+  {
+   "s": "Tap",
    "src": "static/apkui.js:51"
   },
   {
+   "s": "Pair device with pairing code",
+   "src": "static/apkui.js:51"
+  },
+  {
+   "s": "type its IP address",
+   "src": "static/apkui.js:51"
+  },
+  {
+   "s": "port and the 6-digit code here, then Pair",
+   "src": "static/apkui.js:51"
+  },
+  {
+   "s": "Pair",
+   "src": "static/apkui.js:53"
+  },
+  {
+   "s": "6-digit code",
+   "src": "static/apkui.js:53"
+  },
+  {
+   "s": "IP address & port of Wireless debugging",
+   "src": "static/apkui.js:54"
+  },
+  {
+   "s": "Connect",
+   "src": "static/apkui.js:55"
+  },
+  {
+   "s": "Only when Pair did not connect by itself: the IP address & Port on the Wireless debugging screen (not the pairing one)",
+   "src": "static/apkui.js:55"
+  },
+  {
+   "s": "Java / Android SDK folders (optional - empty = find them)",
+   "src": "static/apkui.js:56"
+  },
+  {
+   "s": "Java 21 folder (has bin\\java)",
+   "src": "static/apkui.js:57"
+  },
+  {
    "s": "Save",
-   "src": "static/apkui.js:52"
+   "src": "static/apkui.js:58"
   },
   {
    "s": "Android SDK folder",
-   "src": "static/apkui.js:52"
+   "src": "static/apkui.js:58"
   },
   {
    "s": "Forget the phone",
-   "src": "static/apkui.js:53"
+   "src": "static/apkui.js:59"
   },
   {
    "s": "Forget the paired phone (pair it again to install)",
-   "src": "static/apkui.js:53"
+   "src": "static/apkui.js:59"
   },
   {
    "s": "Not built yet",
-   "src": "static/apkui.js:71"
+   "src": "static/apkui.js:78"
   },
   {
    "s": "Ungrouped",
@@ -29954,11 +29978,15 @@
   },
   {
    "p": "Built: bitGen {0} - {1} MB, {2}",
-   "src": "static/apkui.js:71"
+   "src": "static/apkui.js:78"
   },
   {
    "p": "Built: bitGen - {0} MB, {1}",
-   "src": "static/apkui.js:71"
+   "src": "static/apkui.js:78"
+  },
+  {
+   "p": "{0} - drag it onto the phone screen in Phone Link (or right-click ▸ Share ▸ Phone Link); on the phone open Downloads and tap it",
+   "src": "static/apkui.js:126"
   },
   {
    "p": "{0} — {1} here, {2} in the group (drop assets here to move them in; hold Ctrl to add)",

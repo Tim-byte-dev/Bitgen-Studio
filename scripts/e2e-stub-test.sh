@@ -14831,6 +14831,14 @@ node scripts/test-911.js > /tmp/t911.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui911-ui.js > /tmp/ui911.log 2>&1 \
   && ok "2.911.0 browser test: ✨ the app's idea -> the PC's LLM (stub) writes title / sound / lyrics; Settings' 📱 box with stand-in Java / SDK / adb / Gradle: pair by code, 🔨 Build + install (real npm install + cap sync) -> adb install -r + start; a phone's key gets 403" \
   || { bad "2.911.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui911.log | head -12; }
+# ---- 2.912.0 (📱 the app without Wireless debugging: 📲 QR install, ⬆ Update in the app, 📂 Show the APK for Phone Link)
+node scripts/test-912.js > /tmp/t912.log 2>&1 \
+  && ok "2.912.0 units: apkShare (the 15-minute token, a new QR cancels the old, Explorer / Finder reveal, newer build), versionCode, the guard opens only /apk/<token>/bitGen.apk, build.gradle / manifest / build.js / file opener, apkui + app wiring" \
+  || { bad "2.912.0 units"; grep -a "^FAIL" -A1 /tmp/t912.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui912-ui.js > /tmp/ui912.log 2>&1 \
+  && ok "2.912.0 browser test: a build stamps its id + versionCode; 📲 QR refused with Remote access off, on = QR + link the phone's browser downloads (a bad token 404, the rest 401); 📂 the file; the paired app (older build) shows ⬆ Update -> /api/app/apk = the APK" \
+  || { bad "2.912.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui912.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

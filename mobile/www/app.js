@@ -8,6 +8,8 @@
  *             the PC first (/api/comfy/status, /api/comfy/ensure)
  *   Queue     /api/jobs?all=1, /api/jobs/<id> (its log), /api/jobs/<id>/cancel
  *   Gallery   /api/outputs?kind=video|images|audio -> /outputs/<name>; ⬇ Save into the phone's Documents/bitGen, ⤴ Share
+ *   Update    (2.912.0) /api/app/update -> a newer build on the PC than www/lib/build.js: ⬆ Update downloads /api/app/apk
+ *             and opens Android's installer (FileOpener) - one tap on Install
  *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
  *             = Create on the left, the other tab on the right (the unfolded screen); ⛶ hides the phone's bars */
 (function () {
@@ -68,7 +70,7 @@
     [].forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.classList.toggle("on", b.dataset.v === v); });
     if (v === "queue") loadJobs();
     if (v === "gallery") loadGallery();
-    if (v === "settings") { $("baseIn").value = S.base; aboutPc(); }
+    if (v === "settings") { $("baseIn").value = S.base; aboutPc(); var mb = myBuild(); $("aboutApp").textContent = "This app: bitGen " + (mb.version || "") + (mb.id && mb.id !== "dev" ? " (build " + mb.id + ")" : " (built by hand)"); }
     if (v === "create" || both) estimate(true);
   }
   function visible(n) { return !$("v-" + n).hidden; }
@@ -380,6 +382,45 @@
     saveLocal(cur, true).then(function (uri) { return P.Share.share({ title: cur, files: [uri] }); }).catch(function (e) { if (e && !/cancel/i.test(e.message || "")) alert(e.message || e); });
   };
 
+  /* ---------- ⬆ Update (2.912.0): a newer build on the PC (GET /api/app/update) -> download it (the app's key) into the app's
+     cache and open Android's installer (FileOpener) - you tap Install; Samsung's Auto Blocker must be off */
+  function myBuild() { return window.BG_BUILD || { id: "dev", version: "" }; }
+  var updInfo = null;
+  function isNewer(pcId, appId) {
+    var p = String(pcId || ""), a = String(appId || "");
+    if (!/^\d{14}$/.test(p)) return false;
+    if (!/^\d{14}$/.test(a)) return true;
+    return p > a;
+  }
+  function checkUpdate(say) {
+    if (!S.key) return Promise.resolve(null);
+    return api("/api/app/update").then(function (u) {
+      updInfo = u && u.available && isNewer(u.id, myBuild().id) ? u : null;
+      $("upd").hidden = !updInfo; document.body.classList.toggle("has-upd", !!updInfo);
+      if (updInfo) $("updText").textContent = "⬆ A newer bitGen app is on your PC" + (updInfo.version ? " (" + updInfo.version + ")" : "") + " - " + Math.round(updInfo.size / 1048576) + " MB";
+      if (say) msg("setMsg", updInfo ? "A newer build is on your PC - tap Update at the top." : (u && u.available ? "✓ This is the newest build on your PC." : "Your PC has no build of the app yet."), updInfo ? "" : "ok");
+      return updInfo;
+    }).catch(function (e) { if (say) msg("setMsg", e.message, "bad"); return null; });
+  }
+  function doUpdate() {
+    if (!updInfo) return;
+    var url = S.base + "/api/app/apk?bgk=" + encodeURIComponent(S.key);
+    var b = $("updBtn"); b.disabled = true; b.textContent = "Downloading…";
+    var done = function () { b.disabled = false; b.textContent = "Update"; };
+    if (!(P.FileTransfer && P.Filesystem && P.FileOpener)) { window.open(url, "_blank"); done(); return; }
+    P.Filesystem.getUri({ directory: "CACHE", path: "bitGen-update.apk" }).then(function (u) {
+      return P.FileTransfer.downloadFile({ url: url, path: u.uri }).then(function () { return u.uri; });
+    }).then(function (uri) {
+      b.textContent = "Installing…";
+      return P.FileOpener.open({ filePath: uri, contentType: "application/vnd.android.package-archive", openWithDefault: true });
+    }).catch(function (e) {
+      alert("The update could not be installed: " + ((e && e.message) || e) + "\n\nIf Android says installs are blocked: turn off Samsung Auto Blocker (Settings ▸ Security and privacy ▸ Auto Blocker) and allow bitGen to install unknown apps, then Update again.");
+    }).then(done);
+  }
+  $("updBtn").onclick = doUpdate;
+  $("updLater").onclick = function () { $("upd").hidden = true; document.body.classList.remove("has-upd"); };
+  $("updCheck").onclick = function () { msg("setMsg", "Checking…"); checkUpdate(true); };
+
   /* ---------- settings */
   function aboutPc() {
     if (!S.key) { $("aboutPc").textContent = "Not paired."; return; }
@@ -404,6 +445,7 @@
     return api("/api/app/info").then(function (i) {
       S.info = i; conn("● " + hostOf(S.base), "on");
       fillStyles(); paintWh(); show(S.view === "connect" ? "create" : S.view);
+      checkUpdate(false);
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
   layout();
@@ -417,5 +459,5 @@
     if (v[6]) $("steps").value = v[6]; if (v[7]) $("cfg").value = v[7]; $("ovrOn").checked = v[8] === "1";
     start();
   });
-  document.addEventListener("visibilitychange", function () { if (!document.hidden && S.key) { if (S.view === "queue") loadJobs(); estimate(true); } });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && S.key) { if (S.view === "queue") loadJobs(); estimate(true); checkUpdate(false); } });
 })();

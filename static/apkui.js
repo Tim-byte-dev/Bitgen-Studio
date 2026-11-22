@@ -37,8 +37,14 @@
     + '<button class="ghost" id="apk_buildinst" type="button" title="Build it, then install it on the paired phone and start it">🔨 Build + install</button>'
     + '<button class="ghost" id="apk_inst" type="button" title="Install the last build on the paired phone (Wireless debugging on) and start it">⤓ Install on the phone</button>'
     + '<a class="ghost" id="apk_file" href="/api/apk/file" download style="text-decoration:none;padding:6px 10px;border:1px solid var(--line);border-radius:6px">⬇ APK file</a>'
+    + '<button class="ghost" id="apk_qr" type="button" title="No Wireless debugging: a QR for the phone camera - the phone downloads the app from this PC over Wi-Fi and you tap Install (Remote access on)">📲 Install with a QR</button>'
+    + '<button class="ghost" id="apk_reveal" type="button" title="Explorer with the APK selected - drag it onto the phone screen in Phone Link, or right-click ▸ Share ▸ Phone Link; on the phone tap it in Downloads">📂 Show the APK</button>'
     + '<button class="ghost" id="apk_stop" type="button" hidden>■ Stop</button></div>'
     + '<div id="apk_apk" class="hint" style="margin:4px 0"></div>'
+    + '<div id="apk_qrbox" hidden style="margin:6px 0"><div id="apk_qrimg" style="padding:10px;background:#fff;border-radius:10px;width:max-content"></div>'
+    + '<div id="apk_qrurl" class="hint" style="font-family:var(--mono);word-break:break-all;margin-top:4px"></div>'
+    + '<p class="hint" style="margin:4px 0">Scan it with the phone camera, open the link, and tap Install when the download finishes (the first time Android asks to allow the browser to install apps). Samsung Auto Blocker must be off for this: Settings ▸ Security and privacy ▸ Auto Blocker. The link works for 15 minutes.</p></div>'
+    + '<p class="hint help" style="margin:2px 0 6px">No Wireless debugging? Use 📲 Install with a QR, or 📂 Show the APK and send it with Phone Link. Once the app is on the phone, it offers ⬆ Update by itself when a newer build is on this PC.</p>'
     + '<details id="apk_phone" style="margin:6px 0"><summary class="hint" style="cursor:pointer">Pair the phone (Wireless debugging - once)</summary>'
     + '<ol class="hint" style="margin:6px 0 6px 18px;padding:0"><li>On the phone: Settings ▸ About phone ▸ Software information ▸ tap <b>Build number</b> 7 times (Developer options).</li>'
     + '<li>Settings ▸ <b>Developer options</b> ▸ <b>Wireless debugging</b> - on (the phone on the same Wi-Fi as this PC).</li>'
@@ -65,6 +71,7 @@
     $("apk_inst").disabled = busy || !st.apk || !(st.sdk && st.sdk.adb);
     $("apk_buildinst").disabled = $("apk_buildinst").disabled || !(st.phone && st.phone.ip);
     $("apk_file").style.display = st.apk ? "" : "none";
+    $("apk_qr").disabled = busy || !st.apk; $("apk_reveal").disabled = !st.apk;
     $("apk_get").disabled = busy;
     ["apk_pair", "apk_conn"].forEach(function (id) { $(id).disabled = busy || !(st.sdk && st.sdk.adb); });
     $("apk_stop").hidden = !busy;
@@ -108,6 +115,18 @@
     $("apk_conn").onclick = function () { post("/api/apk/connect", { address: $("apk_caddr").value.trim() }); };
     $("apk_dirsave").onclick = function () { post("/api/apk/paths", { jdk: $("apk_jdk").value, sdk: $("apk_sdk").value }); };
     $("apk_forget").onclick = function () { post("/api/apk/paths", { forget_phone: true }); };
+    $("apk_qr").onclick = function () {
+      fetch("/api/apk/qr", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ("HTTP " + r.status)); return j; }); })
+        .then(function (j) { $("apk_qrbox").hidden = false; $("apk_qrimg").innerHTML = j.qr || ""; $("apk_qrurl").textContent = j.url; try { if (root.H3TestEvent) root.H3TestEvent("apk_qr", j.url); } catch (e) { /* 🧪 */ } })
+        .catch(function (e) { $("apk_qrbox").hidden = true; $("apk_phase").textContent = "✗ " + e.message; $("apk_phase").style.color = "var(--bad, #e5594f)"; });
+    };
+    $("apk_reveal").onclick = function () {
+      fetch("/api/apk/reveal", { method: "POST" }).then(function (r) { return r.json(); }).then(function (j) {
+        $("apk_phase").textContent = j.error ? "✗ " + j.error : "📂 " + j.file + " - drag it onto the phone screen in Phone Link (or right-click ▸ Share ▸ Phone Link); on the phone open Downloads and tap it";
+        $("apk_phase").style.color = j.error ? "var(--bad, #e5594f)" : "var(--ok, #6cc070)";
+      }).catch(function () { /* fine */ });
+    };
   }
   function boot() {
     var after = $("s_remote_alts");

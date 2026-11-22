@@ -9,4 +9,9 @@ fs.mkdirSync(out, { recursive: true });
 fs.copyFileSync(path.join(root, "node_modules", "jsqr", "dist", "jsQR.js"), path.join(out, "jsQR.js"));
 const lic = path.join(root, "node_modules", "jsqr", "LICENSE");
 if (fs.existsSync(lic)) fs.copyFileSync(lic, path.join(out, "jsQR.LICENSE"));
-console.log("vendored: www/vendor/jsQR.js");
+// 2.912.0: www/lib/build.js - which build this is (bitGen's 🔨 Build writes its own id first: BG_BUILD_ID / BG_STUDIO_VERSION),
+// for the app's ⬆ Update check against the APK on the PC
+const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const build = { id: process.env.BG_BUILD_ID || "dev", version: pkg.version, studio: process.env.BG_STUDIO_VERSION || "", at: Date.now() };
+fs.writeFileSync(path.join(root, "www", "lib", "build.js"), "/* made by scripts/vendor.js - not in git */\nwindow.BG_BUILD = " + JSON.stringify(build) + ";\n");
+console.log("vendored: www/vendor/jsQR.js, www/lib/build.js (" + build.id + ")");

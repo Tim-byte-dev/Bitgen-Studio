@@ -13,6 +13,8 @@
   <div class="hdr-r"><div id="conn" class="conn" title="Your PC">○ not connected</div>
     <button id="fsBtn" class="icon" type="button" title="Full screen - hide the phone's status and navigation bars (swipe from the edge to see them)" aria-label="Full screen">⛶</button></div>
 </header>
+<!-- 2.912.0: ⬆ a newer build of this app is on your PC -->
+<div id="upd" class="upd" hidden><span id="updText">⬆ A newer bitGen app is on your PC</span><button id="updBtn" class="btn small go" type="button">Update</button><button id="updLater" class="icon" type="button" aria-label="Later">✕</button></div>
 <main id="panes">
 
 <!-- CONNECT: pair with bitGen Studio on your PC -->
@@ -92,6 +94,8 @@
   <div class="row"><button id="saveBase" class="btn">Save + test</button><button id="testBtn" class="btn">Test</button></div>
   <p id="setMsg" class="msg"></p>
   <p class="hint" id="aboutPc"></p>
+  <p class="hint" id="aboutApp"></p>
+  <button id="updCheck" class="btn" type="button">⬆ Check for an update</button>
   <button id="forget" class="btn danger">Disconnect this phone</button>
   <p class="hint">Disconnecting forgets the PC here. To pair again, create a new link on the PC. On the PC, Settings ▸ General ▸ Remote
     access ▸ Disconnect cuts this phone off from there.</p>
@@ -113,6 +117,7 @@
 </nav>
 
 <script src="vendor/jsQR.js"></script>
+<script src="lib/build.js"></script>
 <script src="lib/core.js"></script>
 <script src="app.js"></script>
 </body>

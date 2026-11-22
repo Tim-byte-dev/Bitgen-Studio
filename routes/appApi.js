@@ -24,6 +24,14 @@ function mount(app) {
       res.status(r.status).json(r.body);
     } catch (e) { res.status(500).json({ error: String((e && e.message) || e) }); }
   });
+  // 2.912.0: ⬆ Update - the build on this PC (its id vs the app's own www/lib/build.js) and the APK itself (the app's key)
+  app.get("/api/app/update", (_req, res) => { try { res.json(require("../lib/apkShare").buildInfo()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
+  app.get("/api/app/apk", (_req, res) => {
+    const f = require("../lib/apkShare").apkFile();
+    if (!require("fs").existsSync(f)) return res.status(404).json({ error: "there is no build on the PC" });
+    res.setHeader("Content-Type", "application/vnd.android.package-archive");
+    res.sendFile(f);
+  });
   // 2.911.0: ✨ Write the song - {idea, style_id} -> {title, style, lyrics} from the PC's LLM
   app.post("/api/app/song", async (req, res) => {
     try { const r = await A.writeSong((req.body || {}).idea, (req.body || {}).style_id); res.status(r.status).json(r.body); }

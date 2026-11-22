@@ -7,9 +7,12 @@
 //   POST /api/apk/pair {address, code}   POST /api/apk/connect {address}   POST /api/apk/install {serial}
 //   POST /api/apk/stop              GET /api/apk/file (the APK itself, to copy by hand)
 //   POST /api/apk/paths {jdk, sdk, forget_phone}   the folders to use ("" = search), forget the paired phone
+//   2.912.0 (no debugging): POST /api/apk/qr {ip} -> a 15-minute download QR (lib/apkShare.js); GET /apk/<token>/bitGen.apk
+//   (open - the token is the key); POST /api/apk/reveal - Explorer with the APK selected (for Phone Link)
 "use strict";
 const fs = require("fs");
 const A = require("../lib/apkBuild");
+const S = require("../lib/apkShare");
 
 function mount(app) {
   const local = (req, res, next) => (req.remote ? res.status(403).json({ error: "building and installing the app is done on the PC itself" }) : next());
@@ -29,6 +32,19 @@ function mount(app) {
   app.post("/api/apk/install", local, go((b) => A.install({ serial: b.serial })));
   app.post("/api/apk/paths", local, (req, res) => { try { res.json(A.setPaths(req.body || {})); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
   app.post("/api/apk/stop", local, (_req, res) => { A.stop(); res.json(A.status()); });
+  // 2.912.0 (Tim: "debugging is disabled - can we use windows phone link?"): 📲 QR install, 📂 Show the APK, the QR's download
+  app.post("/api/apk/qr", local, (req, res) => {
+    const r = S.qrInfo(parseInt(process.env.H3_PORT, 10) || 8311, String((req.body || {}).ip || ""));
+    if (r.error) return res.status(r.status || 400).json({ error: r.error });
+    res.json(r);
+  });
+  app.post("/api/apk/reveal", local, (_req, res) => { try { res.json(S.reveal()); } catch (e) { res.status(e.status || 500).json({ error: String(e.message || e) }); } });
+  app.get("/apk/:token/bitGen.apk", (req, res) => {
+    if (!S.valid(String(req.params.token || ""))) return res.status(404).send("This download link has expired - make a new QR in bitGen Studio (Settings ▸ General ▸ Remote ▸ 📱 ▸ 📲 Install with a QR).");
+    res.setHeader("Content-Type", "application/vnd.android.package-archive");
+    res.setHeader("Content-Disposition", 'attachment; filename="bitGen.apk"');
+    res.sendFile(S.apkFile());
+  });
   app.get("/api/apk/file", local, (_req, res) => {
     const f = A.apkOut();
     if (!fs.existsSync(f)) return res.status(404).json({ error: "there is no APK yet - 🔨 Build the app first" });

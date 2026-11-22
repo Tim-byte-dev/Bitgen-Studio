@@ -7,8 +7,10 @@ android {
         applicationId "au.com.tigerart.bitgen"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // bitGen 2.912.0: bitGen Studio's 🔨 Build passes -PbgVersionCode (minutes since 2026, always higher - Android only
+        // installs an update with a higher code) and -PbgVersionName (mobile/package.json); a build by hand keeps 1 / "1.0"
+        versionCode (project.findProperty("bgVersionCode") ?: "1").toString().toInteger()
+        versionName (project.findProperty("bgVersionName") ?: "1.0").toString()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
