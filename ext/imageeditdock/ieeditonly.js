@@ -39,7 +39,10 @@
     get: function (k) { try { return root.localStorage.getItem("h3." + k); } catch (e) { return null; } },
     set: function (k, v) { try { if (v == null) root.localStorage.removeItem("h3." + k); else root.localStorage.setItem("h3." + k, v); } catch (e) { /* private */ } }
   };
-  function onScreen() { var d = $("imageeditdock"); return !!d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed"); }
+  function onScreen() {
+    if (typeof root.ieOnScreen === "function") return !!root.ieOnScreen();      // 2.917.0: mount.js's - any way it is not drawn = closed
+    var d = $("imageeditdock"); return !!d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed");
+  }
   function load() {
     return root.fetch("/api/aiedit/engines").then(function (r) { return r.json(); }).then(function (j) {
       edit = new Set(((j && j.edit) || []).map(function (s) { return s.id; }));

@@ -14863,6 +14863,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui916-ui.js > /tmp/ui916.log 2>&
   && ok "2.916.0 browser test: the paired app - ＋ Video from the PC, ＋ Audio from the phone, ＋ Picture from the PC -> Generate: the job has them as references" \
   || { bad "2.916.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui916.log | head -12; }
 
+# ---- 2.917.0 (✏ Edit / 🧩 Compose from the References docker whenever the image editor is closed)
+node scripts/test-917.js > /tmp/t917.log 2>&1 \
+  && ok "2.917.0 units: closed / no picture open + references = edit (1) or compose (2-3), Fill / Remove still need a picture, a picture open = its layer, the chip, ieOnScreen (👁 off, hidden group / workspace part, not drawn)" \
+  || { bad "2.917.0 units"; grep -a "^FAIL" -A1 /tmp/t917.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui917-ui.js > /tmp/ui917.log 2>&1 \
+  && ok "2.917.0 browser test: the editor ✕ closed from the start - ✏ Edit on the reference, 2 = Compose with both, 🧩 Compose with 1; not drawn (hidden) = closed; on screen with no picture = the references; a picture open = its layer" \
+  || { bad "2.917.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui917.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

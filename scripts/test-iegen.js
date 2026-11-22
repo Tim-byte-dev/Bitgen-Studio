@@ -15,7 +15,8 @@ const g1 = IX.indexOf("async function generateOne("), g2 = IX.indexOf("\n}", g1)
 check("core's generateOne waits for the render, then offers it: window.H3OnGenerated({mode, text, job}) when it is done (a seam - no editor = undefined)",
   /const st = await awaitJob\(id\);/.test(GEN) && /if \(st === "done" && typeof window\.H3OnGenerated === "function"\) \{ try \{ window\.H3OnGenerated\(\{ mode: gm, text, job: id \}\); \}/.test(GEN) && /return st;/.test(GEN));
 check("...a failing taker never fails the queue (try / catch)", /catch \(e\) \{ console\.warn\("\[generated\]", e\); \}/.test(GEN));
-check("mount.js: the editor on screen = shown and not collapsed", /function ieOnScreen\(\) \{ const d = \$\("imageeditdock"\); return !!d && !d\.classList\.contains\("dockgone"\) && !d\.classList\.contains\("collapsed"\); \}/.test(M));
+// 2.917.0: + 👁 off, inside something hidden, not drawn at all
+check("mount.js: the editor on screen = shown and not collapsed", /function ieOnScreen\(\) \{\s*const d = \$\("imageeditdock"\);\s*if \(!d \|\| d\.classList\.contains\("dockgone"\) \|\| d\.classList\.contains\("collapsed"\)/.test(M) && /getClientRects\(\)\.length > 0/.test(M));
 check("...only a change counts (opened / closed by hand - not the state the page boots in, nor the saved layout landing): /if \(open !== ieWasOpen\)/ + the boot window",
   /if \(open !== ieWasOpen\) \{/.test(M) && /function ieBooting\(\)/.test(M) && /return Date\.now\(\) - ieBootT < 1500;/.test(M));
 check("...opened: the mode it was in is kept (h3.ie.modeWas, '' = it was Image already) and Image is picked through the select's own onchange",

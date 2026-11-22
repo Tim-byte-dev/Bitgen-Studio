@@ -62,7 +62,7 @@
     if (!o || o === "generate") return "";
     if (s.blender && (o === "edit" || o === "refine")) return "";                    // the 🟧 Blender chip says it
     if (!s.editorOn) return s.refs ? `🖼 ${s.refs} reference${s.refs === 1 ? "" : "s"}` : "🖼 no references";
-    if (!s.open) return "";
+    if (!s.open) return s.refs && o !== "fill" && o !== "remove" ? `🖼 ${s.refs} reference${s.refs === 1 ? "" : "s"}` : "";   // 2.917.0: no picture open = the references
     if (o === "fill" || o === "remove") return s.hasSel ? "▭ the selection" : "";
     if ((o === "refine" || o === "background") && s.hasSel) return "▭ the selection";
     if (s.picks > 1) return `▦ ${Math.min(s.picks, 3)} layers`;

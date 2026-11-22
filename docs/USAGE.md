@@ -3195,6 +3195,10 @@ selection in the editor. Your choice comes back when the editor opens again.
 - **🧩 Compose**: one picture made from the references ("put the dog from picture 2 on the sofa in picture 1").
 - The results land in the gallery like any picture.
 
+**"Closed" means not on screen in any way** (2.917.0): ✕, minimized, turned off (👁) in a layout, its docker group or
+floating window hidden, or a tab behind another. The image editor **open with no picture** uses the references too
+(Edit, Refine, Replace background, Compose), so you never have to open the editor just to edit a reference picture.
+
 **With the image editor open**, Fill and Remove are back, and the picture comes from the **selected layer**:
 
 - **✏ Edit**, **🔁 Refine** and **🖼 Replace background** work from the selected layer, even if other layers cover it.

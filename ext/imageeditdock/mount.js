@@ -195,7 +195,16 @@ window.ieOpenUrl = function (url, name) {
      calls window.H3OnGenerated) lands on the document in front as a NEW LAYER named after the prompt (scaled down to
      fit, centred); no document open = it opens as one. The gallery keeps it as always. */
 const IE_PICS = /\.(png|jpe?g|webp|bmp|jxl)$/i;
-function ieOnScreen() { const d = $("imageeditdock"); return !!d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed"); }
+/* 2.917.0 (Tim: "when the image-editor is closed and prompt docker is in edit mode, use the reference images as the images to
+   edit/compose"): closed is more than ✕ / minimized - a layout's 👁 off (dockoff), a workspace hiding it, the docker group /
+   floating window it sits in hidden, a tab behind another: any way it is not drawn counts (the ▾ then works from the
+   References docker's pictures) */
+function ieOnScreen() {
+  const d = $("imageeditdock");
+  if (!d || d.classList.contains("dockgone") || d.classList.contains("collapsed") || d.classList.contains("dockoff")) return false;
+  if (d.closest(".dockoff,.ws-hide,.dockgone")) return false;   // its docker group / window gone
+  return d.getClientRects().length > 0;                 // display:none on it or anything it sits in
+}
 window.ieOnScreen = ieOnScreen;      // 2.543.0: the prompt docker's ▾ asks (pcimgop / pcpromptlink) - it was never global, so they always saw "open"
 const iePref = {
   get: (k, d) => { try { const v = localStorage.getItem("h3." + k); return v == null ? d : v; } catch { return d; } },

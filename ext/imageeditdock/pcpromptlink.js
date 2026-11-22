@@ -28,6 +28,10 @@
  * the rules above; Edit / Refine / Fill / Replace background / Remove always work on the editor's picture - the ✨ AI panel
  * need not be showing (it is shown for the results); the editor closed = it opens; no picture = it says so. A Blender /
  * Daz 3D layer selected (🟧 Blender mode): Edit and Refine render its scene with Blender first (pc3d.js editFromScene).
+ * 2.917.0 (Tim: "for the desktop app, when the image-editor is closed and prompt docker is in edit mode, use the reference
+ * images as the images to edit/compose"): "closed" = any way the editor is not drawn (mount.js ieOnScreen: + a layout's 👁
+ * off, a workspace hiding it, a docker column hidden) - before, those counted as open and Edit asked for a picture there;
+ * and the editor on screen with NO picture open + pictures in the References docker = those pictures too.
  * Pure (Node: scripts/test-promptlink.js, test-imgop541.js): LINKED_MODES, linkedNow, goLabelFor, pickEditStyle, actionFor.
  */
 (function (root) {
@@ -63,6 +67,8 @@
       if (!s.refs) return { kind: "say", op, msg: "put a picture in the References docker first (or open the image editor and a picture)" };
       return { kind: "refs", op, mode: op === "refine" ? "refine" : op === "compose" || s.refs > 1 ? "compose" : "edit", bg: op === "background" };
     }
+    // 2.917.0: the editor on screen with no picture open = the References docker's pictures too (Fill / Remove need one)
+    if (!s.open && s.refs && op !== "fill" && op !== "remove") return { kind: "refs", op, mode: op === "refine" ? "refine" : op === "compose" || s.refs > 1 ? "compose" : "edit", bg: op === "background" };
     if (!s.open) return { kind: "say", op, msg: op === "edit" ? "open a picture to edit first (File ▸ Open, or drop one on the editor)" : `open a picture first - ${op} works on the picture in the image editor` };
     if (s.blender && (op === "edit" || op === "refine")) return { kind: "blender", op, mode: op };
     if (op === "compose") return { kind: "compose", op, mode: "compose" };
