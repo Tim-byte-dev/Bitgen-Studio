@@ -10284,6 +10284,37 @@ the button to see what it is from.
 - It is an estimate: a model's time is not exactly in step with the frames, and a pod or another graphics card is a
   different machine. Renders from before 2.908.0 have no size recorded and are taken as they were.
 
+## 📱 The bitGen app on your phone - your PC renders (2.909.0)
+
+The **bitGen** Android app is the prompt docker in your pocket: you write the prompt on the phone, **your PC** makes the
+picture or the video with bitGen Studio, and the result comes back to the phone.
+
+**Pair it once.** On the PC: **Settings ▸ General ▸ Remote access** - tick it (the first time, close and start bitGen
+Studio again so it listens on your network; Windows asks to let it through the firewall - say yes for private networks),
+then **Create link**. In the app: **📷 Scan the QR** takes a photo of it (or paste the link). The phone and the PC must be on
+the same Wi-Fi. The pairing lasts a month and survives restarting the PC; only one phone (or browser page) is paired at a
+time, and **Disconnect** on the PC cuts it off.
+
+**Create.** 🎬 Video or 🖼 Picture, a style (your PC's own list), the prompt, pictures from the 📷 camera or 🖼 the phone
+(for a video they are the References - the app adds the "<subject 1> is in <Picture 1>" mapping the prompt docker would),
+Resolution, Aspect and Seconds, and **Override style** with its steps, CFG and seed. ⏱ shows how long it will take on your
+PC. **Generate** starts ComfyUI on the PC first if it is not running. Every video model works: MiniMax H3 (FastH3 Omni,
+H3 Ref ...), Wan, LTX 2.3 / 2.5, H3 Long Video and PAN 2 - the PC sends each to its own renderer. (Character swap needs a
+reference video and stays on the PC.)
+
+**Queue** follows the renders (■ Cancel, the log); **Gallery** shows your PC's videos and pictures - tap one to play it,
+**⬇ Save** puts it in the phone's Documents/bitGen, **⤴ Share** sends it to any app.
+
+**Away from home** the app needs a way back to your PC: a VPN into your home network, or a port opened on your router to
+the PC (then put that address in the app's ⚙ Settings). bitGen does not route anything through a cloud service.
+
+**Safety.** With Remote access on, every request that comes from the network must carry the paired phone's key (it is
+sealed with a key only your PC has); without it the studio answers "not paired" - before 2.909.0 only the phone page's own
+functions were guarded. Requests from the PC itself never need it.
+
+**Building the app** (Android Studio, or Anvil): see `mobile/README.md` in the repository - `npm install`,
+`npm run sync`, then Build ▸ APK, and install the APK on the phone.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

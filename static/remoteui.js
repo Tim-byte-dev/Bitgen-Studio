@@ -10,7 +10,7 @@
     if (!st.lan) return "On, but this machine has no LAN address — nothing to connect to.";
     if (st.connected) {
       var mins = st.since ? Math.round((Date.now() - st.since) / 60000) : 0;
-      return "Connected: " + (st.device || "a phone").slice(0, 60)
+      return "Connected: " + (st.app ? "📱 bitGen app - " : "") + (st.device || "a phone").slice(0, 60)
            + (mins ? " (" + mins + " min)" : "") + ". Only one phone at a time.";
     }
     return "On at " + st.lan + ":" + (st.port || 8311)

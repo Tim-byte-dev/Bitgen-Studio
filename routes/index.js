@@ -118,6 +118,8 @@ const { planChunks, framesForSeconds, resolveAuto, FPS, MAX_SINGLE_RUN,
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 64 * 1024 * 1024, files: 9 } });
 
 function mount(app) {
+  // 2.909.0: FIRST of all - a request from the network (Remote access on) needs the paired device's key (lib/remoteGuard.js)
+  app.use(require("../lib/remoteGuard").middleware);
   try { require("../lib/miscMigrate").run(core.BASE); } catch (e) { /* 2.591.0: the app root tidied into misc/ - never blocks the start */ }
   require("../lib/appLog").start();   // 2.522.0: the app console kept for 🐞 bug reports (from the first line on)
   require("./layouts").guard(app);     // 2.587.0: FIRST - a layout being applied holds off the page's own layout saves; a fresh install starts from layouts/default.json
@@ -159,6 +161,7 @@ function mount(app) {
   require("./remotePrep").mount(app);   // 2.767.0: remote mode prepares the LLM / Vision LLM and the video style (lib/remotePrep.js, lib/podLlm.js)   // 2.766.0: FIRST after the JSON parser - remote mode answers /api/comfymodels + /api/modelmgr/cards with runpod/pods/remote_models.json; transfers; the ticked pods (lib/remoteModels.js)
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
+  require("./appApi").mount(app);      // 2.909.0: 📱 the bitGen app - its info + one video form for every model (lib/appApi.js)
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run
   require("./pan2").mount(app);        // 2.890.0: PAN 2 (MBZUAI's world model) from the prompt docker (lib/pan2.js) - the LLM writes its caption

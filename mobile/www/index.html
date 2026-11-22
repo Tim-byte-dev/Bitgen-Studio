@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>bitGen</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand"><img src="icon.png" alt="" width="26" height="26"><b>bitGen</b></div>
+  <div id="conn" class="conn" title="Your PC">○ not connected</div>
+</header>
+
+<!-- CONNECT: pair with bitGen Studio on your PC -->
+<section id="v-connect" class="view">
+  <h2>Connect to my PC</h2>
+  <ol class="steps">
+    <li>On the PC: <b>bitGen Studio ▸ Settings ▸ General ▸ Remote access</b> - tick it (the first time, restart bitGen Studio).</li>
+    <li>Press <b>Create link</b> - a QR code shows.</li>
+    <li>Here: <b>📷 Scan the QR</b> (take a photo of it), or paste the link under it.</li>
+  </ol>
+  <label class="btn big" for="qrFile">📷 Scan the QR</label>
+  <input type="file" id="qrFile" accept="image/*" capture="environment" hidden>
+  <div class="or">or paste the link</div>
+  <input type="url" id="linkIn" placeholder="http://192.168.1.20:8311/remote?t=…" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <label class="f">This phone's name <input id="devName" placeholder="My phone"></label>
+  <button id="pairBtn" class="btn go big">Connect</button>
+  <p id="pairMsg" class="msg"></p>
+  <p class="hint">The phone and the PC must be on the same Wi-Fi (not a guest network). Away from home you need your own way back to the PC -
+    a VPN to your home network, or a port opened on your router - then change the address in ⚙.</p>
+</section>
+
+<!-- CREATE -->
+<section id="v-create" class="view" hidden>
+  <div class="seg" id="kindSeg"><button data-kind="video" class="on">🎬 Video</button><button data-kind="image">🖼 Picture</button></div>
+  <label class="f">Style <select id="styleSel"></select></label>
+  <textarea id="prompt" rows="5" placeholder="What happens - who, where, how the camera moves…"></textarea>
+  <div class="pics" id="pics"></div>
+  <div class="row">
+    <label class="btn small" for="picCam">📷 Camera</label><input type="file" id="picCam" accept="image/*" capture="environment" hidden>
+    <label class="btn small" for="picLib">🖼 Pictures</label><input type="file" id="picLib" accept="image/*" multiple hidden>
+  </div>
+  <div class="grid">
+    <label class="f">Resolution <select id="resSel"><option value="480">480p</option><option value="540" selected>540p</option><option value="720">720p</option><option value="1080">1080p</option></select></label>
+    <label class="f">Aspect <select id="arSel"><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>3:4</option><option>21:9</option></select></label>
+    <label class="f vonly">Seconds <input type="number" id="seconds" min="1" max="120" step="0.5" value="5"></label>
+  </div>
+  <div id="whLine" class="hint"></div>
+  <details id="ovr"><summary><label><input type="checkbox" id="ovrOn"> Override style</label></summary>
+    <div class="grid">
+      <label class="f">Steps <input type="number" id="steps" min="0" max="100" value="0" title="0 = the style's own"></label>
+      <label class="f">CFG <input type="number" id="cfg" min="0" max="30" step="0.1" value="1"></label>
+      <label class="f">Seed <input type="number" id="seed" value="-1" title="-1 = random"></label>
+    </div>
+    <p class="hint">Off: the style's own steps, CFG and size rules. On: these, as Basic Settings' Override style on the PC.</p>
+  </details>
+  <div id="est" class="est"></div>
+  <button id="goBtn" class="btn go big">Generate</button>
+  <p id="goMsg" class="msg"></p>
+</section>
+
+<!-- QUEUE -->
+<section id="v-queue" class="view" hidden>
+  <h2>Queue</h2>
+  <div id="jobs"></div>
+</section>
+
+<!-- GALLERY -->
+<section id="v-gallery" class="view" hidden>
+  <div class="seg" id="galSeg"><button data-g="video" class="on">Video</button><button data-g="images">Pictures</button></div>
+  <div id="gal" class="gal"></div>
+</section>
+
+<!-- SETTINGS -->
+<section id="v-settings" class="view" hidden>
+  <h2>⚙ Settings</h2>
+  <label class="f">Your PC's address <input id="baseIn" placeholder="http://192.168.1.20:8311" autocapitalize="off" spellcheck="false"></label>
+  <div class="row"><button id="saveBase" class="btn">Save + test</button><button id="testBtn" class="btn">Test</button></div>
+  <p id="setMsg" class="msg"></p>
+  <p class="hint" id="aboutPc"></p>
+  <button id="forget" class="btn danger">Disconnect this phone</button>
+  <p class="hint">Disconnecting forgets the PC here. To pair again, create a new link on the PC. On the PC, Settings ▸ General ▸ Remote
+    access ▸ Disconnect cuts this phone off from there.</p>
+</section>
+
+<!-- the viewer -->
+<div id="viewer" hidden>
+  <div class="vbar"><button id="vClose" class="btn small">✕</button><span id="vName"></span><button id="vSave" class="btn small">⬇ Save</button><button id="vShare" class="btn small">⤴ Share</button></div>
+  <div id="vBody"></div>
+</div>
+
+<nav id="tabs">
+  <button data-v="create" class="on">✨<span>Create</span></button>
+  <button data-v="queue">⏳<span>Queue</span></button>
+  <button data-v="gallery">🖼<span>Gallery</span></button>
+  <button data-v="settings">⚙<span>Settings</span></button>
+</nav>
+
+<script src="vendor/jsQR.js"></script>
+<script src="lib/core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

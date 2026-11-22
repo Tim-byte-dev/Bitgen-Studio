@@ -1,0 +1,26 @@
+{
+  "name": "bitgen-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "bitGen - the phone app for bitGen Studio: make pictures and videos on your own PC from your phone",
+  "author": "Tim Paul (Tiger Art)",
+  "license": "UNLICENSED",
+  "scripts": {
+    "vendor": "node scripts/vendor.js",
+    "sync": "node scripts/vendor.js && npx cap sync android",
+    "open": "npx cap open android",
+    "test": "node scripts/test-app.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/file-transfer": "^2.0.6",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "jsqr": "^1.4.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  }
+}

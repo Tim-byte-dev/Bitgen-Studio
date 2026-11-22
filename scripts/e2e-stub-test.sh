@@ -14810,6 +14810,13 @@ node scripts/test-908.js > /tmp/t908.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui908-ui.js > /tmp/ui908.log 2>&1 \
   && ok "2.908.0 browser test: a FastH3 Omni render on the real worker -> '⏱ about …' naming the style, 4x the pixels = 4x the generation, Chat hides it; 📷 Capture frame -> the Gallery's Images tab with the frame lit" \
   || { bad "2.908.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui908.log | head -12; }
+# ---- 2.909.0 (📱 the bitGen app, "My PC": the remote guard, the app's key, one video form, the QR readable at last)
+node scripts/test-909.js > /tmp/t909.log 2>&1 \
+  && ok "2.909.0 units: remoteGuard (no key from the network = 401, CORS for the app only), the app's key (header / ?bgk= on GET / cookie, kept over a restart, revoked), appApi forms per model, lib/qrcode read back by jsQR, the app's core" \
+  || { bad "2.909.0 units"; grep -a "^FAIL" -A1 /tmp/t909.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui909-ui.js > /tmp/ui909.log 2>&1 \
+  && ok "2.909.0 browser test: the app (http://localhost) from 'the network' - 401 without a key, 📷 the QR photo pairs it, a FastH3 Omni 9:16 render on the real worker (544x960), the queue + Gallery via ?bgk=, revoked -> Connect" \
+  || { bad "2.909.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui909.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

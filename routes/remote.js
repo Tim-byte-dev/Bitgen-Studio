@@ -26,7 +26,7 @@ function port() { return parseInt(process.env.H3_PORT, 10) || 8311; }
 
 /** Gate every phone-facing route on the single live session. */
 function gate(req, res, next) {
-  const s = remote.sessionOf(req.headers.cookie);
+  const s = remote.sessionOfReq(req);                 // 2.909.0: the cookie, or the 📱 app's X-Bitgen-Key
   if (!s) {
     return res.status(401).json({
       error: remote.enabled()
@@ -87,7 +87,8 @@ function mount(app) {
     res.json({ url, qr, expires_at, lan: chosen.ip, adapter: chosen.adapter,
                port: port(), candidates: cands,
                note: "This code works once and expires in 10 minutes; making another "
-                   + "cancels it. The phone must be on the same Wi-Fi as this "
+                   + "cancels it. Scan it with the phone's camera (the browser page) or "
+                   + "with the 📱 bitGen app (Connect to my PC). The phone must be on the same Wi-Fi as this "
                    + "computer - not a guest network."
                    + (others.length
                       ? " This computer has " + (others.length + 1) + " network "
@@ -124,14 +125,32 @@ function mount(app) {
         + `Max-Age=${Math.floor(remote.SESSION_TTL_MS / 1000)}`);
       return res.sendFile(path.join(core.BASE, "static", "remote.html"));
     }
-    if (!remote.sessionOf(req.headers.cookie)) return res.status(403).send(
+    if (!remote.sessionOfReq(req)) return res.status(403).send(
       `<meta name=viewport content="width=device-width,initial-scale=1">`
       + `<body style="font:16px system-ui;padding:24px;background:#111;color:#eee">`
       + `<h2>Not connected</h2><p>Scan a fresh link from Settings &rarr; General.</p>`);
     res.sendFile(path.join(core.BASE, "static", "remote.html"));
   });
 
-  // ---- phone side: everything below needs the cookie ---------------------
+  // ---- 2.909.0: the 📱 bitGen app (Tim: "lets do my pc first") -------------------------------------------------
+  // hello: is this address bitGen Studio? (open - lib/remoteGuard.js) / pair: the code from the QR (Settings ▸ General ▸
+  // Remote access ▸ the link: http://<ip>:<port>/remote?t=<code>) -> the app's key; this app becomes THE paired device
+  app.get("/api/remote/hello", (_req, res) => {
+    let version = "";
+    try { version = require("../package.json").version; } catch { version = ""; }
+    res.json({ app: "bitGen Studio", version, remote: remote.enabled(), pair: "/api/remote/pair" });
+  });
+  app.post("/api/remote/pair", (req, res) => {
+    const b = req.body || {};
+    const r = remote.redeem(String(b.code || ""), String(b.device || "bitGen app").slice(0, 120),
+                            req.ip || (req.socket && req.socket.remoteAddress) || "", Date.now(), true);
+    if (r.error) return res.status(403).json({ error: r.error + " - on the computer: Settings ▸ General ▸ Remote access ▸ create a new link and scan it again" });
+    let version = "";
+    try { version = require("../package.json").version; } catch { version = ""; }
+    res.json({ ok: true, token: r.cookie, expires_at: r.expires_at, version, project: core.getProject() });
+  });
+
+  // ---- phone side: everything below needs the cookie (or the app's key) ---
   app.get("/api/remote/me", gate, (req, res) =>
     res.json({ ok: true, device: req.remote.device, project: core.getProject() }));
 
