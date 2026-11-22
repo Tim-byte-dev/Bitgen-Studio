@@ -134,3 +134,15 @@ body.wide nav#tabs { left: auto; width: calc(100% - min(462px, 45%)); border-lef
 .vnav[hidden] { display: none; }
 .vpos { position: absolute; left: 0; right: 0; bottom: calc(var(--sab, 0px) + 4px); text-align: center; font-size: .7rem; color: rgba(255,255,255,.55); pointer-events: none; z-index: 11; }
 #talkBtn.live { background: var(--ok, #3a3) !important; }
+/* 2.916.0: references + the source sheet + the PC's files */
+.pics .p video { width: 100%; height: 100%; object-fit: cover; }
+.pics .p .au { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 1.6rem; background: var(--panel, #222); }
+.pics .p i { position: absolute; left: 4px; bottom: 3px; font-style: normal; font-size: .6rem; background: rgba(0,0,0,.6); padding: 0 4px; border-radius: 4px; max-width: 90%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.sheet { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet[hidden] { display: none; }
+.sheet-in { background: var(--panel, #1c1c1c); width: min(560px, 100%); border-radius: 14px 14px 0 0; padding: 14px 14px calc(var(--sab, 0px) + 14px); display: flex; flex-direction: column; gap: 8px; }
+.sheet-in.big { height: 80vh; }
+.pcgrid { flex: 1; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; align-content: start; }
+.pcgrid .f1 { position: relative; aspect-ratio: 1; background: #111; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+.pcgrid .f1 img, .pcgrid .f1 video { width: 100%; height: 100%; object-fit: cover; }
+.pcgrid .f1 span { position: absolute; left: 0; right: 0; bottom: 0; font-size: .58rem; background: rgba(0,0,0,.6); padding: 1px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

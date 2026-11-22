@@ -14855,6 +14855,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui914-ui.js > /tmp/ui914.log 2>&
   && ok "2.914.0 browser test: relay.php + a real Community server (admin yes, member / nobody no, key yes); Remote access ▾ Cloudflare (stand-in cloudflared) - the address shown, the app told, the forwarder 401 / 403 / 200 / away; the app through the tunnel; 🎙 Talk video / find / own phrase + Speak the prompt" \
   || { bad "2.914.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui914.log | head -12; }
 
+# ---- 2.916.0 (the app's references: pictures / videos / sounds from the camera, the phone or the PC)
+node scripts/test-916.js > /tmp/t916.log 2>&1 \
+  && ok "2.916.0 units: ref_videos / ref_audios into /api/generate + LTX, appRefs (list / resolve / readPicture), the routes, the app's ＋ Picture / Video / Audio + sources" \
+  || { bad "2.916.0 units"; grep -a "^FAIL" -A1 /tmp/t916.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui916-ui.js > /tmp/ui916.log 2>&1 \
+  && ok "2.916.0 browser test: the paired app - ＋ Video from the PC, ＋ Audio from the phone, ＋ Picture from the PC -> Generate: the job has them as references" \
+  || { bad "2.916.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui916.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

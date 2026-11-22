@@ -367,22 +367,90 @@
   }
   $("muSecs").addEventListener("change", function () { estimate(); });
   ["resSel", "arSel", "seconds", "steps", "cfg", "ovrOn"].forEach(function (id) { $(id).addEventListener("change", function () { paintWh(); estimate(); kset("f." + id, id === "ovrOn" ? ($("ovrOn").checked ? "1" : "") : $(id).value); }); });
-  function addPics(files) {
-    [].slice.call(files || []).forEach(function (f) { if (S.pics.length < 9 && /^image\//.test(f.type)) S.pics.push({ file: f, url: URL.createObjectURL(f) }); });
+  /* ---------- references (2.916.0). Tim: "in the android app add a button for reference images and video and audio, user can
+     select from phone gallery, camera or the pc it is connected to using the host bitgen". S.pics = [{kind: image | video |
+     audio, file (from the phone) | pc: {name, where} (on the PC), url, name}] - pictures 9, videos 3, sounds 3 */
+  var MAXREF = { image: 9, video: 3, audio: 3 }, RX = { image: /^image\//, video: /^video\//, audio: /^audio\// };
+  function refs(kind) { return S.pics.filter(function (p) { return (p.kind || "image") === kind; }); }
+  function addPics(files, kind0) {
+    var kind = kind0 || "image";
+    [].slice.call(files || []).forEach(function (f) {
+      if (refs(kind).length < MAXREF[kind] && RX[kind].test(f.type || "")) S.pics.push({ kind: kind, file: f, url: URL.createObjectURL(f), name: f.name || kind });
+    });
     paintPics();
+  }
+  function addPc(kind, it) {
+    if (refs(kind).length >= MAXREF[kind]) { alert("That is the most " + kind + " references (" + MAXREF[kind] + ")."); return; }
+    S.pics.push({ kind: kind, pc: { name: it.name, where: it.where }, url: pcUrl(kind, it), name: it.name });
+    paintPics();
+  }
+  /** a PC file for an <img> / <video> (nothing to show through the relay - it would fetch the whole file) */
+  function pcUrl(kind, it) {
+    if (S.via === "relay" && !tunnel()) return "";
+    var b = S.via === "relay" ? S.relay.url : S.base;
+    if (it.where === "output") return BG.media(b, it.name, S.key);
+    return b + "/passets/" + (kind === "image" ? "images" : kind === "video" ? "video" : "sound") + "/" + encodeURIComponent(it.name) + "?bgk=" + encodeURIComponent(S.key);
   }
   function paintPics() {
     var box = $("pics"); box.innerHTML = "";
+    var n = { image: 0, video: 0, audio: 0 };
     S.pics.forEach(function (p, i) {
-      var d = document.createElement("div"); d.className = "p";
-      d.innerHTML = '<img alt=""><b>' + (i + 1) + '</b><button type="button" aria-label="Remove">✕</button>';
-      d.querySelector("img").src = p.url;
-      d.querySelector("button").onclick = function () { URL.revokeObjectURL(p.url); S.pics.splice(i, 1); paintPics(); };
+      var k = p.kind || "image", d = document.createElement("div"); d.className = "p"; n[k]++;
+      var face = k === "image" ? (p.url ? '<img alt="">' : '<div class="au">🖼</div>') : k === "video" ? (p.url ? '<video muted playsinline preload="metadata"></video>' : '<div class="au">🎬</div>') : '<div class="au">🎵</div>';
+      d.innerHTML = face + "<b>" + (k === "image" ? "" : k === "video" ? "V" : "A") + n[k] + "</b><i>" + esc((p.pc ? "💻 " : "") + p.name) + '</i><button type="button" aria-label="Remove">✕</button>';
+      var m = d.querySelector("img, video"); if (m) m.src = p.url + (k === "video" && p.file ? "#t=0.1" : "");
+      d.querySelector("button").onclick = function () { if (p.file) URL.revokeObjectURL(p.url); S.pics.splice(i, 1); paintPics(); };
       box.appendChild(d);
     });
   }
-  $("picCam").onchange = function (e) { addPics(e.target.files); e.target.value = ""; };
-  $("picLib").onchange = function (e) { addPics(e.target.files); e.target.value = ""; };
+  var INPUT = { image: ["picCam", "picLib"], video: ["vidCam", "vidLib"], audio: ["audCam", "audLib"] };
+  Object.keys(INPUT).forEach(function (k) { INPUT[k].forEach(function (id) { $(id).onchange = function (e) { addPics(e.target.files, k); e.target.value = ""; }; }); });
+  var addKind = "image";
+  [].forEach.call(document.querySelectorAll("[data-add]"), function (b) {
+    b.onclick = function () {
+      addKind = b.dataset.add;
+      $("srcTitle").textContent = { image: "Add a picture", video: "Add a video", audio: "Add a sound" }[addKind];
+      $("srcCam").textContent = addKind === "audio" ? "🎙 Record" : addKind === "video" ? "📹 Camera" : "📷 Camera";
+      $("srcLib").textContent = addKind === "audio" ? "🎵 Phone files" : "🖼 Phone gallery";
+      $("srcSheet").hidden = false;
+    };
+  });
+  $("srcCancel").onclick = function () { $("srcSheet").hidden = true; };
+  $("srcSheet").onclick = function (e) { if (e.target === $("srcSheet")) $("srcSheet").hidden = true; };
+  $("srcCam").onclick = function () { $("srcSheet").hidden = true; $(INPUT[addKind][0]).click(); };
+  $("srcLib").onclick = function () { $("srcSheet").hidden = true; $(INPUT[addKind][1]).click(); };
+  $("srcPc").onclick = function () { $("srcSheet").hidden = true; pcPick(addKind); };
+  /** 💻 the PC's files of a kind: the project's assets + the Gallery (GET /api/app/files) - tap one to add it */
+  var pcKind = "image", pcFiles = [], pcWhere = "";
+  function pcPick(kind) {
+    pcKind = kind; $("pcPick").hidden = false;
+    $("pcTitle").textContent = { image: "🖼 Pictures", video: "🎬 Videos", audio: "🎵 Sounds" }[kind] + " on " + (S.pcName || "your PC");
+    $("pcList").innerHTML = '<p class="hint">Loading…</p>';
+    api("/api/app/files?kind=" + (kind === "image" ? "images" : kind)).then(function (j) { pcFiles = j.files || []; paintPc(); },
+      function (e) { $("pcList").innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; });
+  }
+  function paintPc() {
+    var l = pcFiles.filter(function (f) { return !pcWhere || f.where === pcWhere; }).slice(0, 120);
+    if (!l.length) { $("pcList").innerHTML = '<p class="hint">Nothing here on the PC yet.</p>'; return; }
+    $("pcList").innerHTML = l.map(function (f, i) {
+      var u = pcUrl(pcKind, f), face = pcKind === "image" && u ? '<img loading="lazy" alt="" src="' + esc(u) + '">' : pcKind === "video" && u ? '<video muted preload="metadata" src="' + esc(u) + '#t=0.1"></video>' : pcKind === "audio" ? "🎵" : pcKind === "video" ? "🎬" : "🖼";
+      return '<div class="f1" data-i="' + i + '">' + face + "<span>" + esc(f.name) + "</span></div>";
+    }).join("");
+    [].forEach.call($("pcList").querySelectorAll(".f1"), function (d) { d.onclick = function () { addPc(pcKind, l[+d.dataset.i]); $("pcPick").hidden = true; }; });
+  }
+  [].forEach.call(document.querySelectorAll("#pcWhere button"), function (b) {
+    b.onclick = function () { pcWhere = b.dataset.w; [].forEach.call(document.querySelectorAll("#pcWhere button"), function (x) { x.classList.toggle("on", x === b); }); paintPc(); };
+  });
+  $("pcClose").onclick = function () { $("pcPick").hidden = true; };
+  /** a video / sound reference for the render: from the phone = sent to the project first (POST /api/remote/upload), from
+   *  the PC = its name (the PC copies a Gallery one into its assets) */
+  function refNames(kind) {
+    return Promise.all(refs(kind).map(function (p) {
+      if (p.pc) return Promise.resolve(p.pc);
+      var fd = new FormData(); fd.append("file", p.file, p.file.name || (kind === "video" ? "phone.mp4" : "phone.m4a"));
+      return api("/api/remote/upload", { method: "POST", body: fd, timeout: 600000 }).then(function (j) { return j.name; });
+    }));
+  }
 
   var estT = 0;
   function estimate(now) {
@@ -451,13 +519,20 @@
         fd.append("width", s.width); fd.append("height", s.height); fd.append("seconds", $("seconds").value || "5");
         fd.append("steps", $("steps").value || "0"); fd.append("cfg", $("cfg").value || "1"); fd.append("seed", $("seed").value || "-1");
         fd.append("override", ov ? "1" : "0");
-        S.pics.forEach(function (p) { fd.append("pictures", p.file, p.file.name || "phone.jpg"); });
-        return api("/api/app/video", { method: "POST", body: fd, timeout: 180000 });
+        refs("image").forEach(function (p) { if (p.file) fd.append("pictures", p.file, p.file.name || "phone.jpg"); });
+        fd.append("pc_pictures", JSON.stringify(refs("image").filter(function (p) { return p.pc; }).map(function (p) { return p.pc; })));
+        return Promise.all([refNames("video"), refNames("audio")]).then(function (av) {
+          if (av[0].length || av[1].length) say("Sending it to your PC (with " + av[0].length + " video and " + av[1].length + " sound references)…");
+          fd.append("ref_videos", JSON.stringify(av[0])); fd.append("ref_audios", JSON.stringify(av[1]));
+          return api("/api/app/video", { method: "POST", body: fd, timeout: 180000 });
+        });
       }
       var body = { prompt: prompt, style_id: st.id, batch: 1 };
       if (ov) { body.width = s.width; body.height = s.height; body.steps = +$("steps").value || undefined; body.cfg = +$("cfg").value; body.seed = +$("seed").value; }
       var want = st.slots > 0 || st.refs_optional;
-      return (want && S.pics.length ? Promise.all(S.pics.slice(0, Math.max(1, st.slots || 3)).map(uploadPic)) : Promise.resolve([])).then(function (names) {
+      var ims = refs("image").slice(0, Math.max(1, st.slots || 3));
+      return (want && ims.length ? Promise.all(ims.map(function (p) { return p.pc ? api("/api/app/refs", { method: "POST", json: { kind: "images", items: [p.pc] } }).then(function (j) { return (j.names || [])[0]; }) : uploadPic(p); })) : Promise.resolve([])).then(function (names) {
+        names = names.filter(Boolean);
         if (st.slots > 0 && !st.refs_optional && !names.length) throw new Error("this style edits a picture - add one first (📷 / 🖼)");
         if (names.length) body.images = names;
         return api("/api/genimage", { method: "POST", json: body, timeout: 60000 });
@@ -794,7 +869,7 @@
     return Promise.resolve();
   }
   function fixPhoto(colour) {
-    if (!S.pics.length) { say("pc", "🩹 Add the photo first - Create ▸ 📷 Camera or 🖼 Pictures - then say fix this photo again."); show("create"); return; }
+    if (!refs("image").length) { say("pc", "🩹 Add the photo first - Create ▸ ＋ 🖼 Picture - then say fix this photo again."); show("create"); return; }
     setKind("image");
     var l = styles(), st = l.find(function (x) { return x.slots > 0 && /restor|repair|fix/i.test(x.name); }) || l.find(function (x) { return x.slots > 0 && /edit|kontext/i.test(x.name); }) || l.find(function (x) { return x.slots > 0; });
     if (!st) { say("pc", "🩹 Your PC has no picture-edit style (Qwen Image Edit, FLUX Kontext…) to fix a photo with."); return; }

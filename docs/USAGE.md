@@ -10351,6 +10351,12 @@ Remote; the first time, restart bitGen Studio and let Windows allow it on privat
   After 6 hours away the PC says no until the app has been on your Wi-Fi again. Untick **☁ Away from the Wi-Fi** to keep it
   to the Wi-Fi only. bitGen Studio must be running (with Remote access on) for the app to reach it either way.
 
+**References from the phone or your PC** (2.916.0). On Create, **＋ 🖼 Picture**, **＋ 🎬 Video** (video styles) and **＋ 🎵 Audio**
+(video styles) open a choice: **📷 Camera** / **📹 Camera** / **🎙 Record**, **🖼 Phone gallery** / **🎵 Phone files**, or
+**💻 From my PC** - the PC's pictures, videos or sounds (its project assets and the Gallery; All / Assets / Gallery). A video
+render takes up to 9 pictures, 3 videos and 3 sounds as references - a video or sound from the phone is sent to the PC's
+project first; one from the Gallery is copied into the project's assets. ✕ on a thumbnail takes it off.
+
 **A talking assistant and a swipe gallery** (2.915.0). **🎙 Talk** is a conversation: tap it once and speak - it hears when
 you stop (about a second of quiet), your PC answers, the phone says the answer out loud with its own voices (untick 🔊 to read
 only) and listens again. Tap while it listens to send at once. It ends when it has made something for you, when you say

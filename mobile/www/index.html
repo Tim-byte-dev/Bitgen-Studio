@@ -58,9 +58,14 @@
     </div>
   </div>
   <div class="pics viOnly" id="pics"></div>
-  <div class="row viOnly">
-    <label class="btn small" for="picCam">📷 Camera</label><input type="file" id="picCam" accept="image/*" capture="environment" hidden>
-    <label class="btn small" for="picLib">🖼 Pictures</label><input type="file" id="picLib" accept="image/*" multiple hidden>
+  <!-- 2.916.0: references - pictures, videos, sounds; each from the camera / microphone, the phone, or 💻 the PC -->
+  <div class="row viOnly refadd">
+    <button class="btn small" type="button" data-add="image">＋ 🖼 Picture</button>
+    <button class="btn small vonly" type="button" data-add="video">＋ 🎬 Video</button>
+    <button class="btn small vonly" type="button" data-add="audio">＋ 🎵 Audio</button>
+    <input type="file" id="picCam" accept="image/*" capture="environment" hidden><input type="file" id="picLib" accept="image/*" multiple hidden>
+    <input type="file" id="vidCam" accept="video/*" capture="environment" hidden><input type="file" id="vidLib" accept="video/*" multiple hidden>
+    <input type="file" id="audCam" accept="audio/*" capture hidden><input type="file" id="audLib" accept="audio/*" multiple hidden>
   </div>
   <div class="grid viOnly">
     <label class="f">Resolution <select id="resSel"><option value="480">480p</option><option value="540" selected>540p</option><option value="720">720p</option><option value="1080">1080p</option></select></label>
@@ -129,6 +134,20 @@
 </section>
 
 </main>
+
+<!-- 2.916.0: where a reference comes from, and the PC's files -->
+<div id="srcSheet" class="sheet" hidden><div class="sheet-in">
+  <b id="srcTitle">Add a picture</b>
+  <button class="btn" id="srcCam" type="button">📷 Camera</button>
+  <button class="btn" id="srcLib" type="button">🖼 Phone gallery</button>
+  <button class="btn" id="srcPc" type="button">💻 From my PC</button>
+  <button class="btn small" id="srcCancel" type="button">Cancel</button>
+</div></div>
+<div id="pcPick" class="sheet" hidden><div class="sheet-in big">
+  <div class="row"><b id="pcTitle">On your PC</b><button id="pcClose" class="btn small" type="button">✕</button></div>
+  <div class="seg" id="pcWhere"><button data-w="" class="on">All</button><button data-w="assets">Assets</button><button data-w="output">Gallery</button></div>
+  <div id="pcList" class="pcgrid"></div>
+</div></div>
 
 <!-- the viewer -->
 <div id="viewer" hidden>

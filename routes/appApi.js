@@ -24,9 +24,21 @@ function mount(app) {
     try {
       const pics = (req.files || []).filter((f) => /^image\//.test(String(f.mimetype || "")))
         .map((f) => ({ name: f.originalname || "picture.png", mime: f.mimetype, buffer: f.buffer }));
-      const r = await A.submitVideo(req.body || {}, pics, port());
+      // 2.916.0: pictures from this PC (their names - resolved into Images first) + reference videos / sounds (names in the project)
+      const b = Object.assign({}, req.body || {}), R = require("../lib/appRefs");
+      const js = (v) => { try { const x = JSON.parse(v || "[]"); return Array.isArray(x) ? x : []; } catch { return []; } };
+      for (const n of R.resolve(js(b.pc_pictures), "images")) { const pic = R.readPicture(n); if (pic && pics.length < 9) pics.push(pic); }
+      b.ref_videos = R.resolve(js(b.ref_videos), "video");
+      b.ref_audios = R.resolve(js(b.ref_audios), "audio");
+      const r = await A.submitVideo(b, pics, port());
       res.status(r.status).json(r.body);
     } catch (e) { res.status(500).json({ error: String((e && e.message) || e) }); }
+  });
+  // 2.916.0: 💻 the references on this PC - the project's Images / Video / Sound and the Gallery (lib/appRefs.js)
+  app.get("/api/app/files", (req, res) => { try { res.json({ kind: String(req.query.kind || "images"), files: require("../lib/appRefs").list(String(req.query.kind || "images")) }); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
+  app.post("/api/app/refs", (req, res) => {
+    try { const b = req.body || {}; res.json({ names: require("../lib/appRefs").resolve(b.items, String(b.kind || "images")) }); }
+    catch (e) { res.status(500).json({ error: String(e.message || e) }); }
   });
   // 2.912.0: ⬆ Update - the build on this PC (its id vs the app's own www/lib/build.js) and the APK itself (the app's key)
   app.get("/api/app/update", (_req, res) => { try { res.json(require("../lib/apkShare").buildInfo()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
