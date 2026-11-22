@@ -10492,6 +10492,26 @@ Two buttons at the top of the Talk screen:
 Every answer is said out loud (🔊 Say the answers out loud) and the app listens again, until you say "bye" / "that's all"
 or press ✕ End. Your own phrases can use `ask` too (for example `quick question = ask`). Rebuild the app (1.9.0) to get it.
 
+## 🎵 A song file's title, lyrics and details into the Song tab (2.922.0)
+
+Every song bitGen makes now carries its own details in its tags - flac, mp3 and wav alike:
+
+- **Title** and **Lyrics** - the ones a music player shows (on your phone, in Windows, in a car).
+- A **comment** - "Made with bitGen Studio - <style>, seed N".
+- bitGen's own **details** - the caption, the style, the length, the seed, the save-as format, and the style's bpm / key /
+  time signature / language (a WAV keeps them in its comment - it has nowhere else).
+
+To load one back: in the **Audio docker ▸ 🎶 Song** tab press **🎵 From file** and pick the song - or **drop** a song onto the
+Song tab, from this computer, the **Gallery** or the **Sound assets**. The Title, Lyrics, Caption, Style, Length, Seed and Save
+as fill in; the status line says what it found and where from. Fields it did not find stay as they were; a song with no
+details changes nothing. A style that is no longer installed is named - pick another.
+
+- **Older bitGen songs** (made before 2.922.0) still work: the lyrics, caption and seed are read from the ComfyUI graph inside
+  the file, the title from its filename (`Neon-Nights_20261122-…`).
+- **Songs made elsewhere**: their player tags (title, lyrics) and their genre are used.
+
+Press 🎶 Generate Music with the same seed to make the song again, or change the words and make a new version.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

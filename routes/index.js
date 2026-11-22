@@ -142,6 +142,7 @@ function mount(app) {
   require("./businessProfiles").mount(app);
   require("./cardStocks").mount(app);    // 2.896.0: 📇 your label / card stocks for the Business Card Sheet (lib/cardStocks.js)
   require("./accounting").mount(app);   // 2.877.0: 📒 Accounts - journals, ledger, balance sheet, BAS (lib/accounting.js)
+  require("./songTags").mount(app);    // 2.922.0: 🎶 a song file's title, lyrics and details from its tags (lib/songTags.js)
   require("./layoutRescue").mount(app); // 2.891.0: the dockers reset with a backup - the page's whole storage comes along (lib/layoutRescue.js)
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels

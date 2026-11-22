@@ -39,6 +39,11 @@
             <button type="button" class="ghost gbtn" id="muNew" title="New song — clears the lyrics and details. The first press asks; press again to clear.">🆕 New</button>
             <button type="button" class="ghost gbtn" id="muSave" title="Save this song — lyrics, caption, style, length, count, seed and save-as — into the project's songs folder">💾 Save</button>
             <button type="button" class="ghost gbtn" id="muLoad" title="Load a saved song from this project">📂 Load</button>
+            <!-- 2.922.0 (Tim: "if i load a song into our song tab ... add the lyrics and details and name from the meta tags"):
+                 a song FILE - its title, lyrics and details come from its tags (ext/musicdock/songfile.js, lib/songTags.js);
+                 or drop one (from this computer, the Gallery or the Sound assets) onto the Song tab -->
+            <button type="button" class="ghost gbtn" id="muFromFile" title="Open a song file (flac, mp3, wav …) - its title, lyrics, caption, style, length and seed fill the Song tab from its tags (every song bitGen makes carries them). Or drop a song onto the Song tab - from this computer, the Gallery or the Sound assets.">🎵 From file</button>
+            <input type="file" id="muFromFileIn" accept=".flac,.mp3,.wav,.ogg,.opus,.m4a,.aac,audio/*" hidden>
           </div>
           <!-- 2.247.0 (Tim: "make the song, cover and sheetmusic button the
                same theme as the other buttons"): the tabs wear the app's
@@ -229,6 +234,7 @@
           </div>
           <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0 0" class="hint hidden">— no sheet yet —</pre>
         </div>
+        <style>#muPaneSong.muDropOn { outline: 2px dashed var(--tiger, #f08c1e); outline-offset: -2px; border-radius: 6px; }</style>
         <div id="muPaneSong">
         <!-- 2.243.0 (Tim: "add a title input for the song in music docker"):
              the title LEADS the rendered filename (Neon-Nights_<stamp>…),

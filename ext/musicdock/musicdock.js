@@ -463,4 +463,10 @@ $("muAbcCopy") && ($("muAbcCopy").onclick = function () {
     function () { $("muSheetStatus").textContent = "copy failed — select the text by hand"; });
 });
 
+/* 2.922.0: muSongApply's "the saved style is gone" line had no home (muSongMsg was never defined - a ReferenceError);
+   and the Song tab's own fill / read / tab switch for ext/musicdock/songfile.js (🎵 a song file's tags), which lives
+   outside this closure */
+function muSongMsg(t) { if ($("muStatus")) $("muStatus").textContent = t || ""; }
+window.H3MuSong = { apply: muSongApply, collect: muSongCollect, tab: muTabSel, msg: muSongMsg };
+
 })();

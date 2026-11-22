@@ -59,6 +59,7 @@ except Exception as _e:                                    # noqa: BLE001
 # named by the same rule: <stamp>_s<seed>_<job id>.<ext>.
 import image_name as _iname
 import comfy_progress as _CP          # 2.401.3: live step lines from ComfyUI's websocket
+import song_tags as _tags             # 2.922.0: the song's title, lyrics and details written into its own tags
 
 # Windows consoles default to cp1252; force UTF-8 (with replacement) so a log
 # line can never crash the worker with UnicodeEncodeError. Same guard as the
@@ -243,6 +244,7 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
             if dest.stat().st_size == 0:
                 fail("the copied song is empty: " + name)
             name = to_format(dest, params.get("audio_format"), say)
+            _tags.tag(output_dir / name, _tags.details(params, style, s_i, 0, Path(name).suffix), say)   # 2.922.0
             produced.append(name)
             say(f"[worker] song {i + 1}/{batch} written -> {name}")
     return produced
@@ -381,6 +383,9 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed):
         if not dest.exists() or dest.stat().st_size == 0:
             fail(f"downloaded an empty file for {it.get('filename')}")
         name = to_format(dest, p.get("audio_format"), say)
+        # 2.922.0 (Tim: "if i load a song into our song tab ... add the lyrics and details and name from the meta tags"):
+        # one press = one seed for the whole batch (one latent batch) - the index says which song of it this is
+        _tags.tag(output_dir / name, _tags.details(p, style, seed, i, Path(name).suffix), say)
         produced.append(name)
         say(f"[worker] song {i + 1}/{len(use)} written -> {name}")
     if abc_texts:

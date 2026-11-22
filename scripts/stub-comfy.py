@@ -1243,7 +1243,8 @@ def render_audio(pid, g):
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi",
                         "-i", f"sine=frequency={hz}:sample_rate=44100",
                         "-t", f"{dur:.3f}", "-c:a", "libmp3lame", "-q:a", "5",
-                        str(OUT / fn)], check=False)
+                        # 2.922.0: ComfyUI's SaveAudio writes the API graph as a "prompt" tag - so does the stub
+                        "-metadata", "prompt=" + json.dumps(g), str(OUT / fn)], check=False)
         files.append({"filename": fn, "subfolder": "audio", "type": "output"})
     Path(OUT / f"prompt_{pid}.json").write_text(json.dumps(texts), encoding="utf-8")
     JOBS[pid] = {"status": {"status_str": "success", "completed": True},

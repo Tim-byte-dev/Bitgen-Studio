@@ -14906,6 +14906,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui921-ui.js > /tmp/ui921.log 2>&
   && ok "2.921.0 browser test: the app's Talk - a question answered by the LLM and said out loud, 🌐 Web on = it may search, \"let's have a chat\" = 🤝 the friend (the buttons move, kept), back to 🧑‍💼, find still searches" \
   || { bad "2.921.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui921.log | head -12; }
 
+# ---- 2.922.0 (🎵 a song file into the 🎶 Song tab: its title, lyrics and details from its own tags)
+node scripts/test-922.js > /tmp/t922.log 2>&1 \
+  && ok "2.922.0 units: bitGen's tag (and a WAV's comment), ComfyUI's graph tag (ACE-Step / YuE2 / Music3, the seed through its SeedNode), a player's tags, the filename; mediaMeta prefers bitGen's tag; the worker tags every song; the route outside server.js; 🎵 From file + drop" \
+  || { bad "2.922.0 units"; grep -a "^FAIL" -A1 /tmp/t922.log | head -12; }
+node scripts/test-922-live.js > /tmp/t922l.log 2>&1 \
+  && ok "2.922.0 real files: song_tags.py writes title / lyrics / the details into flac, mp3 and wav (the audio copied, ComfyUI's graph kept, a broken file untouched) and lib/songTags.js reads them back; an older song from its graph + filename; a stranger's from its player tags" \
+  || { bad "2.922.0 real files"; grep -a "^FAIL" -A1 /tmp/t922l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui922-ui.js > /tmp/ui922.log 2>&1 \
+  && ok "2.922.0 browser test: a song made (the worker tags it), 🎵 From file fills title / lyrics / caption / style / length / seed / save-as, a Gallery drop the same, an older bitGen song from its graph tag, a stranger's from its player tags, no details = nothing changed" \
+  || { bad "2.922.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui922.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
