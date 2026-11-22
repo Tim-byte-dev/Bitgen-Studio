@@ -1,6 +1,7 @@
 // bitGen Studio — routes/appVoice.js (2.914.0): 🎙 the 📱 app's voice (lib/appVoice.js).
 //   POST /api/app/voice   multipart: audio (the recording), mode (talk | dictate), history (JSON), phrases (the app's own
-//                         "phrase = kind" lines) -> {heard, intent, text, reply, sources, error}
+//                         "phrase = kind" lines), 2.921.0 web (1 = 🌐 may search), persona (assistant | friend)
+//                         -> {heard, intent, text, reply, sources, persona, web, error}
 // The paired app's key (lib/remoteGuard.js) - also through the relay / the tunnel (a voice clip is small).
 "use strict";
 const fs = require("fs");
@@ -24,7 +25,8 @@ function mount(app) {
       }
       let history = []; try { history = JSON.parse(b.history || "[]"); } catch { history = []; }
       let phrases = []; try { phrases = JSON.parse(b.phrases || "[]"); } catch { phrases = String(b.phrases || ""); }
-      res.json(await require("../lib/appVoice").handle(core, { text, history, custom: phrases, mode: b.mode === "dictate" ? "dictate" : "talk" }));
+      res.json(await require("../lib/appVoice").handle(core, { text, history, custom: phrases, mode: b.mode === "dictate" ? "dictate" : "talk",
+        web: b.web === "1" || b.web === "true", persona: b.persona === "friend" ? "friend" : "assistant" }));
     } catch (e) {
       res.status(500).json({ error: /not installed/i.test(String(e.message)) ? "speech to text is not set up on your PC: bitGen Studio ▸ Settings ▸ Audio ▸ Install faster-whisper" : String(e.message || e) });
     } finally { if (f) fs.unlink(f.path, () => {}); }

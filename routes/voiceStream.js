@@ -2,7 +2,7 @@
 // Mounted from routes/index.js (never server.js). The 📱 app's 🎙 Talk and the studio's 🎙 voice chat send the microphone
 // while you talk, ~200 ms a piece (little-endian int16 mono at the session's rate), and read what happened from each answer.
 //   GET  /api/voice/stream             {installed, isolator, running, ready, device, rate, note}
-//   POST /api/voice/stream/open        {kind: app | chat, history, phrases, mode, language} -> {sid, rate, isolator, device}
+//   POST /api/voice/stream/open        {kind: app | chat, history, phrases, mode, language, web, persona} -> {sid, rate, isolator, device}
 //                                      | 409 {needs: "voicekit"} (Settings ▸ Add-ons ▸ Voice conversation)
 //   POST /api/voice/stream/:sid        the raw PCM (application/octet-stream) -> {events, hearing, done}
 //   POST /api/voice/stream/:sid/close  -> {events, hearing, done}    GET /api/voice/stream/:sid -> the same (a poll)

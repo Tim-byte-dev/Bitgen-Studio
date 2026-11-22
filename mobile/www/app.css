@@ -119,6 +119,9 @@ body.wide nav#tabs { left: auto; width: calc(100% - min(462px, 45%)); border-lef
   #viewer #vBody { grid-row: 1; } #viewer .vbar { grid-row: 3; align-self: start; padding-top: 12px; }
 }
 /* 2.914.0: 🎙 Talk */
+.talkbar { display: flex; gap: 8px; align-items: center; }
+.talkbar .seg { flex: 1; margin: 0; }
+.tgl[aria-pressed="true"] { color: var(--tiger); border-color: var(--tiger); background: var(--panel-2); }
 .talklog { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 12px; }
 .talklog .t { padding: 8px 10px; border-radius: 10px; background: var(--panel, #222); max-width: 92%; white-space: pre-wrap; }
 .talklog .t.you { align-self: flex-end; background: var(--accent-dim, #3a2a18); }

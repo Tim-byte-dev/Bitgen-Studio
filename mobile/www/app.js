@@ -19,6 +19,8 @@
  *             https to the PC with the key, the same 6 hours)
  *   Talk      (2.914.0) 🎙 POST /api/app/voice (the recording; the PC's speech to text): find … = the web, make a video /
  *             picture / song …, fix this photo, your own phrases, else a chat; 🎙 Speak the prompt (dictate)
+ *             (2.921.0) what is / what's / who … = a question for the LLM; 🌐 Web = it may search; 🧑‍💼 Assistant / 🤝 Friend
+ *             ("let's have a chat" switches to the friend, "be my assistant" back); every answer said out loud
  *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
  *             = Create on the left, the other tab on the right (the unfolded screen); ⛶ hides the phone's bars */
 (function () {
@@ -777,6 +779,18 @@
      to the PC (POST /api/app/voice - its own speech to text, lib/appVoice.js decides what the words mean); making things is
      done here, with the Create screen's own Generate. */
   var rec = null, talkHist = [];
+  /* 2.921.0 - Tim: "in the android app when user speaks check keywords, find , search, what is? etc. Let's have a chat, what's?
+     will question the llm. add a web button so it searches the internet. act as a personal assistant or just have a chat as a
+     friend . speak back to me": the PC decides what the words mean (lib/appVoice.js); the app sends 🌐 and the persona */
+  var talkWeb = false, persona = "assistant";
+  function setWeb(on, save) { talkWeb = !!on; $("talkWeb").setAttribute("aria-pressed", talkWeb ? "true" : "false"); if (save) kset("talkWeb", talkWeb ? "1" : "0"); }
+  function setPersona(p, save) {
+    persona = p === "friend" ? "friend" : "assistant";
+    [].forEach.call(document.querySelectorAll("#personaSeg button"), function (b) { b.classList.toggle("on", b.dataset.p === persona); });
+    if (save) kset("persona", persona);
+  }
+  $("talkWeb").onclick = function () { setWeb(!talkWeb, true); msg("talkMsg", talkWeb ? "🌐 It may search the internet for your questions." : "Answers from your PC's LLM (\"find …\" still searches)."); };
+  [].forEach.call(document.querySelectorAll("#personaSeg button"), function (b) { b.onclick = function () { setPersona(b.dataset.p, true); }; });
   /** record until you stop talking (2.915.0: 1.2 s of quiet after speech ends it; nothing said in 8 s = done(null)), or a tap */
   function record(btn, label, done, busyLabel) {
     if (rec) { rec.stop(); return; }
@@ -816,6 +830,7 @@
     fd.append("audio", blob, "voice.webm"); fd.append("mode", mode);
     fd.append("history", JSON.stringify(talkHist.slice(-10)));
     fd.append("phrases", JSON.stringify(($("phrases").value || "").split("\n")));
+    fd.append("web", talkWeb ? "1" : "0"); fd.append("persona", persona);                // 2.921.0
     if (window.BG_TEST_HEARD) fd.append("test_heard", window.BG_TEST_HEARD);            // the suite (the PC honours it only in its test mode)
     return api("/api/app/voice", { method: "POST", body: fd, timeout: 240000 });
   }
@@ -883,10 +898,12 @@
     if (!j.heard) { say("pc", "Nothing was heard - try again a little closer."); return; }
     say("you", j.heard);
     if (j.error) { say("pc", "✗ " + j.error); return; }
-    if (j.intent === "find" || j.intent === "chat") {
+    if (j.persona && j.persona !== persona) setPersona(j.persona, true);          // 2.921.0: "let's have a chat" / "be my assistant"
+    if (j.intent === "find" || j.intent === "chat" || j.intent === "ask" || j.intent === "persona") {
       var ex = null;
       if (j.sources && j.sources.length) { ex = document.createElement("span"); ex.className = "src"; ex.textContent = j.sources.map(function (x, i) { return "[" + (i + 1) + "] " + (x.title || "") + " - " + x.url; }).join("\n"); }
-      say("pc", (j.intent === "find" ? "🔎 " : "") + (j.reply || "(no answer)"), ex);
+      var mark = j.intent === "find" ? "🔎 " : j.sources && j.sources.length ? "🌐 " : j.intent === "persona" ? (j.persona === "friend" ? "🤝 " : "🧑‍💼 ") : "";
+      say("pc", mark + (j.reply || "(no answer)"), ex);
       talkHist.push({ role: "user", content: j.heard }, { role: "assistant", content: j.reply || "" });
       return "talk";                                                          // the conversation goes on
     }
@@ -941,7 +958,7 @@
     navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
       var ac = null, pr = null, finished = false;
       var vs = window.BGVoiceStream.create({ request: liveReq, kind: "app", quietMs: 8000, maxMs: 30000,
-        extra: { mode: "talk", history: talkHist.slice(-10), phrases: ($("phrases").value || "").split("\n"), test_heard: window.BG_TEST_HEARD || "" },
+        extra: { mode: "talk", history: talkHist.slice(-10), phrases: ($("phrases").value || "").split("\n"), web: talkWeb, persona: persona, test_heard: window.BG_TEST_HEARD || "" },
         onEvent: function (e) {
           if (e.type === "speech") msg("talkMsg", "🎙 Hearing you… (your PC hears when you have finished)");
           if (e.type === "turn") { cleanup(); msg("talkMsg", "… your PC is thinking"); }
@@ -1029,11 +1046,12 @@
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
   layout();
-  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen", "relay", "pcName", "lanAt", "phrases", "talkSpeak"].map(kget)).then(function (v) {
+  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen", "relay", "pcName", "lanAt", "phrases", "talkSpeak", "talkWeb", "persona"].map(kget)).then(function (v) {
     S.base = v[0]; S.key = v[1]; S.device = v[2];
     try { S.relay = v[11] ? JSON.parse(v[11]) : null; } catch (e) { S.relay = null; }
     S.pcName = v[12] || ""; S.lanAt = +v[13] || 0;
     $("phrases").value = v[14] || ""; $("talkSpeak").checked = v[15] !== "0";   // 2.915.0: answers are spoken unless you untick it
+    setWeb(v[16] === "1"); setPersona(v[17] || "assistant");                   // 2.921.0: 🌐 off and the assistant until you choose
     if (v[9] === "image" || v[9] === "music") { S.kind = v[9]; [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x.dataset.kind === S.kind); }); }
     paintKind();
     if (v[10] === "1") fullscreen(true);

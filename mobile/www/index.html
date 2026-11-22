@@ -102,6 +102,11 @@
 <!-- 2.914.0: 🎙 TALK - say what you want: find … (the web), make a video / picture / song …, fix this photo, or just chat -->
 <section id="v-talk" class="view" hidden>
   <h2>🎙 Talk</h2>
+  <!-- 2.921.0: how it talks (🧑‍💼 your personal assistant / 🤝 a friend to chat with) and 🌐 whether it may search the web -->
+  <div class="talkbar">
+    <div id="personaSeg" class="seg"><button type="button" data-p="assistant" class="on">🧑‍💼 Assistant</button><button type="button" data-p="friend">🤝 Friend</button></div>
+    <button id="talkWeb" class="btn small tgl" type="button" aria-pressed="false" title="On: questions and chats may search the internet (your PC decides when). Off: your PC's LLM answers from what it knows. &quot;Find / search …&quot; always searches.">🌐 Web</button>
+  </div>
   <div id="talkLog" class="talklog"></div>
   <button id="talkBtn" class="btn go big" type="button">🎙 Talk</button>
   <button id="talkEnd" class="btn small" type="button" hidden>✕ End the conversation</button>
@@ -110,13 +115,15 @@
   <details class="hint"><summary>What you can say</summary>
     <ul>
       <li><b>find …</b> / <b>find out about …</b> / <b>search for …</b> / <b>look up …</b> - your PC searches the web and answers (with the sources)</li>
+      <li><b>what is …</b> / <b>what's …</b> / <b>who …</b> / <b>when …</b> / <b>how much …</b> / <b>tell me about …</b> - a question for your PC's LLM (with 🌐 Web on it searches when the answer needs it)</li>
+      <li><b>let's have a chat</b> / <b>let's talk</b> / <b>chat with me</b> - 🤝 it chats as a friend; <b>be my assistant</b> - 🧑‍💼 back to your personal assistant</li>
       <li><b>make a video of …</b> - 🎬 the prompt filled in and Generate pressed</li>
       <li><b>make a picture of …</b> (photo, drawing, poster…) - 🖼 the same</li>
       <li><b>make a song about …</b> - 🎵 your PC writes it, then makes it</li>
       <li><b>fix this photo</b> / <b>colourise this photo</b> - 🩹 the picture you added on Create, through an edit style</li>
-      <li>anything else - a chat with your PC's LLM</li>
+      <li>anything else - a chat with your PC's LLM, as your assistant or your friend (the buttons above)</li>
     </ul></details>
-  <label class="f">My own phrases - one a line: <i>phrase = find | video | picture | song | fix photo | chat</i>
+  <label class="f">My own phrases - one a line: <i>phrase = find | ask | video | picture | song | fix photo | chat</i>
     <textarea id="phrases" rows="3" placeholder="what's on = find&#10;show me = picture" autocapitalize="off"></textarea></label>
 </section>
 

@@ -10470,6 +10470,28 @@ install keeps working - pick SAM 3 in the settings' Model list and press ⤓ Ins
 **Everything** (Layer ▸ Segment Layer…) still uses SAM 1's automatic mode - SAM 3 has none - so the install also fetches
 the small SAM ViT-B (375 MB) when no SAM 1 is there.
 
+## 🎙 Ask, chat and search by voice in the 📱 app (2.921.0)
+
+The bitGen app's **🎙 Talk** listens for what you mean (your PC hears the words with its own speech to text):
+
+- **A question** - "what is …", "what's …", "who …", "when …", "where …", "why …", "how much / how far / how long …",
+  "tell me about …", "explain …" - goes to your PC's LLM and is answered in a few sentences.
+- **A search** - "find …", "search for …", "look up …" - always searches the web and answers with the sources.
+- **Making things** - "make a video / picture / song …", "fix this photo" - as before.
+- Anything else is a chat.
+
+Two buttons at the top of the Talk screen:
+
+- **🧑‍💼 Assistant / 🤝 Friend** - how it talks. The assistant is quick and practical (the answer first, then one next
+  step). The friend is relaxed and chatty and asks you things back. Say **"let's have a chat"** (or "let's talk", "chat
+  with me") to switch to the friend, and **"be my assistant"** (or "assistant mode") to switch back - the buttons follow.
+- **🌐 Web** - on: questions and chats may search the internet when the answer needs it (prices, news, weather, opening
+  hours); your PC's LLM decides when, and the sources are listed under the answer. Off: the LLM answers from what it knows.
+  "Find …" searches either way.
+
+Every answer is said out loud (🔊 Say the answers out loud) and the app listens again, until you say "bye" / "that's all"
+or press ✕ End. Your own phrases can use `ask` too (for example `quick question = ask`). Rebuild the app (1.9.0) to get it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
