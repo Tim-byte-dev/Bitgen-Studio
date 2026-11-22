@@ -14925,6 +14925,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui923-ui.js > /tmp/ui923.log 2>&
   && ok "2.923.0 browser test: a song with no lyrics is transcribed by itself - the bar (striped, then a climbing %, green at 100), the words in the Lyrics box; 🎤 twice replaces; a Gallery song keeps words already there (⤵ puts them in); no Speech to Text = the Download box, then red" \
   || { bad "2.923.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui923.log | head -12; }
 
+# ---- 2.924.0 (📱 the app built from bitGen wears the studio's theme colours)
+node scripts/test-924.js > /tmp/t924.log 2>&1 \
+  && ok "2.924.0 units: every studio theme -> the app's colours (the map, the words on the accent >= 4.5:1, your accent and Customize colours), theme.js before cap sync, the app's own look without bitGen, the phone's bar icons" \
+  || { bad "2.924.0 units"; grep -a "^FAIL" -A1 /tmp/t924.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui924-ui.js > /tmp/ui924.log 2>&1 \
+  && ok "2.924.0 browser test: the studio on Light + a blue accent -> 🔨 Build -> the BUILT app painted light with the blue GENERATE (white words) and dark bar icons; back on Dark, built again -> dark" \
+  || { bad "2.924.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui924.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

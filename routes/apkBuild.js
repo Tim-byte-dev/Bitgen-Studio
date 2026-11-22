@@ -26,7 +26,7 @@ function mount(app) {
   };
   app.get("/api/apk/status", local, (_req, res) => { try { res.json(A.status()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
   app.post("/api/apk/tools", local, go(() => A.getTools()));
-  app.post("/api/apk/build", local, go((b) => A.build(b.install ? "install" : "")));
+  app.post("/api/apk/build", local, go((b) => A.build(b.install ? "install" : "", b.theme)));   // 2.924.0: + the studio's theme in use
   app.post("/api/apk/pair", local, go((b) => A.pair(b.address, b.code)));
   app.post("/api/apk/connect", local, go((b) => A.connect(b.address)));
   app.post("/api/apk/install", local, go((b) => A.install({ serial: b.serial })));

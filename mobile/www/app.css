@@ -29,7 +29,7 @@ label.f { display: block; font-size: .78rem; color: var(--dim); margin: 8px 0 0;
 label.f > input, label.f > select { margin-top: 4px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--panel-2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font: inherit; cursor: pointer; text-decoration: none; }
-.btn.go { background: var(--tiger); color: #1a1206; border-color: var(--tiger); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.btn.go { background: var(--tiger); color: var(--on-tiger, #1a1206); border-color: var(--tiger); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .btn.big { width: 100%; padding: 14px; margin: 10px 0 4px; font-size: 1rem; }
 .btn.small { padding: 7px 11px; font-size: .85rem; }
 .btn.danger { border-color: var(--bad); color: var(--bad); margin-top: 18px; }
@@ -67,7 +67,7 @@ summary input { width: auto; }
 #writeSong { width: 100%; margin: 6px 0 2px; }
 /* 2.912.0: ⬆ Update bar under the header */
 .upd { position: fixed; z-index: 6; left: 0; right: 0; top: calc(var(--sat) + 47px); display: flex; align-items: center; gap: 8px;
-  padding: 6px calc(var(--sar) + 12px) 6px calc(var(--sal) + 12px); background: #2a2214; border-bottom: 1px solid var(--tiger); font-size: .85rem; }
+  padding: 6px calc(var(--sar) + 12px) 6px calc(var(--sal) + 12px); background: var(--banner, #2a2214); border-bottom: 1px solid var(--tiger); font-size: .85rem; }
 .upd span { flex: 1; min-width: 0; }
 .upd .btn.go { text-transform: none; letter-spacing: 0; }
 body.has-upd { padding-top: calc(var(--sat) + 96px); }   /* 2.911.0 ✨ the PC's LLM writes the song */

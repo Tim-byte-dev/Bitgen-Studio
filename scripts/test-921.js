@@ -75,7 +75,7 @@ const src = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   check("...a question / persona switch is answered, kept in the conversation and SAID (the reply goes through speak); the switch moves the buttons",
     /j\.intent === "ask" \|\| j\.intent === "persona"/.test(app) && /if \(j\.persona && j\.persona !== persona\) setPersona\(j\.persona, true\)/.test(app) && /return speak\(lastSaid\)/.test(app));
   check("the help says the new words", /what is …<\/b> \/ <b>what's …/.test(html) && /let's have a chat<\/b>/.test(html) && /be my assistant<\/b>/.test(html));
-  check("the app's version 1.9.0", JSON.parse(src("mobile/package.json")).version === "1.9.0");
+  check("the app's version 1.9.0 or later", /^1\.(9|[1-9]\d)\./.test(JSON.parse(src("mobile/package.json")).version));
 
   console.log(`\nRESULT: ${P} passed, ${F} failed`);
   process.exit(F ? 1 : 0);

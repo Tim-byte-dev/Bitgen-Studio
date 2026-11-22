@@ -6,3 +6,5 @@ android/app/src/main/assets/capacitor.plugins.json
 android/capacitor-cordova-android-plugins/build/
 # made by scripts/vendor.js / bitGen's 🔨 Build: the build's id + version, for ⬆ Update
 www/lib/build.js
+# 2.924.0: the studio's theme colours for this build (lib/apkTheme.js / scripts/vendor.js)
+www/lib/theme.js

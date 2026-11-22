@@ -10532,6 +10532,20 @@ while the words are heard, green when done, red (with why) when it stops. ✕ hi
 - Words already in the Lyrics box are **never overwritten by themselves**: the bar offers **⤵ Use the heard words**.
 - Speech to Text not installed: the ⬇ Download / Cancel box asks first (about 2 GB, once).
 
+## 🎨 The 📱 app in your theme's colours (2.924.0)
+
+The bitGen app you build from bitGen Studio wears the studio's theme **as it is when you press 🔨 Build**:
+
+1. Pick the look in **Settings ▸ Themes** - a built-in theme or one of your saved ones, an accent of your own, your Customize
+   colours.
+2. **Settings ▸ General ▸ 📱 The bitGen App ▸ 🔨 Build** (or 🔨 Build + install). The build's log says which colours went in
+   ("🎨 the app's colours: bitGen Studio's theme "Light" (light, accent #d97a06)").
+
+The app takes the background, the panels, the text, the dim text, the lines, the accent and the good / bad colours.
+GENERATE's words are black or white - whichever reads on your accent - and on a light theme the phone's status and navigation
+bar icons turn dark. To change the app's colours later: change the studio's theme and build again (⬆ Update in the app picks the
+new build up). A build made outside bitGen (Android Studio, `npx cap sync`) keeps the app's own dark look.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

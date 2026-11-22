@@ -19,6 +19,7 @@
  *             https to the PC with the key, the same 6 hours)
  *   Talk      (2.914.0) 🎙 POST /api/app/voice (the recording; the PC's speech to text): find … = the web, make a video /
  *             picture / song …, fix this photo, your own phrases, else a chat; 🎙 Speak the prompt (dictate)
+ *   Theme     (2.924.0) the studio's theme colours built in (www/lib/theme.js, lib/apkTheme.js); barStyle() = the phone's bars
  *             (2.921.0) what is / what's / who … = a question for the LLM; 🌐 Web = it may search; 🧑‍💼 Assistant / 🤝 Friend
  *             ("let's have a chat" switches to the friend, "be my assistant" back); every answer said out loud
  *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
@@ -200,6 +201,13 @@
     try { if (on && document.documentElement.requestFullscreen && !document.fullscreenElement) return document.documentElement.requestFullscreen().catch(function () {}); if (!on && document.fullscreenElement) return document.exitFullscreen(); } catch (e) { /* fine */ }
     return Promise.resolve();
   }
+  /* 2.924.0: the phone's status / navigation bar icons match the app's colours - dark icons on a light studio theme built in
+     (www/lib/theme.js, lib/apkTheme.js), light ones on the dark look */
+  function barStyle() {
+    var sb = P.SystemBars, t = window.BG_THEME;
+    if (sb && sb.setStyle) sb.setStyle({ style: t && t.scheme === "light" ? "LIGHT" : "DARK" }).catch(function () { /* an old Capacitor */ });
+  }
+  barStyle();
   $("fsBtn").onclick = function () { var on = !$("fsBtn").classList.contains("on"); fullscreen(on); kset("fullscreen", on ? "1" : ""); };
   [].forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.onclick = function () { show(b.dataset.v); }; });
 

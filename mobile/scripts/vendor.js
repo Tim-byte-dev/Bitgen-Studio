@@ -14,4 +14,8 @@ if (fs.existsSync(lic)) fs.copyFileSync(lic, path.join(out, "jsQR.LICENSE"));
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const build = { id: process.env.BG_BUILD_ID || "dev", version: pkg.version, studio: process.env.BG_STUDIO_VERSION || "", at: Date.now() };
 fs.writeFileSync(path.join(root, "www", "lib", "build.js"), "/* made by scripts/vendor.js - not in git */\nwindow.BG_BUILD = " + JSON.stringify(build) + ";\n");
-console.log("vendored: www/vendor/jsQR.js, www/lib/build.js (" + build.id + ")");
+// 2.924.0: www/lib/theme.js - bitGen's 🔨 Build writes the studio's theme there first (lib/apkTheme.js); a build without
+// bitGen (Android Studio, npx cap sync) gets the app's own look
+const theme = path.join(root, "www", "lib", "theme.js");
+if (!fs.existsSync(theme)) fs.writeFileSync(theme, "/* bitGen app - the app's own look - made per build, not in git */\nwindow.BG_THEME = null;\n");
+console.log("vendored: www/vendor/jsQR.js, www/lib/build.js (" + build.id + "), www/lib/theme.js");

@@ -100,6 +100,17 @@
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ("HTTP " + r.status)); return j; }); })
       .then(paint).catch(function (e) { $("apk_phase").textContent = "✗ " + e.message; $("apk_phase").style.color = "var(--bad, #e5594f)"; });
   }
+  /* 2.924.0 (Tim: "when building the app from bitgen can we use the theme colors currently selected for the app?"): the
+     theme in use here - its colours with your accent and Customize changes (static/themes.js) - goes with the build
+     (lib/apkTheme.js writes it into the app) */
+  function themeNow() {
+    var T = root.H3Theme; if (!T || !T.current || !T.varsFor) return null;
+    try {
+      var c = T.current(), v = T.varsFor(c.theme, c.accent, c.vars), vars = {}, th = (T.THEMES || {})[c.theme] || {};
+      Object.keys(v).forEach(function (k) { if (k.indexOf("--th-") !== 0) vars[k.slice(2)] = v[k]; });
+      return { name: c.name || th.name || c.theme, scheme: th.scheme || "dark", vars: vars };
+    } catch (e) { return null; }
+  }
   function confirmGet() {
     var s = last || {}, what = [!s.jdk ? "Java 21 (Eclipse Temurin, ~200 MB)" : "", !s.sdk ? "the Android SDK (Google's command-line tools, platform-tools, Android 36, build-tools - ~600 MB)" : (!s.sdk.adb ? "the Android SDK's platform-tools, Android 36, build-tools" : "")].filter(Boolean);
     var text = "⬇ Download " + (what.join(" and ") || "the build tools") + " into bitGen's tools folder?\n\nGoogle's Android SDK licences are accepted for you (as Android Studio's setup does). The first build then downloads Gradle and its libraries (a few hundred MB).";
@@ -107,8 +118,8 @@
   }
   function wire() {
     $("apk_get").onclick = confirmGet;
-    $("apk_build").onclick = function () { post("/api/apk/build", {}); };
-    $("apk_buildinst").onclick = function () { post("/api/apk/build", { install: true }); };
+    $("apk_build").onclick = function () { post("/api/apk/build", { theme: themeNow() }); };
+    $("apk_buildinst").onclick = function () { post("/api/apk/build", { install: true, theme: themeNow() }); };
     $("apk_inst").onclick = function () { post("/api/apk/install", {}); };
     $("apk_stop").onclick = function () { post("/api/apk/stop"); };
     $("apk_pair").onclick = function () { post("/api/apk/pair", { address: $("apk_paddr").value.trim(), code: $("apk_pcode").value.trim() }); };
