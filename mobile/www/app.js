@@ -12,7 +12,7 @@
  *             and opens Android's installer (FileOpener) - one tap on Install
  *   Wi-Fi     (2.913.0) 📶 Find my PC on Wi-Fi: the phone's own Wi-Fi address (the LanInfo plugin) -> every address of that
  *             network asked GET /api/remote/hello (lib/net.js scan) -> POST /api/remote/lanpair, the PC says Allow (or its
- *             📱 Let the app connect) -> the key. On start: the PC at its address, else found again on the Wi-Fi (its
+ *             📱 Connect the phone) -> the key. On start: the PC at its address, else found again on the Wi-Fi (its
  *             name), else ☁ the relay - for 6 hours after the app was last on the Wi-Fi (lib/net.js relaySend: sealed
  *             with the relay key from pairing; pictures / videos in 4 MB Range parts)
  *   Away      (2.914.0) the PC says how: a relay (sealed boxes, above) or a Cloudflare tunnel ({mode: "tunnel", url} - plain
@@ -161,6 +161,7 @@
     S.key = ""; kset("key", "");
     conn("○ not paired", "bad"); show("connect");
     msg("pairMsg", "Your PC no longer knows this phone (it was disconnected there, or paired with another phone). Create a new link on the PC and scan it.", "bad");
+    if (P.LanInfo) setTimeout(findAndConnect, 500);                         // 2.914.1: on the Wi-Fi it asks again by itself
   }
 
   /* ---------- views */
@@ -274,14 +275,21 @@
     var dev = ($("devName").value || "").trim() || "Android phone";
     return findPc("").then(function (f) {
       S.base = f.base; S.key = "";
-      msg("findMsg", "Found bitGen Studio on " + (f.hello.name || hostOf(f.base)) + " - press Allow on the PC (or 📱 Let the app connect there).");
+      msg("findMsg", "Found bitGen Studio on " + (f.hello.name || hostOf(f.base)) + " - press Allow on the PC (or 📱 Connect the phone there).");
       return lanFetch("/api/remote/lanpair", { method: "POST", json: { device: dev + " (bitGen app)" }, timeout: 15000 }).then(function wait(j) {
         if (j.state === "allowed") return paired(j, f.base, dev, f.hello.name, "findMsg");
         if (j.state !== "pending") throw new Error(j.error || "bitGen Studio said no");
         return new Promise(function (ok) { setTimeout(ok, 1500); }).then(function () { return lanFetch("/api/remote/lanpair/" + j.rid, { timeout: 15000 }); }).then(wait);
       });
-    }).catch(function (e) { msg("findMsg", e.message, "bad"); }).then(function () { finding = false; $("findBtn").disabled = false; });
+    }).catch(function (e) { msg("findMsg", e.message + (P.LanInfo ? " - trying again by itself…" : ""), "bad"); }).then(function () {
+      finding = false; $("findBtn").disabled = false;
+      // 2.914.1 (Tim: "app should connect to bitgen-studio automatically when wifi is the same"): not connected yet = look
+      // again every 15 s while the app is open (the PC's 📱 Connect the phone lets it in, or its bar says Allow)
+      clearTimeout(findT);
+      if (P.LanInfo && !S.key) findT = setTimeout(function () { if (!S.key && !document.hidden) findAndConnect(); }, 15000);
+    });
   }
+  var findT = null;
   $("findBtn").onclick = findAndConnect;
   /** before talking to the paired PC: there at its address -> the Wi-Fi; else found again on this Wi-Fi (a new address) ->
    *  kept; else away -> ☁ the relay (6 hours) */
@@ -753,7 +761,10 @@
     if (v[6]) $("steps").value = v[6]; if (v[7]) $("cfg").value = v[7]; $("ovrOn").checked = v[8] === "1";
     start();
   });
+  // 2.914.1: a heartbeat while the app is open - the PC shows "connected" only for a phone heard from in the last 90 s
+  setInterval(function () { if (!document.hidden && S.key && S.via !== "relay") api("/api/remote/me", { timeout: 10000, lanOnly: true }).catch(function () { /* reach() sorts it out */ }); }, 30000);
   document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && !S.key && P.LanInfo) { findAndConnect(); return; }
     if (document.hidden || !S.key) return;
     reach().then(function () { if (S.view === "queue") loadJobs(); estimate(true); if (S.via !== "relay") checkUpdate(false); connOk(); });   // 📶 / ☁ again after a while away
   });

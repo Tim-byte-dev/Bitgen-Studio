@@ -4219,40 +4219,44 @@
    "src": "static/langpacks.js:271"
   },
   {
-   "s": "The bitGen app on this Wi-Fi",
-   "src": "static/lanpairui.js:33"
-  },
-  {
-   "s": "No QR and no link: the app finds this PC on your Wi-Fi by itself and asks to connect. Press Let the app connect, then open the app (or tap Find my PC on Wi-Fi in it) - or just open the app and press Allow on the bar that appears here",
+   "s": "The bitGen app finds this PC on your Wi-Fi by itself: press Connect the phone and open the app - it connects with no QR and no link. When the app asks while nothing is waiting, a bar here says so - press Allow",
    "src": "static/lanpairui.js:34"
   },
   {
-   "s": "Let the app connect",
+   "s": "Disconnect the phone",
    "src": "static/lanpairui.js:36"
   },
   {
-   "s": "For 5 minutes the next bitGen app that asks on this Wi-Fi is let in without asking you",
+   "s": "Forget the paired phone here - it has to connect again",
    "src": "static/lanpairui.js:36"
   },
   {
    "s": "Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home",
-   "src": "static/lanpairui.js:40"
+   "src": "static/lanpairui.js:38"
   },
   {
    "s": "Allow",
-   "src": "static/lanpairui.js:41"
+   "src": "static/lanpairui.js:39"
   },
   {
    "s": "Deny",
-   "src": "static/lanpairui.js:41"
-  },
-  {
-   "s": "Connected: the bitGen app",
-   "src": "static/lanpairui.js:46"
+   "src": "static/lanpairui.js:39"
   },
   {
    "s": "Stop waiting",
-   "src": "static/lanpairui.js:47"
+   "src": "static/lanpairui.js:45"
+  },
+  {
+   "s": "Connect the phone",
+   "src": "static/lanpairui.js:45"
+  },
+  {
+   "s": "Remote access is on now - close bitGen Studio and start it again (once), then press Connect the phone",
+   "src": "static/lanpairui.js:89"
+  },
+  {
+   "s": "Remote access is on, but bitGen Studio still listens only on this computer - close it and start it again, then press Connect the phone",
+   "src": "static/lanpairui.js:92"
   },
   {
    "s": "Layout",
@@ -30510,11 +30514,7 @@
   },
   {
    "p": "Waiting for the app - open it on the phone ({0} min left)",
-   "src": "static/lanpairui.js:46"
-  },
-  {
-   "p": "Connected: {0}",
-   "src": "static/lanpairui.js:46"
+   "src": "static/lanpairui.js:44"
   },
   {
    "p": "{0} ({1}) wants to connect to bitGen Studio",
@@ -31398,11 +31398,11 @@
   },
   {
    "p": "try {0} (virtual)",
-   "src": "static/remoteui.js:71"
+   "src": "static/remoteui.js:73"
   },
   {
    "p": "try {0}",
-   "src": "static/remoteui.js:71"
+   "src": "static/remoteui.js:73"
   },
   {
    "p": "{0} remote styles hidden: the GPU docker is on All local",

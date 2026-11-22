@@ -104,7 +104,7 @@ const src = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   check("relayLine: off (the dropdown says) / no app / at home / away with the time left / too long away", UI.relayLine({ on: false }) === "" && /ready once/.test(UI.relayLine({ on: true }))
     && /on this Wi-Fi now/.test(UI.relayLine({ on: true, app: true, app_home: true })) && /5 h 30 min more/.test(UI.relayLine({ on: true, app: true, away_left: 5.5 * 3600000 }))
     && /more than 6 hours/.test(UI.relayLine({ on: true, app: true, away_left: 0 })));
-  check("Settings: 📱 Let the app connect; the Allow / Deny bar; loaded by index.html (2.914.0: the relay is picked in Remote access ▾)", /lp_window/.test(src("static/lanpairui.js")) && !/id="lp_relay"/.test(src("static/lanpairui.js"))
+  check("Settings: 📱 Let the app connect; the Allow / Deny bar; loaded by index.html (2.914.0: the relay is picked in Remote access ▾)", /s_remote_connect/.test(src("static/lanpairui.js")) && !/id="lp_relay"/.test(src("static/lanpairui.js"))
     && /✔ Allow/.test(src("static/lanpairui.js")) && /\/static\/lanpairui\.js/.test(src("static/index.html")));
 
   // the app

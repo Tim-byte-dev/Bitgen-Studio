@@ -5,7 +5,8 @@
  * app. i am having trouble scanning the qr code and copying the link ... send the link to the phone and connect
  * automaticlly when i start the app. this link will auto connect when on wifi and stay connected for 6 hours if wifi
  * connection is lost but phone has internet connection elsewhere" -> the relay: "Relay via tigerart.com.au".
- *   Settings ▸ General ▸ Remote: 📱 Let the app connect (5 minutes - the next app that asks is let in), ☁ Away from the
+ *   Settings ▸ General ▸ Remote: 2.914.1 the ONE button 📱 Connect the phone (5 minutes - the next app that asks is let in, + the QR),
+ *   ✕ Disconnect the phone (a link), ☁ Away from the
  *   Wi-Fi (the relay, on by default) and how it is doing.
  *   Anywhere in the studio: a bar when a phone asks - "📱 <phone> (192.168.1.23) wants to connect" ✔ Allow / ✕ Deny.
  * Pure (Node): relayLine(status), leftWords(ms). */
@@ -30,21 +31,20 @@
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function ev(name, v) { try { if (root.H3TestEvent) root.H3TestEvent(name, v); } catch (e) { /* the 🧪 list */ } }
-  var HTML = '<label class="f" style="margin-top:14px">📶 The bitGen app on this Wi-Fi</label>'
-    + '<p class="hint help" style="margin:2px 0 6px">No QR and no link: the app finds this PC on your Wi-Fi by itself and asks to connect. Press Let the app connect, then open the app (or tap Find my PC on Wi-Fi in it) - or just open the app and press Allow on the bar that appears here.</p>'
-    + '<div class="scale" style="gap:8px;flex-wrap:wrap">'
-    + '<button class="ghost" id="lp_window" type="button" title="For 5 minutes the next bitGen app that asks on this Wi-Fi is let in without asking you">📱 Let the app connect</button>'
-    + '</div>'
+  var HTML = '<p class="hint help" style="margin:2px 0 6px">📶 The bitGen app finds this PC on your Wi-Fi by itself: press Connect the phone and open the app - it connects with no QR and no link. When the app asks while nothing is waiting, a bar here says so - press Allow.</p>'
     + '<div id="lp_state" class="hint" style="margin:4px 0"></div>'
+    + '<a href="#" id="lp_disc" class="hint" hidden title="Forget the paired phone here - it has to connect again">✕ Disconnect the phone</a>'
     + '<div id="lp_relayline" class="hint" style="margin:4px 0"></div>'
     + '<p class="hint help" style="margin:2px 0 6px">Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home.</p>';
   var BAR = '<span id="lp_bartext"></span> <button class="ghost" id="lp_allow" type="button">✔ Allow</button> <button class="ghost" id="lp_deny" type="button">✕ Deny</button>';
 
   function paint(j) {
     last = j || {};
-    var st = $("lp_state"), w = $("lp_window");
-    if (st) st.textContent = j.window_open ? "📱 Waiting for the app - open it on the phone (" + Math.ceil(j.window_left / 60) + " min left)." : (j.remote && j.remote.connected && j.remote.app ? "📱 Connected: " + (j.remote.device || "the bitGen app") : "");
-    if (w) { w.textContent = j.window_open ? "■ Stop waiting" : "📱 Let the app connect"; w.dataset.on = j.window_open ? "1" : ""; }
+    var st = $("lp_state"), w = $("s_remote_connect");
+    if (st) st.textContent = j.window_open ? "📱 Waiting for the app - open it on the phone (" + Math.ceil(j.window_left / 60) + " min left)." : "";
+    if (w) { w.textContent = j.window_open ? "■ Stop waiting" : "📱 Connect the phone"; w.dataset.on = j.window_open ? "1" : ""; }
+    var dl = $("lp_disc"); if (dl) dl.hidden = !(j.remote && j.remote.connected);
+    if (j.remote && root.bgRemoteUI && $("s_remote_state") && !j.window_open) $("s_remote_state").textContent = root.bgRemoteUI.fmt(Object.assign({ lan: "1" }, j.remote));
     var rl = $("lp_relayline");
     if (rl) rl.textContent = relayLine(j.relay);
     bar((j.pending || [])[0] || null);
@@ -77,16 +77,33 @@
       timer = setTimeout(refresh, j.remote && j.remote.enabled ? (j.window_open || (j.pending || []).length ? 1500 : 3000) : 15000);
     }).catch(function () { timer = setTimeout(refresh, 15000); });
   }
+  /** 📱 Connect the phone - the one button: Remote access on (the first time), then 5 minutes in which the app on this Wi-Fi
+   *  connects by itself, and the QR (the hidden Create remote link) for a phone without the app */
+  function connect() {
+    var b = $("s_remote_connect"), on = !b.dataset.on;
+    if (!on) { post("/api/remote/lanpair/window", { on: false }).then(function () { var q = $("s_remote_qr"); if (q) q.style.display = "none"; if ($("s_remote_url")) $("s_remote_url").textContent = ""; ev("lanpair_window", "closed"); refresh(); }); return; }
+    fetch("/api/remote/status").then(function (r) { return r.json(); }).then(function (st) {
+      if (!st.enabled) {
+        var sel = $("s_remote_mode");
+        if (sel) { sel.value = "wifi"; sel.dispatchEvent(new Event("change")); }
+        $("lp_state").textContent = "Remote access is on now - close bitGen Studio and start it again (once), then press Connect the phone.";
+        return;
+      }
+      if (st.restart_required) { $("lp_state").textContent = "Remote access is on, but bitGen Studio still listens only on this computer - close it and start it again, then press Connect the phone."; return; }
+      return post("/api/remote/lanpair/window", { on: true }).then(function () {
+        ev("lanpair_window", "open");
+        var l = $("s_remote_link"); if (l) l.click();                              // the QR, for a phone without the app
+        refresh();
+      });
+    }).catch(function (e) { $("lp_state").textContent = "✗ " + e.message; });
+  }
   function wire() {
-    $("lp_window").onclick = function () {
-      var on = !$("lp_window").dataset.on;
-      post("/api/remote/lanpair/window", { on: on }).then(function () { ev("lanpair_window", on ? "open" : "closed"); refresh(); },
-        function (e) { $("lp_state").textContent = "✗ " + e.message; });
-    };
+    $("s_remote_connect").onclick = connect;
+    $("lp_disc").onclick = function (e) { e.preventDefault(); if (root.confirm("Disconnect the phone? It has to connect again (on this Wi-Fi it does by itself when you press Connect the phone).")) post("/api/remote/revoke").then(refresh, refresh); };
   }
   function boot() {
     var after = $("s_remote_alts");
-    if (!after || !doc.body) { setTimeout(boot, 800); return; }
+    if (!after || !doc.body || !$("s_remote_connect")) { setTimeout(boot, 800); return; }
     if ($("lp_box")) return;
     var box = doc.createElement("div"); box.id = "lp_box"; box.innerHTML = HTML;
     after.parentNode.insertBefore(box, after.nextSibling);

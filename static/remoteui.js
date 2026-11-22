@@ -9,9 +9,11 @@
       + "the network port. Until then the phone cannot reach it.";
     if (!st.lan) return "On, but this machine has no LAN address — nothing to connect to.";
     if (st.connected) {
-      var mins = st.since ? Math.round((Date.now() - st.since) / 60000) : 0;
-      return "Connected: " + (st.app ? "📱 bitGen app - " : "") + (st.device || "a phone").slice(0, 60)
-           + (mins ? " (" + mins + " min)" : "") + ". Only one phone at a time.";
+      // 2.914.1 (Tim: "it incorrectly says it's connected"): paired is not connected - connected = heard from in the last 90 s
+      var who = String(st.device || "a phone").replace(/ \(bitGen app\)$/, "").slice(0, 60), idle = +st.idle_seconds || 0;
+      if (idle < 90) return "📱 " + who + " is connected" + (st.app ? " (the bitGen app)" : "") + ".";
+      var m = Math.round(idle / 60), ago = m < 60 ? m + " min" : m < 1440 ? Math.round(m / 60) + " h" : Math.round(m / 1440) + " days";
+      return "📱 " + who + " is paired, not connected - last seen " + ago + " ago." + (st.app ? " It connects again by itself when it is open on this Wi-Fi." : "");
     }
     return "On at " + st.lan + ":" + (st.port || 8311)
          + (st.pairing_open ? " — a pairing link is open." : " — no phone connected.");

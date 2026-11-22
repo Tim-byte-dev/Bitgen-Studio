@@ -69,7 +69,7 @@ After changing anything in `www/`: `npm run sync` again. Icons and the splash co
 - **📶 On the Wi-Fi, no QR (2.913.0):** the `LanInfo` plugin (android/…/LanInfoPlugin.java, registered in MainActivity) gives
   the phone's Wi-Fi address; `www/lib/net.js` asks every address of that /24 `GET /api/remote/hello` (32 at a time) and the
   app sends `POST /api/remote/lanpair {device}`, then waits on `GET /api/remote/lanpair/<rid>` until the PC says Allow (or
-  its 📱 Let the app connect is open) -> the key + the relay. On start: the PC's address, else the PC found again by its name.
+  its 📱 Connect the phone is open) -> the key + the relay. On start: the PC's address, else the PC found again by its name.
 - **☁ The relay (2.913.0):** away from the Wi-Fi a request that cannot reach the PC goes to the relay (`relay.php` beside the
   Community server's `api.php`, `?a=send&pc=<id>`), sealed with AES-256-GCM (WebCrypto; the key from pairing) - the PC
   (lib/relayLink.js) fetches it, answers, and the app opens the answer. Files come in 4 MB `Range` parts. 6 hours after the

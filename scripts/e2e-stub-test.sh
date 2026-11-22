@@ -14849,7 +14849,7 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui913-ui.js > /tmp/ui913.log 2>&
 
 # ---- 2.914.0 (Remote access ▾ Off / Wi-Fi / relay / Cloudflare; the relay for its admins only; 🎙 Talk in the app)
 node scripts/test-914.js > /tmp/t914.log 2>&1 \
-  && ok "2.914.0 units: the modes + relay address, cloudflared per platform + its address, the forwarder marks the tunnel, guard (Cloudflare headers never this computer, tunnel = hello only + 6 hours), relay.php admins / key, 🎙 find / video / picture / song / fix photo / own phrases / chat, the app wiring" \
+  && ok "2.914.0 + 2.914.1 units (the Gradle version lines, ONE connect button, the honest state line, the app looking again, Settings ▸ Skills): the modes + relay address, cloudflared per platform + its address, the forwarder marks the tunnel, guard (Cloudflare headers never this computer, tunnel = hello only + 6 hours), relay.php admins / key, 🎙 find / video / picture / song / fix photo / own phrases / chat, the app wiring" \
   || { bad "2.914.0 units"; grep -a "^FAIL" -A1 /tmp/t914.log | head -12; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui914-ui.js > /tmp/ui914.log 2>&1 \
   && ok "2.914.0 browser test: relay.php + a real Community server (admin yes, member / nobody no, key yes); Remote access ▾ Cloudflare (stand-in cloudflared) - the address shown, the app told, the forwarder 401 / 403 / 200 / away; the app through the tunnel; 🎙 Talk video / find / own phrase + Speak the prompt" \

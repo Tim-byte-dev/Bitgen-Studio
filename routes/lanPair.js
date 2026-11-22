@@ -3,7 +3,7 @@
 //   POST /api/remote/lanpair {device}       the app asks (open - lib/remoteGuard.js) -> {rid, state[, token, relay]}
 //   GET  /api/remote/lanpair/:rid           the app waits (open) -> {state: pending | allowed (+ token, relay) | denied | gone}
 //   GET  /api/remote/lanpair                this PC: the 📱 window + the phones asking + the relay      (local only)
-//   POST /api/remote/lanpair/window {on}    📱 Let the app connect (5 minutes)                        (local only)
+//   POST /api/remote/lanpair/window {on}    📱 Connect the phone (5 minutes)                        (local only)
 //   POST /api/remote/lanpair/answer {rid, allow}   ✔ Allow / ✕ Deny                                     (local only)
 //   POST /api/remote/relay {on}             ☁ Away from the Wi-Fi through the relay                   (local only)
 //   2.914.0 - Remote access ▾ (lib/remoteAway.js): GET /api/remote/away, POST /api/remote/away {mode, relay_url, relay_key},

@@ -3,7 +3,7 @@
  * the app's state (H3Voice.state - the prompt, styles and their lists, Basic Settings, scenes, the job); the server's tool loop
  * (lib/llmAgent.js + lib/appActions.js) asks THIS page to do each action: while a chat turn runs, GET /api/agent/asks is polled
  * and an ask of kind "app" is done here with H3Voice.act (the same code as the 🎙 voice chat) or H3Voice.state, and answered
- * with what happened (POST /api/agent/answer {id, ok, result | state | why}). Skills: Settings ▸ General ▸ 🎛 Skills. */
+ * with what happened (POST /api/agent/answer {id, ok, result | state | why}). Skills: Settings ▸ Skills. */
 (function (root) {
   "use strict";
   const doc = root.document, $ = (id) => doc.getElementById(id);

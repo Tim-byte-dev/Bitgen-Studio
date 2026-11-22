@@ -1956,6 +1956,7 @@
     <button data-stab="video">Video</button>
     <button data-stab="cnet">ControlNet</button>
     <button data-stab="models">Models</button>
+    <button data-stab="skills">Skills</button>
     <button data-stab="extensions">Extensions</button>
   </div>
 
@@ -2017,8 +2018,11 @@
           <option value="cloudflare">Wi-Fi + away: Cloudflare tunnel</option>
         </select></label>
       <input type="checkbox" id="s_remote_on" hidden>
-      <button class="ghost" id="s_remote_link" type="button">Create remote link</button>
-      <button class="ghost" id="s_remote_off" type="button">Disconnect phone</button>
+      <!-- 2.914.1 (Tim: "add just 1 button to connect to the phone in settings-general"): 📱 Connect the phone (static/lanpairui.js) -
+           the app on this Wi-Fi connects by itself while it waits, and the QR shows for a phone without the app. The old two stay, hidden. -->
+      <button id="s_remote_connect" type="button" title="The bitGen app on this Wi-Fi connects by itself while this waits (5 minutes); a phone without the app scans the QR">📱 Connect the phone</button>
+      <button class="ghost" id="s_remote_link" type="button" hidden>Create remote link</button>
+      <button class="ghost" id="s_remote_off" type="button" hidden>Disconnect phone</button>
     </div>
     <div id="s_remote_state" class="hint" style="margin:6px 0"></div>
     <div id="s_remote_relaybox" hidden style="margin:4px 0">
@@ -2126,8 +2130,7 @@
     <!-- 2.887.0: 🧰 files and commands for the LLM - the folder it may work in, the command time limit, the log (static/agentset.js) -->
     <div id="s_agent"></div>
 
-    <!-- 2.888.0: 🎛 skills for the chat's LLM - the built-in ones and yours (static/skillsset.js, lib/skills.js) -->
-    <div id="s_skills"></div>
+    <!-- 2.914.1: 🎛 Skills moved to their own tab (Tim: "Add a separate tab in settings for skills") -->
 
     <!-- 2.760.0 (Tim: "in general tab add currency (AUD,USD,CNY,JPY)etc. convert to this currency when showing prices"):
          static/currency.js + lib/currency.js -->
@@ -3188,6 +3191,10 @@
        GET /api/extensions says is installed RIGHT NOW; installing extracts
        every qualifying bitgen-ext-*.zip in the picked folder into ext/ and
        the page picks it up on the next reload (assembly is per request). -->
+  <!-- 2.914.1: 🎛 Skills for the chat's LLM - the built-in ones and yours (static/skillsset.js, lib/skills.js); was in General -->
+  <div class="stab" id="stab-skills">
+    <div id="s_skills"></div>
+  </div>
   <div class="stab" id="stab-extensions">
     <p class="hint help">Dockers are extensions in <b>ext/&lt;id&gt;/</b>. Pick the folder
       holding your <b>bitgen-ext-*.zip</b> files and Install extracts them all —

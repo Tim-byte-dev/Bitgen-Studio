@@ -9,8 +9,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         // bitGen 2.912.0: bitGen Studio's 🔨 Build passes -PbgVersionCode (minutes since 2026, always higher - Android only
         // installs an update with a higher code) and -PbgVersionName (mobile/package.json); a build by hand keeps 1 / "1.0"
-        versionCode (project.findProperty("bgVersionCode") ?: "1").toString().toInteger()
-        versionName (project.findProperty("bgVersionName") ?: "1.0").toString()
+        // 2.914.1: an assignment - "versionCode (x).toString()" is read by Groovy as versionCode(x).toString(), a call on the
+        // setter's null ("Value is null" - Tim's first build on Windows)
+        versionCode = Integer.parseInt(String.valueOf(project.findProperty("bgVersionCode") ?: "1"))
+        versionName = String.valueOf(project.findProperty("bgVersionName") ?: "1.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

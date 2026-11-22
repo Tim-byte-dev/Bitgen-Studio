@@ -10000,7 +10000,7 @@ Design how your invoices and quotes look in the image editor and Accounts fills 
   only when you ask it to make something. The reply ends with what it did in the app.
 - **Skills** are instructions for a kind of job. The LLM sees each skill's name and the line that says when it is used, and
   loads the one that fits your ask. Four come with bitGen: **write-video-prompt**, **storyboard-from-story**, **make-a-picture**
-  and **music-video**. **Settings ▸ General ▸ 🎛 Skills**: **＋ New skill** (a name, when it is used, the instructions),
+  and **music-video**. **Settings ▸ Skills**: **＋ New skill** (a name, when it is used, the instructions),
   **✎** to change one (on a built-in skill it makes your own copy, used instead of it), **🗑** to delete yours, **⤒ Import a
   SKILL.md** (a `---` block with `name:` and `description:`, then the instructions). Yours are kept in *my-skills* beside the
   app. Skills are words only - they never run anything themselves.
@@ -10341,7 +10341,7 @@ on the phone over Wi-Fi and starts it - no taps (Wireless debugging must be on; 
 Remote; the first time, restart bitGen Studio and let Windows allow it on private networks):
 - **Open the app** (or tap **📶 Find my PC on Wi-Fi** on its Connect screen): it looks for bitGen Studio on the phone's Wi-Fi by
   itself and asks to connect. A bar in bitGen Studio says "📱 <phone> (its address) wants to connect" - press **✔ Allow**
-  (**✕ Deny** if it is not your phone). Or press **📱 Let the app connect** in Settings ▸ General ▸ Remote first: for 5
+  (**✕ Deny** if it is not your phone). Or press **📱 Connect the phone** in Settings ▸ General ▸ Remote first: for 5
   minutes the next app that asks is let in with no question.
 - Every time the app starts it finds your PC again - at its address, or anywhere on the Wi-Fi if the PC got a new address.
 - **Away from home** (mobile data, another Wi-Fi) the app keeps working through the **bitGen relay on tigerart.com.au** for 6

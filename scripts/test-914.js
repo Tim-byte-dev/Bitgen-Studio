@@ -76,5 +76,18 @@ check("the app: 🎙 Talk tab, 🎙 Speak the prompt, My own phrases, 🔊 read 
 check("the app: the Cloudflare tunnel when away (the PC's own address, the key header)", /function tunnel\(\)/.test(app) && /lanFetch\(path, opts, S\.relay\.url\)/.test(app) && /BG\.media\(S\.relay\.url, name, S\.key\)/.test(app));
 check("the app may record (RECORD_AUDIO)", /android\.permission\.RECORD_AUDIO/.test(src("mobile/android/app/src/main/AndroidManifest.xml")));
 
+// 2.914.1 - Tim: "add just 1 button to connect to the phone in settings-general. it incorrectly says it's connected. app should
+// connect to bitgen-studio automatically when wifi is the same. Add a separate tab in settings for skills" + the Windows build log
+const gr = src("mobile/android/app/build.gradle");
+check("build.gradle: versionCode / versionName are assignments (\"versionCode (x).toString()\" called .toString() on the setter's null - \"Value is null\")",
+  /versionCode = Integer\.parseInt\(String\.valueOf\(project\.findProperty\("bgVersionCode"\) \?: "1"\)\)/.test(gr) && /versionName = String\.valueOf\(project\.findProperty\("bgVersionName"\) \?: "1\.0"\)/.test(gr) && !/^\s*versionCode \(/m.test(gr));
+check("Settings ▸ General: ONE button 📱 Connect the phone (the old two hidden, Let the app connect gone)", /<button id="s_remote_connect"/.test(html) && /id="s_remote_link" type="button" hidden/.test(html)
+  && /id="s_remote_off" type="button" hidden/.test(html) && !/id="lp_window"/.test(src("static/lanpairui.js")) && /function connect\(\)/.test(src("static/lanpairui.js")));
+const ru = src("static/remoteui.js");
+check("the state line: connected only when heard from in the last 90 s, else paired + last seen", /idle < 90/.test(ru) && /is paired, not connected - last seen/.test(ru));
+check("the app: a heartbeat every 30 s; not connected = looks again every 15 s (and on coming back, and when the PC forgot it)", /api\("\/api\/remote\/me"/.test(app) && /findT = setTimeout/.test(app) && /!S\.key && P\.LanInfo\) \{ findAndConnect\(\)/.test(app) && /if \(P\.LanInfo\) setTimeout\(findAndConnect, 500\)/.test(app));
+check("Settings ▸ Skills: its own tab (moved out of General)", /<button data-stab="skills">Skills<\/button>/.test(html) && /<div class="stab" id="stab-skills">\s*<div id="s_skills"><\/div>/.test(html)
+  && html.indexOf('id="s_skills"') > html.indexOf('id="stab-skills"'));
+
 console.log(`\nRESULT: ${P} passed, ${F} failed`);
 process.exit(F ? 1 : 0);

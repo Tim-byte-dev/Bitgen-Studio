@@ -1,4 +1,4 @@
-/* static/skillsset.js — 2.888.0: Settings ▸ General ▸ 🎛 Skills for the chat's LLM (window.H3SkillsSet).
+/* static/skillsset.js — 2.888.0: Settings ▸ 🎛 Skills (2.914.1: its own tab, was General) for the chat's LLM (window.H3SkillsSet).
  * The list (built in / yours, a skill of yours with a built-in's name used instead of it), ＋ New skill / ✎ edit in a box
  * (name, when it is used = the description the LLM reads, the instructions), 🗑 delete (yours), ⤒ Import a SKILL.md. The prompt
  * docker's 🎛 lets the chat use them (ext/promptdock/ptapp.js); the LLM loads one with use_skill when it fits (lib/skills.js). */
@@ -11,7 +11,7 @@
     <div class="rowbtns" style="align-items:center"><button class="ghost" id="s_skNew" type="button">＋ New skill</button>
       <button class="ghost" id="s_skImport" type="button" title="A SKILL.md file: a --- name / description --- block, then the instructions">⤒ Import a SKILL.md</button>
       <input type="file" id="s_skFile" accept=".md,.txt,text/markdown,text/plain" style="display:none"><span id="s_skStatus" class="hint" style="flex:1"></span></div>
-    <div id="s_skList" style="max-height:220px;overflow:auto;margin:4px 0"></div>
+    <div id="s_skList" style="max-height:60vh;overflow:auto;margin:4px 0"></div>
     <p class="hint help" style="margin-top:4px">With <b>🎛</b> on in the prompt docker the chat's LLM can work the app for you (write the prompt, pick a style or a
       Basic Settings value, press Generate, add or render a StoryBoard scene, show a docker) and it can follow these skills - instructions
       for a kind of job, loaded when your ask fits a skill's description. A skill is words only: it never runs anything itself. Yours are

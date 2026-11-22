@@ -143,7 +143,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await studio.evaluate(() => { document.getElementById("openSettings").click(); });
     await studio.waitForTimeout(600);
     await studio.evaluate(() => { const t = document.querySelector('[data-stab="general"]'); if (t) t.click(); });
-    await studio.click("#lp_window");
+    await studio.click("#s_remote_connect");
     await studio.waitForFunction(() => /Waiting for the app/.test(document.getElementById("lp_state").textContent), null, { timeout: 5000 }).catch(() => {});
     check("📱 Let the app connect: the studio waits for the app (5 minutes)", /📱 Waiting for the app - open it on the phone \(5 min left\)/.test(await studio.evaluate(() => document.getElementById("lp_state").textContent)));
     await p.click("#findBtn");

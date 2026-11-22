@@ -151,6 +151,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check("🎙 Speak the prompt: the words into the prompt (dictation only, nothing made)", dj && dj.intent === "dictate" && (await p.inputValue("#prompt")) === "a calm lake at dawn", [dj, await p.inputValue("#prompt")]);
     check("no page errors (studio, app)", !serr.length && !errs.length, [serr, errs]);
     await ctx.close();
+    // 2.914.1: the state line is honest; Skills has its own tab
+    const f1 = await studio.evaluate(() => [bgRemoteUI.fmt({ enabled: true, lan: "x", connected: true, device: "Fold (bitGen app)", app: true, idle_seconds: 7200 }),
+      bgRemoteUI.fmt({ enabled: true, lan: "x", connected: true, device: "Fold (bitGen app)", app: true, idle_seconds: 20 })]);
+    check("the state line: an app not heard from for 2 h is \"paired, not connected\"; one heard from 20 s ago is connected", /📱 Fold is paired, not connected - last seen 2 h ago/.test(f1[0]) && /📱 Fold is connected \(the bitGen app\)/.test(f1[1]), f1);
+    check("Settings ▸ General has ONE connect button", await studio.evaluate(() => !!document.getElementById("s_remote_connect") && document.getElementById("s_remote_link").hidden && document.getElementById("s_remote_off").hidden && !document.getElementById("lp_window")));
+    await studio.click('[data-stab="skills"]');
+    await studio.waitForTimeout(300);
+    check("Settings ▸ Skills: its own tab with the skills", await studio.evaluate(() => { const b = document.getElementById("s_skNew"); return !!b && b.offsetParent !== null && document.getElementById("stab-skills").classList.contains("active"); }));
+    await studio.click('[data-stab="general"]');
     await studio.selectOption("#s_remote_mode", "wifi");
     await studio.waitForTimeout(800);
     check("Remote access ▾ back to On this Wi-Fi: the tunnel stopped", !(await (await get("/api/remote/away")).cloudflare.running));
