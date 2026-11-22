@@ -83,7 +83,7 @@ const src = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   check("guard: the Wi-Fi ask + its wait are open, the PC's own answers are not", G.isOpen("POST", "/api/remote/lanpair") && G.isOpen("GET", "/api/remote/lanpair/" + "a".repeat(16))
     && !G.isOpen("GET", "/api/remote/lanpair") && !G.isOpen("POST", "/api/remote/lanpair/answer") && !G.isOpen("POST", "/api/remote/lanpair/window") && !G.isOpen("POST", "/api/remote/relay"));
   const gs = src("lib/remoteGuard.js");
-  check("guard: the app on the Wi-Fi restarts the 6 hours; a relayed request does not", /x-bitgen-via[^\n]*!== "relay"\) remote\.markLan\(\)/.test(gs));
+  check("guard: the app on the Wi-Fi restarts the 6 hours; a relayed / tunnelled request does not", /if \(!via\) remote\.markLan\(\)/.test(gs));
   const rm = require("../lib/remote");
   check("lib/remote: startSession (a code or 📶), markLan, relaySession", typeof rm.startSession === "function" && typeof rm.markLan === "function" && typeof rm.relaySession === "function");
   check("the relay key + this PC's relay secret are kept encrypted (settings/keys.json)", require("../lib/secrets").PATHS.includes("remote.active.rk") && require("../lib/secrets").PATHS.includes("remote.relay.secret"));
@@ -101,10 +101,10 @@ const src = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 
   // the studio's screen
   const UI = require("../static/lanpairui.js");
-  check("relayLine: off / no app / at home / away with the time left / too long away", /Off/.test(UI.relayLine({ on: false })) && /ready once/.test(UI.relayLine({ on: true }))
+  check("relayLine: off (the dropdown says) / no app / at home / away with the time left / too long away", UI.relayLine({ on: false }) === "" && /ready once/.test(UI.relayLine({ on: true }))
     && /on this Wi-Fi now/.test(UI.relayLine({ on: true, app: true, app_home: true })) && /5 h 30 min more/.test(UI.relayLine({ on: true, app: true, away_left: 5.5 * 3600000 }))
     && /more than 6 hours/.test(UI.relayLine({ on: true, app: true, away_left: 0 })));
-  check("Settings: 📱 Let the app connect + ☁ the relay switch; the Allow / Deny bar; loaded by index.html", /lp_window/.test(src("static/lanpairui.js")) && /lp_relay/.test(src("static/lanpairui.js"))
+  check("Settings: 📱 Let the app connect; the Allow / Deny bar; loaded by index.html (2.914.0: the relay is picked in Remote access ▾)", /lp_window/.test(src("static/lanpairui.js")) && !/id="lp_relay"/.test(src("static/lanpairui.js"))
     && /✔ Allow/.test(src("static/lanpairui.js")) && /\/static\/lanpairui\.js/.test(src("static/index.html")));
 
   // the app

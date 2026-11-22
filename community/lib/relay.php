@@ -62,9 +62,32 @@ function relay_limit(string $name, int $limit, int $window): void
     flock($h, LOCK_UN); fclose($h);
 }
 
+/** 2.914.0 - who may register a PC (Tim: "only tigerart admin will be able to use it this relay through tigerart, other users
+ *  can use cloudflare or their own hosts"): an admin of this Community server (the PC's 💬 Community sign-in token), or
+ *  whoever has this relay's key (<private folder>/relay/key.txt - put one there to share your own relay.php) */
+function relay_may_register(string $token, string $key): void
+{
+    $kf = relay_dir() . '/key.txt';
+    $want = is_file($kf) ? trim((string) file_get_contents($kf)) : '';
+    if ($want !== '' && $key !== '' && hash_equals($want, $key)) return;
+    if ($token !== '') {
+        require_once __DIR__ . '/boot.php';
+        try {
+            $s = bgc_settings();
+            if (!empty($s['dsn'])) {
+                $me = auth_user(['token' => $token]);
+                if (is_admin($me)) return;
+                throw new RelayError(403, 'This relay is only for the admins of its Community server - use your own relay.php or Cloudflare (bitGen Studio ▸ Settings ▸ General ▸ Remote access).');
+            }
+        } catch (ApiError $e) {
+            throw new RelayError(403, 'This relay could not check your 💬 Community sign-in: ' . $e->getMessage());
+        }
+    }
+    throw new RelayError(403, 'This relay is private: sign in to 💬 Community as an admin of this server, or give its relay key (bitGen Studio ▸ Settings ▸ General ▸ Remote access).');
+}
+
 function relay_register(string $ip): array
 {
-    relay_limit('reg_' . $ip, RELAY_REGS, 3600);
     $id = relay_b64u(random_bytes(15));
     $secret = relay_b64u(random_bytes(32));
     $d = relay_dir() . '/' . $id;

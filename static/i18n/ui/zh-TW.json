@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "5c3c0f10837d",
- "count": 12166,
+ "v": "f59c2ab3e940",
+ "count": 12165,
  "patternCount": 1401,
  "strings": {
   "'Total price includes GST'": "“Total price includes GST”",
@@ -906,8 +906,7 @@
   "Average startup": "平均啟動時間",
   "Average total": "平均總時間",
   "Avg time": "平均耗時",
-  "Away from home the app reaches this PC through the bitGen relay on tigerart.com.au (the Community server) for 6 hours after it was last on this Wi-Fi. Everything is sealed with a key only the app and this PC have - the relay cannot read it. Pictures and videos come in parts, so they are slower than at home": "離家時，在最後一次連線此 Wi-Fi 後的 6 小時內，應用通過 tigerart.com.au 上的 bitGen 中繼（社群伺服器）訪問這臺電腦。所有內容都用只有應用和這臺電腦才有的金鑰封存 - 中繼無法讀取。圖片和影片分段傳送，所以比在家時慢",
-  "Away from the Wi-Fi: through the relay for 6 hours": "離開 Wi-Fi 時：通過中繼 6 小時",
+  "Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home": "離家時（Remote access ▾ 選擇中繼或 Cloudflare），在最後一次連線此 Wi-Fi 後的 6 小時內，應用可以訪問這臺電腦。通過中繼時，所有內容都用只有應用和這臺電腦才有的金鑰封存 - 中繼無法讀取；圖片和影片分段傳送，所以比在家時慢",
   "Axis": "軸",
   "B": "B",
   "B-Spline": "B 樣條",

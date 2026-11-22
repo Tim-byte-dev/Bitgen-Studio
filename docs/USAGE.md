@@ -10351,6 +10351,27 @@ Remote; the first time, restart bitGen Studio and let Windows allow it on privat
   After 6 hours away the PC says no until the app has been on your Wi-Fi again. Untick **☁ Away from the Wi-Fi** to keep it
   to the Wi-Fi only. bitGen Studio must be running (with Remote access on) for the app to reach it either way.
 
+**Remote access ▾ and 🎙 Talk** (2.914.0). Settings ▸ General ▸ **Remote access** is a dropdown:
+- **Off - this computer only** · **On this Wi-Fi** (the phone at home) ·
+- **Wi-Fi + away: a relay (relay.php)** - empty address = bitGen's relay on tigerart.com.au, which lets in only that Community
+  server's admins (sign in to 💬 Community as one). Your own: copy bitGen Studio's `community` folder (relay.php + lib +
+  .htaccess) to your website hosting, put a key in `bitgen-private/relay/key.txt` (the folder beside your site's folder), and
+  type the relay.php address and the key here. No router change, no DDNS.
+- **Wi-Fi + away: Cloudflare tunnel** - nothing to type and no account: bitGen asks to download cloudflared (about 40 MB) once,
+  then runs a Cloudflare quick tunnel; Cloudflare gives it a random https address, shown here. The address is new each time
+  bitGen starts, so the app learns it on your Wi-Fi. Only the paired app gets in (its key), connecting is refused from outside,
+  and only for 6 hours after the app was last on your Wi-Fi. Quick tunnels are a free testing service with no uptime promise.
+
+In the app, **🎙 Talk** (a tab): tap, speak, tap again. Your PC hears it with its own speech to text (Settings ▸ Audio ▸
+faster-whisper) and the words decide what happens:
+- **find …**, **find out about …**, **search for …**, **look up …** - your PC searches the web and answers, with the sources.
+- **make a video of …**, **make a picture of …** (photo, drawing, poster…), **make a song about …** - the Create screen is filled
+  in and Generate pressed (a song is written by your PC's LLM first).
+- **fix this photo** / **colourise this photo** - the picture you added on Create goes through a picture-edit style.
+- **My own phrases** (one a line): `what's on = find`, `show me = picture` … (find, video, picture, song, fix photo, chat).
+- Anything else is a chat with your PC's LLM; tick **🔊 Read the answers aloud** to hear them.
+**🎙 Speak the prompt** on Create types what you say into the prompt. The first time Android asks to allow the microphone.
+
 **No Wireless debugging? 📲 QR, 📂 Phone Link, ⬆ Update** (2.912.0). Installing without a tap needs Wireless debugging;
 without it Android always asks you to tap **Install** - these three get the app there:
 - **📲 Install with a QR** (Remote access must be on): a QR appears; point the phone's camera at it, its browser downloads

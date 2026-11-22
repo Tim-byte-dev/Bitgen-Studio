@@ -15,6 +15,10 @@
  *             📱 Let the app connect) -> the key. On start: the PC at its address, else found again on the Wi-Fi (its
  *             name), else ☁ the relay - for 6 hours after the app was last on the Wi-Fi (lib/net.js relaySend: sealed
  *             with the relay key from pairing; pictures / videos in 4 MB Range parts)
+ *   Away      (2.914.0) the PC says how: a relay (sealed boxes, above) or a Cloudflare tunnel ({mode: "tunnel", url} - plain
+ *             https to the PC with the key, the same 6 hours)
+ *   Talk      (2.914.0) 🎙 POST /api/app/voice (the recording; the PC's speech to text): find … = the web, make a video /
+ *             picture / song …, fix this photo, your own phrases, else a chat; 🎙 Speak the prompt (dictate)
  *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
  *             = Create on the left, the other tab on the right (the unfolded screen); ⛶ hides the phone's bars */
 (function () {
@@ -38,7 +42,8 @@
   /* ---------- the PC: on the Wi-Fi (S.base), or away from it through ☁ the relay (2.913.0 - lib/net.js; for 6 hours after
      the app was last on the Wi-Fi - bitGen Studio checks the same) */
   var AWAY = window.BGNet ? BGNet.AWAY_MS : 6 * 3600 * 1000, te = new TextEncoder(), td = new TextDecoder();
-  function canRelay() { return !!(window.BGNet && S.key && S.relay && S.relay.id && S.relay.key && Date.now() - (S.lanAt || 0) < AWAY); }
+  function tunnel() { return !!(S.relay && S.relay.mode === "tunnel" && S.relay.url); }   // 2.914.0: away through Cloudflare
+  function canRelay() { return !!(window.BGNet && S.key && S.relay && (tunnel() || (S.relay.id && S.relay.key)) && Date.now() - (S.lanAt || 0) < AWAY); }
   function api(path, opts) {
     if (S.via === "relay" && canRelay()) return relayApi(path, opts);
     return lanFetch(path, opts).catch(function (e) {
@@ -54,7 +59,7 @@
   }
   function hm(ms) { var m = Math.max(0, Math.round(ms / 60000)), h = Math.floor(m / 60); return h ? h + " h " + (m % 60) + " min" : m + " min"; }
   function connOk() {
-    if (S.via === "relay") conn("☁ " + (S.pcName || "your PC") + " through the relay · " + hm(AWAY - (Date.now() - S.lanAt)) + " left", "away");
+    if (S.via === "relay") conn("☁ " + (S.pcName || "your PC") + (tunnel() ? " through Cloudflare · " : " through the relay · ") + hm(AWAY - (Date.now() - S.lanAt)) + " left", "away");
     else conn("● " + hostOf(S.base), "on");
   }
   var probeT = null;
@@ -83,6 +88,13 @@
     });
   }
   function relayApi(path, opts) {
+    if (tunnel()) {                                          // the PC itself over https - the key in the header, as at home
+      return lanFetch(path, opts, S.relay.url).then(function (j) { connOk(); return j; }, function (e) {
+        if (e.status === 403 && /6 hours/.test(e.message)) { S.via = "lan"; stopProbe(); conn("○ away from your Wi-Fi for more than 6 hours", "bad"); }
+        else if (e.net) conn("☁ the Cloudflare tunnel does not answer - is bitGen Studio running?", "bad");
+        throw e;
+      });
+    }
     return relayRaw(path, opts).then(function (r) {
       var j = {}; try { j = JSON.parse(td.decode(r.body) || "{}"); } catch (e) { j = {}; }
       if (r.status === 401 && j && j.unpaired) unpaired();
@@ -111,6 +123,7 @@
   /** where an <img> / <video> gets a file: the PC itself on the Wi-Fi, a Blob fetched through the relay when away */
   function mediaUrl(name, onPct) {
     if (S.via !== "relay") return Promise.resolve(BG.media(S.base, name, S.key));
+    if (tunnel()) return Promise.resolve(BG.media(S.relay.url, name, S.key));
     if (blobs[name]) return Promise.resolve(blobs[name]);
     return relayFile("/outputs/" + encodeURIComponent(name), onPct).then(function (b) { blobs[name] = URL.createObjectURL(b); return blobs[name]; });
   }
@@ -121,7 +134,7 @@
     return fetch(base + "/api/remote/hello", { signal: ctl ? ctl.signal : undefined }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { return j && j.app === "bitGen Studio" ? j : null; }, function () { return null; });
   }
-  function lanFetch(path, opts) {
+  function lanFetch(path, opts, base) {
     var o = opts || {};
     var h = Object.assign({}, o.headers || {});
     if (S.key) h["X-Bitgen-Key"] = S.key;
@@ -130,15 +143,15 @@
     else if (o.body) init.body = o.body;
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     if (ctl) { init.signal = ctl.signal; setTimeout(function () { ctl.abort(); }, o.timeout || 30000); }
-    return fetch(S.base + path, init).then(function (r) {
-      if (S.key) onLan();
+    return fetch((base || S.base) + path, init).then(function (r) {
+      if (S.key && !base) onLan();
       return r.json().catch(function () { return {}; }).then(function (j) {
         if (r.status === 401 && j && j.unpaired) { unpaired(); }
         if (!r.ok) { var e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
         return j;
       });
     }, function (e) {
-      var x = new Error(e && e.name === "AbortError" ? "your PC did not answer in time" : "cannot reach your PC at " + S.base + " - is it on, with bitGen Studio running, and the phone on the same Wi-Fi?");
+      var x = new Error(e && e.name === "AbortError" ? "your PC did not answer in time" : base ? "cannot reach your PC through " + base + " - is bitGen Studio running?" : "cannot reach your PC at " + S.base + " - is it on, with bitGen Studio running, and the phone on the same Wi-Fi?");
       x.net = true; throw x;
     });
   }
@@ -155,10 +168,10 @@
   function show(v) {
     if (!S.key && v !== "connect" && v !== "settings") v = "connect";
     if (S.wide && v === "create") v = S.right || "queue";
-    if (v === "queue" || v === "gallery" || v === "settings") S.right = v;
+    if (v === "queue" || v === "gallery" || v === "settings" || v === "talk") S.right = v;
     S.view = v;
     var both = S.wide && v !== "connect";
-    ["connect", "create", "queue", "gallery", "settings"].forEach(function (n) { $("v-" + n).hidden = !(n === v || (both && n === "create")); });
+    ["connect", "create", "queue", "gallery", "settings", "talk"].forEach(function (n) { $("v-" + n).hidden = !(n === v || (both && n === "create")); });
     [].forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.classList.toggle("on", b.dataset.v === v); });
     if (v === "queue") loadJobs();
     if (v === "gallery") loadGallery();
@@ -489,9 +502,9 @@
     api("/api/outputs" + (S.gal === "images" ? "?kind=images" : S.gal === "audio" ? "?kind=audio" : "")).then(function (l) {
       l = (Array.isArray(l) ? l : []).slice(0, 60);
       if (!l.length) { box.innerHTML = '<p class="hint">Nothing here yet.</p>'; return; }
-      var away = S.via === "relay";
+      var away = S.via === "relay" && !tunnel();
       box.innerHTML = l.map(function (f) {
-        var u = BG.media(S.base, f.name, S.key);
+        var u = BG.media(S.via === "relay" && tunnel() ? S.relay.url : S.base, f.name, S.key);
         if (away && S.gal !== "audio") return '<div class="g" data-n="' + esc(f.name) + '"><div class="ph">' + (S.gal === "images" ? "🖼" : "🎬") + "</div><span>" + esc(f.name) + "</span></div>";
         if (S.gal === "audio") return '<div class="g au" data-n="' + esc(f.name) + '">🎵<span>' + esc(f.name) + (f.duration ? " · " + Math.round(f.duration) + " s" : "") + "</span></div>";
         return '<div class="g" data-n="' + esc(f.name) + '">' + (S.gal === "images" ? '<img loading="lazy" alt="" src="' + u + '">' : '<video preload="metadata" muted playsinline src="' + u + '#t=0.1"></video>')
@@ -513,7 +526,7 @@
     var k = BG.kindOf(name);
     $("vName").textContent = name;
     $("viewer").hidden = false;
-    $("vBody").innerHTML = S.via === "relay" ? '<p class="msg" id="vWait">☁ Fetching it through the relay…</p>' : "";
+    $("vBody").innerHTML = S.via === "relay" && !tunnel() ? '<p class="msg" id="vWait">☁ Fetching it through the relay…</p>' : "";
     mediaUrl(name, function (pc) { var w = $("vWait"); if (w) w.textContent = "☁ Fetching it through the relay… " + pc + "%"; }).then(function (u) {
       if (cur !== name) return;
       $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>'
@@ -531,7 +544,8 @@
     return P.Filesystem.mkdir({ directory: directory, path: "bitGen", recursive: true }).catch(function () { /* there */ })
       .then(function () { return P.Filesystem.getUri({ directory: directory, path: path }); })
       .then(function (u) {
-        if (S.via === "relay") return relayFile("/outputs/" + encodeURIComponent(name)).then(b64of)       // ☁ away: through the relay
+        if (S.via === "relay" && tunnel()) url = BG.media(S.relay.url, name, S.key);                         // ☁ away: the tunnel
+        else if (S.via === "relay") return relayFile("/outputs/" + encodeURIComponent(name)).then(b64of)       // ☁ away: through the relay
           .then(function (data) { return P.Filesystem.writeFile({ directory: directory, path: path, data: data, recursive: true }); }).then(function () { return u.uri; });
         return P.FileTransfer.downloadFile({ url: url, path: u.uri }).then(function () { return u.uri; });
       });
@@ -593,6 +607,110 @@
   $("updLater").onclick = function () { $("upd").hidden = true; document.body.classList.remove("has-upd"); };
   $("updCheck").onclick = function () { msg("setMsg", "Checking…"); checkUpdate(true); };
 
+  /* ---------- 🎙 voice (2.914.0). Tim: "voice chat will be very useful especially if we can add keywords or phrases, like fix
+     this photo or create a video or create a song about... or if i say find... it goes to websearch mode". The recording goes
+     to the PC (POST /api/app/voice - its own speech to text, lib/appVoice.js decides what the words mean); making things is
+     done here, with the Create screen's own Generate. */
+  var rec = null, talkHist = [];
+  function record(btn, label, done) {
+    if (rec) { rec.stop(); return; }
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)) { alert("This phone cannot record here."); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var chunks = [], mr = new MediaRecorder(stream), t = null;
+      rec = mr; btn.classList.add("rec"); btn.textContent = "■ Stop - listening…";
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function () {
+        clearTimeout(t); stream.getTracks().forEach(function (x) { x.stop(); });
+        rec = null; btn.classList.remove("rec"); btn.textContent = label;
+        done(new Blob(chunks, { type: mr.mimeType || "audio/webm" }));
+      };
+      mr.start(250);
+      t = setTimeout(function () { if (rec === mr) mr.stop(); }, 30000);                 // 30 s at most
+    }, function (e) { alert("The microphone: " + ((e && e.message) || e) + " - allow bitGen to use the microphone (Android asks the first time)."); });
+  }
+  function sendVoice(blob, mode) {
+    var fd = new FormData();
+    fd.append("audio", blob, "voice.webm"); fd.append("mode", mode);
+    fd.append("history", JSON.stringify(talkHist.slice(-10)));
+    fd.append("phrases", JSON.stringify(($("phrases").value || "").split("\n")));
+    if (window.BG_TEST_HEARD) fd.append("test_heard", window.BG_TEST_HEARD);            // the suite (the PC honours it only in its test mode)
+    return api("/api/app/voice", { method: "POST", body: fd, timeout: 240000 });
+  }
+  $("micBtn").onclick = function () {
+    record($("micBtn"), "🎙 Speak the prompt", function (b) {
+      msg("goMsg", "🎙 Your PC is listening to it…");
+      sendVoice(b, "dictate").then(function (j) {
+        var p = $("prompt"); p.value = (p.value.trim() ? p.value.trim() + " " : "") + (j.heard || "");
+        msg("goMsg", j.heard ? "🎙 \"" + j.heard + "\"" : "Nothing was heard - try again a little closer.", j.heard ? "ok" : "bad");
+        estimate(true);
+      }, function (e) { msg("goMsg", e.message, "bad"); });
+    });
+  };
+  function say(who, text, extra) {
+    var d = document.createElement("div"); d.className = "t " + who; d.textContent = text;
+    if (extra) d.appendChild(extra);
+    $("talkLog").appendChild(d); d.scrollIntoView({ block: "end" });
+    return d;
+  }
+  function speak(text) {
+    if (!$("talkSpeak").checked || !window.speechSynthesis || !text) return;
+    try { window.speechSynthesis.cancel(); window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch (e) { /* no voice here */ }
+  }
+  function setKind(k) { var b = document.querySelector('#kindSeg button[data-kind="' + k + '"]'); if (b && S.kind !== k) b.click(); }
+  /** make it with the Create screen: its kind, the prompt, (a song: written first), Generate */
+  function makeIt(kind, text) {
+    setKind(kind);
+    if (kind === "music") {
+      var st = styles().find(function (x) { return x.id === $("styleSel").value; }) || {};
+      say("pc", "🎵 Writing a song about " + text + "…");
+      return api("/api/app/song", { method: "POST", json: { idea: text, style_id: st.id || "" }, timeout: 300000 }).then(function (j) {
+        $("prompt").value = j.lyrics || text; $("muTitle").value = j.title || ""; if (j.style) $("muCaption").value = j.style;
+        say("pc", "🎵 \"" + (j.title || "the song") + "\" - making it now."); $("goBtn").click();
+      });
+    }
+    $("prompt").value = text;
+    say("pc", (kind === "video" ? "🎬 Making a video: " : "🖼 Making a picture: ") + text);
+    $("goBtn").click();
+    return Promise.resolve();
+  }
+  function fixPhoto(colour) {
+    if (!S.pics.length) { say("pc", "🩹 Add the photo first - Create ▸ 📷 Camera or 🖼 Pictures - then say fix this photo again."); show("create"); return; }
+    setKind("image");
+    var l = styles(), st = l.find(function (x) { return x.slots > 0 && /restor|repair|fix/i.test(x.name); }) || l.find(function (x) { return x.slots > 0 && /edit|kontext/i.test(x.name); }) || l.find(function (x) { return x.slots > 0; });
+    if (!st) { say("pc", "🩹 Your PC has no picture-edit style (Qwen Image Edit, FLUX Kontext…) to fix a photo with."); return; }
+    $("styleSel").value = st.id;
+    $("prompt").value = colour ? "Restore and colourise this old photo: repair scratches, tears, stains and noise, sharpen the faces, natural realistic colours, keep every person and detail the same."
+      : "Restore this photo: repair scratches, tears, stains, fading and noise, sharpen the faces, keep every person and detail the same.";
+    say("pc", "🩹 " + (colour ? "Restoring and colourising" : "Restoring") + " your photo with " + st.name + "…");
+    $("goBtn").click();
+  }
+  function onHeard(j) {
+    if (!j.heard) { say("pc", "Nothing was heard - try again a little closer."); return; }
+    say("you", j.heard);
+    if (j.error) { say("pc", "✗ " + j.error); return; }
+    if (j.intent === "find" || j.intent === "chat") {
+      var ex = null;
+      if (j.sources && j.sources.length) { ex = document.createElement("span"); ex.className = "src"; ex.textContent = j.sources.map(function (x, i) { return "[" + (i + 1) + "] " + (x.title || "") + " - " + x.url; }).join("\n"); }
+      say("pc", (j.intent === "find" ? "🔎 " : "") + (j.reply || "(no answer)"), ex);
+      talkHist.push({ role: "user", content: j.heard }, { role: "assistant", content: j.reply || "" });
+      speak(j.reply);
+      return;
+    }
+    if (!j.text && j.intent !== "fix_photo") { say("pc", "What should it be? Say it again with what you want - for example: make a video of a tiger walking in the snow."); return; }
+    if (j.intent === "video") return makeIt("video", j.text);
+    if (j.intent === "image") return makeIt("image", j.text);
+    if (j.intent === "song") return makeIt("music", j.text).catch(function (e) { say("pc", "✗ " + e.message); });
+    if (j.intent === "fix_photo") return fixPhoto(j.colour);
+  }
+  $("talkBtn").onclick = function () {
+    record($("talkBtn"), "🎙 Tap and speak", function (b) {
+      msg("talkMsg", "🎙 Your PC is listening…");
+      sendVoice(b, "talk").then(function (j) { msg("talkMsg", ""); return onHeard(j); }, function (e) { msg("talkMsg", e.message, "bad"); });
+    });
+  };
+  $("phrases").onchange = function () { kset("phrases", $("phrases").value); };
+  $("talkSpeak").onchange = function () { kset("talkSpeak", $("talkSpeak").checked ? "1" : ""); };
+
   /* ---------- settings */
   function aboutPc() {
     if (!S.key) { $("aboutPc").textContent = "Not paired."; return; }
@@ -622,10 +740,11 @@
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
   layout();
-  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen", "relay", "pcName", "lanAt"].map(kget)).then(function (v) {
+  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen", "relay", "pcName", "lanAt", "phrases", "talkSpeak"].map(kget)).then(function (v) {
     S.base = v[0]; S.key = v[1]; S.device = v[2];
     try { S.relay = v[11] ? JSON.parse(v[11]) : null; } catch (e) { S.relay = null; }
     S.pcName = v[12] || ""; S.lanAt = +v[13] || 0;
+    $("phrases").value = v[14] || ""; $("talkSpeak").checked = v[15] === "1";
     if (v[9] === "image" || v[9] === "music") { S.kind = v[9]; [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x.dataset.kind === S.kind); }); }
     paintKind();
     if (v[10] === "1") fullscreen(true);

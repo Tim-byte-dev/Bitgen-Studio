@@ -4235,11 +4235,7 @@
    "src": "static/lanpairui.js:36"
   },
   {
-   "s": "Away from the Wi-Fi: through the relay for 6 hours",
-   "src": "static/lanpairui.js:37"
-  },
-  {
-   "s": "Away from home the app reaches this PC through the bitGen relay on tigerart.com.au (the Community server) for 6 hours after it was last on this Wi-Fi. Everything is sealed with a key only the app and this PC have - the relay cannot read it. Pictures and videos come in parts, so they are slower than at home",
+   "s": "Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home",
    "src": "static/lanpairui.js:40"
   },
   {
@@ -30522,7 +30518,7 @@
   },
   {
    "p": "{0} ({1}) wants to connect to bitGen Studio",
-   "src": "static/lanpairui.js:64"
+   "src": "static/lanpairui.js:63"
   },
   {
    "p": "{0} new",

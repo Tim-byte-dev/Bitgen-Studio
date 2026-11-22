@@ -60,6 +60,12 @@ After changing anything in `www/`: `npm run sync` again. Icons and the splash co
 
 ## How it talks to the PC
 
+- **🎙 Talk (2.914.0):** MediaRecorder (RECORD_AUDIO) -> `POST /api/app/voice` (the recording, mode talk | dictate, the
+  conversation, My own phrases) -> the PC's speech to text + lib/appVoice.js -> {heard, intent: find | video | image | song |
+  fix_photo | chat, text, reply, sources}; video / picture / song / fix photo are done by the app's own Create + Generate.
+- **☁ Cloudflare (2.914.0):** away from the Wi-Fi with Remote access ▾ Cloudflare the app is told `{mode: "tunnel", url}` and
+  calls the PC at that https address with its key (the same 6 hours).
+
 - **📶 On the Wi-Fi, no QR (2.913.0):** the `LanInfo` plugin (android/…/LanInfoPlugin.java, registered in MainActivity) gives
   the phone's Wi-Fi address; `www/lib/net.js` asks every address of that /24 `GET /api/remote/hello` (32 at a time) and the
   app sends `POST /api/remote/lanpair {device}`, then waits on `GET /api/remote/lanpair/<rid>` until the PC says Allow (or

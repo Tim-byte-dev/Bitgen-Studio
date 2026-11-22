@@ -2008,13 +2008,28 @@
          carries a one-shot pairing code that expires in 10 minutes. -->
     <label class="f">Remote (phone)</label>
     <div class="scale" style="gap:8px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:6px">
-        <input type="checkbox" id="s_remote_on"> Allow this computer to be reached from the network
-      </label>
+      <!-- 2.914.0: Remote access is a dropdown (static/remoteaccessui.js); the checkbox stays for static/remoteui.js, hidden -->
+      <label style="display:flex;align-items:center;gap:6px">Remote access
+        <select id="s_remote_mode" title="Who can reach this computer: nobody, the phone on this Wi-Fi, or the phone also away from home (a relay or Cloudflare)">
+          <option value="off">Off - this computer only</option>
+          <option value="wifi">On this Wi-Fi</option>
+          <option value="relay">Wi-Fi + away: a relay (relay.php)</option>
+          <option value="cloudflare">Wi-Fi + away: Cloudflare tunnel</option>
+        </select></label>
+      <input type="checkbox" id="s_remote_on" hidden>
       <button class="ghost" id="s_remote_link" type="button">Create remote link</button>
       <button class="ghost" id="s_remote_off" type="button">Disconnect phone</button>
     </div>
     <div id="s_remote_state" class="hint" style="margin:6px 0"></div>
+    <div id="s_remote_relaybox" hidden style="margin:4px 0">
+      <div class="scale" style="gap:6px;flex-wrap:wrap"><input id="s_remote_relayurl" placeholder="https://tigerart.com.au/bitgen-community/relay.php (empty = this one)" style="width:360px" autocomplete="off">
+        <input id="s_remote_relaykey" type="password" placeholder="relay key (your own relay.php)" style="width:200px" autocomplete="off">
+        <button class="ghost" id="s_remote_relaysave" type="button">Save</button></div>
+      <p class="hint help" style="margin:4px 0">The bitGen relay on tigerart.com.au lets in only its own admins (sign in to Community as one). Anyone can put relay.php (bitGen Studio&#39;s community folder) on their own website hosting with a key in bitgen-private/relay/key.txt and type its address and key here. No router change, no DDNS.</p></div>
+    <div id="s_remote_cfbox" hidden style="margin:4px 0">
+      <button class="ghost" id="s_remote_cfget" type="button" hidden title="Cloudflare&#39;s tunnel program, about 40 MB, into bitGen&#39;s tools folder">⬇ Download cloudflared</button>
+      <p class="hint help" style="margin:4px 0">Nothing to type and no account: bitGen runs a Cloudflare quick tunnel and Cloudflare gives it a random https address. The address is new each time bitGen starts, so the app learns it on your Wi-Fi. Quick tunnels are a free testing service with no uptime promise.</p></div>
+    <div id="s_remote_awayline" class="hint" style="margin:4px 0"></div>
     <div id="s_remote_qr" style="display:none;margin:8px 0;padding:12px;background:#fff;
          border-radius:10px;width:max-content"></div>
     <div id="s_remote_url" class="hint" style="font-family:var(--mono);word-break:break-all"></div>
@@ -3649,6 +3664,7 @@
 <script src="/static/modelswap.js"></script>  <!-- 2.680.0: ⇄ beside the image / video style dropdowns - the previous settings back (model_settings.tmp) -->
 <script src="/static/apkui.js"></script>  <!-- 2.911.0: Settings ▸ General ▸ Remote ▸ 📱 build the bitGen app + install it on the phone over Wi-Fi (H3ApkUi, lib/apkBuild.js) -->
 <script src="/static/lanpairui.js"></script>  <!-- 2.913.0: Settings ▸ General ▸ Remote ▸ 📶 the app connects over the Wi-Fi (no QR) + ☁ the relay for 6 hours away; the Allow / Deny bar (H3LanPairUi, lib/lanPair.js) -->
+<script src="/static/remoteaccessui.js"></script>  <!-- 2.914.0: Settings ▸ General ▸ Remote access ▾ (Off / Wi-Fi / relay / Cloudflare) - H3RemoteAccessUi, lib/remoteAway.js -->
 <script src="/static/timeest.js"></script>  <!-- 2.908.0: ⏱ the time estimate under Generate, from this computer's own renders (H3TimeEst, lib/timeEstimate.js) -->
 <script src="/static/lbframe.js"></script>  <!-- 2.903.0: a video in the preview - ⏴ ⏵ one frame, the frame number, 📷 Capture frame (H3LbFrame) -->
 <script src="/static/lbrestyle.js"></script>  <!-- 2.676.0: the image preview's 🎨 Style ▾ - Photoreal, Pixar, 2.5D, Anime, Cartoon (H3Restyle) -->

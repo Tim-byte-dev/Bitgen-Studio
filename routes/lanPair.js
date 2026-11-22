@@ -6,20 +6,23 @@
 //   POST /api/remote/lanpair/window {on}    📱 Let the app connect (5 minutes)                        (local only)
 //   POST /api/remote/lanpair/answer {rid, allow}   ✔ Allow / ✕ Deny                                     (local only)
 //   POST /api/remote/relay {on}             ☁ Away from the Wi-Fi through the relay                   (local only)
+//   2.914.0 - Remote access ▾ (lib/remoteAway.js): GET /api/remote/away, POST /api/remote/away {mode, relay_url, relay_key},
+//   POST /api/remote/cloudflare/install (⬇ cloudflared, lib/cfTunnel.js)                               (local only)
 "use strict";
 const remote = require("../lib/remote");
 const L = require("../lib/lanPair");
 const R = require("../lib/relayLink");
+const A = require("../lib/remoteAway");
 
 function version() { try { return require("../package.json").version; } catch { return ""; } }
 /** the relay for the app (registered first, 6 s at most - without it the app works on the Wi-Fi only) */
 async function relayFor() {
-  try { await Promise.race([R.prepare(), new Promise((r) => setTimeout(r, 6000))]); } catch { /* the Wi-Fi only */ }
-  return R.forApp();
+  if (A.mode() === "relay") { try { await Promise.race([R.prepare(), new Promise((r) => setTimeout(r, 6000))]); } catch { /* the Wi-Fi only */ } }
+  return A.forApp();
 }
 function mount(app) {
   const local = (req, res, next) => (req.remote ? res.status(403).json({ error: "this is answered on the PC itself" }) : next());
-  const viaRelay = (req) => String(req.headers["x-bitgen-via"] || "") === "relay";
+  const viaRelay = (req) => !!require("../lib/remoteGuard").viaOf(req);   // the relay or a tunnel: connecting is for the Wi-Fi
   const ipOf = (req) => String(req.ip || (req.socket && req.socket.remoteAddress) || "");
   const done = async (r) => {
     if (r.state !== "allowed") return r;
@@ -51,6 +54,9 @@ function mount(app) {
     res.status(r.status || 200).json(r);
   });
   app.post("/api/remote/relay", local, (req, res) => res.json(R.setOn((req.body || {}).on !== false)));
+  app.get("/api/remote/away", local, (_req, res) => res.json(A.view()));
+  app.post("/api/remote/away", local, (req, res) => { try { res.json(A.set(req.body || {})); } catch (e) { res.status(e.status || 500).json({ error: String(e.message || e) }); } });
+  app.post("/api/remote/cloudflare/install", local, (_req, res) => res.json(require("../lib/cfTunnel").install()));
 
   if (process.env.H3_E2E === "1") {
     // the suite cannot wait 6 hours, and its relay is a php -S on this computer
@@ -60,7 +66,16 @@ function mount(app) {
       if (b.lan_ago_ms !== undefined) remote._setLanSeen(Date.now() - (+b.lan_ago_ms || 0));
       res.json(R.status());
     });
+    // a stand-in cloudflared (prints a trycloudflare address and waits) - the forwarder's port for the suite to knock on
+    app.post("/api/remote/e2e-cloudflare", local, async (req, res) => {
+      const c = require("../lib/core").getConfig() || {}; c.remote = c.remote || {};
+      c.remote.cloudflare = Object.assign({}, c.remote.cloudflare || {}, { test_bin: String((req.body || {}).bin || "") });
+      require("../lib/core").setConfig(c);
+      const T = require("../lib/cfTunnel"); T.stop(); A.apply();
+      res.json(Object.assign(T.status(), { proxy_port: await T.ensureProxy() }));
+    });
   }
   R.start();
+  setTimeout(() => { try { A.apply(); } catch { /* fine */ } }, 4000).unref();   // 2.914.0: the Cloudflare tunnel, when picked
 }
 module.exports = { mount };

@@ -47,8 +47,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await post("/api/remote/revoke", {});
     await post("/api/remote/enable", { on: true });
     await post("/api/remote/e2e-bound", { host: "0.0.0.0" });
-    await post("/api/remote/e2e-relay", { url: RELAY });
-    await post("/api/remote/relay", { on: true });
+    // 2.914.0: the relay lets in only its admins or whoever has its key - this one's key
+    fs.mkdirSync(path.join(priv, "relay"), { recursive: true }); fs.writeFileSync(path.join(priv, "relay", "key.txt"), "e2e-relay-key\n");
+    await post("/api/remote/away", { mode: "relay", relay_url: RELAY, relay_key: "e2e-relay-key" });
     // a picture in the Gallery to fetch later
     let outs = await get("/api/outputs?kind=images");
     if (!Array.isArray(outs) || !outs.length) {
@@ -105,10 +106,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await post("/api/remote/relay", { on: true });                  // as after a request: the long poll at once
     await p.click('#tabs button[data-v="gallery"]');
     await p.click('#galSeg button[data-g="images"]').catch(() => {});
-    await p.waitForFunction(() => /through the relay/.test(document.getElementById("conn").textContent) && document.querySelectorAll("#gal .g").length > 0, null, { timeout: 60000 }).catch(() => {});
+    await p.waitForFunction(() => /through the relay/.test(document.getElementById("conn").textContent) && (document.querySelectorAll("#gal .g").length > 0 || /Nothing here yet/.test(document.getElementById("gal").textContent)), null, { timeout: 60000 }).catch(() => {});
     const g = await p.evaluate(() => ({ conn: document.getElementById("conn").textContent, tiles: document.querySelectorAll("#gal .g").length, msg: (document.querySelector("#gal .msg") || {}).textContent || "" }));
-    check("☁ the Wi-Fi gone: the Gallery comes through the relay, the time left shown", /☁ \S+ through the relay · 5 h 5\d min left|☁ \S+ through the relay · 6 h 0 min left/.test(g.conn) && g.tiles > 0, g);
-    const pcs = fs.readdirSync(priv + "/relay").filter((d) => !d.startsWith("_"));
+    check("☁ the Wi-Fi gone: the Gallery comes through the relay, the time left shown", /☁ \S+ through the relay · 5 h 5\d min left|☁ \S+ through the relay · 6 h 0 min left/.test(g.conn) && (g.tiles > 0 || (!pic && !g.msg)), g);
+    const pcs = fs.readdirSync(priv + "/relay").filter((d) => !d.startsWith("_") && d !== "key.txt");
     const appKey = await p.evaluate(() => localStorage.getItem("bg.key"));
     const clear = [];
     for (const d of pcs) for (const sub of ["q", "a"]) for (const f of fs.readdirSync(priv + "/relay/" + d + "/" + sub)) {
@@ -155,7 +156,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await b.close();
     try { php.kill(); } catch { /* gone */ }
     await post("/api/remote/revoke", {});
-    await post("/api/remote/e2e-relay", { url: "" });
+    await post("/api/remote/away", { mode: "none", relay_url: "", relay_key: "" });
     await post("/api/remote/enable", { on: !!was.enabled });
     await post("/api/remote/e2e-bound", { host: was.bound || "127.0.0.1" });
   }

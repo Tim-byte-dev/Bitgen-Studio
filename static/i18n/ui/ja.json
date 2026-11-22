@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "4d158444bb90",
- "count": 12166,
+ "v": "d3654c96a4d0",
+ "count": 12165,
  "patternCount": 1401,
  "strings": {
   "'Total price includes GST'": "「Total price includes GST」",
@@ -906,8 +906,7 @@
   "Average startup": "平均起動時間",
   "Average total": "平均合計時間",
   "Avg time": "平均時間",
-  "Away from home the app reaches this PC through the bitGen relay on tigerart.com.au (the Community server) for 6 hours after it was last on this Wi-Fi. Everything is sealed with a key only the app and this PC have - the relay cannot read it. Pictures and videos come in parts, so they are slower than at home": "外出先では、最後にこの Wi-Fi に接続してから 6 時間、アプリは tigerart.com.au の bitGen リレー（Community サーバー）経由でこの PC に届きます。すべてはアプリとこの PC だけが持つ鍵で封印され、リレーは読めません。画像と動画は分割して届くので、自宅より遅くなります",
-  "Away from the Wi-Fi: through the relay for 6 hours": "Wi-Fi の外：リレー経由で 6 時間",
+  "Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home": "外出先では（Remote access ▾ でリレーまたは Cloudflare）、最後にこの Wi-Fi に接続してから 6 時間、アプリはこの PC に届きます。リレー経由ではすべてがアプリとこの PC だけが持つ鍵で封印され、リレーは読めません。画像と動画は分割して届くので、自宅より遅くなります",
   "Axis": "軸",
   "B": "B",
   "B-Spline": "B スプライン",

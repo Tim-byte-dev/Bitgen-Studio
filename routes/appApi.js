@@ -15,8 +15,8 @@ function mount(app) {
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 40 * 1024 * 1024, files: 9 } });
   app.get("/api/app/info", (_req, res) => {
     try {
-      const R = require("../lib/relayLink");          // 2.913.0: ☁ the relay for 6 hours away from the Wi-Fi (registered in the background)
-      const relay = R.forApp(); if (!relay) R.prepare().catch(() => { /* the Wi-Fi only */ });
+      const RA = require("../lib/remoteAway");         // 2.913.0: ☁ away from the Wi-Fi for 6 hours - 2.914.0: the relay or a Cloudflare tunnel
+      const relay = RA.forApp(); if (!relay && RA.mode() === "relay") require("../lib/relayLink").prepare().catch(() => { /* the Wi-Fi only */ });
       res.json(Object.assign(A.info(), { relay }));
     } catch (e) { res.status(500).json({ error: String((e && e.message) || e) }); }
   });

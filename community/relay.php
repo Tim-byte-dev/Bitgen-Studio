@@ -1,7 +1,8 @@
 <?php
 // bitGen Community (2.913.0) - relay.php: the 📱 bitGen app <-> its PC when the phone is away from the Wi-Fi (lib/relay.php).
 //   GET  relay.php?a=info                                   {ok, relay: 1, max}  (is there a relay here?)
-//   POST relay.php?a=register                               {ok, id, secret}     (bitGen Studio, once)
+//   POST relay.php?a=register  {token | key}                {ok, id, secret}     (bitGen Studio, once - 2.914.0: a Community
+//                                admin's sign-in token, or the relay key in <private>/relay/key.txt)
 //   POST relay.php?a=poll&wait=8      X-Relay-Id + Authorization: Bearer <secret>   {ok, reqs: [{rid, box (base64)}]}
 //   POST relay.php?a=answer&rid=...   (the same)  body = the sealed answer          {ok}
 //   POST relay.php?a=send&pc=<id>     body = the app's sealed request -> 200 the sealed answer (application/octet-stream)
@@ -48,7 +49,14 @@ function relay_main(): void
         $len = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
         if ($len > RELAY_MAX + 4096) throw new RelayError(413, 'That is too big for the relay (7 MB at most).');
         $body = (string) file_get_contents('php://input', false, null, 0, RELAY_MAX + 1);
-        if ($a === 'register') { relay_json(200, ['ok' => true] + relay_register((string) ($_SERVER['REMOTE_ADDR'] ?? ''))); return; }
+        if ($a === 'register') {
+            $b = json_decode($body, true);
+            $b = is_array($b) ? $b : [];
+            relay_limit('reg_' . (string) ($_SERVER['REMOTE_ADDR'] ?? ''), RELAY_REGS, 3600);
+            relay_may_register(is_string($b['token'] ?? null) ? $b['token'] : '', is_string($b['key'] ?? null) ? $b['key'] : '');
+            relay_json(200, ['ok' => true] + relay_register((string) ($_SERVER['REMOTE_ADDR'] ?? '')));
+            return;
+        }
         if ($a === 'send') {
             $ans = relay_send((string) ($_GET['pc'] ?? ''), $body);
             http_response_code(200);

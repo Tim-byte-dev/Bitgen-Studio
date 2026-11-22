@@ -17,7 +17,7 @@
   }
   function relayLine(st) {
     var s = st || {};
-    if (!s.on) return "☁ Off - the app works on this Wi-Fi only.";
+    if (!s.on) return "";
     if (!s.app) return "☁ On - ready once the app has connected on this Wi-Fi.";
     if (s.app_home) return "☁ On - the app is on this Wi-Fi now.";
     if (s.away_left > 0) return "☁ The app can reach this PC through the relay for " + leftWords(s.away_left) + " more" + (s.last_error ? " - the relay: " + s.last_error : s.polling ? " (connected to the relay)" : "") + ".";
@@ -34,10 +34,10 @@
     + '<p class="hint help" style="margin:2px 0 6px">No QR and no link: the app finds this PC on your Wi-Fi by itself and asks to connect. Press Let the app connect, then open the app (or tap Find my PC on Wi-Fi in it) - or just open the app and press Allow on the bar that appears here.</p>'
     + '<div class="scale" style="gap:8px;flex-wrap:wrap">'
     + '<button class="ghost" id="lp_window" type="button" title="For 5 minutes the next bitGen app that asks on this Wi-Fi is let in without asking you">📱 Let the app connect</button>'
-    + '<label class="hint" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="lp_relay"> ☁ Away from the Wi-Fi: through the relay for 6 hours</label></div>'
+    + '</div>'
     + '<div id="lp_state" class="hint" style="margin:4px 0"></div>'
     + '<div id="lp_relayline" class="hint" style="margin:4px 0"></div>'
-    + '<p class="hint help" style="margin:2px 0 6px">Away from home the app reaches this PC through the bitGen relay on tigerart.com.au (the Community server) for 6 hours after it was last on this Wi-Fi. Everything is sealed with a key only the app and this PC have - the relay cannot read it. Pictures and videos come in parts, so they are slower than at home.</p>';
+    + '<p class="hint help" style="margin:2px 0 6px">Away from home (Remote access ▾ with a relay or Cloudflare) the app reaches this PC for 6 hours after it was last on this Wi-Fi. Through a relay everything is sealed with a key only the app and this PC have - the relay cannot read it; pictures and videos come in parts, so they are slower than at home.</p>';
   var BAR = '<span id="lp_bartext"></span> <button class="ghost" id="lp_allow" type="button">✔ Allow</button> <button class="ghost" id="lp_deny" type="button">✕ Deny</button>';
 
   function paint(j) {
@@ -45,9 +45,8 @@
     var st = $("lp_state"), w = $("lp_window");
     if (st) st.textContent = j.window_open ? "📱 Waiting for the app - open it on the phone (" + Math.ceil(j.window_left / 60) + " min left)." : (j.remote && j.remote.connected && j.remote.app ? "📱 Connected: " + (j.remote.device || "the bitGen app") : "");
     if (w) { w.textContent = j.window_open ? "■ Stop waiting" : "📱 Let the app connect"; w.dataset.on = j.window_open ? "1" : ""; }
-    var rl = $("lp_relayline"), cb = $("lp_relay");
+    var rl = $("lp_relayline");
     if (rl) rl.textContent = relayLine(j.relay);
-    if (cb && doc.activeElement !== cb) cb.checked = !!(j.relay && j.relay.on);
     bar((j.pending || [])[0] || null);
   }
   function bar(p) {
@@ -84,7 +83,6 @@
       post("/api/remote/lanpair/window", { on: on }).then(function () { ev("lanpair_window", on ? "open" : "closed"); refresh(); },
         function (e) { $("lp_state").textContent = "✗ " + e.message; });
     };
-    $("lp_relay").onchange = function () { post("/api/remote/relay", { on: $("lp_relay").checked }).then(refresh, refresh); };
   }
   function boot() {
     var after = $("s_remote_alts");

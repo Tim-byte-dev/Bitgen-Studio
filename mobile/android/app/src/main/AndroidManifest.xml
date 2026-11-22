@@ -45,6 +45,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- bitGen 2.913.0: 📶 the phone's Wi-Fi address, to find bitGen Studio on it (LanInfoPlugin) -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- bitGen 2.914.0: 🎙 Talk / Speak the prompt - the recording goes to your PC's own speech to text -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- bitGen: 📷 a photo of the pairing QR, pictures for a render (the WebView's camera capture) -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- bitGen: ⬇ Save into Documents/bitGen on Android 9 and older (10+ need no permission for the app's own files) -->

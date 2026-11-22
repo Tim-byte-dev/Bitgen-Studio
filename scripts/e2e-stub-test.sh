@@ -14847,6 +14847,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui913-ui.js > /tmp/ui913.log 2>&
   && ok "2.913.0 browser test: the app finds the PC on 10.9.8.x by itself, the studio's bar -> Allow -> connected with the relay; Wi-Fi gone -> Gallery + a picture through the real relay.php (php -S), sealed; 7 h away refused; 📱 Let the app connect = no question" \
   || { bad "2.913.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui913.log | head -12; }
 
+# ---- 2.914.0 (Remote access ▾ Off / Wi-Fi / relay / Cloudflare; the relay for its admins only; 🎙 Talk in the app)
+node scripts/test-914.js > /tmp/t914.log 2>&1 \
+  && ok "2.914.0 units: the modes + relay address, cloudflared per platform + its address, the forwarder marks the tunnel, guard (Cloudflare headers never this computer, tunnel = hello only + 6 hours), relay.php admins / key, 🎙 find / video / picture / song / fix photo / own phrases / chat, the app wiring" \
+  || { bad "2.914.0 units"; grep -a "^FAIL" -A1 /tmp/t914.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui914-ui.js > /tmp/ui914.log 2>&1 \
+  && ok "2.914.0 browser test: relay.php + a real Community server (admin yes, member / nobody no, key yes); Remote access ▾ Cloudflare (stand-in cloudflared) - the address shown, the app told, the forwarder 401 / 403 / 200 / away; the app through the tunnel; 🎙 Talk video / find / own phrase + Speak the prompt" \
+  || { bad "2.914.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui914.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

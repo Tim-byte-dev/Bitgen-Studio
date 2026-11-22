@@ -46,6 +46,7 @@
   <div class="seg" id="kindSeg"><button data-kind="video" class="on">🎬 Video</button><button data-kind="image">🖼 Picture</button><button data-kind="music">🎵 Music</button></div>
   <label class="f">Style <select id="styleSel"></select></label>
   <textarea id="prompt" rows="5" placeholder="What happens - who, where, how the camera moves…"></textarea>
+  <button id="micBtn" class="btn small" type="button" title="Say the prompt - your PC turns it into words (its own speech to text)">🎙 Speak the prompt</button>
   <!-- 🎵 a song: the lyrics are the prompt; the sound, title, length and file type here (the PC's Music dock fields) -->
   <div class="monly" hidden>
     <button id="writeSong" class="btn" type="button" title="Your PC's LLM writes the title, the sound and the lyrics from what you typed above (an idea: 'a song about neon rain in Bangkok') - the same songwriter as the studio's prompt chat">✨ Write the song</button>
@@ -93,6 +94,26 @@
 </section>
 
 <!-- SETTINGS -->
+<!-- 2.914.0: 🎙 TALK - say what you want: find … (the web), make a video / picture / song …, fix this photo, or just chat -->
+<section id="v-talk" class="view" hidden>
+  <h2>🎙 Talk</h2>
+  <div id="talkLog" class="talklog"></div>
+  <button id="talkBtn" class="btn go big" type="button">🎙 Tap and speak</button>
+  <p id="talkMsg" class="msg"></p>
+  <label class="f chk"><input type="checkbox" id="talkSpeak"> 🔊 Read the answers aloud</label>
+  <details class="hint"><summary>What you can say</summary>
+    <ul>
+      <li><b>find …</b> / <b>find out about …</b> / <b>search for …</b> / <b>look up …</b> - your PC searches the web and answers (with the sources)</li>
+      <li><b>make a video of …</b> - 🎬 the prompt filled in and Generate pressed</li>
+      <li><b>make a picture of …</b> (photo, drawing, poster…) - 🖼 the same</li>
+      <li><b>make a song about …</b> - 🎵 your PC writes it, then makes it</li>
+      <li><b>fix this photo</b> / <b>colourise this photo</b> - 🩹 the picture you added on Create, through an edit style</li>
+      <li>anything else - a chat with your PC's LLM</li>
+    </ul></details>
+  <label class="f">My own phrases - one a line: <i>phrase = find | video | picture | song | fix photo | chat</i>
+    <textarea id="phrases" rows="3" placeholder="what's on = find&#10;show me = picture" autocapitalize="off"></textarea></label>
+</section>
+
 <section id="v-settings" class="view" hidden>
   <h2>⚙ Settings</h2>
   <label class="f">Your PC's address <input id="baseIn" placeholder="http://192.168.1.20:8311" autocapitalize="off" spellcheck="false"></label>
@@ -118,6 +139,7 @@
   <button data-v="create" class="on">✨<span>Create</span></button>
   <button data-v="queue">⏳<span>Queue</span></button>
   <button data-v="gallery">🖼<span>Gallery</span></button>
+  <button data-v="talk">🎙<span>Talk</span></button>
   <button data-v="settings">⚙<span>Settings</span></button>
 </nav>
 

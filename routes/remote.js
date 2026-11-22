@@ -50,6 +50,7 @@ function mount(app) {
 
   app.post("/api/remote/enable", (req, res) => {
     const on = remote.setEnabled(!!(req.body || {}).on);
+    try { require("../lib/remoteAway").apply(); } catch { /* fine */ }   // 2.914.0: the tunnel follows Remote access
     res.json({ ...remote.status(), lan: remote.lanAddress(), port: port(),
                restart_required: remote.restartNeeded(),
                note: on
@@ -149,7 +150,7 @@ function mount(app) {
     let version = "";
     try { version = require("../package.json").version; } catch { version = ""; }
     let relay = null;                                       // 2.913.0: ☁ the relay for 6 hours away from the Wi-Fi (lib/relayLink.js)
-    try { const R = require("../lib/relayLink"); await Promise.race([R.prepare(), new Promise((ok) => setTimeout(ok, 6000))]); relay = R.forApp(); } catch { relay = null; }
+    try { const A = require("../lib/remoteAway"); if (A.mode() === "relay") await Promise.race([require("../lib/relayLink").prepare(), new Promise((ok) => setTimeout(ok, 6000))]); relay = A.forApp(); } catch { relay = null; }   // 2.914.0: the relay or the Cloudflare tunnel
     res.json({ ok: true, token: r.cookie, expires_at: r.expires_at, version, project: core.getProject(), relay });
   });
 
