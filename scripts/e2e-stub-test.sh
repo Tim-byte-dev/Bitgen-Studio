@@ -14839,6 +14839,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui912-ui.js > /tmp/ui912.log 2>&
   && ok "2.912.0 browser test: a build stamps its id + versionCode; 📲 QR refused with Remote access off, on = QR + link the phone's browser downloads (a bad token 404, the rest 401); 📂 the file; the paired app (older build) shows ⬆ Update -> /api/app/apk = the APK" \
   || { bad "2.912.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui912.log | head -12; }
 
+# ---- 2.913.0 (📶 the app connects on the Wi-Fi with no QR + ☁ 6 hours away through the relay)
+node scripts/test-913.js > /tmp/t913.log 2>&1 \
+  && ok "2.913.0 units: the sealed box (studio + app open each other's, AAD, tamper, replay, 2-minute window), the Wi-Fi scan, Allow / Deny / the 5-minute window, the relay url + 6 hours, guard + routes local-only, relay.php, the app wiring + LanInfo plugin" \
+  || { bad "2.913.0 units"; grep -a "^FAIL" -A1 /tmp/t913.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui913-ui.js > /tmp/ui913.log 2>&1 \
+  && ok "2.913.0 browser test: the app finds the PC on 10.9.8.x by itself, the studio's bar -> Allow -> connected with the relay; Wi-Fi gone -> Gallery + a picture through the real relay.php (php -S), sealed; 7 h away refused; 📱 Let the app connect = no question" \
+  || { bad "2.913.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui913.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

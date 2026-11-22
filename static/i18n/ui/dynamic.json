@@ -4219,6 +4219,46 @@
    "src": "static/langpacks.js:271"
   },
   {
+   "s": "The bitGen app on this Wi-Fi",
+   "src": "static/lanpairui.js:33"
+  },
+  {
+   "s": "No QR and no link: the app finds this PC on your Wi-Fi by itself and asks to connect. Press Let the app connect, then open the app (or tap Find my PC on Wi-Fi in it) - or just open the app and press Allow on the bar that appears here",
+   "src": "static/lanpairui.js:34"
+  },
+  {
+   "s": "Let the app connect",
+   "src": "static/lanpairui.js:36"
+  },
+  {
+   "s": "For 5 minutes the next bitGen app that asks on this Wi-Fi is let in without asking you",
+   "src": "static/lanpairui.js:36"
+  },
+  {
+   "s": "Away from the Wi-Fi: through the relay for 6 hours",
+   "src": "static/lanpairui.js:37"
+  },
+  {
+   "s": "Away from home the app reaches this PC through the bitGen relay on tigerart.com.au (the Community server) for 6 hours after it was last on this Wi-Fi. Everything is sealed with a key only the app and this PC have - the relay cannot read it. Pictures and videos come in parts, so they are slower than at home",
+   "src": "static/lanpairui.js:40"
+  },
+  {
+   "s": "Allow",
+   "src": "static/lanpairui.js:41"
+  },
+  {
+   "s": "Deny",
+   "src": "static/lanpairui.js:41"
+  },
+  {
+   "s": "Connected: the bitGen app",
+   "src": "static/lanpairui.js:46"
+  },
+  {
+   "s": "Stop waiting",
+   "src": "static/lanpairui.js:47"
+  },
+  {
    "s": "Layout",
    "src": "static/layouts.js:101"
   },
@@ -30471,6 +30511,18 @@
   {
    "p": "Shared {0} v{1} - anyone can install it now",
    "src": "static/langpacks.js:212"
+  },
+  {
+   "p": "Waiting for the app - open it on the phone ({0} min left)",
+   "src": "static/lanpairui.js:46"
+  },
+  {
+   "p": "Connected: {0}",
+   "src": "static/lanpairui.js:46"
+  },
+  {
+   "p": "{0} ({1}) wants to connect to bitGen Studio",
+   "src": "static/lanpairui.js:64"
   },
   {
    "p": "{0} new",

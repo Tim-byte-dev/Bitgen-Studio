@@ -162,6 +162,7 @@ function mount(app) {
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./appApi").mount(app);      // 2.909.0: 📱 the bitGen app - its info + one video form for every model (lib/appApi.js)
+  require("./lanPair").mount(app);     // 2.913.0: 📶 the app connects over the Wi-Fi with no QR + ☁ the relay for 6 hours away (lib/lanPair.js, lib/relayLink.js)
   require("./apkBuild").mount(app);    // 2.911.0: 📱 build the bitGen app here + install it on the phone over Wi-Fi (lib/apkBuild.js)
   require("./characters").mount(app);  // the Video docker's character panel
   require("./h3LongVideo").mount(app);  // 2.872.0: H3 Long Video from the prompt docker (lib/h3LongVideo.js) - replaces the 30 s single run

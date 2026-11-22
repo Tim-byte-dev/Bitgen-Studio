@@ -1,4 +1,4 @@
-# bitGen Community (2.710.0) - Apache / LiteSpeed: only api.php may be opened from the web.
+# bitGen Community (2.710.0) - Apache / LiteSpeed: only api.php (and relay.php, 2.913.0) may be opened from the web.
 # Everything else in this folder is denied: lib/ (the PHP parts), config.php (the database password),
 # *.db (a SQLite database), *.sql, *.md and these dot-files.
 
@@ -11,8 +11,8 @@
     Deny from all
 </IfModule>
 
-# ... but api.php
-<Files "api.php">
+# ... but api.php (and 2.913.0 relay.php - the 📱 app <-> its PC away from the Wi-Fi, sealed boxes only)
+<FilesMatch "^(api|relay)\.php$">
     <IfModule mod_authz_core.c>
         Require all granted
     </IfModule>
@@ -20,7 +20,7 @@
         Order allow,deny
         Allow from all
     </IfModule>
-</Files>
+</FilesMatch>
 
 # said again by name, in case a host's own rules re-open files: config.php, databases, SQL, notes, dot-files
 <FilesMatch "(^config\.php$|^config\.sample\.php$|\.db$|\.sqlite3?$|\.sql$|\.md$|^\.)">

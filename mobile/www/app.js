@@ -10,6 +10,11 @@
  *   Gallery   /api/outputs?kind=video|images|audio -> /outputs/<name>; ⬇ Save into the phone's Documents/bitGen, ⤴ Share
  *   Update    (2.912.0) /api/app/update -> a newer build on the PC than www/lib/build.js: ⬆ Update downloads /api/app/apk
  *             and opens Android's installer (FileOpener) - one tap on Install
+ *   Wi-Fi     (2.913.0) 📶 Find my PC on Wi-Fi: the phone's own Wi-Fi address (the LanInfo plugin) -> every address of that
+ *             network asked GET /api/remote/hello (lib/net.js scan) -> POST /api/remote/lanpair, the PC says Allow (or its
+ *             📱 Let the app connect) -> the key. On start: the PC at its address, else found again on the Wi-Fi (its
+ *             name), else ☁ the relay - for 6 hours after the app was last on the Wi-Fi (lib/net.js relaySend: sealed
+ *             with the relay key from pairing; pictures / videos in 4 MB Range parts)
  *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
  *             = Create on the left, the other tab on the right (the unfolded screen); ⛶ hides the phone's bars */
 (function () {
@@ -17,7 +22,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var Cap = window.Capacitor || null;
   var P = (Cap && Cap.Plugins) || {};
-  var S = { base: "", key: "", device: "", info: null, kind: "video", pics: [], gal: "video", view: "create", right: "queue", estKey: "", jobsOpen: {}, wide: false };
+  var S = { base: "", key: "", device: "", relay: null, pcName: "", lanAt: 0, via: "lan", info: null, kind: "video", pics: [], gal: "video", view: "create", right: "queue", estKey: "", jobsOpen: {}, wide: false };
 
   /* ---------- kept on the phone (Capacitor Preferences; a plain browser: localStorage) */
   function kget(k) {
@@ -30,8 +35,93 @@
     return Promise.resolve();
   }
 
-  /* ---------- the PC */
+  /* ---------- the PC: on the Wi-Fi (S.base), or away from it through ☁ the relay (2.913.0 - lib/net.js; for 6 hours after
+     the app was last on the Wi-Fi - bitGen Studio checks the same) */
+  var AWAY = window.BGNet ? BGNet.AWAY_MS : 6 * 3600 * 1000, te = new TextEncoder(), td = new TextDecoder();
+  function canRelay() { return !!(window.BGNet && S.key && S.relay && S.relay.id && S.relay.key && Date.now() - (S.lanAt || 0) < AWAY); }
   function api(path, opts) {
+    if (S.via === "relay" && canRelay()) return relayApi(path, opts);
+    return lanFetch(path, opts).catch(function (e) {
+      if (e.net && canRelay() && !(opts && opts.lanOnly)) { goRelay(); return relayApi(path, opts); }
+      throw e;
+    });
+  }
+  var lanSaved = 0;
+  function onLan() {
+    S.lanAt = Date.now();
+    if (S.lanAt - lanSaved > 60000) { lanSaved = S.lanAt; kset("lanAt", String(S.lanAt)); }
+    if (S.via === "relay") { S.via = "lan"; stopProbe(); Object.keys(blobs).forEach(function (k) { URL.revokeObjectURL(blobs[k]); delete blobs[k]; }); connOk(); }
+  }
+  function hm(ms) { var m = Math.max(0, Math.round(ms / 60000)), h = Math.floor(m / 60); return h ? h + " h " + (m % 60) + " min" : m + " min"; }
+  function connOk() {
+    if (S.via === "relay") conn("☁ " + (S.pcName || "your PC") + " through the relay · " + hm(AWAY - (Date.now() - S.lanAt)) + " left", "away");
+    else conn("● " + hostOf(S.base), "on");
+  }
+  var probeT = null;
+  function stopProbe() { if (probeT) clearInterval(probeT); probeT = null; }
+  function goRelay() {
+    S.via = "relay"; connOk();
+    if (!probeT) probeT = setInterval(function () { hello(S.base, 2500).then(function (h) { if (h) onLan(); }); }, 30000);
+  }
+  /** a body for the relay: bytes + its type (JSON, a form with pictures, anything fetch takes) */
+  function bodyOf(o) {
+    if (o.json !== undefined) return Promise.resolve({ bytes: te.encode(JSON.stringify(o.json)), type: "application/json" });
+    if (!o.body) return Promise.resolve({ bytes: null, type: "" });
+    var r = new Response(o.body);
+    return r.arrayBuffer().then(function (ab) { return { bytes: new Uint8Array(ab), type: r.headers.get("content-type") || "" }; });
+  }
+  function relayRaw(path, opts) {
+    var o = opts || {};
+    return bodyOf(o).then(function (b) {
+      if (b.bytes && b.bytes.length > 6.5 * 1048576) throw new Error("that is too big to send through the relay (the pictures?) - at home on the Wi-Fi it works");
+      var h = {}; Object.keys(o.headers || {}).forEach(function (k) { h[k.toLowerCase()] = String(o.headers[k]); });
+      h["x-bitgen-key"] = S.key; if (b.type) h["content-type"] = b.type;
+      return BGNet.relaySend(S.relay, { method: o.method || "GET", path: path, headers: h, body: b.bytes }, o.timeout ? o.timeout + 10000 : 40000);
+    }).catch(function (e) {
+      if (e && e.relay) conn("☁ " + (e.status === 503 ? "your PC is not online with the relay" : "the relay: " + e.message), "bad");
+      throw e;
+    });
+  }
+  function relayApi(path, opts) {
+    return relayRaw(path, opts).then(function (r) {
+      var j = {}; try { j = JSON.parse(td.decode(r.body) || "{}"); } catch (e) { j = {}; }
+      if (r.status === 401 && j && j.unpaired) unpaired();
+      if (r.status === 403 && j && j.away) { S.via = "lan"; stopProbe(); conn("○ away from your Wi-Fi for more than 6 hours", "bad"); }
+      if (r.status < 200 || r.status >= 300) { var e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+      connOk();
+      return j;
+    });
+  }
+  /** a picture / video / song through the relay, 4 MB at a time (Range) -> a Blob */
+  function relayFile(path, onPct) {
+    var PART = 4 * 1048576, parts = [], type = "";
+    function get(from) {
+      return relayRaw(path, { headers: { Range: "bytes=" + from + "-" + (from + PART - 1) }, timeout: 60000 }).then(function (r) {
+        if (r.status !== 206 && r.status !== 200) { var j = {}; try { j = JSON.parse(td.decode(r.body)); } catch (e) { j = {}; } throw new Error(j.error || ("HTTP " + r.status)); }
+        type = r.headers["content-type"] || type; parts.push(r.body);
+        if (r.status === 200) return null;
+        var m = /\/(\d+)$/.exec(r.headers["content-range"] || ""), total = m ? +m[1] : 0, next = from + r.body.length;
+        if (onPct && total) onPct(Math.round(next / total * 100));
+        return total && next < total && r.body.length ? get(next) : null;
+      });
+    }
+    return get(0).then(function () { return new Blob(parts, { type: type || "application/octet-stream" }); });
+  }
+  var blobs = {};
+  /** where an <img> / <video> gets a file: the PC itself on the Wi-Fi, a Blob fetched through the relay when away */
+  function mediaUrl(name, onPct) {
+    if (S.via !== "relay") return Promise.resolve(BG.media(S.base, name, S.key));
+    if (blobs[name]) return Promise.resolve(blobs[name]);
+    return relayFile("/outputs/" + encodeURIComponent(name), onPct).then(function (b) { blobs[name] = URL.createObjectURL(b); return blobs[name]; });
+  }
+  function hello(base, ms) {
+    if (!base) return Promise.resolve(null);
+    var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    if (ctl) setTimeout(function () { ctl.abort(); }, ms || 2500);
+    return fetch(base + "/api/remote/hello", { signal: ctl ? ctl.signal : undefined }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return j && j.app === "bitGen Studio" ? j : null; }, function () { return null; });
+  }
+  function lanFetch(path, opts) {
     var o = opts || {};
     var h = Object.assign({}, o.headers || {});
     if (S.key) h["X-Bitgen-Key"] = S.key;
@@ -41,13 +131,15 @@
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     if (ctl) { init.signal = ctl.signal; setTimeout(function () { ctl.abort(); }, o.timeout || 30000); }
     return fetch(S.base + path, init).then(function (r) {
+      if (S.key) onLan();
       return r.json().catch(function () { return {}; }).then(function (j) {
         if (r.status === 401 && j && j.unpaired) { unpaired(); }
         if (!r.ok) { var e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
         return j;
       });
     }, function (e) {
-      throw new Error(e && e.name === "AbortError" ? "your PC did not answer in time" : "cannot reach your PC at " + S.base + " - is it on, with bitGen Studio running, and the phone on the same Wi-Fi?");
+      var x = new Error(e && e.name === "AbortError" ? "your PC did not answer in time" : "cannot reach your PC at " + S.base + " - is it on, with bitGen Studio running, and the phone on the same Wi-Fi?");
+      x.net = true; throw x;
     });
   }
   function conn(text, cls) { var c = $("conn"); c.textContent = text; c.className = "conn " + (cls || ""); }
@@ -124,16 +216,75 @@
     var dev = ($("devName").value || "").trim() || "bitGen app";
     msg("pairMsg", "Connecting to " + l.base + "…");
     S.base = l.base; S.key = "";
-    api("/api/remote/pair", { method: "POST", json: { code: l.code, device: dev + " (bitGen app)" } }).then(function (j) {
-      S.key = j.token; S.device = dev;
-      return Promise.all([kset("base", S.base), kset("key", S.key), kset("device", dev)]).then(function () {
-        msg("pairMsg", "Connected to bitGen Studio " + (j.version || "") + " - project " + (j.project || ""), "ok");
-        $("linkIn").value = "";
-        return start();
-      });
-    }).catch(function (e) { msg("pairMsg", e.message, "bad"); });
+    lanFetch("/api/remote/pair", { method: "POST", json: { code: l.code, device: dev + " (bitGen app)" } }).then(function (j) {
+      return hello(S.base, 2500).then(function (h) { return paired(j, S.base, dev, h && h.name, "pairMsg"); });
+    }).then(function () { $("linkIn").value = ""; }).catch(function (e) { msg("pairMsg", e.message, "bad"); });
   }
   $("pairBtn").onclick = pair;
+  /** connected (a QR / link, or 📶 on the Wi-Fi): the key, the relay for 6 hours away, the PC's name - kept on the phone */
+  function paired(j, base, dev, name, msgId) {
+    S.base = base; S.key = j.token; S.device = dev; S.pcName = name || ""; S.lanAt = Date.now(); S.via = "lan";
+    if (j.relay !== undefined) S.relay = j.relay || null;
+    return Promise.all([kset("base", S.base), kset("key", S.key), kset("device", dev), kset("pcName", S.pcName), kset("lanAt", String(S.lanAt)),
+      kset("relay", S.relay ? JSON.stringify(S.relay) : "")]).then(function () {
+      msg(msgId, "Connected to bitGen Studio " + (j.version || "") + (S.pcName ? " on " + S.pcName : "") + " - project " + (j.project || ""), "ok");
+      return start();
+    });
+  }
+  function saveRelay(r) { var t = r ? JSON.stringify(r) : ""; if (t !== (S.relay ? JSON.stringify(S.relay) : "")) { S.relay = r || null; kset("relay", t); } }
+
+  /* ---------- 📶 Find my PC on Wi-Fi (2.913.0): no QR, no link. Tim: "if my phone is on the same wifi connection as the
+     desktop ... connect automaticlly when i start the app" */
+  function lanInfo() { return P.LanInfo && P.LanInfo.get ? P.LanInfo.get().catch(function () { return null; }) : Promise.resolve(null); }
+  function portOf(b) { var m = /:(\d+)$/.exec(String(b || "")); return m ? +m[1] : 8311; }
+  function ipOf(b) { var m = /^https?:\/\/(\d+\.\d+\.\d+\.\d+)(:|$)/.exec(String(b || "")); return m ? m[1] : ""; }
+  /** bitGen Studio on this Wi-Fi (`name` given: that PC only) -> {base, hello} */
+  function findPc(name) {
+    var port = portOf(S.base), known = ipOf(S.base);
+    return lanInfo().then(function (li) {
+      var hosts = known ? [known] : [];
+      if (li && li.wifi && li.ip) hosts = hosts.concat(BGNet.hostsOf(li.ip, li.prefix).filter(function (h) { return h !== known; }));
+      if (!hosts.length) throw new Error(li && !li.wifi ? "This phone is not on a Wi-Fi network - connect it to the same Wi-Fi as your PC." : "The app could not see this phone's Wi-Fi address - use the QR or the link below.");
+      return BGNet.scan(hosts, function (h) {
+        return hello("http://" + h + ":" + port, 1500).then(function (j) { return j && j.lanpair && (!name || j.name === name) ? j : null; });
+      }, 32);
+    }).then(function (f) {
+      if (!f) throw new Error("bitGen Studio was not found on this Wi-Fi. On the PC: Settings ▸ General ▸ Remote access ticked (then restart bitGen Studio), and Windows allows it through the firewall on private networks.");
+      return { base: "http://" + f.host + ":" + port, hello: f.hello };
+    });
+  }
+  var finding = false;
+  function findAndConnect() {
+    if (finding) return Promise.resolve();
+    finding = true; $("findBtn").disabled = true;
+    msg("findMsg", "Looking for bitGen Studio on this Wi-Fi…");
+    var dev = ($("devName").value || "").trim() || "Android phone";
+    return findPc("").then(function (f) {
+      S.base = f.base; S.key = "";
+      msg("findMsg", "Found bitGen Studio on " + (f.hello.name || hostOf(f.base)) + " - press Allow on the PC (or 📱 Let the app connect there).");
+      return lanFetch("/api/remote/lanpair", { method: "POST", json: { device: dev + " (bitGen app)" }, timeout: 15000 }).then(function wait(j) {
+        if (j.state === "allowed") return paired(j, f.base, dev, f.hello.name, "findMsg");
+        if (j.state !== "pending") throw new Error(j.error || "bitGen Studio said no");
+        return new Promise(function (ok) { setTimeout(ok, 1500); }).then(function () { return lanFetch("/api/remote/lanpair/" + j.rid, { timeout: 15000 }); }).then(wait);
+      });
+    }).catch(function (e) { msg("findMsg", e.message, "bad"); }).then(function () { finding = false; $("findBtn").disabled = false; });
+  }
+  $("findBtn").onclick = findAndConnect;
+  /** before talking to the paired PC: there at its address -> the Wi-Fi; else found again on this Wi-Fi (a new address) ->
+   *  kept; else away -> ☁ the relay (6 hours) */
+  function reach() {
+    return hello(S.base, 2500).then(function (h) {
+      if (h) { onLan(); S.via = "lan"; return "lan"; }
+      return lanInfo().then(function (li) {
+        if (!(li && li.wifi)) return null;
+        return findPc(S.pcName).then(function (f) { S.base = f.base; kset("base", S.base); onLan(); S.via = "lan"; return "lan"; }, function () { return null; });
+      }).then(function (r) {
+        if (r) return r;
+        if (canRelay()) { goRelay(); return "relay"; }
+        return "";
+      });
+    });
+  }
 
   /* ---------- create */
   function styles() { var i = S.info || {}; return (S.kind === "video" ? i.video_styles : S.kind === "music" ? i.music_styles : i.image_styles) || []; }
@@ -322,7 +473,7 @@
         var el = box.querySelector('.job[data-id="' + id + '"] .log'); if (!el) return;
         api("/api/jobs/" + id + "?log=0").then(function (jd) { el.textContent = (jd.log || []).slice(-40).join("\n"); el.scrollTop = el.scrollHeight; }, function () { /* next time */ });
       });
-      conn("● " + hostOf(S.base), "on");
+      connOk();
     }).catch(function (e) { $("jobs").innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; conn("● can't reach the PC", "bad"); })
       .then(function () { jobsT = setTimeout(loadJobs, 3000); });
   }
@@ -338,35 +489,55 @@
     api("/api/outputs" + (S.gal === "images" ? "?kind=images" : S.gal === "audio" ? "?kind=audio" : "")).then(function (l) {
       l = (Array.isArray(l) ? l : []).slice(0, 60);
       if (!l.length) { box.innerHTML = '<p class="hint">Nothing here yet.</p>'; return; }
+      var away = S.via === "relay";
       box.innerHTML = l.map(function (f) {
         var u = BG.media(S.base, f.name, S.key);
+        if (away && S.gal !== "audio") return '<div class="g" data-n="' + esc(f.name) + '"><div class="ph">' + (S.gal === "images" ? "🖼" : "🎬") + "</div><span>" + esc(f.name) + "</span></div>";
         if (S.gal === "audio") return '<div class="g au" data-n="' + esc(f.name) + '">🎵<span>' + esc(f.name) + (f.duration ? " · " + Math.round(f.duration) + " s" : "") + "</span></div>";
         return '<div class="g" data-n="' + esc(f.name) + '">' + (S.gal === "images" ? '<img loading="lazy" alt="" src="' + u + '">' : '<video preload="metadata" muted playsinline src="' + u + '#t=0.1"></video>')
           + "<span>" + esc(f.name) + "</span></div>";
       }).join("");
       [].forEach.call(box.querySelectorAll(".g"), function (g) { g.onclick = function () { view(g.dataset.n); }; });
+      if (away && S.gal === "images") thumbs([].slice.call(box.querySelectorAll(".g")).slice(0, 12));
     }).catch(function (e) { box.innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; });
+  }
+  /** ☁ away: the first pictures through the relay, one at a time (videos open when tapped) */
+  function thumbs(list) {
+    var g = list.shift(); if (!g || S.via !== "relay") return;
+    mediaUrl(g.dataset.n).then(function (u) { var ph = g.querySelector(".ph"); if (ph) ph.outerHTML = '<img alt="" src="' + u + '">'; }, function () { /* stays a placeholder */ })
+      .then(function () { thumbs(list); });
   }
   var cur = "";
   function view(name) {
     cur = name;
-    var u = BG.media(S.base, name, S.key), k = BG.kindOf(name);
+    var k = BG.kindOf(name);
     $("vName").textContent = name;
-    $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>'
-      : k === "audio" ? '<audio controls autoplay src="' + u + '"></audio>' : '<img alt="" src="' + u + '">';
     $("viewer").hidden = false;
+    $("vBody").innerHTML = S.via === "relay" ? '<p class="msg" id="vWait">☁ Fetching it through the relay…</p>' : "";
+    mediaUrl(name, function (pc) { var w = $("vWait"); if (w) w.textContent = "☁ Fetching it through the relay… " + pc + "%"; }).then(function (u) {
+      if (cur !== name) return;
+      $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>'
+        : k === "audio" ? '<audio controls autoplay src="' + u + '"></audio>' : '<img alt="" src="' + u + '">';
+    }, function (e) { if (cur === name) $("vBody").innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; });
   }
   $("vClose").onclick = function () { $("viewer").hidden = true; $("vBody").innerHTML = ""; };
   /** the file into the phone: Documents/bitGen (asked for the storage permission first), else the app's own folder;
    *  share = the app's cache (the share sheet saves it anywhere) -> the file's uri */
+  function b64of(blob) {
+    return new Promise(function (ok, no) { var r = new FileReader(); r.onload = function () { ok(String(r.result).replace(/^data:[^,]*,/, "")); }; r.onerror = function () { no(r.error); }; r.readAsDataURL(blob); });
+  }
   function fetchTo(name, directory) {
     var url = BG.media(S.base, name, S.key), path = "bitGen/" + name;
     return P.Filesystem.mkdir({ directory: directory, path: "bitGen", recursive: true }).catch(function () { /* there */ })
       .then(function () { return P.Filesystem.getUri({ directory: directory, path: path }); })
-      .then(function (u) { return P.FileTransfer.downloadFile({ url: url, path: u.uri }).then(function () { return u.uri; }); });
+      .then(function (u) {
+        if (S.via === "relay") return relayFile("/outputs/" + encodeURIComponent(name)).then(b64of)       // ☁ away: through the relay
+          .then(function (data) { return P.Filesystem.writeFile({ directory: directory, path: path, data: data, recursive: true }); }).then(function () { return u.uri; });
+        return P.FileTransfer.downloadFile({ url: url, path: u.uri }).then(function () { return u.uri; });
+      });
   }
   function saveLocal(name, forShare) {
-    if (!(P.FileTransfer && P.Filesystem)) { window.open(BG.media(S.base, name, S.key), "_blank"); return Promise.resolve(""); }
+    if (!(P.FileTransfer && P.Filesystem)) { return mediaUrl(name).then(function (u) { window.open(u, "_blank"); return ""; }); }
     if (forShare) return fetchTo(name, "CACHE");
     return (P.Filesystem.requestPermissions ? P.Filesystem.requestPermissions().catch(function () { return null; }) : Promise.resolve(null))
       .then(function () { return fetchTo(name, "DOCUMENTS"); })
@@ -404,6 +575,7 @@
   }
   function doUpdate() {
     if (!updInfo) return;
+    if (S.via === "relay") { alert("Update at home on the Wi-Fi - the app is too big to fetch through the relay."); return; }
     var url = S.base + "/api/app/apk?bgk=" + encodeURIComponent(S.key);
     var b = $("updBtn"); b.disabled = true; b.textContent = "Downloading…";
     var done = function () { b.disabled = false; b.textContent = "Update"; };
@@ -434,23 +606,26 @@
     S.base = b; kset("base", b); $("testBtn").onclick();
   };
   $("forget").onclick = function () {
-    if (!confirm("Forget your PC on this phone? You will need a new pairing link to connect again.")) return;
-    S.key = ""; S.info = null; Promise.all([kset("key", ""), kset("base", "")]).then(function () { S.base = ""; conn("○ not connected"); show("connect"); });
+    if (!confirm("Forget your PC on this phone? You will need to connect again (📶 Find my PC on Wi-Fi, or a pairing link).")) return;
+    S.key = ""; S.info = null; S.relay = null; S.via = "lan"; stopProbe();
+    Promise.all([kset("key", ""), kset("base", ""), kset("relay", ""), kset("pcName", "")]).then(function () { S.base = ""; conn("○ not connected"); show("connect"); });
   };
 
   /* ---------- start */
   function start() {
-    if (!S.key) { show("connect"); return Promise.resolve(); }
+    if (!S.key) { show("connect"); if (P.LanInfo) findAndConnect(); return Promise.resolve(); }   // 📶 in the app: look for the PC at once
     conn("… " + hostOf(S.base));
-    return api("/api/app/info").then(function (i) {
-      S.info = i; conn("● " + hostOf(S.base), "on");
+    return reach().then(function () { return api("/api/app/info"); }).then(function (i) {
+      S.info = i; if (i.relay !== undefined) saveRelay(i.relay); connOk();
       fillStyles(); paintWh(); show(S.view === "connect" ? "create" : S.view);
       checkUpdate(false);
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
   layout();
-  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen"].map(kget)).then(function (v) {
+  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen", "relay", "pcName", "lanAt"].map(kget)).then(function (v) {
     S.base = v[0]; S.key = v[1]; S.device = v[2];
+    try { S.relay = v[11] ? JSON.parse(v[11]) : null; } catch (e) { S.relay = null; }
+    S.pcName = v[12] || ""; S.lanAt = +v[13] || 0;
     if (v[9] === "image" || v[9] === "music") { S.kind = v[9]; [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x.dataset.kind === S.kind); }); }
     paintKind();
     if (v[10] === "1") fullscreen(true);
@@ -459,5 +634,8 @@
     if (v[6]) $("steps").value = v[6]; if (v[7]) $("cfg").value = v[7]; $("ovrOn").checked = v[8] === "1";
     start();
   });
-  document.addEventListener("visibilitychange", function () { if (!document.hidden && S.key) { if (S.view === "queue") loadJobs(); estimate(true); checkUpdate(false); } });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden || !S.key) return;
+    reach().then(function () { if (S.view === "queue") loadJobs(); estimate(true); if (S.via !== "relay") checkUpdate(false); connOk(); });   // 📶 / ☁ again after a while away
+  });
 })();

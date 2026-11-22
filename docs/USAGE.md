@@ -10337,6 +10337,20 @@ on the phone over Wi-Fi and starts it - no taps (Wireless debugging must be on; 
 **⤓ Install on the phone** installs the last build; **⬇ APK file** gives you the file to copy by hand. (By hand instead:
 `mobile/README.md` - `npm install`, `npm run sync`, Android Studio's Build ▸ APK.)
 
+**📶 Connect on your Wi-Fi with no QR, and ☁ 6 hours away** (2.913.0). With **Remote access** ticked (Settings ▸ General ▸
+Remote; the first time, restart bitGen Studio and let Windows allow it on private networks):
+- **Open the app** (or tap **📶 Find my PC on Wi-Fi** on its Connect screen): it looks for bitGen Studio on the phone's Wi-Fi by
+  itself and asks to connect. A bar in bitGen Studio says "📱 <phone> (its address) wants to connect" - press **✔ Allow**
+  (**✕ Deny** if it is not your phone). Or press **📱 Let the app connect** in Settings ▸ General ▸ Remote first: for 5
+  minutes the next app that asks is let in with no question.
+- Every time the app starts it finds your PC again - at its address, or anywhere on the Wi-Fi if the PC got a new address.
+- **Away from home** (mobile data, another Wi-Fi) the app keeps working through the **bitGen relay on tigerart.com.au** for 6
+  hours after it was last on your Wi-Fi - the top line says "☁ <PC> through the relay · 4 h 12 min left". Every request and
+  answer is sealed with a key only the app and your PC have (AES-256-GCM, made when the app connected on the Wi-Fi), so the
+  relay cannot read them. Pictures and videos come in 4 MB parts (slower than at home; the app's ⬆ Update waits for home).
+  After 6 hours away the PC says no until the app has been on your Wi-Fi again. Untick **☁ Away from the Wi-Fi** to keep it
+  to the Wi-Fi only. bitGen Studio must be running (with Remote access on) for the app to reach it either way.
+
 **No Wireless debugging? 📲 QR, 📂 Phone Link, ⬆ Update** (2.912.0). Installing without a tap needs Wireless debugging;
 without it Android always asks you to tap **Install** - these three get the app there:
 - **📲 Install with a QR** (Remote access must be on): a QR appears; point the phone's camera at it, its browser downloads

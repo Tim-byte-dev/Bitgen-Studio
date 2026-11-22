@@ -6,7 +6,8 @@ tiny install - no libraries, no composer. The API is in [API.md](API.md). MIT li
 
 ```
 community/
-  api.php              the one endpoint the web can reach
+  api.php              the endpoint the web can reach
+  relay.php            (2.913.0) the 📱 bitGen app <-> its PC when the phone is away from the PC's Wi-Fi (no database)
   .htaccess            denies everything else (lib/, config.php, *.db, *.sql, *.md)
   config.sample.php    copy to config.php and fill in (config.php is never in git)
   lib/                 the parts (http, settings, db, validate, ratelimit, auth, users, messages, the actions)
@@ -123,3 +124,15 @@ node scripts/test-community710-server.js
 ```
 
 It starts `php -S` on a free port with a temporary SQLite database and runs every action over real HTTP.
+
+## The relay (2.913.0)
+
+`relay.php` lets the 📱 bitGen app reach its PC for 6 hours after it was last on the PC's Wi-Fi - the phone on mobile data
+cannot see 192.168.x.x, and the PC is behind its router, so both ask this server. bitGen Studio registers once
+(`?a=register` - an id and a secret, only the secret's SHA-256 is kept), then fetches the app's requests (`?a=poll`, the
+id + secret, held 8 s at most) and leaves its answers (`?a=answer`); the app sends (`?a=send&pc=<id>`, waits 25 s at most).
+Every request and answer is sealed with AES-256-GCM by the app and its PC (a key made when the app paired on the Wi-Fi) -
+this server cannot read or change them, and keeps nothing longer than 2 minutes. It needs no database: the boxes are
+files in the private folder the admin page makes (`bitgen-private/relay/`, outside the site; `BITGEN_PRIVATE_DIR`
+overrides). Limits for shared hosting: 7 MB a box (pictures and videos go in parts), 400 requests / 5 minutes per PC,
+10 new PCs / hour per address. `.htaccess` lets `api.php` and `relay.php` through and nothing else.

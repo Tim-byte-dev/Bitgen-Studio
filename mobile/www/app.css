@@ -17,6 +17,7 @@ button.icon.on { color: var(--tiger); border-color: var(--tiger); }
 .conn { font-size: .78rem; color: var(--dim); max-width: 46vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .conn.on { color: var(--ok); }
 .conn.bad { color: var(--bad); }
+.conn.away { color: var(--accent, #f80); }   /* 2.913.0: ☁ through the relay */
 h2 { font-size: 1.1rem; margin: 6px 0 10px; }
 .view { max-width: 640px; margin: 0 auto; }
 .steps { padding-left: 20px; color: var(--dim); }
@@ -72,6 +73,7 @@ summary input { width: auto; }
 body.has-upd { padding-top: calc(var(--sat) + 96px); }   /* 2.911.0 ✨ the PC's LLM writes the song */
 .gal .g { position: relative; aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
 .gal .g img, .gal .g video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.gal .g .ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; opacity: .6; }   /* 2.913.0: ☁ away - fetched when tapped */
 .gal .g span { position: absolute; left: 0; right: 0; bottom: 0; font-size: .62rem; padding: 2px 5px; background: rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 nav#tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--panel); border-top: 1px solid var(--line); padding: 0 var(--sar) var(--sab) var(--sal); z-index: 5; }
 nav#tabs button { flex: 1; background: none; border: 0; color: var(--dim); padding: 8px 0 10px; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }

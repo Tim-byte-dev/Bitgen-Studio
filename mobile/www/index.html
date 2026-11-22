@@ -20,6 +20,11 @@
 <!-- CONNECT: pair with bitGen Studio on your PC -->
 <section id="v-connect" class="view">
   <h2>Connect to my PC</h2>
+  <!-- 2.913.0: 📶 no QR, no link - the app finds bitGen Studio on this Wi-Fi and asks to connect (the PC says Allow) -->
+  <button id="findBtn" class="btn go big" type="button">📶 Find my PC on Wi-Fi</button>
+  <p id="findMsg" class="msg"></p>
+  <p class="hint">On the PC: <b>bitGen Studio ▸ Settings ▸ General ▸ Remote access</b> ticked (the first time, restart bitGen Studio). Then press <b>📱 Let the app connect</b> there - or press <b>Allow</b> on the bar that shows on the PC when this phone asks.</p>
+  <div class="or">or with a QR / link</div>
   <ol class="steps">
     <li>On the PC: <b>bitGen Studio ▸ Settings ▸ General ▸ Remote access</b> - tick it (the first time, restart bitGen Studio).</li>
     <li>Press <b>Create link</b> - a QR code shows.</li>
@@ -32,8 +37,8 @@
   <label class="f">This phone's name <input id="devName" placeholder="My phone"></label>
   <button id="pairBtn" class="btn go big">Connect</button>
   <p id="pairMsg" class="msg"></p>
-  <p class="hint">The phone and the PC must be on the same Wi-Fi (not a guest network). Away from home you need your own way back to the PC -
-    a VPN to your home network, or a port opened on your router - then change the address in ⚙.</p>
+  <p class="hint">The phone and the PC must be on the same Wi-Fi (not a guest network) to connect. Away from home the app reaches your PC through the
+    bitGen relay for 6 hours after it was last on your Wi-Fi - sealed with a key only the app and your PC have.</p>
 </section>
 
 <!-- CREATE -->
@@ -119,6 +124,7 @@
 <script src="vendor/jsQR.js"></script>
 <script src="lib/build.js"></script>
 <script src="lib/core.js"></script>
+<script src="lib/net.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -138,16 +138,19 @@ function mount(app) {
   app.get("/api/remote/hello", (_req, res) => {
     let version = "";
     try { version = require("../package.json").version; } catch { version = ""; }
-    res.json({ app: "bitGen Studio", version, remote: remote.enabled(), pair: "/api/remote/pair" });
+    res.json({ app: "bitGen Studio", version, remote: remote.enabled(), pair: "/api/remote/pair",
+               name: require("os").hostname(), lanpair: "/api/remote/lanpair" });   // 2.913.0: 📶 the app finds this PC by its name
   });
-  app.post("/api/remote/pair", (req, res) => {
+  app.post("/api/remote/pair", async (req, res) => {
     const b = req.body || {};
     const r = remote.redeem(String(b.code || ""), String(b.device || "bitGen app").slice(0, 120),
                             req.ip || (req.socket && req.socket.remoteAddress) || "", Date.now(), true);
     if (r.error) return res.status(403).json({ error: r.error + " - on the computer: Settings ▸ General ▸ Remote access ▸ create a new link and scan it again" });
     let version = "";
     try { version = require("../package.json").version; } catch { version = ""; }
-    res.json({ ok: true, token: r.cookie, expires_at: r.expires_at, version, project: core.getProject() });
+    let relay = null;                                       // 2.913.0: ☁ the relay for 6 hours away from the Wi-Fi (lib/relayLink.js)
+    try { const R = require("../lib/relayLink"); await Promise.race([R.prepare(), new Promise((ok) => setTimeout(ok, 6000))]); relay = R.forApp(); } catch { relay = null; }
+    res.json({ ok: true, token: r.cookie, expires_at: r.expires_at, version, project: core.getProject(), relay });
   });
 
   // ---- phone side: everything below needs the cookie (or the app's key) ---

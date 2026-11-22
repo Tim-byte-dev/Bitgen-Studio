@@ -53,7 +53,7 @@ async function main() {
   const lint = phpFiles.map((f) => [f, spawnSync("php", ["-l", path.join(DIR, f)], { encoding: "utf8" })]);
   check("php -l: every PHP file (" + phpFiles.length + ") has no syntax error", lint.every(([, r]) => r.status === 0), lint.filter(([, r]) => r.status !== 0).map(([f, r]) => f + ": " + r.stdout + r.stderr));
   const hta = fs.existsSync(path.join(DIR, ".htaccess")) ? fs.readFileSync(path.join(DIR, ".htaccess"), "utf8") : "";
-  check(".htaccess exists: denies all, grants only api.php", /Require all denied/.test(hta) && /<Files "api\.php">[\s\S]*Require all granted[\s\S]*<\/Files>/.test(hta));
+  check(".htaccess exists: denies all, grants only api.php (and 2.913.0 relay.php)", /Require all denied/.test(hta) && /<FilesMatch "\^\(api\|relay\)\\\.php\$">[\s\S]*Require all granted[\s\S]*<\/FilesMatch>/.test(hta));
   check(".htaccess: lib/ and config.php denied by name too (+ *.db, *.sql, *.md)", /RewriteRule \^lib/.test(hta) && /config\\\.php/.test(hta) && /\\\.db\$/.test(hta) && /\\\.sql\$/.test(hta) && /\\\.md\$/.test(hta));
   const libHta = fs.existsSync(path.join(DIR, "lib/.htaccess")) ? fs.readFileSync(path.join(DIR, "lib/.htaccess"), "utf8") : "";
   check("lib/.htaccess denies everything", /Require all denied/.test(libHta));
