@@ -14817,6 +14817,13 @@ node scripts/test-909.js > /tmp/t909.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui909-ui.js > /tmp/ui909.log 2>&1 \
   && ok "2.909.0 browser test: the app (http://localhost) from 'the network' - 401 without a key, 📷 the QR photo pairs it, a FastH3 Omni 9:16 render on the real worker (544x960), the queue + Gallery via ?bgk=, revoked -> Connect" \
   || { bad "2.909.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui909.log | head -12; }
+# ---- 2.910.0 (📱 the app: 🎵 music + the Galaxy Z Fold layout - compact / wide live, the hinge, ⛶)
+node scripts/test-910.js > /tmp/t910.log 2>&1 \
+  && ok "2.910.0 units: /api/app/info's music styles, ⏱ for a song (max_duration), the studio's ⏱ in Music mode, the app's music form + Music tab, compact / wide + hinge CSS, ⛶ SystemBars, the manifest's resizeable activity" \
+  || { bad "2.910.0 units"; grep -a "^FAIL" -A1 /tmp/t910.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui910-ui.js > /tmp/ui910.log 2>&1 \
+  && ok "2.910.0 browser test: on a 344 px cover screen 🎵 a song from the app (sound words + length from the style, 30 s mp3 with a title) made by the real worker, ⏱, played in the Music tab; unfolded to 884 px = two panes with the prompt kept, folded back = one; ⛶ toggles" \
+  || { bad "2.910.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui910.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

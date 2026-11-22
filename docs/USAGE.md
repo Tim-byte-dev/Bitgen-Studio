@@ -10302,8 +10302,20 @@ PC. **Generate** starts ComfyUI on the PC first if it is not running. Every vide
 H3 Ref ...), Wan, LTX 2.3 / 2.5, H3 Long Video and PAN 2 - the PC sends each to its own renderer. (Character swap needs a
 reference video and stays on the PC.)
 
-**Queue** follows the renders (■ Cancel, the log); **Gallery** shows your PC's videos and pictures - tap one to play it,
-**⬇ Save** puts it in the phone's Documents/bitGen, **⤴ Share** sends it to any app.
+**🎵 Music** (2.910.0): one of your PC's song styles, the lyrics in the prompt box, the **Sound** words and **Seconds**
+(filled in from the style - change them as you like), a **Title** and the **File** type (mp3 / flac / wav) - **Make the
+song**. ⏱ says how long a song of that length takes on your PC.
+
+**Queue** follows the renders (■ Cancel, the log); **Gallery** shows your PC's videos, pictures and music - tap one to play
+it, **⬇ Save** puts it in the phone's Documents/bitGen, **⤴ Share** sends it to any app.
+
+**Folding phones and big screens** (2.910.0, a Galaxy Z Fold): the app lays itself out by the screen it is on. Folded (the
+cover screen), in split screen or a pop-up window it is **compact** - one screen at a time, the tabs at the bottom. Unfolded
+(or on a tablet / in landscape, 700 px and wider) it is **wide** - Create on the left, the Queue, Gallery or Settings on the
+right, each on its own side of the fold. Fold, unfold or resize the window and it switches at once, keeping what you typed.
+Half-folded in Flex mode, a playing video sits on the top half with its buttons on the bottom. **⛶** (top right) hides the
+phone's status and navigation bars for the whole screen - swipe from an edge to see them for a moment; ⛶ again brings them
+back. The app remembers it.
 
 **Away from home** the app needs a way back to your PC: a VPN into your home network, or a port opened on your router to
 the PC (then put that address in the app's ⚙ Settings). bitGen does not route anything through a cloud service.

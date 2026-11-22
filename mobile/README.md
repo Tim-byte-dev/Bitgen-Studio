@@ -17,10 +17,13 @@ This first version talks to **your PC** ("My PC"). RunPod and OpenRouter directl
 
 - **📷 Scan the QR** (a photo of it) - or paste the link - and **Connect**. Done; the pairing lasts a month and survives
   restarting the PC. One phone at a time.
-- **✨ Create** - 🎬 Video / 🖼 Picture, the style, the prompt, pictures, size, seconds, Override style; ⏱ the time
-  estimate; **Generate**.
+- **✨ Create** - 🎬 Video / 🖼 Picture / 🎵 Music, the style, the prompt (a song's lyrics), pictures, size, seconds,
+  Override style (a song: its sound words, seconds, title, mp3 / flac / wav); ⏱ the time estimate; **Generate**.
 - **⏳ Queue** - progress, the log, ■ Cancel.
-- **🖼 Gallery** - your PC's videos and pictures; ⬇ Save (Documents/bitGen), ⤴ Share.
+- **🖼 Gallery** - your PC's videos, pictures and music; ⬇ Save (Documents/bitGen), ⤴ Share.
+- **Folding phones** (a Galaxy Z Fold): compact on the cover screen / split screen / pop-up windows, wide (Create left,
+  the other tab right, each on its own side of the hinge) unfolded - live as you fold and resize. **⛶** hides the
+  status and navigation bars (Capacitor 8's SystemBars).
 - **⚙ Settings** - the PC's address (change it to your VPN / router address when you are away from home), Disconnect.
 
 ## Building the APK

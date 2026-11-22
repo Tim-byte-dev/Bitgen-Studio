@@ -1,13 +1,20 @@
 /* bitGen app - the studio's dark look (Tiger orange on warm charcoal) */
 :root { --bg: #14110e; --panel: #1d1915; --panel-2: #26211b; --line: #3a342a; --ink: #eee6da; --dim: #9b9184; --tiger: #f59e2c; --bad: #e5594f; --ok: #6cc070; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
+/* the phone's bars: env() (WebView 140+ with viewport-fit=cover) or Capacitor 8's SystemBars variables */
+:root { --sat: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)); --sab: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+  --sal: max(env(safe-area-inset-left, 0px), var(--safe-area-inset-left, 0px)); --sar: max(env(safe-area-inset-right, 0px), var(--safe-area-inset-right, 0px)); }
 html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-body { padding: calc(env(safe-area-inset-top) + 52px) 14px calc(env(safe-area-inset-bottom) + 74px); }
+body { padding: calc(var(--sat) + 52px) calc(var(--sar) + 14px) calc(var(--sab) + 74px) calc(var(--sal) + 14px); }
 header#top { position: fixed; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
-  padding: calc(env(safe-area-inset-top) + 8px) 14px 8px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  padding: calc(var(--sat) + 8px) calc(var(--sar) + 14px) 8px calc(var(--sal) + 14px); background: var(--panel); border-bottom: 1px solid var(--line); }
+.hdr-r { display: flex; align-items: center; gap: 10px; min-width: 0; }
+button.icon { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; width: 34px; height: 30px; font-size: 1rem; padding: 0; }
+button.icon.on { color: var(--tiger); border-color: var(--tiger); }
 .brand { display: flex; gap: 8px; align-items: center; font-size: 1.05rem; }
 .brand img { border-radius: 6px; }
-.conn { font-size: .78rem; color: var(--dim); max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conn { font-size: .78rem; color: var(--dim); max-width: 46vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .conn.on { color: var(--ok); }
 .conn.bad { color: var(--bad); }
 h2 { font-size: 1.1rem; margin: 6px 0 10px; }
@@ -53,18 +60,52 @@ summary input { width: auto; }
 .job .bar i { display: block; height: 100%; background: var(--tiger); width: 0; }
 .job .log { font: 11px/1.35 ui-monospace, monospace; color: var(--dim); white-space: pre-wrap; max-height: 180px; overflow: auto; margin-top: 6px; display: none; }
 .job.open .log { display: block; }
-.gal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.gal .g.au { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2.6rem; color: var(--tiger); background: var(--panel); }
+#vBody audio { width: min(92%, 520px); }
 .gal .g { position: relative; aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
 .gal .g img, .gal .g video { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gal .g span { position: absolute; left: 0; right: 0; bottom: 0; font-size: .62rem; padding: 2px 5px; background: rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-nav#tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--panel); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
+nav#tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--panel); border-top: 1px solid var(--line); padding: 0 var(--sar) var(--sab) var(--sal); z-index: 5; }
 nav#tabs button { flex: 1; background: none; border: 0; color: var(--dim); padding: 8px 0 10px; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 nav#tabs button span { font-size: .66rem; }
 nav#tabs button.on { color: var(--tiger); }
 #viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; flex-direction: column; }
 #viewer[hidden] { display: none; }
-.vbar { display: flex; gap: 6px; align-items: center; padding: calc(env(safe-area-inset-top) + 8px) 8px 8px; background: var(--panel); }
+.vbar { display: flex; gap: 6px; align-items: center; padding: calc(var(--sat) + 8px) calc(var(--sar) + 8px) 8px calc(var(--sal) + 8px); background: var(--panel); }
 .vbar span { flex: 1; font-size: .75rem; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #vBody { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 #vBody img, #vBody video { max-width: 100%; max-height: 100%; }
-@media (max-width: 380px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---- 2.910.0 (Tim: "make the app resizable, i have a galaxy fold z ... compact mode and fullscreen mode") ----
+   COMPACT - the cover screen, a pop-up / split-screen window: one pane, the tabs at the bottom (the rules above), tighter.
+   WIDE (700 px +) - the unfolded screen, a tablet, landscape: Create stays on the left, the Queue / Gallery / Settings tab on
+   the right (the Create tab button goes - it is always there). Folding / unfolding / resizing keeps everything as it is
+   (the activity is not restarted - AndroidManifest configChanges). The hinge: two side-by-side screen segments put each
+   pane on its own side of the fold (the Viewport Segments API); top / bottom segments (Flex mode) put a playing video on
+   the top half and its buttons on the bottom. */
+@media (max-width: 420px) {
+  body { padding-left: calc(var(--sal) + 10px); padding-right: calc(var(--sar) + 10px); }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .grid > label:nth-child(3):last-child { grid-column: 1 / -1; }
+  .gal { grid-template-columns: repeat(2, 1fr); }
+  .seg button { padding: 9px 4px; font-size: .9rem; }
+  .brand b { display: none; }
+}
+body.wide { padding-bottom: calc(var(--sab) + 70px); }
+body.wide #panes { display: grid; grid-template-columns: minmax(320px, 440px) minmax(0, 1fr); column-gap: 22px; align-items: start; max-width: 1400px; margin: 0 auto; }
+body.wide .view { max-width: none; margin: 0; }
+body.wide #v-create { grid-column: 1; position: sticky; top: calc(var(--sat) + 60px); max-height: calc(100vh - var(--sat) - var(--sab) - 140px); overflow: auto; padding-right: 4px; }
+body.wide #v-queue, body.wide #v-gallery, body.wide #v-settings { grid-column: 2; }
+body.wide #v-connect { grid-column: 1 / -1; max-width: 560px; margin: 0 auto; }
+body.wide nav#tabs button[data-v="create"] { display: none; }
+body.wide nav#tabs { left: auto; width: calc(100% - min(462px, 45%)); border-left: 1px solid var(--line); }
+@media (horizontal-viewport-segments: 2) {
+  body.wide #panes { max-width: none; grid-template-columns: calc(env(viewport-segment-width 0 0, 50vw) - var(--sal) - 28px) minmax(0, 1fr);
+    column-gap: calc(env(viewport-segment-left 1 0, 50vw) - env(viewport-segment-right 0 0, 50vw) + 28px); }
+  body.wide nav#tabs { width: auto; left: env(viewport-segment-left 1 0, 50vw); }
+}
+@media (vertical-viewport-segments: 2) {
+  #viewer { display: grid; grid-template-rows: env(viewport-segment-height 0 0, 50vh) calc(env(viewport-segment-top 0 1, 50vh) - env(viewport-segment-bottom 0 0, 50vh)) 1fr; }
+  #viewer #vBody { grid-row: 1; } #viewer .vbar { grid-row: 3; align-self: start; padding-top: 12px; }
+}

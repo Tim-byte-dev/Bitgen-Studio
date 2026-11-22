@@ -3,10 +3,10 @@
  * Tim: "the time estimate will be good" - how long the render will take on THIS computer, from its own finished renders
  * (📊 Statistics; lib/timeEstimate.js scales the same style's last renders to the size, length, steps and CFG asked).
  *   A small line at the foot of the prompt docker's Generate button (its tooltip says what it is from): "⏱ about 6 min (5 min – 7½ min)", its tooltip says what it is from;
- *   "⏱ no time yet …" before the first render of the style. It follows Generate's mode (🎬 Video / 🖼 Image), the style,
+ *   "⏱ no time yet …" before the first render of the style. It follows Generate's mode (🎬 Video / 🖼 Image / 2.910.0 🎶 Music), the style,
  *   Basic Settings' size, seconds, steps and CFG (a quiet look every 2 s - only a change asks the server), and a render
  *   finishing (the job list's count) asks again.
- * Pure (Node): requestOf(ui) -> the POST body, or null for a mode with no estimate. */
+ * Pure (Node): requestOf(ui) -> the POST body, or null for a mode with no estimate (Speech, Graph, Chat). */
 (function (root) {
   "use strict";
   /** ui = {mode, vstyle, vname, istyle, iname, width, height, seconds, steps, cfg, iw, ih, isteps, icfg, override} */
@@ -19,6 +19,9 @@
     if (u.mode === "image") {
       return { kind: "image", style: u.istyle || "", name: u.iname || "", width: u.override ? +u.iw || 0 : 0, height: u.override ? +u.ih || 0 : 0,
                frames: 1, steps: u.override ? +u.isteps || 0 : 0, cfg: u.override && u.icfg !== "" && u.icfg != null ? +u.icfg : null };
+    }
+    if (u.mode === "audio") {                           // 2.910.0: 🎶 Music - the song's length (the Music dock's duration)
+      return { kind: "music", style: u.mstyle || "", name: u.mname || "", seconds: +u.mdur || 0 };
     }
     return null;
   }
@@ -35,7 +38,8 @@
     var ov = $("ovrStyle");
     return { mode: val("genModeSel") || "video", vstyle: val("videoStyleSel"), vname: optName("videoStyleSel"), istyle: val("styleSel"), iname: optName("styleSel"),
              width: val("width"), height: val("height"), seconds: val("seconds"), steps: val("steps"), cfg: val("cfg"),
-             iw: iwh ? iwh.width : 0, ih: iwh ? iwh.height : 0, isteps: val("imgSteps"), icfg: val("imgCfg"), override: !!(ov && ov.checked) };
+             iw: iwh ? iwh.width : 0, ih: iwh ? iwh.height : 0, isteps: val("imgSteps"), icfg: val("imgCfg"), override: !!(ov && ov.checked),
+             mstyle: val("musicSel"), mname: optName("musicSel"), mdur: val("muDur") };
   }
   /** the estimate rides IN the Generate button (2.908.0): a small line at its foot (#go[data-est]::after - no height
    *  taken from the prompt docker, whose column ends at the button), the tooltip on the button; #goEst (hidden) keeps the

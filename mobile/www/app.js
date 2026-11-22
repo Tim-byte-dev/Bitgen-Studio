@@ -3,15 +3,18 @@
  * header). The PC decides everything a render needs - this is the prompt docker, in your pocket.
  *   Connect   the QR (a photo of it, read by jsQR) or the link -> POST /api/remote/pair -> the key, kept on the phone
  *   Create    /api/app/info (the styles), POST /api/app/video (every video model) or /api/genimage (+ /api/passets for
- *             pictures), ⏱ /api/timeestimate, ComfyUI started on the PC first (/api/comfy/status, /api/comfy/ensure)
+ *             pictures) or 🎵 /api/genmusic (the lyrics, the sound, the length), ⏱ /api/timeestimate, ComfyUI started on
+ *             the PC first (/api/comfy/status, /api/comfy/ensure)
  *   Queue     /api/jobs?all=1, /api/jobs/<id> (its log), /api/jobs/<id>/cancel
- *   Gallery   /api/outputs?kind=video|images -> /outputs/<name>; ⬇ Save into the phone's Documents/bitGen, ⤴ Share */
+ *   Gallery   /api/outputs?kind=video|images|audio -> /outputs/<name>; ⬇ Save into the phone's Documents/bitGen, ⤴ Share
+ *   Layout    (2.910.0, a Galaxy Z Fold) compact = one pane + bottom tabs (the cover screen, a pop-up window); wide (700 px+)
+ *             = Create on the left, the other tab on the right (the unfolded screen); ⛶ hides the phone's bars */
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var Cap = window.Capacitor || null;
   var P = (Cap && Cap.Plugins) || {};
-  var S = { base: "", key: "", device: "", info: null, kind: "video", pics: [], gal: "video", view: "create", estKey: "", jobsOpen: {} };
+  var S = { base: "", key: "", device: "", info: null, kind: "video", pics: [], gal: "video", view: "create", right: "queue", estKey: "", jobsOpen: {}, wide: false };
 
   /* ---------- kept on the phone (Capacitor Preferences; a plain browser: localStorage) */
   function kget(k) {
@@ -53,16 +56,40 @@
   }
 
   /* ---------- views */
+  /** compact: one view. wide: Create on the left + the right-hand view (Queue / Gallery / Settings) */
   function show(v) {
     if (!S.key && v !== "connect" && v !== "settings") v = "connect";
+    if (S.wide && v === "create") v = S.right || "queue";
+    if (v === "queue" || v === "gallery" || v === "settings") S.right = v;
     S.view = v;
-    ["connect", "create", "queue", "gallery", "settings"].forEach(function (n) { $("v-" + n).hidden = n !== v; });
+    var both = S.wide && v !== "connect";
+    ["connect", "create", "queue", "gallery", "settings"].forEach(function (n) { $("v-" + n).hidden = !(n === v || (both && n === "create")); });
     [].forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.classList.toggle("on", b.dataset.v === v); });
     if (v === "queue") loadJobs();
     if (v === "gallery") loadGallery();
     if (v === "settings") { $("baseIn").value = S.base; aboutPc(); }
-    if (v === "create") estimate(true);
+    if (v === "create" || both) estimate(true);
   }
+  function visible(n) { return !$("v-" + n).hidden; }
+  /* the Fold: folding / unfolding (or resizing a pop-up window) switches compact <-> wide where the user is */
+  var mqWide = window.matchMedia ? window.matchMedia("(min-width: 700px)") : null;
+  function layout() {
+    var w = !!(mqWide && mqWide.matches);
+    if (w === S.wide && document.body.classList.contains("wide") === w) return;
+    S.wide = w; document.body.classList.toggle("wide", w);
+    if (S.view) show(S.view === "create" && !w ? "create" : S.view);
+  }
+  if (mqWide) { if (mqWide.addEventListener) mqWide.addEventListener("change", layout); else if (mqWide.addListener) mqWide.addListener(layout); }
+  window.addEventListener("resize", layout);
+  /* ⛶ full screen: Capacitor 8's SystemBars hides the status + navigation bars (swipe from an edge shows them a moment) */
+  function fullscreen(on) {
+    $("fsBtn").classList.toggle("on", !!on);
+    var sb = P.SystemBars;
+    if (sb) return (on ? sb.hide({}) : sb.show({})).catch(function () { /* an old Capacitor */ });
+    try { if (on && document.documentElement.requestFullscreen && !document.fullscreenElement) return document.documentElement.requestFullscreen().catch(function () {}); if (!on && document.fullscreenElement) return document.exitFullscreen(); } catch (e) { /* fine */ }
+    return Promise.resolve();
+  }
+  $("fsBtn").onclick = function () { var on = !$("fsBtn").classList.contains("on"); fullscreen(on); kset("fullscreen", on ? "1" : ""); };
   [].forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.onclick = function () { show(b.dataset.v); }; });
 
   /* ---------- connect */
@@ -106,24 +133,42 @@
   $("pairBtn").onclick = pair;
 
   /* ---------- create */
-  function styles() { var i = S.info || {}; return (S.kind === "video" ? i.video_styles : i.image_styles) || []; }
+  function styles() { var i = S.info || {}; return (S.kind === "video" ? i.video_styles : S.kind === "music" ? i.music_styles : i.image_styles) || []; }
   function fillStyles() {
-    var sel = $("styleSel"), keep = sel.value || ((S.info || {}).ui || {})[S.kind === "video" ? "vstyle" : "style"] || "";
+    var sel = $("styleSel"), keep = sel.value || ((S.info || {}).ui || {})[S.kind === "video" ? "vstyle" : S.kind === "music" ? "music" : "style"] || "";
     var l = styles();
     sel.innerHTML = l.map(function (s) { return '<option value="' + s.id + '">' + esc(s.name) + "</option>"; }).join("") || '<option value="">(no styles on the PC)</option>';
     if (l.some(function (s) { return s.id === keep; })) sel.value = keep;
-    kget("style." + S.kind).then(function (v) { if (v && l.some(function (s) { return s.id === v; })) { sel.value = v; estimate(true); } });
+    kget("style." + S.kind).then(function (v) { if (v && l.some(function (s) { return s.id === v; })) sel.value = v; musicFill(); estimate(true); });
+    musicFill();
+  }
+  /** 🎵 a music style's own sound words and length fill the fields - unless you changed them */
+  var muFilled = { caption: "", secs: $("muSecs").defaultValue || "" };   // the page's own 60 counts as not yours
+  function musicFill() {
+    if (S.kind !== "music") return;
+    var st = styles().find(function (x) { return x.id === $("styleSel").value; }) || {};
+    var c = $("muCaption"), d = $("muSecs");
+    if (!c.value.trim() || c.value === muFilled.caption) { c.value = st.caption || ""; muFilled.caption = c.value; }
+    if (!d.value || d.value === muFilled.secs) { if (st.seconds) d.value = String(st.seconds); muFilled.secs = d.value; }
+    if (st.max_seconds) d.max = String(st.max_seconds);
+  }
+  function paintKind() {
+    [].forEach.call(document.querySelectorAll(".vonly"), function (x) { x.hidden = S.kind !== "video"; });
+    [].forEach.call(document.querySelectorAll(".viOnly"), function (x) { x.hidden = S.kind === "music"; });
+    [].forEach.call(document.querySelectorAll(".monly"), function (x) { x.hidden = S.kind !== "music"; });
+    $("prompt").placeholder = S.kind === "music" ? "The lyrics - [verse] … [chorus] … (or a few words for an instrumental)"
+      : S.kind === "image" ? "The picture - who, what, where, the light, the style…" : "What happens - who, where, how the camera moves…";
+    $("goBtn").textContent = S.kind === "music" ? "Make the song" : "Generate";
   }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   [].forEach.call(document.querySelectorAll("#kindSeg button"), function (b) {
     b.onclick = function () {
-      S.kind = b.dataset.kind;
+      S.kind = b.dataset.kind; kset("kind", S.kind);
       [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x === b); });
-      [].forEach.call(document.querySelectorAll(".vonly"), function (x) { x.hidden = S.kind !== "video"; });
-      fillStyles(); paintWh(); estimate(true);
+      paintKind(); fillStyles(); paintWh(); estimate(true);
     };
   });
-  $("styleSel").onchange = function () { kset("style." + S.kind, $("styleSel").value); estimate(true); };
+  $("styleSel").onchange = function () { kset("style." + S.kind, $("styleSel").value); musicFill(); estimate(true); };
   function wh() {
     if (S.kind === "image") { var e = { 480: 768, 540: 1024, 720: 1280, 1080: 1536 }[$("resSel").value] || 1024; return BG.imgSizeFor(e, $("arSel").value); }
     return BG.sizeFor($("resSel").value, $("arSel").value);
@@ -132,6 +177,7 @@
     var s = wh();
     $("whLine").textContent = "→ " + s.width + " × " + s.height + (S.kind === "image" && !$("ovrOn").checked ? " (with Override style on - off, the style's own size)" : "");
   }
+  $("muSecs").addEventListener("change", function () { estimate(); });
   ["resSel", "arSel", "seconds", "steps", "cfg", "ovrOn"].forEach(function (id) { $(id).addEventListener("change", function () { paintWh(); estimate(); kset("f." + id, id === "ovrOn" ? ($("ovrOn").checked ? "1" : "") : $(id).value); }); });
   function addPics(files) {
     [].slice.call(files || []).forEach(function (f) { if (S.pics.length < 9 && /^image\//.test(f.type)) S.pics.push({ file: f, url: URL.createObjectURL(f) }); });
@@ -154,10 +200,12 @@
   function estimate(now) {
     clearTimeout(estT);
     estT = setTimeout(function () {
-      if (!S.key || S.view !== "create") return;
+      if (!S.key || !visible("create")) return;
       var s = wh(), st = styles().find(function (x) { return x.id === $("styleSel").value; }) || {};
       var ov = $("ovrOn").checked;
-      var body = S.kind === "video"
+      var body = S.kind === "music"
+        ? { kind: "music", style: st.id || "", name: st.name || "", seconds: +$("muSecs").value || 0 }
+        : S.kind === "video"
         ? { kind: "video", style: st.id || "", name: st.name || "", width: s.width, height: s.height, seconds: +$("seconds").value || 5, steps: +$("steps").value || 0, cfg: +$("cfg").value }
         : { kind: "image", style: st.id || "", name: st.name || "", width: ov ? s.width : 0, height: ov ? s.height : 0, frames: 1, steps: ov ? +$("steps").value || 0 : 0, cfg: ov ? +$("cfg").value : null };
       var k = JSON.stringify(body);
@@ -192,13 +240,20 @@
   }
   $("goBtn").onclick = function () {
     var prompt = $("prompt").value.trim(), st = styles().find(function (x) { return x.id === $("styleSel").value; });
-    if (!prompt) { msg("goMsg", "Write what you want first.", "bad"); return; }
+    if (!prompt) { msg("goMsg", S.kind === "music" ? "Write the lyrics first (a few words make an instrumental)." : "Write what you want first.", "bad"); return; }
     if (!st) { msg("goMsg", "Pick a style - your PC has none of this kind yet.", "bad"); return; }
     var btn = $("goBtn"); btn.disabled = true;
     var say = function (t, c) { msg("goMsg", t, c); };
     var s = wh(), ov = $("ovrOn").checked;
     comfyReady(say).then(function () {
       say("Sending it to your PC…");
+      if (S.kind === "music") {
+        var mb = { prompt: prompt, style_id: st.id, batch: 1, format: $("muFormat").value || "mp3" };
+        var cap = $("muCaption").value.trim(); if (cap) mb.caption = cap;
+        var secs = parseFloat($("muSecs").value); if (secs > 0) mb.max_duration = secs;
+        var ttl = $("muTitle").value.trim(); if (ttl) mb.title = ttl;
+        return api("/api/genmusic", { method: "POST", json: mb, timeout: 60000 });
+      }
       if (S.kind === "video") {
         var fd = new FormData();
         fd.append("prompt", prompt); fd.append("style_id", st.id);
@@ -226,7 +281,7 @@
   var jobsT = 0;
   function loadJobs() {
     clearTimeout(jobsT);
-    if (S.view !== "queue" || !S.key) return;
+    if (!visible("queue") || !S.key) return;
     api("/api/jobs?all=1").then(function (d) {
       var l = BG.jobsOf(d).slice().sort(function (a, b) { return (b.created || 0) - (a.created || 0); }).slice(0, 30);
       var box = $("jobs");
@@ -261,11 +316,12 @@
   function loadGallery() {
     if (!S.key) return;
     var box = $("gal");
-    api("/api/outputs" + (S.gal === "images" ? "?kind=images" : "")).then(function (l) {
+    api("/api/outputs" + (S.gal === "images" ? "?kind=images" : S.gal === "audio" ? "?kind=audio" : "")).then(function (l) {
       l = (Array.isArray(l) ? l : []).slice(0, 60);
       if (!l.length) { box.innerHTML = '<p class="hint">Nothing here yet.</p>'; return; }
       box.innerHTML = l.map(function (f) {
         var u = BG.media(S.base, f.name, S.key);
+        if (S.gal === "audio") return '<div class="g au" data-n="' + esc(f.name) + '">🎵<span>' + esc(f.name) + (f.duration ? " · " + Math.round(f.duration) + " s" : "") + "</span></div>";
         return '<div class="g" data-n="' + esc(f.name) + '">' + (S.gal === "images" ? '<img loading="lazy" alt="" src="' + u + '">' : '<video preload="metadata" muted playsinline src="' + u + '#t=0.1"></video>')
           + "<span>" + esc(f.name) + "</span></div>";
       }).join("");
@@ -277,7 +333,8 @@
     cur = name;
     var u = BG.media(S.base, name, S.key), k = BG.kindOf(name);
     $("vName").textContent = name;
-    $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>' : '<img alt="" src="' + u + '">';
+    $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>'
+      : k === "audio" ? '<audio controls autoplay src="' + u + '"></audio>' : '<img alt="" src="' + u + '">';
     $("viewer").hidden = false;
   }
   $("vClose").onclick = function () { $("viewer").hidden = true; $("vBody").innerHTML = ""; };
@@ -332,8 +389,12 @@
       fillStyles(); paintWh(); show(S.view === "connect" ? "create" : S.view);
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
-  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn"].map(kget)).then(function (v) {
+  layout();
+  Promise.all(["base", "key", "device", "f.resSel", "f.arSel", "f.seconds", "f.steps", "f.cfg", "f.ovrOn", "kind", "fullscreen"].map(kget)).then(function (v) {
     S.base = v[0]; S.key = v[1]; S.device = v[2];
+    if (v[9] === "image" || v[9] === "music") { S.kind = v[9]; [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x.dataset.kind === S.kind); }); }
+    paintKind();
+    if (v[10] === "1") fullscreen(true);
     $("devName").value = S.device || "";
     if (v[3]) $("resSel").value = v[3]; if (v[4]) $("arSel").value = v[4]; if (v[5]) $("seconds").value = v[5];
     if (v[6]) $("steps").value = v[6]; if (v[7]) $("cfg").value = v[7]; $("ovrOn").checked = v[8] === "1";

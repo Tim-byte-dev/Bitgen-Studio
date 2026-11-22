@@ -10,8 +10,10 @@
 <body>
 <header id="top">
   <div class="brand"><img src="icon.png" alt="" width="26" height="26"><b>bitGen</b></div>
-  <div id="conn" class="conn" title="Your PC">○ not connected</div>
+  <div class="hdr-r"><div id="conn" class="conn" title="Your PC">○ not connected</div>
+    <button id="fsBtn" class="icon" type="button" title="Full screen - hide the phone's status and navigation bars (swipe from the edge to see them)" aria-label="Full screen">⛶</button></div>
 </header>
+<main id="panes">
 
 <!-- CONNECT: pair with bitGen Studio on your PC -->
 <section id="v-connect" class="view">
@@ -34,21 +36,30 @@
 
 <!-- CREATE -->
 <section id="v-create" class="view" hidden>
-  <div class="seg" id="kindSeg"><button data-kind="video" class="on">🎬 Video</button><button data-kind="image">🖼 Picture</button></div>
+  <div class="seg" id="kindSeg"><button data-kind="video" class="on">🎬 Video</button><button data-kind="image">🖼 Picture</button><button data-kind="music">🎵 Music</button></div>
   <label class="f">Style <select id="styleSel"></select></label>
   <textarea id="prompt" rows="5" placeholder="What happens - who, where, how the camera moves…"></textarea>
-  <div class="pics" id="pics"></div>
-  <div class="row">
+  <!-- 🎵 a song: the lyrics are the prompt; the sound, title, length and file type here (the PC's Music dock fields) -->
+  <div class="monly" hidden>
+    <label class="f">Sound <textarea id="muCaption" rows="2" placeholder="genre, instruments, voice, mood, tempo - the style's own words fill in"></textarea></label>
+    <div class="grid">
+      <label class="f">Title <input id="muTitle" placeholder="(optional)"></label>
+      <label class="f">Seconds <input type="number" id="muSecs" min="5" max="600" step="5" value="60"></label>
+      <label class="f">File <select id="muFormat"><option value="mp3">mp3</option><option value="flac">flac</option><option value="wav">wav</option></select></label>
+    </div>
+  </div>
+  <div class="pics viOnly" id="pics"></div>
+  <div class="row viOnly">
     <label class="btn small" for="picCam">📷 Camera</label><input type="file" id="picCam" accept="image/*" capture="environment" hidden>
     <label class="btn small" for="picLib">🖼 Pictures</label><input type="file" id="picLib" accept="image/*" multiple hidden>
   </div>
-  <div class="grid">
+  <div class="grid viOnly">
     <label class="f">Resolution <select id="resSel"><option value="480">480p</option><option value="540" selected>540p</option><option value="720">720p</option><option value="1080">1080p</option></select></label>
     <label class="f">Aspect <select id="arSel"><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>3:4</option><option>21:9</option></select></label>
     <label class="f vonly">Seconds <input type="number" id="seconds" min="1" max="120" step="0.5" value="5"></label>
   </div>
-  <div id="whLine" class="hint"></div>
-  <details id="ovr"><summary><label><input type="checkbox" id="ovrOn"> Override style</label></summary>
+  <div id="whLine" class="hint viOnly"></div>
+  <details id="ovr" class="viOnly"><summary><label><input type="checkbox" id="ovrOn"> Override style</label></summary>
     <div class="grid">
       <label class="f">Steps <input type="number" id="steps" min="0" max="100" value="0" title="0 = the style's own"></label>
       <label class="f">CFG <input type="number" id="cfg" min="0" max="30" step="0.1" value="1"></label>
@@ -69,7 +80,7 @@
 
 <!-- GALLERY -->
 <section id="v-gallery" class="view" hidden>
-  <div class="seg" id="galSeg"><button data-g="video" class="on">Video</button><button data-g="images">Pictures</button></div>
+  <div class="seg" id="galSeg"><button data-g="video" class="on">Video</button><button data-g="images">Pictures</button><button data-g="audio">Music</button></div>
   <div id="gal" class="gal"></div>
 </section>
 
@@ -84,6 +95,8 @@
   <p class="hint">Disconnecting forgets the PC here. To pair again, create a new link on the PC. On the PC, Settings ▸ General ▸ Remote
     access ▸ Disconnect cuts this phone off from there.</p>
 </section>
+
+</main>
 
 <!-- the viewer -->
 <div id="viewer" hidden>
