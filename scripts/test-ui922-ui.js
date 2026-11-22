@@ -52,6 +52,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
     const p = await b.newPage({ viewport: { width: 1500, height: 1000 } });
     const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    // 2.923.0: a song with no lyrics is transcribed by itself - here the suite's stand-in hears these words, and Speech to
+    // Text counts as installed (test-ui923-ui.js follows the transcription itself)
+    await p.addInitScript(() => { window.BG_TEST_SEGMENTS = [{ start: 0, end: 2, text: "heard by the stand-in" }];
+      Object.defineProperty(window, "H3NeedInstall", { configurable: true, get() { return { ensure: () => Promise.resolve(true), status: () => Promise.resolve(true) }; }, set() {} }); });
     await p.goto(URL_ + "/");
     await p.waitForFunction(() => window.H3SongFile && window.H3MuSong && document.getElementById("muFromFile") && document.getElementById("musicSel"), null, { timeout: 60000 });
     await p.waitForFunction((id) => [...document.getElementById("musicSel").options].some((o) => o.value === id), SID, { timeout: 20000 }).catch(() => {});
@@ -109,7 +113,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.setInputFiles("#muFromFileIn", bare);
     await settle();
     const f5 = await fields();
-    check("a song with no details: nothing changed (my words kept), it says so", f5.lyrics === "my own words" && f5.title === "Mine" && /no title, lyrics or details in its tags - nothing changed/.test(f5.status), f5);
+    await p.waitForFunction(() => /Transcribed/.test(document.getElementById("muTrText").textContent), null, { timeout: 20000 }).catch(() => {});
+    const f5b = await p.evaluate(() => ({ lyrics: document.getElementById("muLyrics").value, use: !document.getElementById("muTrUse").classList.contains("hidden") }));
+    check("a song with no details: no field changed (my words kept) - its words transcribed (2.923.0), ⤵ offered, never put over mine",
+      f5.title === "Mine" && /no title, lyrics or details in its tags/.test(f5.status) && f5b.lyrics === "my own words" && f5b.use, [f5, f5b]);
     const txt = await fetch(URL_ + "/api/song-tags", { method: "POST", body: (() => { const fd = new FormData(); fd.append("audio", new Blob(["hello"]), "notes.txt"); return fd; })() });
     const outside = await fetch(URL_ + "/api/song-tags?src=output&name=" + encodeURIComponent("../../package.json"));
     check("not a song = 400; a name outside the project's folders = refused", txt.status === 400 && outside.status === 400, [txt.status, outside.status]);

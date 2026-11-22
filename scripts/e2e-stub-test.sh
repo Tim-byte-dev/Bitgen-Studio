@@ -14917,6 +14917,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui922-ui.js > /tmp/ui922.log 2>&
   && ok "2.922.0 browser test: a song made (the worker tags it), 🎵 From file fills title / lyrics / caption / style / length / seed / save-as, a Gallery drop the same, an older bitGen song from its graph tag, a stranger's from its player tags, no details = nothing changed" \
   || { bad "2.922.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui922.log | head -12; }
 
+# ---- 2.923.0 (🎤 the Song tab transcribes a song with no lyrics, with a progress bar)
+node scripts/test-923.js > /tmp/t923.log 2>&1 \
+  && ok "2.923.0 units: Whisper's segments -> lyrics (lines, verse breaks, no [Music]), the job's stages and climbing bar (stand-in), Song Separation first into a folder of its own, the routes, the bar + 🎤 button, never over words already there; the phone page's voice fix" \
+  || { bad "2.923.0 units"; grep -a "^FAIL" -A1 /tmp/t923.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui923-ui.js > /tmp/ui923.log 2>&1 \
+  && ok "2.923.0 browser test: a song with no lyrics is transcribed by itself - the bar (striped, then a climbing %, green at 100), the words in the Lyrics box; 🎤 twice replaces; a Gallery song keeps words already there (⤵ puts them in); no Speech to Text = the Download box, then red" \
+  || { bad "2.923.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui923.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

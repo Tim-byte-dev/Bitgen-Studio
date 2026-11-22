@@ -69,8 +69,8 @@ check("the Song tab: 🎵 From file beside 📂 Load (a hidden song picker)", /i
 check("ext/musicdock/songfile.js is loaded after musicdock.js", ext.scripts.indexOf("songfile.js") === ext.scripts.indexOf("musicdock.js") + 1);
 check("...a file from this computer -> POST; a drop from the Gallery (output) / Sound assets (sound) -> GET; a dropped file -> POST",
   /fetch\("\/api\/song-tags", \{ method: "POST", body: fd \}\)/.test(sf) && /fromProject\(p\.type === "asset" \? "sound" : "output", p\.name\)/.test(sf) && /if \(f\) \{ e\.preventDefault\(\); fromFile\(f\); return; \}/.test(sf));
-check("...only the fields found fill in (the rest kept), nothing found = nothing changed, a missing style said",
-  /var cur = M\(\)\.collect \? M\(\)\.collect\(\) : \{\}/.test(sf) && /nothing changed/.test(sf) && /is not in this install - pick one/.test(sf));
+check("...only the fields found fill in (the rest kept), nothing found = no field changed (2.923.0: its words transcribed), a missing style said",
+  /var cur = M\(\)\.collect \? M\(\)\.collect\(\) : \{\}/.test(sf) && /no title, lyrics or details in its tags/.test(sf) && /is not in this install - pick one/.test(sf));
 const md = src("ext/musicdock/musicdock.js");
 check("muSongApply's 'the style is gone' line has a home again (muSongMsg was never defined); the Song tab's fill / read shared as window.H3MuSong",
   /function muSongMsg\(t\) \{/.test(md) && /window\.H3MuSong = \{ apply: muSongApply, collect: muSongCollect, tab: muTabSel, msg: muSongMsg \}/.test(md) && /M\(\)\.apply\(next\)/.test(sf));

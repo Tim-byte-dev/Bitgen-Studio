@@ -44,6 +44,10 @@
                  or drop one (from this computer, the Gallery or the Sound assets) onto the Song tab -->
             <button type="button" class="ghost gbtn" id="muFromFile" title="Open a song file (flac, mp3, wav …) - its title, lyrics, caption, style, length and seed fill the Song tab from its tags (every song bitGen makes carries them). Or drop a song onto the Song tab - from this computer, the Gallery or the Sound assets.">🎵 From file</button>
             <input type="file" id="muFromFileIn" accept=".flac,.mp3,.wav,.ogg,.opus,.m4a,.aac,audio/*" hidden>
+            <!-- 2.923.0 (Tim: "can we add a transcribe and put the lyrics in the song tab if no lyrics are found. let user know
+                 that it is transcribing with a progress bar"): the loaded song's words, heard - by itself when its tags have
+                 no lyrics, or this button (again) -->
+            <button type="button" class="ghost gbtn" id="muTranscribe" disabled title="Transcribe - hear the words of the song you loaded with 🎵 From file (or dropped here) and put them in the Lyrics box. It runs by itself when the song's tags have no lyrics. Song Separation (when installed) takes the voice out of the music first for cleaner words.">🎤 Transcribe</button>
           </div>
           <!-- 2.247.0 (Tim: "make the song, cover and sheetmusic button the
                same theme as the other buttons"): the tabs wear the app's
@@ -241,6 +245,25 @@
              saves/loads with the song, and prefills the Save dialog's name. -->
         <label class="f" style="flex:0 0 auto;margin:0 0 6px" title="The song's title — it leads the rendered filename, saves with the song, and prefills the Save name.">Title
           <input type="text" id="muTitle" style="width:100%;box-sizing:border-box" placeholder="untitled"></label>
+        <!-- 2.923.0: the transcription's progress (ext/musicdock/songfile.js) -->
+        <div id="muTrBox" class="hidden" role="status" aria-live="polite">
+          <div class="muTrLine"><span id="muTrText">🎤 Transcribing…</span><span id="muTrPct"></span>
+            <button type="button" class="ghost gbtn hidden" id="muTrUse" title="Put the heard words in the Lyrics box (they replace what is there)">⤵ Use the heard words</button>
+            <button type="button" class="ghost gbtn" id="muTrX" title="Hide (a transcription still running finishes; its words are not put in)" aria-label="Hide">✕</button></div>
+          <div class="muTrBar"><div id="muTrFill"></div></div>
+        </div>
+        <style>
+          #muTrBox { margin: 0 0 6px; padding: 6px 8px; border: 1px solid var(--line, #262a33); border-radius: 6px; background: var(--panel-2, #141822); font-size: .78rem; }
+          #muTrBox .muTrLine { display: flex; gap: 8px; align-items: center; margin-bottom: 5px; }
+          #muTrBox #muTrText { flex: 1; min-width: 0; }
+          #muTrBox #muTrPct { font-family: var(--mono, monospace); color: var(--tiger, #f08c1e); }
+          #muTrBox .muTrBar { height: 8px; border-radius: 4px; background: var(--line, #262a33); overflow: hidden; position: relative; }
+          #muTrFill { height: 100%; width: 0; background: var(--tiger, #f08c1e); border-radius: 4px; transition: width .4s ease; }
+          #muTrBox.busy #muTrFill { background-image: linear-gradient(45deg, rgba(255,255,255,.25) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.25) 50%, rgba(255,255,255,.25) 75%, transparent 75%); background-size: 16px 16px; animation: muTrMove .8s linear infinite; }
+          #muTrBox.ok #muTrFill { background: #3fa95f; }
+          #muTrBox.bad { border-color: #c0392b; } #muTrBox.bad #muTrFill { background: #c0392b; }
+          @keyframes muTrMove { from { background-position: 0 0; } to { background-position: 16px 0; } }
+        </style>
         <div class="murow">
           <textarea id="muLyrics" placeholder="Lyrics — the prompt for the song. Section tags on their own lines: [verse] … [chorus] … [bridge] … [outro]"></textarea>
           <textarea id="muCaption" placeholder="Caption override for this song only — leave empty to use the style's. Global Metadata: genre, BPM, key, mood.  Vocal Details: …  Arrangement: …"></textarea>

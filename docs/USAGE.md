@@ -10512,6 +10512,26 @@ details changes nothing. A style that is no longer installed is named - pick ano
 
 Press 🎶 Generate Music with the same seed to make the song again, or change the words and make a new version.
 
+## 🎤 Transcribe a song's words into the Song tab (2.923.0)
+
+When a song you load into the **🎶 Song** tab (🎵 From file, or dropped on the tab) has **no lyrics in its tags**, bitGen
+hears them itself and puts them in the Lyrics box:
+
+1. **Taking the voice out of the music** - when Song Separation (demucs) is installed, the vocals are split off first (into a
+   folder of its own - your Sound assets are not touched). Sung words are heard far better without the band. Without it the
+   whole mix is heard, and the bar says so.
+2. **Loading the speech model**, then **hearing the words** - Speech to Text (faster-whisper, or Bark if you picked it).
+3. The words go into the **Lyrics** box - a line for each phrase, a blank line where the singer pauses. Check them: hearing is
+   never perfect, and section tags ([verse], [chorus]) are yours to add.
+
+A **progress bar** under the Title shows what it is doing and how far it is - striped while a step cannot be measured, a %
+while the words are heard, green when done, red (with why) when it stops. ✕ hides it.
+
+- **🎤 Transcribe** (beside 🎵 From file) hears the song you loaded again on purpose. When the Lyrics box has words, the
+  first press asks - press again to replace them.
+- Words already in the Lyrics box are **never overwritten by themselves**: the bar offers **⤵ Use the heard words**.
+- Speech to Text not installed: the ⬇ Download / Cancel box asks first (about 2 GB, once).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

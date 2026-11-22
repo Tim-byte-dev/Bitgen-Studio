@@ -194,7 +194,7 @@ function mount(app) {
     const f = req.file;
     if (!f) return res.status(400).json({ error: "no audio" });
     try {
-      const text = String((await asr.transcribeFile(f.path)) || "").trim();
+      const text = String(((await asr.transcribeFile(f.path)) || {}).text || "").trim();   // 2.923.0: it answers {text, …} - this read "[object Object]"
       fs.unlink(f.path, () => {});
       if (!text) return res.json({ heard: "", reply: "", note: "nothing was heard" });
       const hist = (() => { try { return JSON.parse(req.body.history || "[]"); } catch { return []; } })();
