@@ -1751,6 +1751,146 @@
    "src": "static/apis.js:113"
   },
   {
+   "s": "The bitGen app (Android)",
+   "src": "static/apkui.js:31"
+  },
+  {
+   "s": "Build the phone app on this PC and install it on your phone over Wi-Fi. It needs Java 21 and the Android SDK: bitGen uses the ones of Android Studio when it is installed, otherwise Get the build tools downloads them (about 1.5 - 2 GB) into the tools folder of bitGen",
+   "src": "static/apkui.js:32"
+  },
+  {
+   "s": "Get the build tools",
+   "src": "static/apkui.js:35"
+  },
+  {
+   "s": "Download what is missing: Java 21 (Eclipse Temurin) and/or the Android SDK from Google (command-line tools, platform-tools, Android 36, build-tools)",
+   "src": "static/apkui.js:35"
+  },
+  {
+   "s": "Build the app",
+   "src": "static/apkui.js:36"
+  },
+  {
+   "s": "npm install, cap sync, Gradle assembleDebug → mobile/dist/bitGen.apk (the first build downloads Gradle - several minutes)",
+   "src": "static/apkui.js:36"
+  },
+  {
+   "s": "Build + install",
+   "src": "static/apkui.js:37"
+  },
+  {
+   "s": "Build it, then install it on the paired phone and start it",
+   "src": "static/apkui.js:37"
+  },
+  {
+   "s": "Install on the phone",
+   "src": "static/apkui.js:38"
+  },
+  {
+   "s": "Install the last build on the paired phone (Wireless debugging on) and start it",
+   "src": "static/apkui.js:38"
+  },
+  {
+   "s": "APK file",
+   "src": "static/apkui.js:39"
+  },
+  {
+   "s": "Pair the phone (Wireless debugging - once)",
+   "src": "static/apkui.js:42"
+  },
+  {
+   "s": "On the phone: Settings ▸ About phone ▸ Software information ▸ tap",
+   "src": "static/apkui.js:43"
+  },
+  {
+   "s": "Build number",
+   "src": "static/apkui.js:43"
+  },
+  {
+   "s": "7 times (Developer options)",
+   "src": "static/apkui.js:43"
+  },
+  {
+   "s": "Settings ▸",
+   "src": "static/apkui.js:44"
+  },
+  {
+   "s": "Developer options",
+   "src": "static/apkui.js:44"
+  },
+  {
+   "s": "Wireless debugging",
+   "src": "static/apkui.js:44"
+  },
+  {
+   "s": "on (the phone on the same Wi-Fi as this PC)",
+   "src": "static/apkui.js:44"
+  },
+  {
+   "s": "Tap",
+   "src": "static/apkui.js:45"
+  },
+  {
+   "s": "Pair device with pairing code",
+   "src": "static/apkui.js:45"
+  },
+  {
+   "s": "type its IP address",
+   "src": "static/apkui.js:45"
+  },
+  {
+   "s": "port and the 6-digit code here, then Pair",
+   "src": "static/apkui.js:45"
+  },
+  {
+   "s": "Pair",
+   "src": "static/apkui.js:47"
+  },
+  {
+   "s": "6-digit code",
+   "src": "static/apkui.js:47"
+  },
+  {
+   "s": "IP address & port of Wireless debugging",
+   "src": "static/apkui.js:48"
+  },
+  {
+   "s": "Connect",
+   "src": "static/apkui.js:49"
+  },
+  {
+   "s": "Only when Pair did not connect by itself: the IP address & Port on the Wireless debugging screen (not the pairing one)",
+   "src": "static/apkui.js:49"
+  },
+  {
+   "s": "Java / Android SDK folders (optional - empty = find them)",
+   "src": "static/apkui.js:50"
+  },
+  {
+   "s": "Java 21 folder (has bin\\java)",
+   "src": "static/apkui.js:51"
+  },
+  {
+   "s": "Save",
+   "src": "static/apkui.js:52"
+  },
+  {
+   "s": "Android SDK folder",
+   "src": "static/apkui.js:52"
+  },
+  {
+   "s": "Forget the phone",
+   "src": "static/apkui.js:53"
+  },
+  {
+   "s": "Forget the paired phone (pair it again to install)",
+   "src": "static/apkui.js:53"
+  },
+  {
+   "s": "Not built yet",
+   "src": "static/apkui.js:71"
+  },
+  {
    "s": "Ungrouped",
    "src": "static/assetgroups.js:79"
   },
@@ -2064,10 +2204,6 @@
   },
   {
    "s": "the caches and previews too (bitGen re-makes them)",
-   "src": "static/bgp.js:110"
-  },
-  {
-   "s": "Save",
    "src": "static/bgp.js:110"
   },
   {
@@ -16015,10 +16151,6 @@
    "src": "ext/imageeditdock/pclaser.js:554"
   },
   {
-   "s": "Connect",
-   "src": "ext/imageeditdock/pclaser.js:554"
-  },
-  {
    "s": "Disconnect",
    "src": "ext/imageeditdock/pclaser.js:554"
   },
@@ -29819,6 +29951,14 @@
   {
    "p": "{0} keys",
    "src": "static/apis.js:108"
+  },
+  {
+   "p": "Built: bitGen {0} - {1} MB, {2}",
+   "src": "static/apkui.js:71"
+  },
+  {
+   "p": "Built: bitGen - {0} MB, {1}",
+   "src": "static/apkui.js:71"
   },
   {
    "p": "{0} — {1} here, {2} in the group (drop assets here to move them in; hold Ctrl to add)",

@@ -3,7 +3,8 @@
  * header). The PC decides everything a render needs - this is the prompt docker, in your pocket.
  *   Connect   the QR (a photo of it, read by jsQR) or the link -> POST /api/remote/pair -> the key, kept on the phone
  *   Create    /api/app/info (the styles), POST /api/app/video (every video model) or /api/genimage (+ /api/passets for
- *             pictures) or 🎵 /api/genmusic (the lyrics, the sound, the length), ⏱ /api/timeestimate, ComfyUI started on
+ *             pictures) or 🎵 /api/genmusic (the lyrics, the sound, the length; ✨ /api/app/song - the PC's LLM writes
+ *             them from an idea), ⏱ /api/timeestimate, ComfyUI started on
  *             the PC first (/api/comfy/status, /api/comfy/ensure)
  *   Queue     /api/jobs?all=1, /api/jobs/<id> (its log), /api/jobs/<id>/cancel
  *   Gallery   /api/outputs?kind=video|images|audio -> /outputs/<name>; ⬇ Save into the phone's Documents/bitGen, ⤴ Share
@@ -152,6 +153,19 @@
     if (!d.value || d.value === muFilled.secs) { if (st.seconds) d.value = String(st.seconds); muFilled.secs = d.value; }
     if (st.max_seconds) d.max = String(st.max_seconds);
   }
+  /** ✨ Write the song (2.911.0): the prompt box holds the idea; the PC's LLM writes the title, the sound and the lyrics
+   *  (POST /api/app/song - lib/songwriter.js, as the studio's prompt chat does for "make a song about ...") */
+  $("writeSong").onclick = function () {
+    var idea = $("prompt").value.trim(), st = styles().find(function (x) { return x.id === $("styleSel").value; }) || {};
+    if (!idea) { msg("goMsg", "Type what the song is about first (a few words), then ✨.", "bad"); return; }
+    var b = $("writeSong"); b.disabled = true; b.textContent = "✨ Writing…";
+    msg("goMsg", "Your PC's LLM is writing the song (the first time it may have to start the LLM)…");
+    api("/api/app/song", { method: "POST", json: { idea: idea, style_id: st.id || "" }, timeout: 300000 }).then(function (j) {
+      $("prompt").value = j.lyrics || ""; $("muTitle").value = j.title || "";
+      if (j.style) $("muCaption").value = j.style;
+      msg("goMsg", "✨ \"" + (j.title || "the song") + "\" written - change anything you like, then Make the song.", "ok");
+    }).catch(function (e) { msg("goMsg", e.message, "bad"); }).then(function () { b.disabled = false; b.textContent = "✨ Write the song"; });
+  };
   function paintKind() {
     [].forEach.call(document.querySelectorAll(".vonly"), function (x) { x.hidden = S.kind !== "video"; });
     [].forEach.call(document.querySelectorAll(".viOnly"), function (x) { x.hidden = S.kind === "music"; });
@@ -211,7 +225,10 @@
       var k = JSON.stringify(body);
       if (k === S.estKey && !now) return;
       S.estKey = k;
-      api("/api/timeestimate", { method: "POST", json: body }).then(function (j) { $("est").textContent = j.text || ""; $("est").title = j.title || ""; }, function () { $("est").textContent = ""; });
+      api("/api/timeestimate", { method: "POST", json: body }).then(function (j) {
+        $("est").textContent = j.text || ""; $("est").title = j.title || "";
+        if (!j.estimate) S.estKey = "";                 /* "no time yet": ask again next time - a render may have just landed */
+      }, function () { $("est").textContent = ""; S.estKey = ""; });
     }, now ? 0 : 400);
   }
   function comfyReady(say) {

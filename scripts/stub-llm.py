@@ -128,6 +128,22 @@ class H(BaseHTTPRequestHandler):
         # 2.404.0: ✨ Build a scene with AI - the plan answered the way chat models do: a lead-in, a ```json fence, a
         # trailing comma (lib/scenePlan.parse sees through them); SCENEPLAN_GARBLE_TEST answers prose first, the plan
         # only on the retry that names the fault; SCENEPLAN_NOMODEL_TEST asks for no detailed model
+        # 2.911.0: the songwriter (lib/songwriter FORMAT_NOTE - the 📱 app's ✨ Write the song, the chat's "make a song")
+        # answered the way chat models do: a think block, bold labels, a lead-in line and a sign-off after the lyrics
+        if "THE USER IS ASKING FOR A SONG" in alltext:
+            usr = " ".join(str(m.get("content", "")) for m in msgs if m.get("role") == "user")
+            topic = "neon rain" if "neon" in usr.lower() else "the river"
+            content = ("<think>A song about " + topic + ". TITLE, STYLE, LYRICS.</think>\n"
+                       "**TITLE:** Lanterns on " + topic.title() + "\n"
+                       "**STYLE:** dreamy synth-pop, airy female vocal, soft drum machine, 96 BPM\n"
+                       "**LYRICS:**\n[verse]\nLights on the water, " + topic + " at night\n[chorus]\nStay, stay, stay till the light\n")
+            data = json.dumps({"choices": [{"finish_reason": "stop", "message": {"role": "assistant", "content": content}}]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if "BITGEN_SCENE_PLAN" in alltext:
             retry = any(m.get("role") == "assistant" for m in msgs) and "That was not the JSON plan" in alltext
             if "SCENEPLAN_GARBLE_TEST" in alltext and not retry:

@@ -10304,7 +10304,10 @@ reference video and stays on the PC.)
 
 **🎵 Music** (2.910.0): one of your PC's song styles, the lyrics in the prompt box, the **Sound** words and **Seconds**
 (filled in from the style - change them as you like), a **Title** and the **File** type (mp3 / flac / wav) - **Make the
-song**. ⏱ says how long a song of that length takes on your PC.
+song**. ⏱ says how long a song of that length takes on your PC. **✨ Write the song** (2.911.0): type an idea instead of
+lyrics ("a song about neon rain in Bangkok") and press ✨ - your PC's LLM writes the title, the sound and the lyrics into
+the fields, the same songwriter as the studio's prompt chat ("make a song about ..."), steered by the style's own sound.
+Change anything, then Make the song.
 
 **Queue** follows the renders (■ Cancel, the log); **Gallery** shows your PC's videos, pictures and music - tap one to play
 it, **⬇ Save** puts it in the phone's Documents/bitGen, **⤴ Share** sends it to any app.
@@ -10324,8 +10327,15 @@ the PC (then put that address in the app's ⚙ Settings). bitGen does not route 
 sealed with a key only your PC has); without it the studio answers "not paired" - before 2.909.0 only the phone page's own
 functions were guarded. Requests from the PC itself never need it.
 
-**Building the app** (Android Studio, or Anvil): see `mobile/README.md` in the repository - `npm install`,
-`npm run sync`, then Build ▸ APK, and install the APK on the phone.
+**Building the app and putting it on the phone - from bitGen** (2.911.0): **Settings ▸ General ▸ Remote ▸ 📱 The bitGen
+app**. It needs Java 21 and the Android SDK: with Android Studio installed bitGen uses its own; otherwise **⬇ Get the
+build tools** downloads them into bitGen's tools folder (about 1.5 - 2 GB, Google's SDK licences accepted for you; the first
+build also fetches Gradle). Then the phone, once: on the phone Settings ▸ About phone ▸ Software information ▸ tap **Build
+number** 7 times; Settings ▸ **Developer options** ▸ **Wireless debugging** on; **Pair device with pairing code** - type its
+IP address & port and the 6-digit code into **Pair the phone**. From then on **🔨 Build + install** builds the app and puts it
+on the phone over Wi-Fi and starts it - no taps (Wireless debugging must be on; bitGen finds the phone again by itself).
+**⤓ Install on the phone** installs the last build; **⬇ APK file** gives you the file to copy by hand. (By hand instead:
+`mobile/README.md` - `npm install`, `npm run sync`, Android Studio's Build ▸ APK.)
 
 ## Tips
 

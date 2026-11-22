@@ -63,6 +63,7 @@ summary input { width: auto; }
 .gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .gal .g.au { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2.6rem; color: var(--tiger); background: var(--panel); }
 #vBody audio { width: min(92%, 520px); }
+#writeSong { width: 100%; margin: 6px 0 2px; }   /* 2.911.0 ✨ the PC's LLM writes the song */
 .gal .g { position: relative; aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
 .gal .g img, .gal .g video { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gal .g span { position: absolute; left: 0; right: 0; bottom: 0; font-size: .62rem; padding: 2px 5px; background: rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

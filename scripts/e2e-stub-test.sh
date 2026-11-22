@@ -14824,6 +14824,13 @@ node scripts/test-910.js > /tmp/t910.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui910-ui.js > /tmp/ui910.log 2>&1 \
   && ok "2.910.0 browser test: on a 344 px cover screen 🎵 a song from the app (sound words + length from the style, 30 s mp3 with a title) made by the real worker, ⏱, played in the Music tab; unfolded to 884 px = two panes with the prompt kept, folded back = one; ⛶ toggles" \
   || { bad "2.910.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui910.log | head -12; }
+# ---- 2.911.0 (✨ the app's songwriter = the chat's; 📱 build the app + install it on the phone over Wi-Fi from Settings)
+node scripts/test-911.js > /tmp/t911.log 2>&1 \
+  && ok "2.911.0 units: songMessages / songwriter.parse, apkBuild (java version, adb pair / devices / mdns, the phone picked, local.properties, Temurin + command-line tools URLs, Android Studio's folders), apkui, local-only routes" \
+  || { bad "2.911.0 units"; grep -a "^FAIL" -A1 /tmp/t911.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui911-ui.js > /tmp/ui911.log 2>&1 \
+  && ok "2.911.0 browser test: ✨ the app's idea -> the PC's LLM (stub) writes title / sound / lyrics; Settings' 📱 box with stand-in Java / SDK / adb / Gradle: pair by code, 🔨 Build + install (real npm install + cap sync) -> adb install -r + start; a phone's key gets 403" \
+  || { bad "2.911.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui911.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

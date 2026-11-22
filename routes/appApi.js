@@ -4,6 +4,7 @@
 //   GET  /api/app/info    {app, version, project, video_styles: [{id, name, arch, route}], image_styles, ui, defaults}
 //   POST /api/app/video   multipart: prompt, style_id, width, height, seconds, steps, cfg, seed, override, negative,
 //                         pictures (up to 9) -> the endpoint the style renders through (its answer + route / endpoint)
+//   POST /api/app/song    {idea, style_id} -> {title, style, lyrics} (2.911.0: the PC's LLM, lib/songwriter.js)
 "use strict";
 const multer = require("multer");
 const A = require("../lib/appApi");
@@ -22,6 +23,11 @@ function mount(app) {
       const r = await A.submitVideo(req.body || {}, pics, port());
       res.status(r.status).json(r.body);
     } catch (e) { res.status(500).json({ error: String((e && e.message) || e) }); }
+  });
+  // 2.911.0: ✨ Write the song - {idea, style_id} -> {title, style, lyrics} from the PC's LLM
+  app.post("/api/app/song", async (req, res) => {
+    try { const r = await A.writeSong((req.body || {}).idea, (req.body || {}).style_id); res.status(r.status).json(r.body); }
+    catch (e) { res.status(500).json({ error: String((e && e.message) || e) }); }
   });
 }
 module.exports = { mount };

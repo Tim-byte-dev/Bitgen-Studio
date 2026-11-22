@@ -18,7 +18,8 @@ This first version talks to **your PC** ("My PC"). RunPod and OpenRouter directl
 - **📷 Scan the QR** (a photo of it) - or paste the link - and **Connect**. Done; the pairing lasts a month and survives
   restarting the PC. One phone at a time.
 - **✨ Create** - 🎬 Video / 🖼 Picture / 🎵 Music, the style, the prompt (a song's lyrics), pictures, size, seconds,
-  Override style (a song: its sound words, seconds, title, mp3 / flac / wav); ⏱ the time estimate; **Generate**.
+  Override style (a song: its sound words, seconds, title, mp3 / flac / wav - or ✨ Write the song: your PC's LLM writes
+  them from an idea); ⏱ the time estimate; **Generate**.
 - **⏳ Queue** - progress, the log, ■ Cancel.
 - **🖼 Gallery** - your PC's videos, pictures and music; ⬇ Save (Documents/bitGen), ⤴ Share.
 - **Folding phones** (a Galaxy Z Fold): compact on the cover screen / split screen / pop-up windows, wide (Create left,
@@ -28,7 +29,11 @@ This first version talks to **your PC** ("My PC"). RunPod and OpenRouter directl
 
 ## Building the APK
 
-You need **Node.js 20+** and **Android Studio** (it brings the Android SDK and JDK 21), or Anvil.
+**The easy way - from bitGen Studio 2.911.0+:** Settings ▸ General ▸ Remote ▸ 📱 The bitGen app. It uses Android Studio's
+Java 21 + SDK when they are there, or ⬇ downloads them; pair the phone once with Wireless debugging (its 6-digit code),
+then 🔨 Build + install builds the APK and installs it on the phone over Wi-Fi, no taps.
+
+**By hand:** you need **Node.js 20+** and **Android Studio** (it brings the Android SDK and JDK 21), or Anvil.
 
 ```
 cd mobile
