@@ -904,31 +904,86 @@
   var BYE = /^(?:ok(?:ay)?[, ]+)?(?:bye|goodbye|good bye|stop|stop listening|that'?s all|that is all|thanks?(?: you)?[,.!]? (?:that'?s all|bye)|we'?re done|i'?m done|end(?: the)? conversation|cancel|never ?mind)\b/i;
   function endConvo(words) {
     convo = false; quietTurns = 0; hush();
-    if (rec) { rec.tapped = false; rec.stop(); }
+    if (rec) { rec.tapped = false; if (rec.cancel) rec.cancel(); else rec.stop(); }
     $("talkBtn").classList.remove("live"); $("talkBtn").textContent = "🎙 Talk"; $("talkEnd").hidden = true;
     msg("talkMsg", words || "");
   }
+  /** what the PC made of a turn (lib/appVoice.js) -> said, made, spoken; then listen again or end */
+  function talkAnswer(j) {
+    if (!convo) return;
+    if (j.intent === "bye" || (j.heard && BYE.test(j.heard.trim()))) { say("you", j.heard); say("pc", "Okay - talk to you later."); return speak("Okay, talk to you later.").then(function () { endConvo(""); }); }
+    lastSaid = "";
+    return Promise.resolve(onHeard(j)).then(function (goOn) {
+      msg("talkMsg", "🔊");
+      return speak(lastSaid).then(function () {
+        if (!convo) return;
+        if (goOn === "talk" || !j.heard) turn();                               // a question: listen for the next one
+        else endConvo("✓ On it - it opens here when it is done.");             // made something: done talking
+      });
+    });
+  }
+  /* 2.919.0 (Tim: "https://inworld.ai/open-source#voice-isolator, would this be something we can use to have a conversation
+     with bitgen" -> "go ahead"): with Settings ▸ Add-ons ▸ Voice conversation on the PC, 🎙 Talk STREAMS the microphone to it
+     while you talk (lib/voicestream.js -> /api/voice/stream): its Voice Isolator takes the room's noise out, SAVA says when
+     the SENTENCE is finished - a pause to think no longer ends the turn, a quick "yes" is answered at once - and the PC hears
+     it and says what it means in one go. On the Wi-Fi or through Cloudflare; through the relay (and when it fails) the
+     recording as before. */
+  var voiceLive = false;
+  function liveOk() { return voiceLive && !!window.BGVoiceStream && (S.via !== "relay" || tunnel()); }
+  function liveReq(method, path, body, json) {
+    var base = S.via === "relay" && tunnel() ? S.relay.url : undefined;
+    var o = { method: method, timeout: 30000 };
+    if (body != null) { if (json) o.json = body; else { o.body = body; o.headers = { "Content-Type": "application/octet-stream" }; } }
+    return lanFetch(path, o, base);
+  }
+  function liveListen(btn, label, done, busyLabel) {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { done({ error: "this phone cannot stream the microphone here" }); return; }
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
+      var ac = null, pr = null, finished = false;
+      var vs = window.BGVoiceStream.create({ request: liveReq, kind: "app", quietMs: 8000, maxMs: 30000,
+        extra: { mode: "talk", history: talkHist.slice(-10), phrases: ($("phrases").value || "").split("\n"), test_heard: window.BG_TEST_HEARD || "" },
+        onEvent: function (e) {
+          if (e.type === "speech") msg("talkMsg", "🎙 Hearing you… (your PC hears when you have finished)");
+          if (e.type === "turn") { cleanup(); msg("talkMsg", "… your PC is thinking"); }
+        } });
+      function cleanup() {
+        if (finished) return; finished = true;
+        try { if (pr) pr.disconnect(); } catch (x) { /* gone */ }
+        try { if (ac) ac.close(); } catch (x) { /* gone */ }
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        if (rec === live) rec = null; btn.classList.remove("rec"); btn.textContent = label;
+      }
+      var live = { tapped: false, stop: function () { vs.finish(); cleanup(); }, cancel: function () { vs.cancel(); cleanup(); } };
+      rec = live; btn.classList.add("rec"); btn.textContent = busyLabel || "■ I'm done";
+      try {
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+        var src = ac.createMediaStreamSource(stream); pr = ac.createScriptProcessor(4096, 1, 1);
+        var mute = ac.createGain(); mute.gain.value = 0; src.connect(pr); pr.connect(mute); mute.connect(ac.destination);
+        pr.onaudioprocess = function (e) { if (!finished) vs.feed(e.inputBuffer.getChannelData(0), ac.sampleRate); };
+      } catch (x) { vs.cancel(); cleanup(); done({ error: "the microphone: " + ((x && x.message) || x) }); return; }
+      vs.result.then(function (r) { cleanup(); done(r); });
+    }, function (e) { done({ error: "the microphone: " + ((e && e.message) || e) + " - allow bitGen to use the microphone" }); });
+  }
+  function liveTurn() {
+    msg("talkMsg", "🎙 Listening… (your PC hears when you have finished)");
+    liveListen($("talkBtn"), "… thinking", function (r) {
+      if (!convo || r.cancelled) return;
+      if (r.error) { voiceLive = false; msg("talkMsg", "The live listening stopped (" + r.error + ") - listening the simple way.", "bad"); turn(); return; }
+      if (r.nothing || !r.result) { quietTurns++; if (quietTurns >= 2) { endConvo("Talk again any time."); return; } turn(); return; }
+      quietTurns = 0;
+      talkAnswer(r.result);
+    }, "■ I'm done");
+  }
   function turn() {
     if (!convo) return;
+    if (liveOk()) { liveTurn(); return; }
     msg("talkMsg", "🎙 Listening… (it hears when you stop)");
     record($("talkBtn"), "… thinking", function (b) {
       if (!convo) return;
       if (!b) { quietTurns++; if (quietTurns >= 2) { endConvo("Talk again any time."); return; } turn(); return; }
       quietTurns = 0;
       msg("talkMsg", "… your PC is thinking");
-      sendVoice(b, "talk").then(function (j) {
-        if (!convo) return;
-        if (j.intent === "bye" || (j.heard && BYE.test(j.heard.trim()))) { say("you", j.heard); say("pc", "Okay - talk to you later."); return speak("Okay, talk to you later.").then(function () { endConvo(""); }); }
-        lastSaid = "";
-        return Promise.resolve(onHeard(j)).then(function (goOn) {
-          msg("talkMsg", "🔊");
-          return speak(lastSaid).then(function () {
-            if (!convo) return;
-            if (goOn === "talk" || !j.heard) turn();                               // a question: listen for the next one
-            else endConvo("✓ On it - it opens here when it is done.");             // made something: done talking
-          });
-        });
-      }, function (e) { msg("talkMsg", e.message, "bad"); endConvo(e.message); });
+      sendVoice(b, "talk").then(talkAnswer, function (e) { msg("talkMsg", e.message, "bad"); endConvo(e.message); });
     }, "■ I'm done");
   }
   $("talkBtn").onclick = function () {
@@ -936,7 +991,10 @@
     if (convo) { endConvo(""); return; }
     convo = true; quietTurns = 0;
     $("talkBtn").classList.add("live"); $("talkEnd").hidden = false;
-    turn();
+    // 2.919.0: does the PC have the live turn detection? (one quick ask; no answer = the recording as before)
+    var ask = S.via === "relay" && !tunnel() ? Promise.resolve(null) : liveReq("GET", "/api/voice/stream").catch(function () { return null; });
+    msg("talkMsg", "🎙 …");
+    ask.then(function (st) { voiceLive = !!(st && st.installed); if (convo) turn(); });
   };
   $("talkEnd").onclick = function () { endConvo("Talk again any time."); };
   $("phrases").onchange = function () { kset("phrases", $("phrases").value); };

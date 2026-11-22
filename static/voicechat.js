@@ -11,6 +11,11 @@
  *                  again. While it speaks it does not listen (it would hear itself).
  *   The window: the conversation (what you said, what it answered, what it did), the mic level, ⏸ / ▶ listening, 🔈 / 🔇
  *                  its voice (and which voice), a box to type instead, ✕ ends it ("goodbye" / "stop listening" too).
+ * 2.919.0 (Tim: "https://inworld.ai/open-source#voice-isolator, would this be something we can use to have a conversation
+ *   with bitgen" -> "go ahead"): with Settings ▸ Add-ons ▸ Voice conversation installed the microphone is STREAMED to the PC
+ *   while you talk (static/voicestream.js -> /api/voice/stream, lib/voiceStream.js): Inworld's Voice Isolator takes the
+ *   room's noise out and SAVA says when the SENTENCE is finished - a pause to think no longer cuts you off, a quick "yes" is
+ *   not waited on; the PC hears it and the turn goes on as before. Without it (or when it fails) the level detector below.
  * Pure (Node: scripts/test-voice564.js): vadStep, downsample, encodeWav, matchOption, DOCKS, MODES, SETTING_IDS, speakable. */
 (function (root) {
   "use strict";
@@ -95,7 +100,8 @@
   const tev = (k, v) => { if (root.H3TestEvent) { try { root.H3TestEvent(k, v); } catch (e) { /* the 🧪 list */ } } };
   const LS = (k, d) => { try { const v = root.localStorage.getItem("h3.voice." + k); return v == null ? d : v; } catch (e) { return d; } };
   const LSset = (k, v) => { try { root.localStorage.setItem("h3.voice." + k, v); } catch (e) { /* private */ } };
-  const S = { open: false, phase: "off", stream: null, ctx: null, proc: null, vad: null, pre: [], utt: null, rate: 48000, history: [], listen: true, speaking: false, busy: false, level: 0 };
+  const S = { open: false, phase: "off", stream: null, ctx: null, proc: null, vad: null, pre: [], utt: null, rate: 48000, history: [], listen: true, speaking: false, busy: false, level: 0,
+              live: false, cur: null };   // 2.919.0: live = stream to the PC (SAVA + Voice Isolator); cur = the turn being streamed
 
   function css() {
     if ($("vcCss")) return;
@@ -200,7 +206,8 @@
     let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
     const rms = Math.sqrt(sum / (buf.length || 1));
     S.level = rms; const m = $("vcMeter"); if (m) m.style.width = Math.min(100, Math.round(rms * 900)) + "%";
-    if (!S.listen || S.busy || S.speaking) { S.utt = null; S.vad = null; S.pre = []; return; }
+    if (!S.listen || S.busy || S.speaking) { S.utt = null; S.vad = null; S.pre = []; if (S.cur && !S.busy) { S.cur.cancel(); S.cur = null; } return; }
+    if (S.live) { if (!S.cur) S.cur = liveTurn(); S.cur.feed(buf, S.rate); return; }      // 2.919.0: the PC decides the turn
     const dt = (buf.length / S.rate) * 1000;
     const r = vadStep(S.vad, rms, dt); S.vad = r.st;
     if (r.ev === "start") { S.utt = S.pre.slice(); }
@@ -208,6 +215,38 @@
     else { S.pre.push(buf); while (S.pre.length > Math.ceil(500 / dt)) S.pre.shift(); }   // the last half second, kept
     if (r.ev === "end" && S.utt) { const u = S.utt; S.utt = null; S.pre = []; heard(u); }
     if (r.ev === "drop") { S.utt = null; }
+  }
+  /* 2.919.0: a turn streamed to the PC (static/voicestream.js) - SAVA closes it, the PC hears it */
+  function vsReq(method, p, body, json) {
+    const init = { method };
+    if (body != null) { init.headers = { "Content-Type": json ? "application/json" : "application/octet-stream" }; init.body = json ? JSON.stringify(body) : body; }
+    return fetch(p, init).then(async (r) => {
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { const e = new Error(j.error || "HTTP " + r.status); e.status = r.status; throw e; }
+      return j;
+    });
+  }
+  function liveTurn() {
+    const vs = root.BGVoiceStream.create({ request: vsReq, kind: "chat", quietMs: 15000, maxMs: 30000,
+      extra: { test_heard: root.BG_TEST_HEARD || "" },                 // (the suite: the PC honours it only in its test mode)
+      onEvent: (e) => {
+        if (e.type === "speech" && !S.busy) { S.phase = "hearing"; paint(); }
+        if (e.type === "turn") { S.busy = true; S.phase = "hearing"; paint(); tev("voice_turn", String(e.reason || "")); }
+      } });
+    vs.result.then(async (r) => {
+      if (S.cur === vs) S.cur = null;
+      if (r.cancelled) return;
+      if (r.error) {
+        S.busy = false; S.phase = "listening";
+        if (S.open) { S.live = false; bubble("err", "⚠ the live turn detection stopped (" + r.error + ") - listening the simple way"); }
+        paint(); return;
+      }
+      const text = String(r.heard || "").trim();
+      if (!text || /^[\s.,!?]*$/.test(text)) { S.busy = false; S.phase = "listening"; paint(); return; }
+      tev("voice_heard", text);
+      await turn(text);
+    });
+    return vs;
   }
   async function heard(chunks) {
     const n = chunks.reduce((a, c) => a + c.length, 0), all = new Float32Array(n);
@@ -333,12 +372,15 @@
   async function start() {
     panel(); S.open = true; S.listen = true; S.phase = "listening"; paint();
     tev("voice", "open");
+    // 2.919.0: the live turn detection when the add-on is there (Settings ▸ Add-ons ▸ Voice conversation)
+    try { const vs = await (await fetch("/api/voice/stream")).json(); S.live = !!(vs && vs.installed && root.BGVoiceStream); if (S.live) tev("voice_live", vs.isolator ? "isolator" : "sava"); } catch (e) { S.live = false; }
     if (!(await startMic())) { S.phase = "typing"; paint(); }
     else if (!$("vcLog").children.length) bubble("ai", "I'm listening - ask for a prompt, a style, a setting, or say generate.");
     try { fetch("/api/voice/status").then((r) => r.json()).then((s) => { if (s && s.asr && !s.asr.installed) bubble("err", "faster-whisper is not installed - Settings ▸ Audio ▸ Install faster-whisper (typing works meanwhile)"); }).catch(() => {}); } catch (e) { /* fine */ }
     paint();
   }
   function stop() {
+    if (S.cur) { S.cur.cancel(); S.cur = null; }
     stopMic(); S.open = false; S.phase = "off"; S.busy = false;
     try { root.speechSynthesis.cancel(); } catch (e) { /* none */ }
     const p = $("vcPanel"); if (p) p.remove();

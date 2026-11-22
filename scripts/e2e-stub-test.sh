@@ -14882,6 +14882,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui918-ui.js > /tmp/ui918.log 2>&
   && ok "2.918.0 browser test: the ⓘ LongCat hint; no sound = said; Generate -> /api/longcat with the speech + the First-frame picture; 409 -> the Download box; END TO END the real server -> longcat_worker.py -> the stub -> a _longcat.mp4 as long as the sound" \
   || { bad "2.918.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui918.log | head -12; }
 
+# ---- 2.919.0 (🎙 a real conversation: SAVA end of turn + the Voice Isolator, the microphone streamed)
+node scripts/test-919.js > /tmp/t919.log 2>&1 \
+  && ok "2.919.0 units: voicestream.js (one file in the studio + the app; resample, PCM16, a turn against a stand-in PC, quiet = nothing, not installed said), the add-on (venv, PyTorch, inworld-sava / inworld-voice-isolation from PyPI or GitHub, the weights; the isolator failing = turn detection alone), the routes, the clients' wiring" \
+  || { bad "2.919.0 units"; grep -a "^FAIL" -A1 /tmp/t919.log | head -12; }
+node scripts/test-919-live.js > /tmp/tl919.log 2>&1 \
+  && ok "2.919.0 LIVE stream (scripts/voice_stream.py + the stand-in inworld package): a turn found and closed by the turn model, heard; the app's turn answered by lib/appVoice; silence = nothing; a tap closes it; a click dropped; 404 / 413 / an odd piece" \
+  || { bad "2.919.0 live stream"; grep -a "^FAIL" -A1 /tmp/tl919.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui919-ui.js > /tmp/ui919.log 2>&1 \
+  && ok "2.919.0 browser test: the studio's 🎙 voice chat and the 📱 app's 🎙 Talk go live with the add-on - Chromium's fake microphone streamed in raw pieces, the PC closes the turn, hears it; the prompt written / a video made; without it the old way" \
+  || { bad "2.919.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui919.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -123,6 +123,12 @@
           "by": "PedroMarinhoDev",
           "url": "https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar",
           "what": "LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)"
+        },
+        {
+          "name": "SAVA and Voice Isolator",
+          "by": "Inworld AI",
+          "url": "https://inworld.ai/open-source",
+          "what": "the voice conversation's end-of-turn detection and noise isolation (Apache-2.0 code and weights)"
         }
       ]
     },

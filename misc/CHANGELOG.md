@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.919.0** — 🎙 A Real Conversation With bitGen: the 📱 App's 🎙 Talk and the Studio's 🎙 Voice Chat Stream Your Voice to the PC While You Speak - Inworld's SAVA Hears When You Have Finished Your Sentence (a Pause to Think No Longer Cuts You Off, a Quick "Yes" Is Answered at Once) and the Voice Isolator Takes the Room's Noise Out Before Whisper Hears It; Settings ▸ Add-ons ▸ Voice Conversation (Apache-2.0); Without It the Old Way
 - **2.918.0** — 🗣 LongCat Avatar 1.6: a Person Talking or Singing to a Sound - Meituan LongCat's LongCat-Video-Avatar 1.6 as a Video Style: the References Docker's First Sound Is the Speech, Its First Picture the Person (or Just the Prompt), the Video as Long as the Sound (25 fps, 480p / 720p, 8 Distilled Steps a Segment, Past 10 Minutes); Settings ▸ Add-ons ▸ LongCat Avatar 1.6 Installs the ComfyUI-LongCat-Avatar Node Pack and the Files; the 📱 App Renders It Too
 - **2.917.0** — ✏ Edit / 🧩 Compose From the References Docker Whenever the Image Editor Is Closed - Any Way It Is Not on Screen (👁 Off, a Hidden Docker Group or Window, a Tab Behind Another) or Open With No Picture
 - **2.916.0** — 📱 The bitGen App's References: ＋ Picture, ＋ Video and ＋ Audio on Create - Each From the Camera (or a Recording), the Phone's Gallery / Files, or 💻 Your PC (Its Assets and the Gallery); a Video Render Takes Up to 9 Pictures, 3 Videos and 3 Sounds as References

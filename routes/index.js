@@ -271,6 +271,7 @@ function mount(app) {
   require("./refKeep").mount(app);         // 2.548.0: the reference docker kept as it changes (POST /api/projects/refs)
   require("./sceneedit").mount(app);   // 2.337.0: the scene cards' ✎ First frame (Qwen Image 2.1)
   require("./voice").mount(app);       // 2.564.0: the 🎙 voice chat (lib/asrLive, lib/voiceAgent)
+  require("./voiceStream").mount(app); // 2.919.0: the live voice stream - SAVA end of turn + the Voice Isolator (lib/voiceStream.js)
   require("./ltx").mount(app);         // 2.338.0: LTX 2.5 from the prompt docker (Tim's all-in-one canvas)
   require("./h3Viggle").mount(app);    // 2.352.0: the H3_Viggle style - each scene's 🎬 motion video
   require("./modelsFound").mount(app); // 2.719.0: misc/models_found.json + the check before a render (lib/modelsFound.js)

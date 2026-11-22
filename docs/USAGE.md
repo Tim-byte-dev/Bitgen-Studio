@@ -10431,6 +10431,25 @@ each continuing from the last 13 frames of the one before - the queue says how m
 style on, Basic Settings' seed is used (LongCat's 8 steps and cfg 1 are its own). The 📱 bitGen app renders it too: pick the
 style there, add the person (＋ Picture) and the speech (＋ Audio).
 
+## 🎙 A real conversation with bitGen - SAVA + Voice Isolator (2.919.0)
+
+Talking to bitGen (the 📱 app's **🎙 Talk**, the studio's **🎙 voice chat**) used to guess when you had finished from the
+microphone's level: a pause to think cut you off, and a quick "yes" waited out the silence. With **Settings ▸ Add-ons ▸
+Voice conversation** installed, your voice is **streamed to the PC while you speak** and two of Inworld's open models
+(Apache-2.0) listen to it:
+
+- **SAVA** hears when you have **finished your sentence** - not just gone quiet - so you can pause mid-thought, and a
+  short answer is taken at once. (It still closes the turn after 1.6 s of silence, whatever it thinks.)
+- **Voice Isolator** takes the room's noise out (a TV, fans, a car, a café) before Whisper hears the words.
+
+Install it once: Settings ▸ Add-ons ▸ **Voice conversation** ▸ ⤓ Install (about 3 GB - PyTorch in its own venv,
+`voice-kit/.venv`, and the two models). It needs faster-whisper (Settings ▸ Audio) to hear the words. SAVA is light enough
+for the CPU; the isolator uses the graphics card when there is one. Nothing else changes: open the voice chat (Ctrl+Alt+V)
+or tap 🎙 Talk in the app and speak. In the app the PC hears your turn and works out what it means in one go.
+
+The app streams on your Wi-Fi and through a Cloudflare tunnel. Through the tigerart.com.au relay (too slow for live audio),
+or if the stream fails, it goes back to the old way by itself - the voice chat says so in its window.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10477,6 +10496,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[PAN 2](https://github.com/ifm-ai/PAN2)** (the Institute of Foundation Models (IFM) at MBZUAI) - the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files
 - **[LongCat-Video-Avatar 1.6](https://github.com/meituan-longcat/LongCat-Video)** (the Meituan LongCat Team) - the audio-driven avatar video style (MIT weights)
 - **[ComfyUI-LongCat-Avatar](https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar)** (PedroMarinhoDev) - LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)
+- **[SAVA and Voice Isolator](https://inworld.ai/open-source)** (Inworld AI) - the voice conversation's end-of-turn detection and noise isolation (Apache-2.0 code and weights)
 
 ### Image models
 

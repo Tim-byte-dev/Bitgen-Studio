@@ -266,3 +266,13 @@ into your ComfyUI's custom_nodes and downloads
 MIT - Meituan LongCat Team; Whisper large-v3's encoder, MIT - OpenAI) and Wan 2.1's umT5 text encoder and VAE from
 Comfy-Org/Wan_2.1_ComfyUI_repackaged (Apache-2.0). bitGen Studio talks to the pack through ComfyUI's API only
 (misc/longcat_worker.py builds the graph).
+
+## 🎙 SAVA and Voice Isolator (2.919.0)
+
+No Inworld code or weights are shipped. Settings ▸ Add-ons ▸ Voice conversation installs
+[inworld-ai/sava](https://github.com/inworld-ai/sava) (SAVA - voice activity and end-of-turn detection) and
+[inworld-ai/voice-isolator](https://github.com/inworld-ai/voice-isolator) (Voice Isolator - 48 kHz speech denoising) with pip
+into its own venv (voice-kit/.venv); their weights (huggingface.co/inworld/sava, huggingface.co/inworld/voice-isolator) come
+from Hugging Face. Code and weights are Apache-2.0 (Copyright 2026 Inworld AI); their NOTICE files travel with the packages.
+scripts/voice_stream.py uses their published Python APIs only.
+
