@@ -1,6 +1,6 @@
 {
   "name": "bitgen-mobile",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "private": true,
   "description": "bitGen - the phone app for bitGen Studio: make pictures and videos on your own PC from your phone",
   "author": "Tim Paul (Tiger Art)",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^8.0.1",
+    "@capacitor-community/text-to-speech": "^8.0.2",
     "@capacitor/android": "^8.6.2",
     "@capacitor/core": "^8.6.2",
     "@capacitor/file-transfer": "^2.0.6",

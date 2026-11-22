@@ -60,6 +60,9 @@ After changing anything in `www/`: `npm run sync` again. Icons and the splash co
 
 ## How it talks to the PC
 
+- **🎙 Conversation + viewer (2.915.0):** the recording stops itself after ~1.2 s of quiet (an AnalyserNode on the mic), the
+  answer is said with `@capacitor-community/text-to-speech` (Android's TextToSpeech; speechSynthesis in a browser) and the
+  app listens again; after Generate `watchJob` opens the result; the viewer swipes (touch) through that kind's Gallery.
 - **🎙 Talk (2.914.0):** MediaRecorder (RECORD_AUDIO) -> `POST /api/app/voice` (the recording, mode talk | dictate, the
   conversation, My own phrases) -> the PC's speech to text + lib/appVoice.js -> {heard, intent: find | video | image | song |
   fix_photo | chat, text, reply, sources}; video / picture / song / fix photo are done by the app's own Create + Generate.

@@ -4252,11 +4252,11 @@
   },
   {
    "s": "Remote access is on now - close bitGen Studio and start it again (once), then press Connect the phone",
-   "src": "static/lanpairui.js:89"
+   "src": "static/lanpairui.js:103"
   },
   {
    "s": "Remote access is on, but bitGen Studio still listens only on this computer - close it and start it again, then press Connect the phone",
-   "src": "static/lanpairui.js:92"
+   "src": "static/lanpairui.js:106"
   },
   {
    "s": "Layout",
@@ -30518,7 +30518,7 @@
   },
   {
    "p": "{0} ({1}) wants to connect to bitGen Studio",
-   "src": "static/lanpairui.js:63"
+   "src": "static/lanpairui.js:75"
   },
   {
    "p": "{0} new",

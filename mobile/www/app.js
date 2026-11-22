@@ -463,8 +463,9 @@
         return api("/api/genimage", { method: "POST", json: body, timeout: 60000 });
       });
     }).then(function (j) {
-      say("On its way - " + (j.id ? "job " + j.id : "queued") + ". The Queue tab follows it.", "ok");
-      setTimeout(function () { show("queue"); }, 900);
+      say("On its way - " + (j.id ? "job " + j.id : "queued") + ". It opens here when it is done.", "ok");
+      if (j.id) watchJob(j.id);                                             // 2.915.0: the result opens by itself
+      if (!S.wide) setTimeout(function () { show("queue"); }, 900);
     }).catch(function (e) { say(e.message, "bad"); }).then(function () { btn.disabled = false; });
   };
 
@@ -518,7 +519,8 @@
         return '<div class="g" data-n="' + esc(f.name) + '">' + (S.gal === "images" ? '<img loading="lazy" alt="" src="' + u + '">' : '<video preload="metadata" muted playsinline src="' + u + '#t=0.1"></video>')
           + "<span>" + esc(f.name) + "</span></div>";
       }).join("");
-      [].forEach.call(box.querySelectorAll(".g"), function (g) { g.onclick = function () { view(g.dataset.n); }; });
+      var names = l.map(function (f) { return f.name; });
+      [].forEach.call(box.querySelectorAll(".g"), function (g) { g.onclick = function () { view(g.dataset.n, names); }; });
       if (away && S.gal === "images") thumbs([].slice.call(box.querySelectorAll(".g")).slice(0, 12));
     }).catch(function (e) { box.innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; });
   }
@@ -528,20 +530,100 @@
     mediaUrl(g.dataset.n).then(function (u) { var ph = g.querySelector(".ph"); if (ph) ph.outerHTML = '<img alt="" src="' + u + '">'; }, function () { /* stays a placeholder */ })
       .then(function () { thumbs(list); });
   }
-  var cur = "";
-  function view(name) {
-    cur = name;
-    var k = BG.kindOf(name);
-    $("vName").textContent = name;
+  /* ---------- the viewer (2.915.0). Tim: "in app after it generates show the picture it generated, create a side swipe gallery
+     for images, videos and audio (make random visualizations for audio), swipe up or down returns to the homepage" */
+  var cur = "", vList = [], vIdx = 0, viz = null;
+  /** open `name`; `list` = the names to swipe through (the Gallery's list, or the kind's list fetched after a render) */
+  function view(name, list) {
+    vList = Array.isArray(list) && list.indexOf(name) >= 0 ? list : [name];
+    vIdx = vList.indexOf(name);
     $("viewer").hidden = false;
+    paintView();
+  }
+  function paintView() {
+    var name = vList[vIdx]; cur = name;
+    var k = BG.kindOf(name);
+    stopViz();
+    $("vName").textContent = name;
+    $("vPrev").hidden = vIdx <= 0; $("vNext").hidden = vIdx >= vList.length - 1;
+    $("vPos").textContent = vList.length > 1 ? (vIdx + 1) + " / " + vList.length + " · swipe ‹ › · up / down = back" : "swipe up / down = back";
     $("vBody").innerHTML = S.via === "relay" && !tunnel() ? '<p class="msg" id="vWait">☁ Fetching it through the relay…</p>' : "";
     mediaUrl(name, function (pc) { var w = $("vWait"); if (w) w.textContent = "☁ Fetching it through the relay… " + pc + "%"; }).then(function (u) {
       if (cur !== name) return;
-      $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>'
-        : k === "audio" ? '<audio controls autoplay src="' + u + '"></audio>' : '<img alt="" src="' + u + '">';
+      if (k === "audio") return showSong(u, name);
+      $("vBody").innerHTML = k === "video" ? '<video controls autoplay playsinline src="' + u + '"></video>' : '<img alt="" src="' + u + '">';
     }, function (e) { if (cur === name) $("vBody").innerHTML = '<p class="msg bad">' + esc(e.message) + "</p>"; });
   }
-  $("vClose").onclick = function () { $("viewer").hidden = true; $("vBody").innerHTML = ""; };
+  function step(d) { var n = vIdx + d; if (n < 0 || n >= vList.length) return; vIdx = n; paintView(); }
+  function closeView(home) { stopViz(); $("viewer").hidden = true; $("vBody").innerHTML = ""; if (home) show("create"); }
+  $("vPrev").onclick = function () { step(-1); };
+  $("vNext").onclick = function () { step(1); };
+  (function () {                                                            // the swipes
+    var x0 = 0, y0 = 0, t0 = 0, on = false;
+    var el = $("viewer");
+    el.addEventListener("touchstart", function (e) { if (e.touches.length !== 1 || e.target.closest(".vbar")) return; on = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); }, { passive: true });
+    el.addEventListener("touchend", function (e) {
+      if (!on) return; on = false;
+      var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if (Date.now() - t0 > 900) return;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1);
+      else if (Math.abs(dy) > 90 && Math.abs(dy) > Math.abs(dx) * 1.3) closeView(true);
+    }, { passive: true });
+    document.addEventListener("keydown", function (e) {
+      if ($("viewer").hidden) return;
+      if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Escape") closeView(e.key !== "Escape");
+    });
+  })();
+  /** 🎵 a song: a random visualisation on a canvas (the music's own levels when the PC sends CORS - else drawn to a beat) */
+  function stopViz() { if (viz) { viz.stop = true; try { if (viz.ctx) viz.ctx.close(); } catch (e) { /* closed */ } viz = null; } }
+  function showSong(u, name) {
+    $("vBody").innerHTML = '<canvas class="viz"></canvas><div class="aud"><audio controls autoplay playsinline></audio></div>';
+    var cv = $("vBody").querySelector("canvas"), au = $("vBody").querySelector("audio");
+    var styles = ["bars", "wave", "rings", "particles", "spiral"], v = viz = { stop: false, style: styles[Math.floor(Math.random() * styles.length)], hue: Math.floor(Math.random() * 360), an: null, ctx: null, parts: [] };
+    var useCors = !/^blob:/.test(u);
+    if (useCors) au.crossOrigin = "anonymous";
+    au.onerror = function () { if (useCors) { useCors = false; au.removeAttribute("crossorigin"); au.src = u; au.play().catch(function () {}); } };   // no CORS: play it, draw to a beat
+    au.onplay = function () {
+      if (v.ctx || !useCors || !(window.AudioContext || window.webkitAudioContext)) return;
+      try { v.ctx = new (window.AudioContext || window.webkitAudioContext)(); var src = v.ctx.createMediaElementSource(au); v.an = v.ctx.createAnalyser(); v.an.fftSize = 256; src.connect(v.an); v.an.connect(v.ctx.destination); } catch (e) { v.an = null; }
+    };
+    au.src = u;
+    var g = cv.getContext("2d"), bins = new Uint8Array(128), t = 0;
+    (function frame() {
+      if (v.stop) return;
+      var w = cv.width = cv.clientWidth * (window.devicePixelRatio || 1), h = cv.height = cv.clientHeight * (window.devicePixelRatio || 1);
+      t += 1;
+      if (v.an) v.an.getByteFrequencyData(bins);
+      else for (var i = 0; i < bins.length; i++) bins[i] = au.paused ? bins[i] * 0.9 : 90 + 80 * Math.sin(t / 9 + i / 5) * Math.sin(t / 23 + i / 11) + Math.random() * 40;   // drawn to a beat
+      g.fillStyle = "rgba(0,0,0,0.25)"; g.fillRect(0, 0, w, h);
+      var hue = (v.hue + t / 4) % 360, n = bins.length, i2;
+      if (v.style === "bars") { var bw = w / n; for (i2 = 0; i2 < n; i2++) { var bh = bins[i2] / 255 * h * 0.8; g.fillStyle = "hsl(" + ((hue + i2 * 2) % 360) + ",80%,55%)"; g.fillRect(i2 * bw, h - bh, bw * 0.8, bh); } }
+      else if (v.style === "wave") { g.strokeStyle = "hsl(" + hue + ",85%,60%)"; g.lineWidth = 3 * (window.devicePixelRatio || 1); g.beginPath(); for (i2 = 0; i2 < n; i2++) { var y = h / 2 + (bins[i2] - 128) / 128 * h * 0.35 * Math.sin(i2 / 3 + t / 10); i2 ? g.lineTo(i2 / (n - 1) * w, y) : g.moveTo(0, y); } g.stroke(); }
+      else if (v.style === "rings") { for (i2 = 0; i2 < 8; i2++) { var r = (bins[i2 * 12] / 255) * Math.min(w, h) * 0.45 + i2 * 6; g.strokeStyle = "hsla(" + ((hue + i2 * 30) % 360) + ",85%,60%,0.8)"; g.lineWidth = 4; g.beginPath(); g.arc(w / 2, h / 2, Math.max(4, r), 0, Math.PI * 2); g.stroke(); } }
+      else if (v.style === "particles") { var lvl = bins.slice(0, 16).reduce(function (a, b) { return a + b; }, 0) / 16 / 255; for (i2 = 0; i2 < lvl * 8; i2++) v.parts.push({ x: w / 2, y: h / 2, vx: (Math.random() - 0.5) * 14 * lvl, vy: (Math.random() - 0.5) * 14 * lvl, life: 60 }); v.parts = v.parts.filter(function (q) { q.x += q.vx; q.y += q.vy; q.life--; g.fillStyle = "hsla(" + hue + ",90%,60%," + q.life / 60 + ")"; g.fillRect(q.x, q.y, 4, 4); return q.life > 0; }).slice(-600); }
+      else { for (i2 = 0; i2 < n; i2++) { var a = i2 / n * Math.PI * 6 + t / 30, rr = (i2 / n) * Math.min(w, h) * 0.45, s2 = 2 + bins[i2] / 40; g.fillStyle = "hsl(" + ((hue + i2 * 3) % 360) + ",85%,60%)"; g.fillRect(w / 2 + Math.cos(a) * rr, h / 2 + Math.sin(a) * rr, s2, s2); } }
+      requestAnimationFrame(frame);
+    })();
+  }
+  /** after Generate (2.915.0): follow the job and open what it made, with that kind's Gallery to swipe through */
+  function watchJob(id) {
+    var until = Date.now() + 60 * 60000;
+    (function poll() {
+      if (Date.now() > until || !S.key) return;
+      api("/api/jobs/" + id + "?log=0", { timeout: 15000 }).then(function (j) {
+        if (j.status === "done") {
+          var name = BG.outName(j); if (!name) return;
+          var k = BG.kindOf(name);
+          api("/api/outputs" + (k === "image" ? "?kind=images" : k === "audio" ? "?kind=audio" : "")).then(function (l) { return (Array.isArray(l) ? l : []).map(function (f) { return f.name; }); }, function () { return [name]; })
+            .then(function (list) { if (list.indexOf(name) < 0) list.unshift(name); msg("goMsg", "✓ Done - " + name, "ok"); view(name, list.slice(0, 60)); });
+          return;
+        }
+        if (/failed|error|cancel/.test(j.status || "")) { msg("goMsg", "✗ " + (j.error || j.status), "bad"); return; }
+        setTimeout(poll, 3000);
+      }, function () { setTimeout(poll, 6000); });
+    })();
+  }
+  $("vClose").onclick = function () { closeView(false); };
   /** the file into the phone: Documents/bitGen (asked for the storage permission first), else the app's own folder;
    *  share = the app's cache (the share sheet saves it anywhere) -> the file's uri */
   function b64of(blob) {
@@ -620,21 +702,39 @@
      to the PC (POST /api/app/voice - its own speech to text, lib/appVoice.js decides what the words mean); making things is
      done here, with the Create screen's own Generate. */
   var rec = null, talkHist = [];
-  function record(btn, label, done) {
+  /** record until you stop talking (2.915.0: 1.2 s of quiet after speech ends it; nothing said in 8 s = done(null)), or a tap */
+  function record(btn, label, done, busyLabel) {
     if (rec) { rec.stop(); return; }
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)) { alert("This phone cannot record here."); return; }
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)) { alert("This phone cannot record here."); done(null); return; }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
-      var chunks = [], mr = new MediaRecorder(stream), t = null;
-      rec = mr; btn.classList.add("rec"); btn.textContent = "■ Stop - listening…";
+      var chunks = [], mr = new MediaRecorder(stream), t = null, vad = null, spoke = false, quiet = 0, loud = 0, floor = 0, n = 0, started = Date.now();
+      rec = mr; btn.classList.add("rec"); btn.textContent = busyLabel || "■ I'm done";
       mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
       mr.onstop = function () {
-        clearTimeout(t); stream.getTracks().forEach(function (x) { x.stop(); });
+        clearTimeout(t); clearInterval(vad); stream.getTracks().forEach(function (x) { x.stop(); });
+        try { if (ac) ac.close(); } catch (e) { /* closed */ }
         rec = null; btn.classList.remove("rec"); btn.textContent = label;
-        done(new Blob(chunks, { type: mr.mimeType || "audio/webm" }));
+        done(spoke || mr.tapped || window.BG_TEST_HEARD ? new Blob(chunks, { type: mr.mimeType || "audio/webm" }) : null);
       };
       mr.start(250);
       t = setTimeout(function () { if (rec === mr) mr.stop(); }, 30000);                 // 30 s at most
-    }, function (e) { alert("The microphone: " + ((e && e.message) || e) + " - allow bitGen to use the microphone (Android asks the first time)."); });
+      var ac = null;
+      try {                                                                               // end of speech: the level, every 100 ms
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+        var an = ac.createAnalyser(); an.fftSize = 1024; ac.createMediaStreamSource(stream).connect(an);
+        var buf = new Uint8Array(an.fftSize);
+        vad = setInterval(function () {
+          an.getByteTimeDomainData(buf);
+          var sum = 0; for (var i = 0; i < buf.length; i++) { var x = (buf[i] - 128) / 128; sum += x * x; }
+          var rms = Math.sqrt(sum / buf.length); n++;
+          if (n <= 4) { floor = Math.max(floor, rms); return; }                           // the room's own level first
+          var th = Math.max(0.02, floor * 2.5);
+          if (rms > th) { loud += 100; quiet = 0; if (loud >= 200) spoke = true; } else { quiet += 100; if (!spoke) loud = 0; }
+          if (spoke && quiet >= 1200 && rec === mr) mr.stop();                            // they stopped talking
+          if (!spoke && Date.now() - started > 8000 && rec === mr) mr.stop();             // nothing said
+        }, 100);
+      } catch (e) { vad = null; }
+    }, function (e) { alert("The microphone: " + ((e && e.message) || e) + " - allow bitGen to use the microphone (Android asks the first time)."); done(null); });
   }
   function sendVoice(blob, mode) {
     var fd = new FormData();
@@ -646,6 +746,7 @@
   }
   $("micBtn").onclick = function () {
     record($("micBtn"), "🎙 Speak the prompt", function (b) {
+      if (!b) { msg("goMsg", "Nothing was heard - tap 🎙 and speak.", "bad"); return; }
       msg("goMsg", "🎙 Your PC is listening to it…");
       sendVoice(b, "dictate").then(function (j) {
         var p = $("prompt"); p.value = (p.value.trim() ? p.value.trim() + " " : "") + (j.heard || "");
@@ -654,16 +755,27 @@
       }, function (e) { msg("goMsg", e.message, "bad"); });
     });
   };
+  var lastSaid = "";
   function say(who, text, extra) {
+    if (who === "pc") lastSaid = text;
     var d = document.createElement("div"); d.className = "t " + who; d.textContent = text;
     if (extra) d.appendChild(extra);
     $("talkLog").appendChild(d); d.scrollIntoView({ block: "end" });
     return d;
   }
+  /** the answer read aloud (2.915.0): the phone's own text to speech (the TextToSpeech plugin - Android's voices, offline
+   *  when installed), else the web view's speechSynthesis -> a promise that ends when it has finished speaking */
   function speak(text) {
-    if (!$("talkSpeak").checked || !window.speechSynthesis || !text) return;
-    try { window.speechSynthesis.cancel(); window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch (e) { /* no voice here */ }
+    var t = String(text || "").replace(/https?:\/\/\S+/g, "").replace(/\[\d+\]/g, "").replace(/[*_#`>]/g, "").replace(/\p{Extended_Pictographic}/gu, "").trim();
+    if (!$("talkSpeak").checked || !t) return Promise.resolve();
+    var cap = new Promise(function (ok) { setTimeout(ok, Math.min(60000, 1500 + t.length * 90)); });   // never wait for ever
+    if (P.TextToSpeech && P.TextToSpeech.speak) return Promise.race([P.TextToSpeech.speak({ text: t.slice(0, 3900), lang: navigator.language || "en-US", rate: 1.0, pitch: 1.0, volume: 1.0, category: "playback" }).catch(function () {}), cap]);
+    if (!window.speechSynthesis) return Promise.resolve();
+    return Promise.race([new Promise(function (ok) {
+      try { window.speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.onend = ok; u.onerror = ok; window.speechSynthesis.speak(u); } catch (e) { ok(); }
+    }), cap]);
   }
+  function hush() { try { if (P.TextToSpeech && P.TextToSpeech.stop) P.TextToSpeech.stop(); if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* quiet */ } }
   function setKind(k) { var b = document.querySelector('#kindSeg button[data-kind="' + k + '"]'); if (b && S.kind !== k) b.click(); }
   /** make it with the Create screen: its kind, the prompt, (a song: written first), Generate */
   function makeIt(kind, text) {
@@ -701,23 +813,59 @@
       if (j.sources && j.sources.length) { ex = document.createElement("span"); ex.className = "src"; ex.textContent = j.sources.map(function (x, i) { return "[" + (i + 1) + "] " + (x.title || "") + " - " + x.url; }).join("\n"); }
       say("pc", (j.intent === "find" ? "🔎 " : "") + (j.reply || "(no answer)"), ex);
       talkHist.push({ role: "user", content: j.heard }, { role: "assistant", content: j.reply || "" });
-      speak(j.reply);
-      return;
+      return "talk";                                                          // the conversation goes on
     }
-    if (!j.text && j.intent !== "fix_photo") { say("pc", "What should it be? Say it again with what you want - for example: make a video of a tiger walking in the snow."); return; }
+    if (!j.text && j.intent !== "fix_photo") { say("pc", "What should it be? Say it again with what you want - for example: make a video of a tiger walking in the snow."); return "talk"; }
     if (j.intent === "video") return makeIt("video", j.text);
     if (j.intent === "image") return makeIt("image", j.text);
     if (j.intent === "song") return makeIt("music", j.text).catch(function (e) { say("pc", "✗ " + e.message); });
     if (j.intent === "fix_photo") return fixPhoto(j.colour);
   }
+  /* hands-free (2.915.0). Tim: "when user speaks to the phone recognize when the conversation is ended and the app should reply
+     to make it more fluid like an assistant": 🎙 Talk starts a conversation - it listens, hears you stop talking, your PC
+     answers, the app says the answer and listens again. It ends when you say bye / that's all / stop, after making
+     something, after two turns with nothing said, or with ✕ End. A tap while it listens = "I'm done, send it". */
+  var convo = false, quietTurns = 0;
+  var BYE = /^(?:ok(?:ay)?[, ]+)?(?:bye|goodbye|good bye|stop|stop listening|that'?s all|that is all|thanks?(?: you)?[,.!]? (?:that'?s all|bye)|we'?re done|i'?m done|end(?: the)? conversation|cancel|never ?mind)\b/i;
+  function endConvo(words) {
+    convo = false; quietTurns = 0; hush();
+    if (rec) { rec.tapped = false; rec.stop(); }
+    $("talkBtn").classList.remove("live"); $("talkBtn").textContent = "🎙 Talk"; $("talkEnd").hidden = true;
+    msg("talkMsg", words || "");
+  }
+  function turn() {
+    if (!convo) return;
+    msg("talkMsg", "🎙 Listening… (it hears when you stop)");
+    record($("talkBtn"), "… thinking", function (b) {
+      if (!convo) return;
+      if (!b) { quietTurns++; if (quietTurns >= 2) { endConvo("Talk again any time."); return; } turn(); return; }
+      quietTurns = 0;
+      msg("talkMsg", "… your PC is thinking");
+      sendVoice(b, "talk").then(function (j) {
+        if (!convo) return;
+        if (j.intent === "bye" || (j.heard && BYE.test(j.heard.trim()))) { say("you", j.heard); say("pc", "Okay - talk to you later."); return speak("Okay, talk to you later.").then(function () { endConvo(""); }); }
+        lastSaid = "";
+        return Promise.resolve(onHeard(j)).then(function (goOn) {
+          msg("talkMsg", "🔊");
+          return speak(lastSaid).then(function () {
+            if (!convo) return;
+            if (goOn === "talk" || !j.heard) turn();                               // a question: listen for the next one
+            else endConvo("✓ On it - it opens here when it is done.");             // made something: done talking
+          });
+        });
+      }, function (e) { msg("talkMsg", e.message, "bad"); endConvo(e.message); });
+    }, "■ I'm done");
+  }
   $("talkBtn").onclick = function () {
-    record($("talkBtn"), "🎙 Tap and speak", function (b) {
-      msg("talkMsg", "🎙 Your PC is listening…");
-      sendVoice(b, "talk").then(function (j) { msg("talkMsg", ""); return onHeard(j); }, function (e) { msg("talkMsg", e.message, "bad"); });
-    });
+    if (rec) { rec.tapped = true; rec.stop(); return; }                           // "I'm done" - send it now
+    if (convo) { endConvo(""); return; }
+    convo = true; quietTurns = 0;
+    $("talkBtn").classList.add("live"); $("talkEnd").hidden = false;
+    turn();
   };
+  $("talkEnd").onclick = function () { endConvo("Talk again any time."); };
   $("phrases").onchange = function () { kset("phrases", $("phrases").value); };
-  $("talkSpeak").onchange = function () { kset("talkSpeak", $("talkSpeak").checked ? "1" : ""); };
+  $("talkSpeak").onchange = function () { kset("talkSpeak", $("talkSpeak").checked ? "1" : "0"); };
 
   /* ---------- settings */
   function aboutPc() {
@@ -752,7 +900,7 @@
     S.base = v[0]; S.key = v[1]; S.device = v[2];
     try { S.relay = v[11] ? JSON.parse(v[11]) : null; } catch (e) { S.relay = null; }
     S.pcName = v[12] || ""; S.lanAt = +v[13] || 0;
-    $("phrases").value = v[14] || ""; $("talkSpeak").checked = v[15] === "1";
+    $("phrases").value = v[14] || ""; $("talkSpeak").checked = v[15] !== "0";   // 2.915.0: answers are spoken unless you untick it
     if (v[9] === "image" || v[9] === "music") { S.kind = v[9]; [].forEach.call(document.querySelectorAll("#kindSeg button"), function (x) { x.classList.toggle("on", x.dataset.kind === S.kind); }); }
     paintKind();
     if (v[10] === "1") fullscreen(true);

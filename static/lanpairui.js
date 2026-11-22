@@ -49,18 +49,32 @@
     if (rl) rl.textContent = relayLine(j.relay);
     bar((j.pending || [])[0] || null);
   }
+  /** the "wants to connect" bar - 2.915.0 (Tim: "when the allow or deny button is pressed for remote connection hide the
+   *  notification. show it over the dialog when connecting, i didn't know it was there because the dialog was still open"):
+   *  a POPOVER (the browser's top layer - above an open Settings dialog), hidden at once on ✔ / ✕ */
+  function hideBar() {
+    var b = $("lp_bar"); if (!b) return;
+    try { if (b.matches && b.matches(":popover-open")) b.hidePopover(); } catch (e) { /* no popover here */ }
+    b.style.display = "none";
+  }
   function bar(p) {
     var b = $("lp_bar");
-    if (!p) { if (b) b.hidden = true; shown = ""; return; }
+    if (!p) { hideBar(); shown = ""; return; }
     if (!b) {
       b = doc.createElement("div"); b.id = "lp_bar"; b.innerHTML = BAR;
-      b.style.cssText = "position:fixed;top:44px;left:50%;transform:translateX(-50%);z-index:99999;background:var(--panel,#222);border:1px solid var(--accent,#f80);border-radius:10px;padding:8px 12px;box-shadow:0 6px 24px rgba(0,0,0,.45);display:flex;gap:8px;align-items:center";
+      b.style.cssText = "position:fixed;top:44px;left:50%;transform:translateX(-50%);margin:0;inset:auto;top:44px;left:50%;z-index:99999;background:var(--panel,#222);color:inherit;border:2px solid var(--accent,#f80);border-radius:10px;padding:10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.6);gap:8px;align-items:center";
+      if ("popover" in b) b.setAttribute("popover", "manual");
       doc.body.appendChild(b);
-      $("lp_allow").onclick = function () { answer(b.dataset.rid, true); };
-      $("lp_deny").onclick = function () { answer(b.dataset.rid, false); };
+      $("lp_allow").onclick = function () { hideBar(); answer(b.dataset.rid, true); };
+      $("lp_deny").onclick = function () { hideBar(); answer(b.dataset.rid, false); };
     }
-    b.hidden = false; b.dataset.rid = p.rid;
+    // an open modal dialog (Settings) makes the rest of the page inert - the bar goes INTO the topmost one so it can be pressed
+    var dl = [].slice.call(doc.querySelectorAll("dialog[open]")).filter(function (d) { try { return d.matches(":modal"); } catch (e) { return false; } }).pop() || doc.body;
+    if (b.parentNode !== dl) { try { if (b.matches(":popover-open")) b.hidePopover(); } catch (e) { /* none */ } dl.appendChild(b); shown = ""; }
+    b.dataset.rid = p.rid;
     $("lp_bartext").textContent = "📱 " + p.device + " (" + p.ip + ") wants to connect to bitGen Studio";
+    b.style.display = "flex";
+    try { if (b.showPopover) { var open = b.matches(":popover-open"); if (open && shown !== p.rid) { b.hidePopover(); open = false; } if (!open) b.showPopover(); } } catch (e) { /* the fixed bar */ }   // a new ask: on top of whatever opened since
     if (shown !== p.rid) { shown = p.rid; ev("lanpair_ask", p.device); }
   }
   function post(url, body) {

@@ -10351,6 +10351,15 @@ Remote; the first time, restart bitGen Studio and let Windows allow it on privat
   After 6 hours away the PC says no until the app has been on your Wi-Fi again. Untick **☁ Away from the Wi-Fi** to keep it
   to the Wi-Fi only. bitGen Studio must be running (with Remote access on) for the app to reach it either way.
 
+**A talking assistant and a swipe gallery** (2.915.0). **🎙 Talk** is a conversation: tap it once and speak - it hears when
+you stop (about a second of quiet), your PC answers, the phone says the answer out loud with its own voices (untick 🔊 to read
+only) and listens again. Tap while it listens to send at once. It ends when it has made something for you, when you say
+**bye** / **that's all** / **stop listening**, after two turns with nothing said, or with **✕ End the conversation**.
+After **Generate** the picture, video or song opens by itself when it is done. In the viewer **swipe left / right** for the
+next / previous one of that kind, **swipe up or down** to go back to Create (‹ › and the arrow keys too); a song plays with a
+random moving visualisation. In bitGen Studio the "📱 … wants to connect" bar shows above an open Settings window and goes as
+soon as you press ✔ Allow or ✕ Deny.
+
 **Remote access ▾ and 🎙 Talk** (2.914.0). Settings ▸ General ▸ **Remote access** is a dropdown:
 - **Off - this computer only** · **On this Wi-Fi** (the phone at home) ·
 - **Wi-Fi + away: a relay (relay.php)** - empty address = bitGen's relay on tigerart.com.au, which lets in only that Community

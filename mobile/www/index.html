@@ -98,9 +98,10 @@
 <section id="v-talk" class="view" hidden>
   <h2>🎙 Talk</h2>
   <div id="talkLog" class="talklog"></div>
-  <button id="talkBtn" class="btn go big" type="button">🎙 Tap and speak</button>
+  <button id="talkBtn" class="btn go big" type="button">🎙 Talk</button>
+  <button id="talkEnd" class="btn small" type="button" hidden>✕ End the conversation</button>
   <p id="talkMsg" class="msg"></p>
-  <label class="f chk"><input type="checkbox" id="talkSpeak"> 🔊 Read the answers aloud</label>
+  <label class="f chk"><input type="checkbox" id="talkSpeak" checked> 🔊 Say the answers out loud</label>
   <details class="hint"><summary>What you can say</summary>
     <ul>
       <li><b>find …</b> / <b>find out about …</b> / <b>search for …</b> / <b>look up …</b> - your PC searches the web and answers (with the sources)</li>
@@ -132,7 +133,10 @@
 <!-- the viewer -->
 <div id="viewer" hidden>
   <div class="vbar"><button id="vClose" class="btn small">✕</button><span id="vName"></span><button id="vSave" class="btn small">⬇ Save</button><button id="vShare" class="btn small">⤴ Share</button></div>
+  <!-- 2.915.0: swipe left / right = the next / previous one, up / down = back to Create; ‹ › for a thumb or a mouse -->
   <div id="vBody"></div>
+  <button id="vPrev" class="vnav l" type="button" aria-label="Previous">‹</button><button id="vNext" class="vnav r" type="button" aria-label="Next">›</button>
+  <div id="vPos" class="vpos"></div>
 </div>
 
 <nav id="tabs">

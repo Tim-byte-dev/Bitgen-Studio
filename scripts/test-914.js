@@ -89,5 +89,17 @@ check("the app: a heartbeat every 30 s; not connected = looks again every 15 s (
 check("Settings ▸ Skills: its own tab (moved out of General)", /<button data-stab="skills">Skills<\/button>/.test(html) && /<div class="stab" id="stab-skills">\s*<div id="s_skills"><\/div>/.test(html)
   && html.indexOf('id="s_skills"') > html.indexOf('id="stab-skills"'));
 
+// 2.915.0 - Tim: "when the allow or deny button is pressed ... hide the notification. show it over the dialog ... after it generates show
+// the picture it generated, create a side swipe gallery ... swipe up or down returns to the homepage. ... recognize when the
+// conversation is ended and the app should reply to make it more fluid like an assistant"
+const lpu = src("static/lanpairui.js");
+check("the bar: a popover, put inside the open modal dialog, hidden at once on ✔ / ✕", /setAttribute\("popover", "manual"\)/.test(lpu) && /d\.matches\(":modal"\)/.test(lpu) && /lp_allow"\)\.onclick = function \(\) \{ hideBar\(\);/.test(lpu) && /lp_deny"\)\.onclick = function \(\) \{ hideBar\(\);/.test(lpu));
+check("the viewer: swipe left / right (next / previous), up / down = back to Create; ‹ ›; the list kept", /function step\(d\)/.test(app) && /closeView\(true\)/.test(app) && /id="vPrev"/.test(ahtml) && /view\(g\.dataset\.n, names\)/.test(app));
+check("after Generate: the job followed, what it made opened with that kind's Gallery", /function watchJob\(id\)/.test(app) && /if \(j\.id\) watchJob\(j\.id\)/.test(app));
+check("a song: a random visualisation (5 kinds) on a canvas - the music's own levels when it can, else drawn to a beat", /\["bars", "wave", "rings", "particles", "spiral"\]/.test(app) && /createMediaElementSource/.test(app) && /crossOrigin = "anonymous"/.test(app));
+check("a conversation: the end of speech heard (1.2 s quiet), nothing said = no send, it answers out loud and listens again; bye ends it", /quiet >= 1200/.test(app) && /function turn\(\)/.test(app) && /goOn === "talk"/.test(app) && /id="talkEnd"/.test(ahtml)
+  && V.classify("okay goodbye").kind === "bye" && V.classify("thanks, that's all").kind === "bye" && V.classify("stop the music video").kind === "chat");
+check("the phone says the answers: the TextToSpeech plugin (Android's voices), else speechSynthesis", /P\.TextToSpeech\.speak/.test(app) && !!JSON.parse(src("mobile/package.json")).dependencies["@capacitor-community/text-to-speech"]);
+
 console.log(`\nRESULT: ${P} passed, ${F} failed`);
 process.exit(F ? 1 : 0);

@@ -28,7 +28,7 @@ const html = src("mobile/www/index.html"), js = src("mobile/www/app.js"), css = 
 check("app: 🎵 Music in Create (sound, title, seconds, file) and the Gallery's Music tab", /data-kind="music"/.test(html) && /id="muCaption"/.test(html) && /id="muTitle"/.test(html)
   && /id="muSecs"/.test(html) && /id="muFormat"/.test(html) && /data-g="audio"/.test(html));
 check("app: a song goes to /api/genmusic with the lyrics, sound, length, title and file type", /api\("\/api\/genmusic"/.test(js) && /mb\.caption = cap/.test(js) && /mb\.max_duration = secs/.test(js) && /mb\.title = ttl/.test(js) && /format: \$\("muFormat"\)\.value/.test(js));
-check("app: the Gallery plays a song (<audio>)", /k === "audio" \? '<audio controls autoplay/.test(js) && /\?kind=audio/.test(js));
+check("app: the Gallery plays a song (<audio> - 2.915.0: with a visualisation, showSong)", /if \(k === "audio"\) return showSong\(u, name\)/.test(js) && /<audio controls autoplay playsinline>/.test(js) && /\?kind=audio/.test(js));
 check("app: compact / wide by the screen's width, live (matchMedia + resize)", /matchMedia\("\(min-width: 700px\)"\)/.test(js) && /addEventListener\("resize", layout\)/.test(js) && /body\.wide #panes \{ display: grid/.test(css));
 check("app: the fold's hinge - each pane on its own side (horizontal-viewport-segments), Flex mode for the viewer (vertical)", /@media \(horizontal-viewport-segments: 2\)/.test(css) && /@media \(vertical-viewport-segments: 2\)/.test(css) && /env\(viewport-segment-width 0 0/.test(css));
 check("app: the phone's bars from env() or Capacitor 8's SystemBars variables", /var\(--safe-area-inset-top, 0px\)/.test(css) && /viewport-fit=cover/.test(html));

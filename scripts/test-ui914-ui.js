@@ -41,6 +41,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const php = spawn("php", ["-S", "127.0.0.1:" + phpPort, "-t", path.join(__dirname, "..", "community")], { stdio: "ignore",
     env: Object.assign({}, process.env, { BITGEN_PRIVATE_DIR: priv, PHP_CLI_SERVER_WORKERS: "4", BGC_DSN: "sqlite:" + path.join(T, "c.db"), BGC_ADMINS: "boss", BGC_POW_BITS: "0", BGC_REGISTER_PER_HOUR: "200", BGC_MAIL_LOG: path.join(T, "mail.log") }) });
   const C = "http://127.0.0.1:" + phpPort;
+  // a stand-in LLM (the chat turn of a conversation)
+  const llmPort = 8420 + Math.floor(Math.random() * 20);
+  const llm = spawn("python3", [path.join(__dirname, "stub-llm.py"), String(llmPort), path.join(T, "llm")], { stdio: "ignore" });
+  const cfg0 = await get("/api/config");
   const b = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessSendPreflights,PrivateNetworkAccessRespectPreflightResults,BlockInsecurePrivateNetworkRequests"] });
   try {
     for (let i = 0; i < 30; i++) { try { if ((await fetch(C + "/relay.php?a=info")).ok) break; } catch { /* starting */ } await sleep(200); }
@@ -96,7 +100,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
     // ---- the app away: through the tunnel; 🎙
     let lanUp = false;
-    const ctx = await b.newContext({ viewport: { width: 412, height: 880 }, extraHTTPHeaders: XFF, permissions: ["microphone"] });
+    const ctx = await b.newContext({ viewport: { width: 412, height: 880 }, extraHTTPHeaders: XFF, permissions: ["microphone"], hasTouch: true });
     await ctx.addInitScript((o) => {
       window.Capacitor = { Plugins: { LanInfo: { get: () => Promise.resolve({ wifi: false, ip: "", prefix: 0 }) } } };
       localStorage.setItem("bg.base", "http://10.9.8.42:8311"); localStorage.setItem("bg.key", o.key); localStorage.setItem("bg.pcName", "vm");
@@ -124,23 +128,77 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const talk = async (heard) => {
       await p.evaluate((h) => { window.BG_TEST_HEARD = h; }, heard);
       const wait = p.waitForResponse((r) => /\/api\/app\/voice$/.test(r.url()), { timeout: 60000 }).catch(() => null);
-      await p.click("#talkBtn"); await p.waitForTimeout(900); await p.click("#talkBtn");
+      // 2.915.0: a conversation - the first tap starts it (listening), a tap while it listens sends what was said
+      if (!/I'm done/.test(await p.textContent("#talkBtn"))) { await p.click("#talkBtn"); await p.waitForFunction(() => /I'm done/.test(document.getElementById("talkBtn").textContent), null, { timeout: 10000 }).catch(() => {}); }
+      await p.waitForTimeout(700); await p.click("#talkBtn");
       const r = await wait; return r ? await r.json() : null;
     };
+    const swipe = (x0, y0, x1, y1) => p.evaluate((a) => {
+      const v = document.getElementById("viewer"), T = (x, y) => new Touch({ identifier: 1, target: v, clientX: x, clientY: y });
+      v.dispatchEvent(new TouchEvent("touchstart", { touches: [T(a[0], a[1])], changedTouches: [T(a[0], a[1])], bubbles: true }));
+      v.dispatchEvent(new TouchEvent("touchend", { touches: [], changedTouches: [T(a[2], a[3])], bubbles: true }));
+    }, [x0, y0, x1, y1]);
     await p.click('#tabs button[data-v="talk"]');
+    await p.uncheck("#talkSpeak");                                                   // headless: nothing to say it with
     const v1 = await talk("please make a video of a red kite over the sea");
     await p.waitForFunction(() => /Making a video: a red kite over the sea/.test(document.getElementById("talkLog").textContent), null, { timeout: 15000 }).catch(() => {});
     const t1 = await p.evaluate(() => ({ log: document.getElementById("talkLog").textContent, prompt: document.getElementById("prompt").value, kind: document.querySelector("#kindSeg button.on").dataset.kind }));
     check("🎙 \"make a video of …\" (through the tunnel): heard, the Create screen's prompt filled, video, Generate pressed", v1 && v1.intent === "video" && t1.prompt === "a red kite over the sea" && t1.kind === "video" && /Making a video/.test(t1.log), [v1, t1]);
     await p.waitForFunction(() => /On its way|ComfyUI|Sending|job/i.test(document.getElementById("goMsg").textContent), null, { timeout: 20000 }).catch(() => {});
     check("…and the render went to the PC", /On its way|Sending|ComfyUI/i.test(await p.evaluate(() => document.getElementById("goMsg").textContent)), await p.evaluate(() => document.getElementById("goMsg").textContent));
+    check("…a made thing ends the conversation (\"🎙 Talk\" again, no ✕ End)", await p.evaluate(() => /🎙 Talk/.test(document.getElementById("talkBtn").textContent) && document.getElementById("talkEnd").hidden));
+    // 2.915.0: the result opens by itself; swipe through that kind's Gallery; swipe up = back to Create
+    await p.waitForFunction(() => !document.getElementById("viewer").hidden && document.querySelector("#vBody video"), null, { timeout: 150000 }).catch(() => {});
+    const vw = await p.evaluate(() => ({ open: !document.getElementById("viewer").hidden, name: document.getElementById("vName").textContent, vid: !!document.querySelector("#vBody video"), pos: document.getElementById("vPos").textContent }));
+    check("after Generate the video it made opens by itself, with the Gallery's videos to swipe", vw.open && /\.(mp4|webm|mov)$/.test(vw.name) && vw.vid && /swipe/.test(vw.pos), vw);
+    const many = /^1 \/ (\d+)/.exec(vw.pos);
+    if (many && +many[1] > 1) {
+      await swipe(330, 400, 80, 410);
+      await p.waitForTimeout(300);
+      check("swipe left: the next one", /^2 \//.test(await p.textContent("#vPos")) && (await p.textContent("#vName")) !== vw.name, await p.textContent("#vPos"));
+      await swipe(80, 400, 330, 410);
+      await p.waitForTimeout(300);
+      check("swipe right: back to the first", (await p.textContent("#vName")) === vw.name);
+    } else console.log("SKIP (swipe sideways): one video in the Gallery");
+    await swipe(200, 650, 210, 250);
+    await p.waitForTimeout(300);
+    check("swipe up: back to the Create screen", await p.evaluate(() => document.getElementById("viewer").hidden && !document.getElementById("v-create").hidden));
     await p.click('#tabs button[data-v="talk"]');
     const v2 = await talk("find cheapest flights to china");
     check("🎙 \"find …\" goes to the web search (the answer, or why not, in the conversation)", v2 && v2.intent === "find" && v2.text === "cheapest flights to china"
       && /find cheapest flights to china/.test(await p.evaluate(() => document.getElementById("talkLog").textContent)), v2);
+    if (!(v2 && v2.error)) {
+      await p.waitForFunction(() => /I'm done/.test(document.getElementById("talkBtn").textContent), null, { timeout: 20000 }).catch(() => {});
+      check("…an answer, then it listens again by itself (a conversation)", /I'm done/.test(await p.textContent("#talkBtn")) && !(await p.isHidden("#talkEnd")));
+    } else console.log("SKIP (listens again after find): " + v2.error);
+    // a chat turn (the stand-in LLM): the answer, then it listens again - a conversation
+    await post("/api/config", { llm: { external_url: "http://127.0.0.1:" + llmPort + "/v1/chat/completions" } });
+    if (/I'm done/.test(await p.textContent("#talkBtn"))) { await p.click("#talkEnd"); await p.waitForTimeout(300); }
+    const vc = await talk("how are you today");
+    await p.waitForFunction(() => /I'm done/.test(document.getElementById("talkBtn").textContent), null, { timeout: 30000 }).catch(() => {});
+    check("💬 a chat: the PC's LLM answers, then the app listens again by itself (a conversation)", vc && vc.intent === "chat" && vc.reply && /I'm done/.test(await p.textContent("#talkBtn")) && !(await p.isHidden("#talkEnd")), vc);
     await p.fill("#phrases", "show me = picture"); await p.dispatchEvent("#phrases", "change");
     const v3 = await talk("show me a lighthouse in a storm");
     check("🎙 My own phrases: \"show me = picture\" -> a picture of the rest", v3 && v3.intent === "image" && v3.text === "a lighthouse in a storm", v3);
+    await p.waitForTimeout(1500); await p.keyboard.press("Escape");             // the picture may have opened
+    await p.click('#tabs button[data-v="talk"]');
+    const v4 = await talk("okay goodbye");
+    await p.waitForFunction(() => /talk to you later/.test(document.getElementById("talkLog").textContent) && document.getElementById("talkEnd").hidden, null, { timeout: 15000 }).catch(() => {});
+    check("🎙 \"goodbye\": the conversation ends with a goodbye (no LLM needed)", v4 && v4.intent === "bye" && /talk to you later/.test(await p.textContent("#talkLog")) && /🎙 Talk/.test(await p.textContent("#talkBtn")), v4);
+    // 🎵 a song in the viewer: a random visualisation (a stand-in song in a stand-in Gallery)
+    const wav = (() => { const n = 22050, d = Buffer.alloc(44 + n * 2); d.write("RIFF", 0); d.writeUInt32LE(36 + n * 2, 4); d.write("WAVEfmt ", 8); d.writeUInt32LE(16, 16); d.writeUInt16LE(1, 20); d.writeUInt16LE(1, 22);
+      d.writeUInt32LE(22050, 24); d.writeUInt32LE(44100, 28); d.writeUInt16LE(2, 32); d.writeUInt16LE(16, 34); d.write("data", 36); d.writeUInt32LE(n * 2, 40);
+      for (let i = 0; i < n; i++) d.writeInt16LE(Math.round(9000 * Math.sin(i / 8)), 44 + i * 2); return d; })();
+    await p.route(/\/api\/outputs\?kind=audio/, (rt) => rt.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": "http://localhost" }, body: JSON.stringify([{ name: "song_a.wav" }, { name: "song_b.wav" }]) }));
+    await p.route(/\/outputs\/song_[ab]\.wav/, (rt) => rt.fulfill({ status: 200, contentType: "audio/wav", headers: { "Access-Control-Allow-Origin": "http://localhost" }, body: wav }));
+    await p.click('#tabs button[data-v="gallery"]');
+    await p.click('#galSeg button[data-g="audio"]');
+    await p.waitForSelector("#gal .g", { timeout: 15000 }).catch(() => {});
+    await p.click("#gal .g");
+    await p.waitForTimeout(1500);
+    const vz = await p.evaluate(() => { const c = document.querySelector("#vBody canvas.viz"); if (!c) return null; const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let lit = 0; for (let i = 0; i < d.length; i += 16) if (d[i] + d[i + 1] + d[i + 2] > 60) lit++; return { lit, audio: !!document.querySelector("#vBody audio"), pos: document.getElementById("vPos").textContent }; });
+    check("🎵 a song in the viewer: a moving visualisation + the player, the songs to swipe", vz && vz.lit > 20 && vz.audio && /1 \/ 2/.test(vz.pos), vz);
+    await p.keyboard.press("ArrowUp");
     await p.click('#tabs button[data-v="create"]');
     await p.fill("#prompt", "");
     await p.evaluate(() => { window.BG_TEST_HEARD = "a calm lake at dawn"; });
@@ -151,6 +209,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check("🎙 Speak the prompt: the words into the prompt (dictation only, nothing made)", dj && dj.intent === "dictate" && (await p.inputValue("#prompt")) === "a calm lake at dawn", [dj, await p.inputValue("#prompt")]);
     check("no page errors (studio, app)", !serr.length && !errs.length, [serr, errs]);
     await ctx.close();
+    // 2.915.0: the "wants to connect" bar shows ABOVE the open Settings dialog and goes at once on ✔ Allow
+    await studio.evaluate(() => { if (!document.getElementById("settings").open) document.getElementById("openSettings").click(); });
+    await post("/api/remote/lanpair", { device: "Another phone (bitGen app)" }, XFF);
+    await studio.waitForFunction(() => { const x = document.getElementById("lp_bar"); return x && x.style.display !== "none" && x.matches(":popover-open"); }, null, { timeout: 10000 }).catch(() => {});
+    const top = await studio.evaluate(() => { const x = document.getElementById("lp_bar"), r = x.getBoundingClientRect(), at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { pop: x.matches(":popover-open"), onTop: !!(at && x.contains(at)), dlg: document.getElementById("settings").open }; });
+    check("the bar: a popover above the open Settings dialog", top.pop && top.onTop && top.dlg, top);
+    await studio.click("#lp_deny");
+    check("…✕ Deny hides it at once", await studio.evaluate(() => { const x = document.getElementById("lp_bar"); return x.style.display === "none" && !x.matches(":popover-open"); }));
     // 2.914.1: the state line is honest; Skills has its own tab
     const f1 = await studio.evaluate(() => [bgRemoteUI.fmt({ enabled: true, lan: "x", connected: true, device: "Fold (bitGen app)", app: true, idle_seconds: 7200 }),
       bgRemoteUI.fmt({ enabled: true, lan: "x", connected: true, device: "Fold (bitGen app)", app: true, idle_seconds: 20 })]);
@@ -166,6 +232,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   } finally {
     await b.close();
     try { php.kill(); } catch { /* gone */ }
+    try { llm.kill(); } catch { /* gone */ }
+    await post("/api/config", { llm: { external_url: ((cfg0.llm || {}).external_url) || "" } });
     await post("/api/remote/away", { mode: "none" });
     await post("/api/remote/e2e-cloudflare", { bin: "" });
     await post("/api/remote/revoke", {});

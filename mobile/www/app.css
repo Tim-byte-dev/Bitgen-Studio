@@ -125,3 +125,12 @@ body.wide nav#tabs { left: auto; width: calc(100% - min(462px, 45%)); border-lef
 .talklog .t .src { display: block; font-size: .75rem; color: var(--dim); margin-top: 4px; word-break: break-all; }
 .btn.rec { background: var(--bad, #c33) !important; }
 .chk { display: flex; align-items: center; gap: 8px; }
+/* 2.915.0: the swipe viewer + the song's visualisation */
+#vBody { touch-action: pan-x pan-y; position: relative; }
+#vBody canvas.viz { width: 100%; height: 100%; display: block; }
+#vBody .aud { position: absolute; left: 0; right: 0; bottom: calc(var(--sab, 0px) + 18px); display: flex; justify-content: center; }
+.vnav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 64px; border: 0; border-radius: 10px; background: rgba(0,0,0,.35); color: #fff; font-size: 2rem; z-index: 11; }
+.vnav.l { left: calc(var(--sal, 0px) + 6px); } .vnav.r { right: calc(var(--sar, 0px) + 6px); }
+.vnav[hidden] { display: none; }
+.vpos { position: absolute; left: 0; right: 0; bottom: calc(var(--sab, 0px) + 4px); text-align: center; font-size: .7rem; color: rgba(255,255,255,.55); pointer-events: none; z-index: 11; }
+#talkBtn.live { background: var(--ok, #3a3) !important; }
