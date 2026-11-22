@@ -10450,6 +10450,26 @@ or tap 🎙 Talk in the app and speak. In the app the PC hears your turn and wor
 The app streams on your Wi-Fi and through a Cloudflare tunnel. Through the tigerart.com.au relay (too slow for live audio),
 or if the stream fails, it goes back to the old way by itself - the voice chat says so in its window.
 
+## ✂ SAM 3 in the image editor (2.920.0)
+
+The image editor's Segment Anything now uses **SAM 3** (Meta, Segment Anything with Concepts) by default. It does
+everything the older SAMs did and understands **words** on its own:
+
+- **Object Selection tool (W)**: click a thing to select it, drag a box around one, Shift-click to add, Alt-click to take
+  away - as before, with SAM 3's outlines.
+- **Find** (the tool's options bar): type what you want - "dog", "the woman's hair", "sky" - and press **Select** (or
+  **◐ Mask** to make it the layer's mask). SAM 3 finds every match itself; the older SAMs needed CLIPSeg to guess first.
+- **Select ▸ Subject…**: several things at once ("dog, ball, sun"), into a selection, a mask or **each match on its own
+  layer** (grouped, the original untouched; one Undo takes it back).
+
+Install it once: **Select ▸ Segment Anything Settings ▸ ⤓ Install** (about 3.4 GB plus PyTorch in `venvs/segment`;
+needs an NVIDIA card - CPU works but is slow). Meta gates `facebook/sam3`: put your Hugging Face token in Settings once
+Meta has approved you; without one the install uses an ungated mirror of the same files (SAM License). An existing SAM 1
+install keeps working - pick SAM 3 in the settings' Model list and press ⤓ Install.
+
+**Everything** (Layer ▸ Segment Layer…) still uses SAM 1's automatic mode - SAM 3 has none - so the install also fetches
+the small SAM ViT-B (375 MB) when no SAM 1 is there.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10506,6 +10526,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **FIBO 2.0** (Bria) - the Fibo 2.0 Edit styles
 - **Anima, MOSS-Image, SDXL and Pony models** - more picture styles
 - **SAM 2 (Segment Anything)** (Meta) - Select Subject, cut-outs through a shot
+- **[SAM 3 (Segment Anything with Concepts)](https://github.com/facebookresearch/sam3)** (Meta) - the image editor's selections by a click, a box or words (SAM License - downloaded by the install, not shipped)
 - **Hunyuan3D 2.1** (Tencent) - 🧊 picture to 3D (under its own community licence)
 - **TRELLIS.2** (Microsoft) - 🧊 picture to 3D
 - **[cadrille](https://github.com/col14m/cadrille)** (col14m) - ✨ Generate in SolidCraft writes part code from a description or a picture (weights CC BY-NC 4.0)

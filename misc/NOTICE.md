@@ -276,3 +276,11 @@ into its own venv (voice-kit/.venv); their weights (huggingface.co/inworld/sava,
 from Hugging Face. Code and weights are Apache-2.0 (Copyright 2026 Inworld AI); their NOTICE files travel with the packages.
 scripts/voice_stream.py uses their published Python APIs only.
 
+## ✂ SAM 3 (2.920.0)
+
+No SAM 3 code or weights are shipped. The image editor's Segment Anything install (Select ▸ Segment Anything settings ▸ ⬇
+Install) downloads Meta's SAM 3 weights (huggingface.co/facebook/sam3 - gated: your own Hugging Face token once Meta approves
+you - else the unmodified mirror huggingface.co/ml-resources/sam3) into models/sam3 under the **SAM License** (Copyright Meta
+Platforms, Inc.; commercial use and redistribution allowed with the licence kept - its LICENSE file is downloaded beside the
+weights) and runs them through Hugging Face transformers (Apache-2.0).
+

@@ -15,6 +15,8 @@
  *   LAYER ▸ SEND TO REFERENCES  the picked layers (Ctrl-click; else the active one) into the reference dock - Generate
  *                               in the prompt docker (video or image) uses them
  *   SELECT ▸ SEGMENT ANYTHING SETTINGS…   install (venvs/segment), the SAM model, a checkpoint you already have
+ * 2.920.0 (Tim: "yeh, upgrade to sam3"): SAM 3 is the model when it is installed - clicks / boxes through its tracker, and
+ *   WORDS read by SAM 3 itself (every instance of "dog", "the woman's hair" - no CLIPSeg guess first); Everything stays SAM 1.
  * The server side is lib/segment.js + routes/segment.js; masks come back as PNGs (255 = the segment).
  * The pure parts (a mask picture -> a selection, the layer names) are tested in Node.
  */
@@ -210,7 +212,7 @@
         <div class="kxrow"><label><input type="checkbox" id="sdAll" ${S.segAll ? "checked" : ""}> Sample All Layers</label>
           <label title="Each separate match its own selection region / layer"><input type="checkbox" id="sdEach"> each match separately</label></div>
         <div class="kxrow"><span title="How sure the words must be (lower = more is found)">Threshold</span><input type="range" id="sdThr" min="5" max="90" value="${Math.round(store.get("seg.thr", 0.35) * 100)}"><span id="sdThrV"></span></div>
-        <div class="kxrow"><label title="SAM draws the exact outline of what the words found (off = the rough area only)"><input type="checkbox" id="sdRef" checked> exact outline (SAM)</label>
+        <div class="kxrow"><label title="SAM draws the exact outline of what the words found (off = the rough area only; SAM 3 always draws it)"><input type="checkbox" id="sdRef" checked> exact outline (SAM)</label>
           <label title="With 'each match on its own layer': take them out of the layer"><input type="checkbox" id="sdCut"> cut out of the layer</label></div>`,
         (dd) => {
           const words = dd.querySelector("#sdW").value.trim(); if (!words) { say("type what to find"); return false; }
@@ -251,11 +253,11 @@
       const models = Object.entries(st.models).map(([k, m]) => `<option value="${k}"${k === st.model ? " selected" : ""}>${esc(m.label)} - ${esc(m.size)}${m.found ? " ✔ here" : ""}</option>`).join("");
       const d = E.ui.dialog("Segment Anything", `
         ${why ? `<div class="kxrow" style="color:#e0a030">${esc(why)}</div>` : ""}
-        <div class="kxrow" style="color:var(--pc-dim)">Meta's Segment Anything + CLIPSeg (words), on this machine in their own venv (venvs/segment). ⬇ Install downloads them once (torch, ~2.5 GB with an NVIDIA card; the SAM model below); after that nothing goes online.</div>
+        <div class="kxrow" style="color:var(--pc-dim)">Meta's Segment Anything on this machine in its own venv (venvs/segment). <b>SAM 3</b> (the default) selects by a click, a box OR words - it finds every "dog" or "the woman's hair" itself; the older SAMs use CLIPSeg for words. ⬇ Install downloads them once (torch, ~2.5 GB with an NVIDIA card; SAM 3 3.4 GB - facebook/sam3 is gated: your Hugging Face token in Settings when Meta approved you, else the same files from an ungated mirror under the SAM License; + SAM ViT-B for "Everything"); after that nothing goes online.</div>
         <div class="kxrow"><span>State</span><b id="ssState">${st.ready ? "ready" : st.venv_ready ? "installed - the model file is missing" : "not installed"}${st.server && st.server.running ? ` · running on ${esc(st.server.device || "…")}` : ""}</b></div>
         <div class="kxrow"><span>Model</span><select id="ssModel">${models}</select></div>
         <div class="kxrow"><span title="A SAM .pth you already have (ComfyUI's models/sams is looked in by itself)">Checkpoint</span><input type="text" id="ssCk" value="${esc(st.checkpoint_found ? st.checkpoint : "")}" placeholder="${esc(st.checkpoint)}" style="flex:1"></div>
-        <div class="kxrow"><button class="ghost" id="ssInstall"${st.installing && st.installing.state === "running" ? ' disabled aria-busy="true"' : ""} title="${st.ready ? "Installed - install it again over the top (repairs a broken install)" : "Download and install Segment Anything + CLIPSeg"}">${st.ready || st.venv_ready ? "⟳ Reinstall / repair" : "⬇ Install"}</button><b id="ssInst" role="status" style="margin:0 6px"></b><label><input type="checkbox" id="ssCpu"> CPU only</label></div>
+        <div class="kxrow"><button class="ghost" id="ssInstall"${st.installing && st.installing.state === "running" ? ' disabled aria-busy="true"' : ""} title="${st.ready ? "Installed - install it again over the top (repairs a broken install)" : "Download and install Segment Anything (SAM 3 + SAM ViT-B, or the SAM picked) + CLIPSeg"}">${st.ready || st.venv_ready ? "⟳ Reinstall / repair" : "⬇ Install"}</button><b id="ssInst" role="status" style="margin:0 6px"></b><label><input type="checkbox" id="ssCpu"> CPU only</label></div>
         <pre id="ssLog" style="max-height:160px;overflow:auto;font-size:11px;white-space:pre-wrap;margin:4px 0">${esc(((st.installing || {}).log || []).join("\n"))}</pre>`,
         (dd) => {
           const body = { model: dd.querySelector("#ssModel").value, checkpoint: dd.querySelector("#ssCk").value.trim() };

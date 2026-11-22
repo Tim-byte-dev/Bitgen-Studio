@@ -14893,6 +14893,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui919-ui.js > /tmp/ui919.log 2>&
   && ok "2.919.0 browser test: the studio's 🎙 voice chat and the 📱 app's 🎙 Talk go live with the add-on - Chromium's fake microphone streamed in raw pieces, the PC closes the turn, hears it; the prompt written / a video made; without it the old way" \
   || { bad "2.919.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui919.log | head -12; }
 
+# ---- 2.920.0 (✂ SAM 3 in the image editor: a click, a box or words; each match on its own layer)
+node scripts/test-920.js > /tmp/t920.log 2>&1 \
+  && ok "2.920.0 units: SAM 3 is a folder model (facebook/sam3, else the ungated mirror), found / status / settings, the install (transformers 5, CUDA 12.8, the HF token, SAM ViT-B for Everything), Everything without SAM 1 = 409 saying so, segment.py's SAM 3 paths (Sam3Tracker for clicks / boxes, Sam3 for words)" \
+  || { bad "2.920.0 units"; grep -a "^FAIL" -A1 /tmp/t920.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

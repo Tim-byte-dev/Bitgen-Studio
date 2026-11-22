@@ -165,6 +165,12 @@
           "what": "Select Subject, cut-outs through a shot"
         },
         {
+          "name": "SAM 3 (Segment Anything with Concepts)",
+          "by": "Meta",
+          "url": "https://github.com/facebookresearch/sam3",
+          "what": "the image editor's selections by a click, a box or words (SAM License - downloaded by the install, not shipped)"
+        },
+        {
           "name": "Hunyuan3D 2.1",
           "by": "Tencent",
           "what": "🧊 picture to 3D (under its own community licence)"

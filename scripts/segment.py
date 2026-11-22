@@ -17,6 +17,9 @@ stdin: one JSON request per line, stdout: "H3SEG <json>" answers ("H3SEG-LOG <te
   op "auto"    EVERYTHING: SamAutomaticMaskGenerator's masks, biggest first     {points_per_side, max, min_area (% of
                the picture), iou, stability}
   op "status"  the device and what is loaded
+2.920.0 (Tim: "yeh, upgrade to sam3"): model "sam3" (checkpoint = its folder, transformers 5): op "points" = Sam3Tracker
+(clicks / a box - SAM 2-style, sharper than SAM 1), op "text" = Sam3 concept segmentation - the words find EVERY instance
+of the phrase themselves (no CLIPSeg guess first; threshold = its score); op "auto" stays SAM 1 (lib/segment.js picks it).
 An answer: {id, ok, masks: [{file, label, bbox: [x, y, w, h], area, score}], took, note} - each mask a full-size
 8-bit PNG (255 = the segment). --fake = no torch: flat-colour regions stand in for SAM's (the tests, and the pipes).
 """
@@ -30,7 +33,7 @@ import numpy as np
 from PIL import Image
 
 FAKE = "--fake" in sys.argv
-STATE = {"sam": {}, "pred": {}, "pred_key": None, "clipseg": None, "device": None}
+STATE = {"sam": {}, "pred": {}, "pred_key": None, "clipseg": None, "device": None, "sam3": {}, "sam3_emb": None}
 CLIPSEG_ID = "CIDAS/clipseg-rd64-refined"
 COLOURS = {"red": (220, 40, 40), "green": (40, 180, 60), "blue": (40, 70, 220), "yellow": (230, 210, 40),
            "white": (245, 245, 245), "black": (15, 15, 15), "orange": (240, 140, 30), "purple": (140, 60, 190)}
@@ -210,6 +213,85 @@ def heat(rgb, terms):
             for p in probs]
 
 
+# ------------------------------------------------------------------ SAM 3 (2.920.0, transformers 5)
+def sam3_parts(req, which):
+    """(processor, model) for SAM 3: which "tracker" (clicks / boxes) or "concept" (words) - loaded once, kept"""
+    folder = req.get("checkpoint") or ""
+    key = (which, folder)
+    if key in STATE["sam3"]:
+        return STATE["sam3"][key]
+    import transformers as T  # noqa: WPS433
+    if not hasattr(T, "Sam3Model"):
+        raise RuntimeError("this venv's transformers has no SAM 3 (it needs 5.0 or newer) - ⟳ Reinstall in Segment Anything settings")
+    if which == "tracker":
+        proc, cls = T.Sam3TrackerProcessor.from_pretrained(folder), T.Sam3TrackerModel
+    else:
+        proc, cls = T.Sam3Processor.from_pretrained(folder), T.Sam3Model
+    t = time.time()
+    model = cls.from_pretrained(folder).to(device()).eval()
+    log(f"SAM 3 {which} loaded in {time.time() - t:.1f}s on {device()}")
+    STATE["sam3"][key] = (proc, model)
+    return STATE["sam3"][key]
+
+
+def sam3_points(req, rgb, pts, box):
+    """clicks (+ / -) and / or a box -> ONE mask, the best of SAM 3's three; the picture's embedding kept for the next click"""
+    import torch  # noqa: WPS433
+    proc, model = sam3_parts(req, "tracker")
+    img = Image.fromarray(rgb)
+    kw = {"images": img, "return_tensors": "pt"}
+    if pts:
+        kw["input_points"] = [[[[float(a[0]), float(a[1])] for a in pts]]]
+        kw["input_labels"] = [[[int(a[2]) if len(a) > 2 else 1 for a in pts]]]
+    if box:
+        kw["input_boxes"] = [[[float(v) for v in box]]]
+    inputs = proc(**kw).to(device())
+    key = (req.get("image_key") or req["image"], rgb.shape)
+    with torch.no_grad():
+        try:                                                     # the same picture clicked again: its embedding reused
+            if STATE["sam3_emb"] is None or STATE["sam3_emb"][0] != key:
+                STATE["sam3_emb"] = (key, model.get_image_embeddings(inputs["pixel_values"]))
+            args = {k: v for k, v in inputs.items() if k != "pixel_values"}
+            out = model(image_embeddings=STATE["sam3_emb"][1], multimask_output=True, **args)
+        except (TypeError, AttributeError, ValueError):
+            out = model(**inputs, multimask_output=True)
+    masks = proc.post_process_masks(out.pred_masks.cpu(), inputs["original_sizes"])[0]   # [objects, 3, H, W]
+    scores = out.iou_scores.float().cpu().numpy().reshape(-1)
+    ms = np.asarray(masks[0].numpy(), bool) if hasattr(masks[0], "numpy") else np.asarray(masks[0], bool)
+    i = int(np.argmax(scores[:len(ms)])) if len(scores) else 0
+    return ms[i], float(scores[i]) if len(scores) else 1.0
+
+
+def sam3_words(req, rgb, terms, thr, each):
+    """each phrase -> every instance SAM 3 finds (its own score >= thr): one mask per phrase, or one per instance"""
+    import torch  # noqa: WPS433
+    proc, model = sam3_parts(req, "concept")
+    img = Image.fromarray(rgb)
+    h, w = rgb.shape[:2]
+    out = []
+    for t in terms:
+        inputs = proc(images=img, text=t, return_tensors="pt").to(device())
+        with torch.no_grad():
+            res = model(**inputs)
+        r = proc.post_process_instance_segmentation(res, threshold=thr, mask_threshold=0.5,
+                                                    target_sizes=inputs.get("original_sizes").tolist())[0]
+        ms = [np.asarray(m.cpu().numpy() if hasattr(m, "cpu") else m, bool) for m in r["masks"]]
+        sc = [float(s) for s in (r["scores"].cpu().tolist() if hasattr(r["scores"], "cpu") else r["scores"])]
+        if not ms:
+            log(f"\"{t}\": not found")
+            continue
+        log(f"\"{t}\": {len(ms)} found by SAM 3")
+        if each:
+            for i, (m, s) in enumerate(zip(ms, sc)):
+                out.append((m, t if len(ms) == 1 else f"{t} {i + 1}", s))
+        else:
+            u = np.zeros((h, w), bool)
+            for m in ms:
+                u |= m
+            out.append((u, t, max(sc)))
+    return out
+
+
 def best_of(masks, scores):
     i = int(np.argmax(scores))
     return np.asarray(masks[i], bool), float(scores[i])
@@ -237,6 +319,9 @@ def op_points(req, rgb):
             if inside:
                 m = inside[0]
         return [(m, "object", 0.99)]
+    if req.get("model") == "sam3":                                # 2.920.0
+        m, s = sam3_points(req, rgb, pts, box)
+        return [(m, "object", s)]
     p = predictor(req, rgb)
     kw = {"multimask_output": True}
     if pts:
@@ -272,6 +357,8 @@ def op_text(req, rgb):
             for i, c in enumerate(comps):
                 out.append((c, t if len(comps) == 1 else f"{t} {i + 1}", 0.9))
         return out
+    if req.get("model") == "sam3":                                # 2.920.0: SAM 3 reads the words itself
+        return sam3_words(req, rgb, terms, thr, each)
     maps = heat(rgb, terms)
     p = predictor(req, rgb) if refine else None
     for t, pm in zip(terms, maps):
@@ -333,13 +420,14 @@ def handle(req):
     op = req.get("op")
     if op == "status":
         return {"ok": True, "fake": FAKE, "device": "fake" if FAKE else device(),
-                "loaded": [k[0] for k in STATE["sam"]], "clipseg": bool(STATE["clipseg"])}
+                "loaded": [k[0] for k in STATE["sam"]] + [f"sam3 {k[0]}" for k in STATE["sam3"]], "clipseg": bool(STATE["clipseg"])}
     if op not in OPS:
         raise RuntimeError(f"unknown op {op!r}")
     rgb = load_rgb(req["image"])
     items = OPS[op](req, rgb)
     masks = write_masks(req, items)
-    note = f"{op}: {len(masks)} mask(s)" + (" (fake - flat-colour regions, not SAM)" if FAKE else f" on {device()}")
+    who = "SAM 3" if req.get("model") == "sam3" else "SAM"
+    note = f"{op}: {len(masks)} mask(s)" + (" (fake - flat-colour regions, not SAM)" if FAKE else f" - {who} on {device()}")
     return {"ok": True, "masks": masks, "w": int(rgb.shape[1]), "h": int(rgb.shape[0]), "took": round(time.time() - t0, 3), "note": note}
 
 

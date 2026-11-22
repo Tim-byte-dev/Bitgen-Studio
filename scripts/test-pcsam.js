@@ -79,9 +79,10 @@ function send(port, method, u, body, type) {
       throws(() => SEG.requestOf({ op: "paint" }), /op must be one of points, text, auto/) && throws(() => SEG.requestOf({ op: "points" }), /click on the picture/)
       && throws(() => SEG.requestOf({ op: "text", prompt: "  " }), /write what to select/));
     const gpu = SEG.pipPlan(true), cpu = SEG.pipPlan(false);
-    check("pipPlan: pip, torch (CUDA 12.4 wheels from PyTorch's index on an NVIDIA card, PyPI's otherwise), segment-anything + transformers + opencv",
-      gpu.length === 3 && gpu[1].includes("--index-url") && gpu[1].includes("https://download.pytorch.org/whl/cu124") && !cpu[1].includes("--index-url")
-      && ["segment-anything", "transformers", "opencv-python-headless"].every((p) => gpu[2].includes(p)));
+    // 2.920.0: cu128 (an RTX 50-series has no cu124 kernels) and transformers 5 (SAM 3)
+    check("pipPlan: pip, torch (CUDA 12.8 wheels from PyTorch's index on an NVIDIA card, PyPI's otherwise), segment-anything + transformers 5 + opencv",
+      gpu.length === 3 && gpu[1].includes("--index-url") && gpu[1].includes("https://download.pytorch.org/whl/cu128") && !cpu[1].includes("--index-url")
+      && ["segment-anything", "transformers>=5.0", "huggingface_hub", "opencv-python-headless"].every((p) => gpu[2].includes(p)));
     const fsrc = path.join(tmp, "src.bin"), fdst = path.join(tmp, "dst.pth");
     fs.writeFileSync(fsrc, Buffer.alloc(5000, 7));
     const dl = spawnSync("python3", ["-c", SEG.fetchScript("file://" + fsrc, fdst)], { encoding: "utf8" });
@@ -98,7 +99,7 @@ function send(port, method, u, body, type) {
       && throws(() => SEG.settings({ model: "vit_z" }), /model must be one of/) && throws(() => SEG.settings({ checkpoint: "x.bin" }), /\.pth/));
     SEG.settings({ model: "vit_b", checkpoint: "" });
     const st = SEG.status();
-    check("status: not installed here, the stand-in allowed on the test server, the three models listed", st.ready === false && st.fake_available === true && Object.keys(st.models).join() === "vit_b,vit_l,vit_h", st);
+    check("status: not installed here, the stand-in allowed on the test server, the models listed (2.920.0: + SAM 3)", st.ready === false && st.fake_available === true && Object.keys(st.models).join() === "vit_b,vit_l,vit_h,sam3", st);
 
     // ---- 2
     const img = path.join(tmp, "scene.png");
