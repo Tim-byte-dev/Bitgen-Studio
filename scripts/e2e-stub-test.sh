@@ -15021,6 +15021,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui935-ui.js > /tmp/ui935.log 2>&
   && ok "2.935.0 browser test: 🚓 hidden first then shown, the city drawn, keys drive and stay in the game, pauses (P / focus / hidden / a render), GAME OVER -> name -> 🏆" \
   || { bad "2.935.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui935.log | head -12; }
 
+# ---- 2.936.0 (🚓 Police Chase's art pack - scripts/chase_assets.py, the loader)
+node scripts/test-936.js > /tmp/t936.log 2>&1 \
+  && ok "2.936.0 units: the bake (Blender, five pictures a building), the pack (roads cut from the atlas, pack.json), never committed, the loader" \
+  || { bad "2.936.0 units"; grep -a "^FAIL" -A1 /tmp/t936.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

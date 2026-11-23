@@ -10865,3 +10865,16 @@ the image editor); it pauses when the docker is hidden or folded, the window goe
 and draws nothing while paused. **While rendering**: *play lighter* (30 frames a second, fewer pixels - the default) or
 *pause* until the render is done.
 
+### The city art pack (2.936.0)
+
+Police Chase can look like a real city: asphalt roads with lane marks, pavements, a paved police square and buildings rendered
+from your own Blender models. The art comes as its own zip - unzip it into the install folder (it lands in
+ext/chasedock/assets/) and open the game again. Without it the game keeps its painted streets and lit-window blocks.
+
+To make your own pack: build buildings in Blender, one collection each (collections inside a collection count one by one),
+and have a roads kit's texture atlas at hand, then run
+`python3 scripts/chase_assets.py --city city.blend --roads atlas.png --blender "path/to/blender" --credit "who made it"`.
+Blender renders every building from its four sides and from above, and the game shows each as a box wearing those five
+pictures - light to draw, and the models themselves never leave Blender. Bought or royalty-free art may be used inside the game
+but not handed out as files, so the pack is never in the public repo.
+

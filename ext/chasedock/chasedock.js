@@ -18,6 +18,11 @@
  *               - off to start with, M / 🔇 turns it on (kept)
  *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten asks for a name
  * window.H3Chase: newGame(seed), pause(why), resume(), camera(mode), sound(on), scores(), info() (tests)
+ * 2.936.0 (Tim: "can i upload a blender file of the cars and the city maze? to make it a little more pleasing to the eye"):
+ * an ART PACK, when installed - ext/chasedock/assets/pack.json (scripts/chase_assets.py makes it from a city .blend and a
+ * roads kit; never in the repo, it ships as its own zip): the ground from its road pictures (straights turned to the road,
+ * plain asphalt at the corners, pavers on the station square, pavement under the blocks) and each block a building of the
+ * pack - a box wearing the five pictures Blender rendered of it, a random one, a random quarter turn. No pack = as before.
  */
 (function (root) {
   "use strict";
@@ -117,16 +122,17 @@
     var V = G.V, m = s.maze;
     if (V.city) { V.scene.remove(V.city); V.city.traverse(function (o) { if (o.geometry) o.geometry.dispose(); [].concat(o.material || []).forEach(function (mt) { if (mt.map) mt.map.dispose(); if (mt.emissiveMap) mt.emissiveMap.dispose(); mt.dispose(); }); }); }
     var city = new T.Group(); V.city = city; V.scene.add(city);
-    // the ground: one canvas, 32 px a tile
-    var P = 32, cv = doc.createElement("canvas"); cv.width = m.W * P; cv.height = m.H * P;
+    // the ground: one canvas - 32 px a tile painted, or (2.936.0) 64 px a tile from the art pack's road pictures
+    var RP = G.pack && G.pack.roadImgs, P = RP ? 64 : 32, cv = doc.createElement("canvas"); cv.width = m.W * P; cv.height = m.H * P;
     var g = cv.getContext("2d");
     g.fillStyle = "#2b2e38"; g.fillRect(0, 0, cv.width, cv.height);                       // pavement under the blocks
     var home = {}; m.station.tiles.forEach(function (t) { home[t[0] + "," + t[1]] = 1; });
-    for (var y = 0; y < m.H; y++) for (var x = 0; x < m.W; x++) {
+    if (RP) paintRoads(g, m, P, home, RP);
+    for (var y = 0; y < m.H && !RP; y++) for (var x = 0; x < m.W; x++) {
       if (!C.open(m, x, y)) continue;
       g.fillStyle = home[x + "," + y] ? "#1b2846" : "#17191f"; g.fillRect(x * P, y * P, P, P);
     }
-    g.strokeStyle = "#5b6070"; g.lineWidth = 2;                                           // kerbs
+    g.strokeStyle = RP ? "#a7abb3" : "#5b6070"; g.lineWidth = RP ? 3 : 2;               // kerbs
     for (var y2 = 0; y2 < m.H; y2++) for (var x2 = 0; x2 < m.W; x2++) {
       if (!C.open(m, x2, y2)) continue;
       C.DIRS.forEach(function (d) {
@@ -141,7 +147,7 @@
       });
     }
     g.strokeStyle = "rgba(255, 214, 90, .55)"; g.lineWidth = 1.5; g.setLineDash([6, 6]);  // lane marks on the straights
-    for (var y3 = 0; y3 < m.H; y3++) for (var x3 = 0; x3 < m.W; x3++) {
+    for (var y3 = 0; y3 < m.H && !RP; y3++) for (var x3 = 0; x3 < m.W; x3++) {             // (the pack's roads have their own)
       if (!C.open(m, x3, y3) || home[x3 + "," + y3]) continue;
       var lr = C.open(m, x3 - 1, y3) && C.open(m, x3 + 1, y3) && !C.open(m, x3, y3 - 1) && !C.open(m, x3, y3 + 1);
       var ud = C.open(m, x3, y3 - 1) && C.open(m, x3, y3 + 1) && !C.open(m, x3 - 1, y3) && !C.open(m, x3 + 1, y3);
@@ -161,11 +167,14 @@
     under.rotation.x = -Math.PI / 2; under.position.y = -0.01; city.add(under);
     // the buildings: lit windows, three heights (low enough to see the streets behind them)
     var win = windowTextures(), R = C.rng(s.seed * 31 + s.level), byH = [[], [], [], []];
+    var PB = G.pack && G.pack.json.buildings && G.pack.json.buildings.length ? G.pack.json.buildings : null, packed = [];   // 2.936.0
     for (var y4 = 0; y4 < m.H; y4++) for (var x4 = 0; x4 < m.W; x4++) {
       if (C.open(m, x4, y4)) continue;
       var edge = x4 === 0 || y4 === 0 || x4 === m.W - 1 || y4 === m.H - 1;
+      if (!edge && PB) { var vi = Math.floor(R() * PB.length); (packed[vi] = packed[vi] || []).push([x4, y4, Math.floor(R() * 4)]); continue; }
       byH[edge ? 0 : 1 + Math.floor(R() * 3)].push([x4, y4, R()]);
     }
+    packed.forEach(function (list, vi) { if (list) packBuildings(city, m, PB[vi], list); });
     var tints = [0x8a93a8, 0x9c8f86, 0x7f8fa0, 0xa59a8a, 0x8796b0, 0x9aa3a8];
     byH.forEach(function (list, floors) {
       if (!list.length) return;
@@ -194,6 +203,53 @@
     G.mazeOf = m;
     k = 0;
     return k;
+  }
+  /* ---- 2.936.0: the art pack (ext/chasedock/assets/pack.json, made by scripts/chase_assets.py - not in the repo) ---- */
+  var ROT = [0, Math.PI / 2, Math.PI, -Math.PI / 2];
+  /** what a road tile is: "h" / "v" a straight (left-right / up-down), "x" anything else (pure) */
+  function roadKind(m, x, y) {
+    var l = C.open(m, x - 1, y), r = C.open(m, x + 1, y), u = C.open(m, x, y - 1), d = C.open(m, x, y + 1);
+    return l && r && !u && !d ? "h" : u && d && !l && !r ? "v" : "x";
+  }
+  function paintRoads(g, m, P, home, RP) {
+    for (var y = 0; y < m.H; y++) for (var x = 0; x < m.W; x++) {
+      var road = C.open(m, x, y), img = !road ? RP.pavement : home[x + "," + y] ? RP.plaza : roadKind(m, x, y) === "x" ? RP.plain : RP.straight;
+      if (!img) continue;
+      if (road && roadKind(m, x, y) === "v" && !home[x + "," + y]) {
+        g.save(); g.translate(x * P + P / 2, y * P + P / 2); g.rotate(Math.PI / 2); g.drawImage(img, -P / 2, -P / 2, P, P); g.restore();
+      } else g.drawImage(img, x * P, y * P, P, P);
+    }
+  }
+  var packTex = {};
+  function packTexture(url) {
+    if (packTex[url]) return packTex[url];
+    var t = new T.TextureLoader().load("/ext/chasedock/assets/" + url, function () { G.camSettling = Math.max(G.camSettling || 0, 2); kick(); });
+    if (T.SRGBColorSpace) t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+    return (packTex[url] = t);
+  }
+  /** one building of the pack on every tile in list [[x, y, quarter turns]]: a box wearing its five pictures */
+  function packBuildings(city, m, b, list) {
+    var F = b.faces || {}, sz = b.size_m || [1, 1, 1];
+    var mat = function (f) { return F[f] ? new T.MeshStandardMaterial({ map: packTexture(F[f]), color: 0xe2e6f0, roughness: 0.85, emissive: 0x2a2f3a, emissiveMap: packTexture(F[f]), emissiveIntensity: 0.35 }) : new T.MeshStandardMaterial({ color: 0x161b26 }); };
+    var mats = [mat("px"), mat("nx"), mat("py"), new T.MeshStandardMaterial({ color: 0x161b26 }), mat("pz"), mat("nz")];
+    var k = 0.94 / Math.max(sz[0], sz[1], 0.01), sx = sz[0] * k, sd = sz[1] * k, h = Math.min(1.8, sz[2] * k);
+    var im = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), mats, list.length), M = new T.Matrix4(), Q = new T.Quaternion(), Y = new T.Vector3(0, 1, 0);
+    list.forEach(function (t, i) {
+      var w = world(m, t[0], t[1]); Q.setFromAxisAngle(Y, ROT[t[2]]);
+      M.compose(new T.Vector3(w[0], h / 2, w[1]), Q, new T.Vector3(sx, h, sd)); im.setMatrixAt(i, M);
+    });
+    im.userData.pack = b.id;
+    city.add(im);
+  }
+  /** pack.json + its road pictures, if the pack is installed (null when not - the painted city then) */
+  function loadPack() {
+    return fetch("/ext/chasedock/assets/pack.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || j.version !== 1) return null;
+      var roads = j.roads || {}, names = Object.keys(roads), imgs = {};
+      return Promise.all(names.map(function (n) {
+        return new Promise(function (ok) { var im = new Image(); im.onload = function () { imgs[n] = im; ok(); }; im.onerror = function () { ok(); }; im.src = "/ext/chasedock/assets/" + roads[n]; });
+      })).then(function () { G.pack = { json: j, roadImgs: Object.keys(imgs).length ? imgs : null }; return G.pack; });
+    }).catch(function () { return null; });
   }
   var WIN = null;
   function windowTextures() {
@@ -395,7 +451,7 @@
     if (key === G.msgKey) return;
     G.msgKey = key;
     var m = $("pcMsg"), b = "", t = "", dim = false;
-    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every bag of cash and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key."; dim = true; }
+    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every bag of cash and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key." + (G.pack && G.pack.json.credits && G.pack.json.credits.length ? '<br><small style="opacity:.65">' + G.pack.json.credits.map(esc).join(" · ") + "</small>" : ""); dim = true; }
     else if (G.paused) { b = "PAUSED"; t = (G.why && G.why !== "paused" ? esc(G.why) + " · " : "") + "P, Space or a click carries on"; dim = true; }
     else if (s.phase === "ready") { b = "LEVEL " + s.level; t = "Get ready…"; }
     else if (s.phase === "busted") { b = "BUSTED!"; t = s.lives > 0 ? s.lives + " car" + (s.lives > 1 ? "s" : "") + " left" : ""; }
@@ -546,7 +602,7 @@
   var started = null;
   function start() {
     if (started) return started;
-    started = three().then(function () { setupView(); loadScores(); kick(); return true; })
+    started = three().then(loadPack).then(function () { setupView(); loadScores(); kick(); return true; })
       .catch(function (e) { G.err = String((e && e.message) || e); var m = $("pcMsg"); if (m) m.innerHTML = "<b>⚠</b><span>" + esc(G.err) + "</span>"; started = null; return false; });
     return started;
   }
@@ -557,6 +613,6 @@
     pause: pause, resume: resume, camera: setCamera, sound: setSound, scores: loadScores, save: saveScore,
     state: function () { return G.demo ? null : G.s; },
     info: function () { return { ready: !!G.V, playing: !!(G.s && !G.demo), paused: G.paused, why: G.why, cam: G.cam, sound: G.sound, render: G.render, light: G.light,
-                                 drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
+                                 pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
   };
 })(window);

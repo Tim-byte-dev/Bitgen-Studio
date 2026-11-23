@@ -77,7 +77,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("C: the chase camera behind the car, C again: the city", c1.cam === "chase" && /Chase/.test(c1.btn) && (await info()).cam === "city", c1);
     // a render running
     // a render "runs": the app's job list held still for the moment (its poll would reset a hand-set liveJobsById)
-    await ev(() => { window.__rj = window.refreshJobs; window.refreshJobs = async () => {}; window.liveJobsById = { t935: { id: "t935", status: "running" } }; });
+    // (the app's job poll may hold the original refreshJobs - the running job is put back every 50 ms while this part runs)
+    await ev(() => { window.__rj = window.refreshJobs; window.refreshJobs = async () => {}; const put = () => { window.liveJobsById = { t935: { id: "t935", status: "running" } }; }; put(); window.__jobT = setInterval(put, 50); });
     await p.waitForTimeout(600);
     const l1 = await info();
     check("a render running, While rendering = play lighter: still playing, lighter", !l1.paused && l1.light, l1);
@@ -85,7 +86,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(700);
     const l2 = await info();
     check("...= pause: paused while it runs, said why", l2.paused && /render/.test(l2.why), l2);
-    await ev(() => { window.liveJobsById = {}; window.refreshJobs = window.__rj; });
+    await ev(() => { clearInterval(window.__jobT); window.liveJobsById = {}; window.refreshJobs = window.__rj; });
     await p.waitForTimeout(900);
     check("...the render done: it carries on by itself", !(await info()).paused);
     await ev(() => { const s = document.getElementById("pcRender"); s.value = "light"; s.dispatchEvent(new Event("change")); });
