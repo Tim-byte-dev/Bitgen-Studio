@@ -14933,6 +14933,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui924-ui.js > /tmp/ui924.log 2>&
   && ok "2.924.0 browser test: the studio on Light + a blue accent -> 🔨 Build -> the BUILT app painted light with the blue GENERATE (white words) and dark bar icons; back on Dark, built again -> dark" \
   || { bad "2.924.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui924.log | head -12; }
 
+# ---- 2.925.0 (⟳ updating by itself from GitHub + the 📱 app built again)
+node scripts/test-925.js > /tmp/t925.log 2>&1 \
+  && ok "2.925.0 units: the settings, never while something works, GitHub -> update -> a restart waiting, the app built only when its source changed (after the restart, in the last build's colours), errors, Later, sourceHash, the app's 30-minute look" \
+  || { bad "2.925.0 units"; grep -a "^FAIL" -A1 /tmp/t925.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui925-ui.js > /tmp/ui925.log 2>&1 \
+  && ok "2.925.0 browser test: ⟳ Updates' switches saved; the restart bar (browser: start.bat; desktop: a 60 s countdown then the restart; Later); a changed app source -> the app built again by itself in the last build's colours" \
+  || { bad "2.925.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui925.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

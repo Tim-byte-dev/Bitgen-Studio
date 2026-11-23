@@ -5,6 +5,13 @@
 //   POST /api/update/start           -> {ok} | 409 {error}   (one at a time)
 //   GET  /api/update/job?from=N      {job: {state, from, to, restart, error}, lines[], next}
 //   GET/POST /api/update/settings    {auto_check} - 2.573.0: the check on startup (bitGen Studio + ComfyUI), on by default
+//   2.925.0 (Tim: "is there a way to make the phone app update from github? instead of contantly copying and pasting?" ->
+//   "B) PC auto-updates") - lib/autoUpdate.js, its loop started here:
+//   GET  /api/update/auto            {settings: {auto, every_h, app}, state, busy}
+//   POST /api/update/auto            {auto, every_h, app} -> settings
+//   POST /api/update/auto/check      {app_only} - look now (in the background) -> state
+//   POST /api/update/auto/later      the restart bar's Later (an hour)
+//   POST /api/update/auto/e2e        H3_E2E only: {restart: {from, to}} | {clear: true} - the suite's way to show the bar
 "use strict";
 const U = require("../lib/updater");
 const core = require("../lib/core");
@@ -23,6 +30,24 @@ function mount(app) {
     core.setConfig(c);
     res.json({ ok: true, auto_check: c.update.auto_check });
   });
+  const AU = require("../lib/autoUpdate");
+  const autoView = () => ({ settings: AU.settings(), state: Object.assign(AU.state(), { busy: AU.busyNow() }) });   // busy: now, not at the last tick
+  app.get("/api/update/auto", (_req, res) => { try { res.json(autoView()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
+  app.post("/api/update/auto", (req, res) => { try { AU.setSettings(req.body || {}); res.json(autoView()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
+  app.post("/api/update/auto/check", (req, res) => {
+    const b = req.body || {};
+    AU.tick({ force: !b.app_only, appOnly: !!b.app_only }).catch(() => {});
+    setTimeout(() => res.json(autoView()), 300);
+  });
+  app.post("/api/update/auto/later", (_req, res) => { AU.later(3600000); res.json(autoView()); });
+  app.post("/api/update/auto/e2e", (req, res) => {
+    if (process.env.H3_E2E !== "1") return res.status(404).json({ error: "not here" });
+    const b = req.body || {};
+    if (b.clear) { AU._reset(); return res.json(autoView()); }
+    if (b.restart) { AU._S.restart = { from: String(b.restart.from || ""), to: String(b.restart.to || ""), at: Date.now() }; AU._S.state = "restart"; AU._S.later_until = 0; AU._S.note = "updated (the suite)"; }
+    res.json(autoView());
+  });
+  AU.startLoop();
   app.post("/api/update/start", (_req, res) => {
     const r = U.start();
     if (r.error) return res.status(409).json(r);

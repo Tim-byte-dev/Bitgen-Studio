@@ -44,8 +44,8 @@ check("...no theme sent = the app's own look written (BG_THEME null)", w0.name =
 fs.rmSync(T, { recursive: true, force: true });
 
 const ab = src("lib/apkBuild.js"), ui = src("static/apkui.js"), vd = src("mobile/scripts/vendor.js");
-check("the build: theme -> www/lib/theme.js BEFORE scripts/vendor.js and cap sync, said in its log", /async function build\(then, theme\)/.test(ab) && ab.indexOf('require("./apkTheme").write(dir, theme)') > 0
-  && ab.indexOf('require("./apkTheme").write(dir, theme)') < ab.indexOf('"scripts", "vendor.js"') && /🎨 the app's colours: bitGen Studio's theme/.test(ab));
+check("the build: theme -> www/lib/theme.js BEFORE scripts/vendor.js and cap sync, said in its log", /async function build\(then, theme\)/.test(ab) && ab.indexOf('AT.write(dir, theme)') > 0
+  && ab.indexOf('AT.write(dir, theme)') < ab.indexOf('"scripts", "vendor.js"') && /🎨 the app's colours: bitGen Studio's theme/.test(ab));
 check("the route passes it; 🔨 Build and 🔨 Build + install send the theme in use (H3Theme: the theme, your accent, your colours)",
   /A\.build\(b\.install \? "install" : "", b\.theme\)/.test(src("routes/apkBuild.js")) && /post\("\/api\/apk\/build", \{ theme: themeNow\(\) \}\)/.test(ui) && /post\("\/api\/apk\/build", \{ install: true, theme: themeNow\(\) \}\)/.test(ui)
   && /T\.varsFor\(c\.theme, c\.accent, c\.vars\)/.test(ui) && /k\.indexOf\("--th-"\) !== 0/.test(ui));
@@ -56,7 +56,7 @@ check("the app: lib/theme.js in <head> after app.css (before the first paint)", 
 check("...GENERATE's words and the ⬆ Update bar follow the theme (the old look when there is none)", /\.btn\.go \{ background: var\(--tiger\); color: var\(--on-tiger, #1a1206\);/.test(css) && /background: var\(--banner, #2a2214\)/.test(css));
 check("...the phone's status / navigation bar icons: LIGHT style (dark icons) on a light theme, DARK otherwise (Capacitor 8 SystemBars)",
   /sb\.setStyle\(\{ style: t && t\.scheme === "light" \? "LIGHT" : "DARK" \}\)/.test(js) && /barStyle\(\);/.test(js));
-check("the app's version 1.10.0", JSON.parse(src("mobile/package.json")).version === "1.10.0");
+check("the app's version 1.10+", /^1\.(1\d|[2-9]\d)\./.test(JSON.parse(src("mobile/package.json")).version));
 check("server.js untouched", !/apkTheme/.test(src("misc/server.js")));
 
 console.log(`\nRESULT: ${P} passed, ${F} failed`);

@@ -10546,6 +10546,29 @@ GENERATE's words are black or white - whichever reads on your accent - and on a 
 bar icons turn dark. To change the app's colours later: change the studio's theme and build again (⬆ Update in the app picks the
 new build up). A build made outside bitGen (Android Studio, `npx cap sync`) keeps the app's own dark look.
 
+## ⟳ Updating by itself from GitHub - and the 📱 app with it (2.925.0)
+
+No more copying files across: bitGen Studio can fetch its own updates from GitHub and build the phone app again by itself.
+
+1. **Settings ▸ General ▸ ⟳ Updates** - tick **Update bitGen Studio from GitHub by itself** and pick how often (every hour,
+   3, 6, 12 hours or once a day). **then build the 📱 app again when it changed** is ticked with it.
+2. Build the app **once by hand** (Settings ▸ General ▸ 📱 The bitGen App ▸ 🔨 Build) - in the theme you want; later builds
+   bitGen makes by itself use the same colours.
+
+What happens then, one thing at a time and never while a render, song, picture, update or app build is running:
+
+- bitGen Studio asks GitHub. When there is a newer version it updates itself the way **⤓ Update now** does - your projects,
+  settings, styles and models are never touched; files you changed yourself are backed up.
+- When the update needs a restart: in the desktop app a bar counts down **60 s** and restarts it (**⟳ Restart now**, or
+  **Later** - asked again in an hour; while something runs it waits). In a browser the bar asks you to close start.bat (or
+  bitgen-studio.sh) and start it again.
+- After the restart (or straight away when none was needed), when the update changed the app's source, the **📱 app is built
+  again**. The phone's **⬆ Update** banner finds it - the app looks when it starts, when you come back to it and every 30
+  minutes while it is open. Tap Update, then **Install** (Android always asks for that tap).
+
+The line under the switches says when it last looked, what GitHub has, when it looks next and what happened to the app.
+**⟳ Look now** asks at once. The PC has to be on (and bitGen Studio running) for any of this.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

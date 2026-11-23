@@ -756,6 +756,7 @@
     if (!S.key) return Promise.resolve(null);
     return api("/api/app/update").then(function (u) {
       updInfo = u && u.available && isNewer(u.id, myBuild().id) ? u : null;
+      if (updInfo && !say && updInfo.id === updLater) return updInfo;   // 2.925.0: "Later" holds for that build; a newer one shows again
       $("upd").hidden = !updInfo; document.body.classList.toggle("has-upd", !!updInfo);
       if (updInfo) $("updText").textContent = "⬆ A newer bitGen app is on your PC" + (updInfo.version ? " (" + updInfo.version + ")" : "") + " - " + Math.round(updInfo.size / 1048576) + " MB";
       if (say) msg("setMsg", updInfo ? "A newer build is on your PC - tap Update at the top." : (u && u.available ? "✓ This is the newest build on your PC." : "Your PC has no build of the app yet."), updInfo ? "" : "ok");
@@ -779,7 +780,12 @@
     }).then(done);
   }
   $("updBtn").onclick = doUpdate;
-  $("updLater").onclick = function () { $("upd").hidden = true; document.body.classList.remove("has-upd"); };
+  var updLater = "";
+  $("updLater").onclick = function () { updLater = updInfo ? updInfo.id : ""; $("upd").hidden = true; document.body.classList.remove("has-upd"); };
+  /* 2.925.0 - Tim: "is there a way to make the phone app update from github? instead of contantly copying and pasting?" The PC
+     now updates itself from GitHub and builds this app again (lib/autoUpdate.js); while the app stays open it looks for that
+     new build every 30 minutes too (as well as on start and when you come back to it), so ⬆ Update turns up by itself. */
+  setInterval(function () { if (!document.hidden && S.key && S.via !== "relay") checkUpdate(false); }, 30 * 60000);
   $("updCheck").onclick = function () { msg("setMsg", "Checking…"); checkUpdate(true); };
 
   /* ---------- 🎙 voice (2.914.0). Tim: "voice chat will be very useful especially if we can add keywords or phrases, like fix
