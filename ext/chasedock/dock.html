@@ -2,7 +2,7 @@
       <div class="bhead" data-collapse="chasedock">▾ 🚓 Police Chase<button id="pcMaxBtn" class="maxbtn" data-max="chasedock" type="button" title="Maximize" aria-label="Maximize" style="margin-left:auto">⛶</button><button id="pcCloseBtn" class="ghost" type="button" title="Close the docker (the 🚓 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
       <div class="bbody" id="pcBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
         <!-- 2.935.0 (Tim: "lets make it with cars, call it police chase"): a 3D maze chase for a break during work - the
-             getaway car, the cash, the police, the 📡 jammer. Rules: chasecore.js (window.H3ChaseCore); the 3D view, keys,
+             getaway car, the burgers (the cash before 2.937.0), the police, the 📡 jammer. Rules: chasecore.js (window.H3ChaseCore); the 3D view, keys,
              sound and the high scores: chasedock.js (window.H3Chase); the scores file: chaseserver.js. -->
         <style>
           #chasedock .bbody { padding: 4px; }
@@ -50,7 +50,7 @@
         <div id="pcStage" tabindex="0" aria-label="Police Chase - click here, then drive with the arrow keys">
           <div class="pchud"><div><small>SCORE</small><span id="pcScore">0</span></div><div style="text-align:center"><small>HIGH SCORE</small><span id="pcBest">0</span></div><div style="text-align:right"><small>LEVEL <span id="pcLevel">1</span></small><span id="pcLives"></span></div></div>
           <div id="pcJam"><i></i></div>
-          <div id="pcMsg" class="dim"><b>🚓 POLICE CHASE</b><span>Pick up every bag of cash and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key.</span></div>
+          <div id="pcMsg" class="dim"><b>🚓 POLICE CHASE</b><span>Pick up every burger and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key.</span></div>
           <div id="pcName"><input id="pcNameIn" type="text" maxlength="16" placeholder="Your name" aria-label="Your name for the high scores"><button id="pcNameOk" type="button">Save</button></div>
           <div id="pcScores" aria-live="polite"></div>
         </div>

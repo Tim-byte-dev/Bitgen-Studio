@@ -23,6 +23,9 @@
  * roads kit; never in the repo, it ships as its own zip): the ground from its road pictures (straights turned to the road,
  * plain asphalt at the corners, pavers on the station square, pavement under the blocks) and each block a building of the
  * pack - a box wearing the five pictures Blender rendered of it, a random one, a random quarter turn. No pack = as before.
+ * 2.937.0 (Tim: "it would be nice if the cars were the 3d models with a little aesthetics and the square cubes were hamburgers
+ * or cakes"): the pack's cars (cars/getaway.glb, cars/police.glb from scripts/chase_car.py) replace the box cars - the police
+ * paint in each car's colour, our light bar on its roof; the pick-ups are burgers and the bonus a cake (made here, no files).
  */
 (function (root) {
   "use strict";
@@ -68,17 +71,18 @@
     scene.add(new T.HemisphereLight(0x9fb4ff, 0x1a1410, 1.25));
     var sun = new T.DirectionalLight(0xffe6c8, 1.6); sun.position.set(-8, 18, 10); scene.add(sun);
     var V = { r: r, scene: scene, cam: cam, city: null, camPos: new T.Vector3(0, 30, 20), camLook: new T.Vector3(), player: null, police: [], lights: [] };
-    V.player = makeCar({ body: 0xff8a1c, roof: 0xffa94d });
+    var CM = G.pack && G.pack.cars || {};                          // 2.937.0: the pack's 3D cars, when there
+    V.player = makeCar({ body: 0xff8a1c, roof: 0xffa94d, model: CM.getaway });
     scene.add(V.player.g);
     C.POLICE.forEach(function (p) {
-      var c = makeCar({ body: p.color, roof: 0xf2f4f8, police: true });
+      var c = makeCar({ body: p.color, roof: 0xf2f4f8, police: true, model: CM.police });
       c.accent = p.color; scene.add(c.g); V.police.push(c);
       var L = new T.PointLight(0xff2030, 0, 3.2, 2); scene.add(L); V.lights.push(L);
     });
     // the pick-ups
     V.jamGeo = new T.OctahedronGeometry(0.17);
     V.jamMat = new T.MeshStandardMaterial({ color: 0x39d0ff, emissive: 0x39d0ff, emissiveIntensity: 1.1, metalness: 0.2, roughness: 0.3 });
-    V.bonus = new T.Mesh(new T.OctahedronGeometry(0.22), new T.MeshStandardMaterial({ color: 0xffd34d, emissive: 0xffb000, emissiveIntensity: 0.8, metalness: 0.8, roughness: 0.2 }));
+    V.bonus = makeCake();
     V.bonus.visible = false; scene.add(V.bonus);
     G.V = V;
     resize();
@@ -93,6 +97,7 @@
   function box(w, h, d, m, x, y, z, g) { var o = new T.Mesh(new T.BoxGeometry(w, h, d), m); o.position.set(x, y, z); g.add(o); return o; }
   /** a car, nose to -z: body, glass cabin, roof, wheels, lights; police: a red / blue light bar */
   function makeCar(o) {
+    if (o.model) return modelCar(o);
     var g = new T.Group(), inner = new T.Group(); g.add(inner);
     var M = function (p) { return new T.MeshStandardMaterial(Object.assign({ transparent: true }, p)); };
     var mBody = M({ color: o.body, metalness: 0.45, roughness: 0.4 }), mRoof = M({ color: o.roof, metalness: 0.3, roughness: 0.45 });
@@ -114,6 +119,65 @@
       c.mats.push(c.red, c.blue);
     }
     return c;
+  }
+  /** 2.937.0: a car from the pack's model (scripts/chase_car.py: nose -Z, wheels on the ground): its own materials per car,
+   *  scaled to 0.8 of a tile; the police paint ("Body") in the car's colour and our light bar on the roof */
+  function modelCar(o) {
+    var g = new T.Group(), inner = new T.Group(), car = o.model.clone(true), mats = [], body = null;
+    g.add(inner); inner.add(car);
+    car.traverse(function (n) {
+      if (!n.isMesh) return;
+      var arr = [].concat(n.material).map(function (m0) {
+        var m = m0.clone();
+        if (o.police) { m.transparent = true; }
+        if (m0.name === "Body") { body = m; if (o.police) { m.map = null; m.color.setHex(o.body); m.metalness = 0.4; m.roughness = 0.35; } }
+        mats.push(m); return m;
+      });
+      n.material = Array.isArray(n.material) ? arr : arr[0];
+    });
+    var bb = new T.Box3().setFromObject(car), sz = bb.getSize(new T.Vector3()), k = 0.8 / Math.max(sz.x, sz.z, 1e-6);
+    car.scale.multiplyScalar(k);
+    bb = new T.Box3().setFromObject(car); var ctr = bb.getCenter(new T.Vector3());
+    car.position.x -= ctr.x; car.position.z -= ctr.z; car.position.y -= bb.min.y;
+    var top = bb.max.y - bb.min.y;
+    var c = { g: g, inner: inner, mats: mats, mBody: body || mats[0] || new T.MeshStandardMaterial(), ang: 0, model: true };
+    if (o.police) {
+      var M = function (p) { return new T.MeshStandardMaterial(Object.assign({ transparent: true }, p)); };
+      c.red = M({ color: 0x400008, emissive: 0xff1030, emissiveIntensity: 0 });
+      c.blue = M({ color: 0x000840, emissive: 0x2050ff, emissiveIntensity: 0 });
+      box(0.11, 0.04, 0.07, c.red, -0.06, top * 0.86 + 0.02, 0.03, inner); box(0.11, 0.04, 0.07, c.blue, 0.06, top * 0.86 + 0.02, 0.03, inner);
+      mats.push(c.red, c.blue);
+    }
+    return c;
+  }
+  /** 2.937.0: the pick-ups - a burger (bun, patty, cheese, lettuce, bun), five instanced layers; the bonus - a cake */
+  var BURGER = null;
+  function burgerParts() {
+    if (BURGER) return BURGER;
+    var S = function (c, p) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.7 }, p || {})); };
+    var lay = function (geo, y, mat) { geo.translate(0, y, 0); return { geo: geo, mat: mat }; };
+    var top = new T.SphereGeometry(0.088, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2); top.scale(1, 0.7, 1);
+    var cheese = new T.BoxGeometry(0.15, 0.008, 0.15); cheese.rotateY(Math.PI / 4);
+    BURGER = [
+      lay(new T.CylinderGeometry(0.084, 0.074, 0.034, 18), 0.017, S(0xd9913f, { emissive: 0x2a1404 })),
+      lay(new T.CylinderGeometry(0.092, 0.092, 0.03, 18), 0.049, S(0x5a2e17, { roughness: 0.9 })),
+      lay(cheese, 0.068, S(0xffc928, { emissive: 0x3a2a00 })),
+      lay(new T.CylinderGeometry(0.098, 0.098, 0.01, 14), 0.077, S(0x4fb83a, { emissive: 0x0c2a08 })),
+      lay(top, 0.082, S(0xe39a45, { emissive: 0x2a1404, roughness: 0.5 })),
+    ];
+    return BURGER;
+  }
+  function makeCake() {
+    var g = new T.Group(), S = function (c, p) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.6 }, p || {})); };
+    var add = function (geo, mat, y) { var o = new T.Mesh(geo, mat); o.position.y = y; g.add(o); return o; };
+    add(new T.CylinderGeometry(0.2, 0.2, 0.014, 24), S(0xf4f4f4), 0.007);                                 // the plate
+    add(new T.CylinderGeometry(0.15, 0.15, 0.1, 24), S(0xf3a6c8, { emissive: 0x3a1020 }), 0.064);        // pink sponge
+    add(new T.TorusGeometry(0.15, 0.012, 8, 32), S(0xffffff), 0.114).rotation.x = Math.PI / 2;           // icing ring
+    add(new T.CylinderGeometry(0.1, 0.1, 0.075, 24), S(0xfff1d6, { emissive: 0x2a2010 }), 0.152);        // cream top tier
+    add(new T.SphereGeometry(0.03, 12, 8), S(0xd0102a, { emissive: 0x500008, roughness: 0.3 }), 0.215);  // the cherry
+    add(new T.CylinderGeometry(0.008, 0.008, 0.07, 8), S(0x7ec8ff), 0.225).position.x = 0.05;           // a candle
+    add(new T.SphereGeometry(0.014, 8, 6), S(0xffd060, { emissive: 0xffa000, emissiveIntensity: 2 }), 0.27).position.x = 0.05;
+    return g;
   }
   var world = function (m, x, y) { return [x - m.W / 2 + 0.5, y - m.H / 2 + 0.5]; };
 
@@ -193,12 +257,11 @@
       });
       city.add(im);
     });
-    // the cash: one instanced mesh, a bundle per tile
+    // the pick-ups (2.937.0: burgers): one instanced mesh a layer, a burger a tile
     var cashIdx = [], k = 0;
     for (var i = 0; i < m.W * m.H; i++) if (s.items[i] === 1) cashIdx.push(i);
-    var cash = new T.InstancedMesh(new T.BoxGeometry(0.17, 0.08, 0.11), new T.MeshStandardMaterial({ color: 0x35c463, emissive: 0x0c4a20, emissiveIntensity: 0.9, roughness: 0.5 }), Math.max(1, cashIdx.length));
-    cash.count = cashIdx.length; city.add(cash);
-    V.cash = cash; V.cashIdx = cashIdx;
+    V.cash = burgerParts().map(function (p) { var im = new T.InstancedMesh(p.geo, p.mat, Math.max(1, cashIdx.length)); im.count = cashIdx.length; city.add(im); return im; });
+    V.cashIdx = cashIdx;
     V.jams = m.jammers.map(function (j) { var o = new T.Mesh(V.jamGeo, V.jamMat); var w = world(m, j[0], j[1]); o.position.set(w[0], 0.25, w[1]); city.add(o); o.userData.k = j[1] * m.W + j[0]; return o; });
     G.mazeOf = m;
     k = 0;
@@ -248,7 +311,13 @@
       var roads = j.roads || {}, names = Object.keys(roads), imgs = {};
       return Promise.all(names.map(function (n) {
         return new Promise(function (ok) { var im = new Image(); im.onload = function () { imgs[n] = im; ok(); }; im.onerror = function () { ok(); }; im.src = "/ext/chasedock/assets/" + roads[n]; });
-      })).then(function () { G.pack = { json: j, roadImgs: Object.keys(imgs).length ? imgs : null }; return G.pack; });
+      })).then(function () {
+        G.pack = { json: j, roadImgs: Object.keys(imgs).length ? imgs : null, cars: {} };
+        var cars = j.cars || {}, GL = T.GLTFLoader ? new T.GLTFLoader() : null;
+        return Promise.all(Object.keys(cars).map(function (role) {        // 2.937.0: the 3D cars (a car that fails stays a box)
+          return GL ? new Promise(function (ok) { GL.load("/ext/chasedock/assets/" + cars[role], function (gl) { G.pack.cars[role] = gl.scene; ok(); }, null, function () { ok(); }); }) : null;
+        })).then(function () { return G.pack; });
+      });
     }).catch(function () { return null; });
   }
   var WIN = null;
@@ -305,13 +374,13 @@
       var P3 = new T.Vector3();
       V.cashIdx.forEach(function (k, j) {
         var on = s.items[k] === 1, x = k % m.W, y = (k / m.W) | 0, w = world(m, x, y);
-        E3.set(0, t * 1.6 + j * 0.37, 0); Q.setFromEuler(E3); S3.setScalar(on ? 1 : 0); P3.set(w[0], 0.12 + Math.sin(t * 3 + j) * 0.02, w[1]);
-        M4.compose(P3, Q, S3); V.cash.setMatrixAt(j, M4);
+        E3.set(0, t * 1.2 + j * 0.37, 0); Q.setFromEuler(E3); S3.setScalar(on ? 1.05 : 0); P3.set(w[0], 0.03 + Math.abs(Math.sin(t * 3 + j)) * 0.04, w[1]);
+        M4.compose(P3, Q, S3); for (var L = 0; L < V.cash.length; L++) V.cash[L].setMatrixAt(j, M4);
       });
-      V.cash.instanceMatrix.needsUpdate = true;
+      V.cash.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
       V.jams.forEach(function (o, j) { o.visible = s.items[o.userData.k] === 2; o.rotation.y = t * 2; o.position.y = 0.25 + Math.sin(t * 4 + j) * 0.05; });
       V.bonus.visible = !!s.bonus && (s.bonus.t > 2 || Math.floor(t * 6) % 2 === 0);
-      if (s.bonus) { var bw = world(m, s.bonus.x, s.bonus.y); V.bonus.position.set(bw[0], 0.3 + Math.sin(t * 3) * 0.05, bw[1]); V.bonus.rotation.y = t * 2.2; }
+      if (s.bonus) { var bw = world(m, s.bonus.x, s.bonus.y); V.bonus.position.set(bw[0], 0.02 + Math.abs(Math.sin(t * 3)) * 0.05, bw[1]); V.bonus.rotation.y = t * 1.5; }
       camera(dt, m, pw, p.face);
     } else if (!G.mazeOf) {
       // the attract screen: a demo city behind the title
@@ -451,7 +520,7 @@
     if (key === G.msgKey) return;
     G.msgKey = key;
     var m = $("pcMsg"), b = "", t = "", dim = false;
-    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every bag of cash and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key." + (G.pack && G.pack.json.credits && G.pack.json.credits.length ? '<br><small style="opacity:.65">' + G.pack.json.credits.map(esc).join(" · ") + "</small>" : ""); dim = true; }
+    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every burger and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key." + (G.pack && G.pack.json.credits && G.pack.json.credits.length ? '<br><small style="opacity:.65">' + G.pack.json.credits.map(esc).join(" · ") + "</small>" : ""); dim = true; }
     else if (G.paused) { b = "PAUSED"; t = (G.why && G.why !== "paused" ? esc(G.why) + " · " : "") + "P, Space or a click carries on"; dim = true; }
     else if (s.phase === "ready") { b = "LEVEL " + s.level; t = "Get ready…"; }
     else if (s.phase === "busted") { b = "BUSTED!"; t = s.lives > 0 ? s.lives + " car" + (s.lives > 1 ? "s" : "") + " left" : ""; }
@@ -613,6 +682,6 @@
     pause: pause, resume: resume, camera: setCamera, sound: setSound, scores: loadScores, save: saveScore,
     state: function () { return G.demo ? null : G.s; },
     info: function () { return { ready: !!G.V, playing: !!(G.s && !G.demo), paused: G.paused, why: G.why, cam: G.cam, sound: G.sound, render: G.render, light: G.light,
-                                 pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
+                                 pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs, cars: Object.keys(G.pack.cars || {}).sort() } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
   };
 })(window);

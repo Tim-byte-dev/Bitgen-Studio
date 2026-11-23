@@ -9,7 +9,8 @@
 #   buildings/<id>_{px,nx,pz,nz,py}.jpg   each building of the city .blend as five pictures (scripts/chase_bake.py renders
 #                                         them - the models themselves are not in the pack)
 #   roads/{straight,plain,pavement,plaza}.jpg   squares cut from the roads kit's texture atlas (ROAD_CROPS)
-#   pack.json   {version: 1, buildings: [{id, name, size_m, faces}], roads: {...}, credits: [...]}
+#   cars/getaway.glb, cars/police.glb    (2.937.0) cars made by scripts/chase_car.py, copied in (--getaway / --police)
+#   pack.json   {version: 1, buildings: [{id, name, size_m, faces}], roads: {...}, cars: {getaway, police}, credits: [...]}
 # Needs Pillow; the buildings need Blender (the app, run headless) or a Python with the bpy module.
 import argparse, json, os, shutil, subprocess, sys, tempfile
 
@@ -72,18 +73,26 @@ def main(argv=None):
     ap.add_argument("--blender", default=None)
     ap.add_argument("--bpy-python", default=None)
     ap.add_argument("--credit", action="append", default=[])
+    ap.add_argument("--getaway", help="the getaway car: a .glb from scripts/chase_car.py")
+    ap.add_argument("--police", help="the police car: a .glb from scripts/chase_car.py (its paint material named Body)")
     a = ap.parse_args(argv)
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
-    pack = {"version": 1, "buildings": [], "roads": {}, "credits": a.credit}
+    pack = {"version": 1, "buildings": [], "roads": {}, "cars": {}, "credits": a.credit}
     old = os.path.join(out, "pack.json")
     if os.path.exists(old):
         try:
             prev = json.load(open(old))
-            pack["buildings"] = prev.get("buildings", []); pack["roads"] = prev.get("roads", {})
+            pack["buildings"] = prev.get("buildings", []); pack["roads"] = prev.get("roads", {}); pack["cars"] = prev.get("cars", {})
             pack["credits"] = a.credit or prev.get("credits", [])
         except Exception:
             pass
+    for role in ("getaway", "police"):
+        f = getattr(a, role)
+        if f:
+            os.makedirs(os.path.join(out, "cars"), exist_ok=True)
+            shutil.copyfile(f, os.path.join(out, "cars", role + ".glb"))
+            pack["cars"][role] = "cars/" + role + ".glb"
     if a.roads:
         pack["roads"] = crop_roads(a.roads, os.path.join(out, "roads"))
     if a.city:
@@ -103,7 +112,7 @@ def main(argv=None):
             shutil.rmtree(tmp, ignore_errors=True)
     with open(old, "w") as fh:
         json.dump(pack, fh, indent=1)
-    print("pack:", old, "-", len(pack["buildings"]), "buildings,", len(pack["roads"]), "road pictures")
+    print("pack:", old, "-", len(pack["buildings"]), "buildings,", len(pack["roads"]), "road pictures,", len(pack["cars"]), "cars")
     return pack
 
 

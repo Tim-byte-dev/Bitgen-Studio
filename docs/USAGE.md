@@ -10846,14 +10846,14 @@ Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Po
 when it would not fit (⛶ / 🗗 as usual; ✕ or 🚓 again hides it). It is hidden until you open it the first time.
 
 **Click the city**, then press **Enter** or an arrow key. You drive the orange getaway car: **arrows** or **W A S D** (a
-gamepad's d-pad or stick, or a swipe on a touch screen). Pick up every green bag of cash to clear the city - the next level is
+gamepad's d-pad or stick, or a swipe on a touch screen). Pick up every burger to clear the city (green bags of cash before 2.937.0) - the next level is
 a new, bigger city with faster police. Four police cars come out of the station in the middle: one heads straight for you,
 one for where you are going, one comes from the side and the rookie sometimes takes a wrong turn. Now and then they patrol
 their corners instead. Caught = **BUSTED** (three cars to start with, one more at 10,000 points).
 
 A **📡 jammer** (the four blue gems in the corners) jams their radios for a few seconds: the police turn grey, slow down and
 scatter (the blue bar shows how long is left) - bump one and it drives back to the station, 200, 400, 800 then 1,600 points.
-A gold diamond shows up now and then below the station for a bonus.
+A cake (a gold diamond before 2.937.0) shows up now and then below the station for a bonus.
 
 **🎥 City / Chase** (C) - the whole city from above (turned a quarter in a tall, narrow docker), or behind your car, where ↑
 drives straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
@@ -10878,3 +10878,11 @@ Blender renders every building from its four sides and from above, and the game 
 pictures - light to draw, and the models themselves never leave Blender. Bought or royalty-free art may be used inside the game
 but not handed out as files, so the pack is never in the public repo.
 
+### 3D cars, burgers and a cake (2.937.0)
+
+With the art pack installed, the getaway car and the police cars are 3D models: the police paint in each car's own colour and
+a red / blue light bar on the roof. The pick-ups are burgers and the bonus is a cake (also without the pack).
+To put your own cars in: `python scripts/chase_car.py --in car.fbx --out getaway.glb --tris 16000 --turn 180` (a Python with
+Blender's bpy, or `blender -b --python scripts/chase_car.py -- ...`) cuts a car down to game size, turns its nose the right
+way (--turn) and names the paint (--paint "body") so the game can colour it; then
+`python3 scripts/chase_assets.py --getaway getaway.glb --police police.glb` puts them in the pack.

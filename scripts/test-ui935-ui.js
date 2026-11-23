@@ -43,7 +43,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(500);
     const v1 = await ev(() => { const d = document.getElementById("chasedock"), r = d.getBoundingClientRect(), c = document.getElementById("maincol").getBoundingClientRect(), cv = document.querySelector("#pcStage canvas");
       return { shown: !d.classList.contains("dockgone"), inView: r.bottom <= c.bottom + 4, canvas: !!cv && cv.width > 100, msg: document.getElementById("pcMsg").textContent, i: window.H3Chase.info() }; });
-    check("🚓 shows it, all in view (⛶ when it would not fit); the city is drawn (three.js), the title says how to play", v1.shown && v1.inView && v1.canvas && /POLICE CHASE/.test(v1.msg) && /cash/.test(v1.msg) && v1.i.phase === "title", v1);
+    check("🚓 shows it, all in view (⛶ when it would not fit); the city is drawn (three.js), the title says how to play", v1.shown && v1.inView && v1.canvas && /POLICE CHASE/.test(v1.msg) && /burger/.test(v1.msg) && v1.i.phase === "title", v1);
     check("...the title is one picture - nothing keeps drawing", !v1.i.looping);
     // a game
     await ev(() => window.H3Chase.newGame(4242));
@@ -79,11 +79,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     // a render "runs": the app's job list held still for the moment (its poll would reset a hand-set liveJobsById)
     // (the app's job poll may hold the original refreshJobs - the running job is put back every 50 ms while this part runs)
     await ev(() => { window.__rj = window.refreshJobs; window.refreshJobs = async () => {}; const put = () => { window.liveJobsById = { t935: { id: "t935", status: "running" } }; }; put(); window.__jobT = setInterval(put, 50); });
-    await p.waitForTimeout(600);
+    await p.waitForFunction(() => window.H3Chase.info().light, null, { timeout: 10000 }).catch(() => {});
     const l1 = await info();
     check("a render running, While rendering = play lighter: still playing, lighter", !l1.paused && l1.light, l1);
     await ev(() => { const s = document.getElementById("pcRender"); s.value = "pause"; s.dispatchEvent(new Event("change")); });
-    await p.waitForTimeout(700);
+    await p.waitForFunction(() => window.H3Chase.info().paused, null, { timeout: 10000 }).catch(() => {});   // (SwiftShader: a few frames a second)
     const l2 = await info();
     check("...= pause: paused while it runs, said why", l2.paused && /render/.test(l2.why), l2);
     await ev(() => { clearInterval(window.__jobT); window.liveJobsById = {}; window.refreshJobs = window.__rj; });

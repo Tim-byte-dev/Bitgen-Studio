@@ -15026,6 +15026,11 @@ node scripts/test-936.js > /tmp/t936.log 2>&1 \
   && ok "2.936.0 units: the bake (Blender, five pictures a building), the pack (roads cut from the atlas, pack.json), never committed, the loader" \
   || { bad "2.936.0 units"; grep -a "^FAIL" -A1 /tmp/t936.log | head -12; }
 
+# ---- 2.937.0 (🚓 Police Chase: 3D cars, burgers, a cake)
+node scripts/test-937.js > /tmp/t937.log 2>&1 \
+  && ok "2.937.0 units: chase_car.py (cut down, nose, Body, glb), the pack's cars, model cars with light bars, burgers, the cake" \
+  || { bad "2.937.0 units"; grep -a "^FAIL" -A1 /tmp/t937.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
