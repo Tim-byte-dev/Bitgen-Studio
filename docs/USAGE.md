@@ -10584,6 +10584,21 @@ The full threat model is in **docs/bitgen-studio-threat-model.md**. What you may
   the PC only.
 - **Links in the desktop app** open in your browser or mail program; anything else (file:, search-ms: …) is ignored.
 
+## 👂 "Hi Gemma" - waking the 📱 app by its name (2.927.0)
+
+1. **Settings ▸ General ▸ 🗣 The assistant** (under 📱 The bitGen App): type the name you want to call it (Gemma to start
+   with) and keep **The app listens for "Hi …" while it is open** ticked.
+2. Build the app once more (🔨 Build, or let ⟳ auto-update do it) so the phone has app 1.12.0, and allow the microphone.
+3. With the app open, say **"Hi Gemma"** (hey / hello / okay Gemma, or just "Gemma"). It opens Talk, says "Yes?" and listens
+   - carry on talking as with 🎙 Talk. Say **"Hi Gemma, what's the weather in Brisbane?"** and it answers straight away.
+   "Bye" / "that's all" or ✕ End finishes; then it listens for its name again.
+
+- **👂** in the app's top bar is lit while it listens; tap it to stop (and again to start). It never listens in the
+  background, while it is talking or recording, or away from home through the relay (the Cloudflare tunnel is fine).
+- Each short burst of speech goes to your PC's speech to text (the kept-up Whisper - Settings ▸ Audio must have
+  faster-whisper installed), which is told the name so it spells it your way. Nothing is kept; long talk (a TV) is ignored.
+- The assistant answers to the name, and says it if you ask who it is.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -12,6 +12,8 @@ header#top { position: fixed; top: 0; left: 0; right: 0; z-index: 5; display: fl
 .hdr-r { display: flex; align-items: center; gap: 10px; min-width: 0; }
 button.icon { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; width: 34px; height: 30px; font-size: 1rem; padding: 0; }
 button.icon.on { color: var(--tiger); border-color: var(--tiger); }
+#wakeBtn.on { animation: wakePulse 2.4s ease-in-out infinite; }   /* 2.927.0: 👂 listening for its name */
+@keyframes wakePulse { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tiger) 35%, transparent); } }
 .brand { display: flex; gap: 8px; align-items: center; font-size: 1.05rem; }
 .brand img { border-radius: 6px; }
 .conn { font-size: .78rem; color: var(--dim); max-width: 46vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

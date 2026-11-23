@@ -105,7 +105,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       fs.writeFileSync(marker, "a change to the app's source " + Date.now());
       await post("/api/update/auto/check", { app_only: true });
       for (let i = 0; i < 600; i++) { s = await getj("/api/update/auto"); if (s.state.app.state === "built" || s.state.app.state === "error") break; await sleep(1000); }
-      check("a file of the app's source changed -> the look builds the 📱 app again by itself", s.state.app.state === "built" && /1\.11\.0/.test(s.state.app.note), s.state.app);
+      check("a file of the app's source changed -> the look builds the 📱 app again by itself", s.state.app.state === "built" && /1\.\d+\.\d+/.test(s.state.app.note), s.state.app);
       const st1 = await getj("/api/apk/status");
       const log = (st1.job && st1.job.log || []).join("\n");
       check("…in the colours of the last build you pressed (\"Tim Light\"), not the studio's look now", /theme "Tim Light" \(light, accent #2b6cd6\)/.test(log), log.slice(-500));

@@ -14949,6 +14949,14 @@ curl -s -H "Host: rebind.example:8311" "http://127.0.0.1:8311/api/config" | grep
   && ok "2.926.0 live: a request for /api/config under a rebound name is refused by the running server" \
   || bad "2.926.0 live: a rebound Host reached /api/config"
 
+# ---- 2.927.0 (👂 "Hi <name>": the app wakes on its name)
+node scripts/test-927.js > /tmp/t927.log 2>&1 \
+  && ok "2.927.0 units: match() (greetings, sound-alike spellings, the name first, the rest = the first question, a TV's \"Emma went…\" not), the name kept, bursts of speech (pre-roll, 6 s at most), the WAV, Whisper told the name, the LLM told its name, the wiring" \
+  || { bad "2.927.0 units"; grep -a "^FAIL" -A1 /tmp/t927.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui927-ui.js > /tmp/ui927.log 2>&1 \
+  && ok "2.927.0 browser test: Settings ▸ General names it (Nova); the app's 👂 listens; \"Hey Nova\" opens Talk and answers; \"Hi Nova, what is …\" answered at once (the LLM told its name); other words nothing; 👂 off; the desktop's switch off" \
+  || { bad "2.927.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui927.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

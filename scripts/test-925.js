@@ -143,7 +143,7 @@ function world(o) {
   check("a build records its source + time; \"last\" = the theme of the last build you pressed, kept by apk.theme", /built_source: sourceHash\(dir\)/.test(A) && /theme === "last"/.test(A) && /saveCfg\(\{ theme: sent \}\)/.test(A));
   const M = src("mobile/www/app.js");
   check("the app looks for a new build every 30 minutes while open; Later holds for that build", /30 \* 60000/.test(M) && /updInfo\.id === updLater/.test(M));
-  check("the app is 1.11.0", JSON.parse(src("mobile/package.json")).version === "1.11.0");
+  check("the app is 1.11+", /^1\.(1[1-9]|[2-9]\d)\./.test(JSON.parse(src("mobile/package.json")).version));
   check("H3_NO_AUTOUPDATE=1 keeps the loop off", /H3_NO_AUTOUPDATE/.test(src("lib/autoUpdate.js")));
 
   fs.rmSync(T, { recursive: true, force: true });

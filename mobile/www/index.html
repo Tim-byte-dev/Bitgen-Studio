@@ -13,6 +13,7 @@
 <header id="top">
   <div class="brand"><img src="icon.png" alt="" width="26" height="26"><b>bitGen</b></div>
   <div class="hdr-r"><div id="conn" class="conn" title="Your PC">○ not connected</div>
+    <button id="wakeBtn" class="icon tgl" type="button" hidden aria-pressed="false" title="Listening for its name while the app is open - tap to stop / start" aria-label="Listening for its name">👂</button>
     <button id="fsBtn" class="icon" type="button" title="Full screen - hide the phone's status and navigation bars (swipe from the edge to see them)" aria-label="Full screen">⛶</button></div>
 </header>
 <!-- 2.912.0: ⬆ a newer build of this app is on your PC -->
@@ -180,6 +181,7 @@
 <script src="lib/core.js"></script>
 <script src="lib/net.js"></script>
 <script src="lib/voicestream.js"></script>
+<script src="lib/wake.js"></script><!-- 2.927.0: 👂 "Hi Gemma" -->
 <script src="app.js"></script>
 </body>
 </html>

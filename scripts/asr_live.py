@@ -52,9 +52,11 @@ def main():
         m = WhisperModel(name, device=dev, compute_type=comp, download_root=root)
         return m
 
-    def run(m, audio, lang):
+    def run(m, audio, lang, prompt=None):
+        # 2.927.0: "prompt" = words to expect (the 📱 app's wake word: "Hi Gemma." - spelled the user's way)
         segs, info = m.transcribe(load_audio(audio), language=lang, vad_filter=True, beam_size=1,
-                                  condition_on_previous_text=False, word_timestamps=False)
+                                  condition_on_previous_text=False, word_timestamps=False,
+                                  initial_prompt=(prompt or None))
         text = " ".join(str(s.text).strip() for s in segs).strip()       # drained here: a GPU failure surfaces now
         return text, getattr(info, "language", None) or lang or ""
 
@@ -80,15 +82,16 @@ def main():
         jid = job.get("id")
         audio = job.get("audio") or ""
         lang = (job.get("language") or "").strip() or lang0
+        prompt = (job.get("prompt") or "").strip()[:200] or None
         try:
-            text, lg = run(model, audio, lang)
+            text, lg = run(model, audio, lang, prompt)
         except Exception as e:  # noqa: BLE001
             if is_cuda_problem(e) and not used.startswith("cpu"):
                 sys.stderr.write("[asr-live] GPU failed - CPU from now on. " + CUDA_HINT + "\n")
                 sys.stderr.flush()
                 try:
                     model, used = load("cpu", "int8"), "cpu"
-                    text, lg = run(model, audio, lang)
+                    text, lg = run(model, audio, lang, prompt)
                 except Exception as e2:  # noqa: BLE001
                     say({"id": jid, "error": f"transcription failed: {e2}"})
                     continue

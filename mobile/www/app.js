@@ -849,7 +849,9 @@
     return api("/api/app/voice", { method: "POST", body: fd, timeout: 240000 });
   }
   $("micBtn").onclick = function () {
+    wakeStop();                                                                // 2.927.0: one microphone at a time
     record($("micBtn"), "🎙 Speak the prompt", function (b) {
+      setTimeout(wakeStart, 800);
       if (!b) { msg("goMsg", "Nothing was heard - tap 🎙 and speak.", "bad"); return; }
       msg("goMsg", "🎙 Your PC is listening to it…");
       sendVoice(b, "dictate").then(function (j) {
@@ -938,6 +940,7 @@
     if (rec) { rec.tapped = false; if (rec.cancel) rec.cancel(); else rec.stop(); }
     $("talkBtn").classList.remove("live"); $("talkBtn").textContent = "🎙 Talk"; $("talkEnd").hidden = true;
     msg("talkMsg", words || "");
+    setTimeout(wakeStart, 1200);                                              // 2.927.0: 👂 listening for its name again
   }
   /** what the PC made of a turn (lib/appVoice.js) -> said, made, spoken; then listen again or end */
   function talkAnswer(j) {
@@ -1017,16 +1020,110 @@
       sendVoice(b, "talk").then(talkAnswer, function (e) { msg("talkMsg", e.message, "bad"); endConvo(e.message); });
     }, "■ I'm done");
   }
-  $("talkBtn").onclick = function () {
-    if (rec) { rec.tapped = true; rec.stop(); return; }                           // "I'm done" - send it now
-    if (convo) { endConvo(""); return; }
+  /** a conversation starts (🎙 Talk, or 2.927.0 its name called): then(first) - first = what to do instead of listening */
+  function startConvo(first) {
+    wakeStop();
     convo = true; quietTurns = 0;
     $("talkBtn").classList.add("live"); $("talkEnd").hidden = false;
     // 2.919.0: does the PC have the live turn detection? (one quick ask; no answer = the recording as before)
     var ask = S.via === "relay" && !tunnel() ? Promise.resolve(null) : liveReq("GET", "/api/voice/stream").catch(function () { return null; });
     msg("talkMsg", "🎙 …");
-    ask.then(function (st) { voiceLive = !!(st && st.installed); if (convo) turn(); });
+    ask.then(function (st) { voiceLive = !!(st && st.installed); if (!convo) return; if (first) first(); else turn(); });
+  }
+  $("talkBtn").onclick = function () {
+    if (rec) { rec.tapped = true; rec.stop(); return; }                           // "I'm done" - send it now
+    if (convo) { endConvo(""); return; }
+    startConvo();
   };
+
+  /* 2.927.0 👂 "HI GEMMA". Tim: "can we make the chat with the phone more realistic" -> "when the app is running it is
+     listening for keywords like Hi Gemma. the desktop app can give it a name in general settings". While the app is open
+     (on the Wi-Fi or the Cloudflare tunnel - not the relay) it listens: each short burst of speech (lib/wake.js) goes to
+     the PC, whose kept-up Whisper hears whether its name was called (POST /api/app/wake, lib/wakeWord.js). Then it answers
+     "Yes?" - or straight away what you asked after the name - and the conversation goes on as 🎙 Talk. 👂 in the top bar
+     shows it listening; a tap stops / starts it (kept on the phone). Never while it talks, records or is in the background. */
+  var wake = { on: false, stream: null, ac: null, pr: null, seg: null, busy: false, fails: 0, broken: "", gen: 0 }, wakeMine = true;
+  function assistant() { return (S.info && S.info.assistant) || null; }
+  function wakeWanted() {
+    var a = assistant();
+    return !!(a && a.wake && wakeMine && !wake.broken && S.key && !convo && !rec && !document.hidden && window.BGWake && (S.via !== "relay" || tunnel())
+      && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+  function paintWake() {
+    var a = assistant(), b = $("wakeBtn");
+    if (!b) return;
+    b.hidden = !(a && a.wake);
+    b.setAttribute("aria-pressed", wake.on ? "true" : "false");
+    b.classList.toggle("on", wake.on);
+    b.title = !a ? "" : wake.broken ? "👂 Stopped: " + wake.broken : wakeMine ? (wake.on ? "Listening for \"Hi " + a.name + "\" - tap to stop" : "Listens for \"Hi " + a.name + "\" while the app is open (not through the relay)") : "Not listening for \"Hi " + a.name + "\" - tap to start";
+  }
+  function wakeStop() {
+    wake.gen++;
+    if (wake.seg) wake.seg.reset();
+    try { if (wake.pr) wake.pr.disconnect(); } catch (e) { /* gone */ }
+    try { if (wake.ac) wake.ac.close(); } catch (e) { /* gone */ }
+    if (wake.stream) wake.stream.getTracks().forEach(function (t) { t.stop(); });
+    wake.on = false; wake.stream = wake.ac = wake.pr = null;
+    paintWake();
+  }
+  function wakeStart() {
+    if (wake.on || !wakeWanted()) { paintWake(); return; }
+    var g = ++wake.gen;
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
+      if (g !== wake.gen || !wakeWanted()) { stream.getTracks().forEach(function (t) { t.stop(); }); paintWake(); return; }
+      try {
+        var ac = new (window.AudioContext || window.webkitAudioContext)(), src = ac.createMediaStreamSource(stream), pr = ac.createScriptProcessor(4096, 1, 1);
+        var mute = ac.createGain(); mute.gain.value = 0; src.connect(pr); pr.connect(mute); mute.connect(ac.destination);
+        wake.seg = window.BGWake.segmenter({ onClip: wakeClip });
+        pr.onaudioprocess = function (e) { if (wake.on && !wake.busy) wake.seg.feed(e.inputBuffer.getChannelData(0), ac.sampleRate); };
+        wake.stream = stream; wake.ac = ac; wake.pr = pr; wake.on = true;
+      } catch (x) { stream.getTracks().forEach(function (t) { t.stop(); }); wake.broken = "the microphone: " + ((x && x.message) || x); }
+      paintWake();
+    }, function (e) { wake.broken = "the microphone: " + ((e && e.message) || e); paintWake(); });
+  }
+  function wakeSend(blob, test) {
+    var fd = new FormData();
+    fd.append("audio", blob, "wake.wav");
+    fd.append("history", JSON.stringify(talkHist.slice(-10)));
+    fd.append("phrases", JSON.stringify(($("phrases").value || "").split("\n")));
+    fd.append("web", talkWeb ? "1" : "0"); fd.append("persona", persona);
+    if (test) fd.append("test_heard", test);
+    return api("/api/app/wake", { method: "POST", body: fd, timeout: 60000, lanOnly: true });
+  }
+  function wakeClip(f32, rate, test) {
+    if (wake.busy || convo) return;
+    wake.busy = true;
+    var g = wake.gen;
+    wakeSend(new Blob([window.BGWake.wav(f32, rate)], { type: "audio/wav" }), test).then(function (j) {
+      wake.fails = 0;
+      if (j && j.wake && g === wake.gen && !convo) heardName(j);
+    }, function (e) {
+      if (++wake.fails >= 3) { wake.broken = e.message; wakeStop(); msg("talkMsg", "👂 Not listening for its name: " + e.message, "bad"); }
+    }).then(function () { wake.busy = false; });
+  }
+  /** its name was called: say so, answer, talk */
+  function heardName(j) {
+    var a = assistant() || { name: "" };
+    if (S.view !== "talk") show("talk");
+    startConvo(function () {
+      if (j.result) { j.result.heard = j.result.heard || j.rest; return talkAnswer(j.result); }   // "Hi Gemma, what's the time?"
+      say("you", j.heard || ("Hi " + a.name));
+      var hi = ["Yes?", "Hi - I'm listening.", "Hey! What's up?", "Mm-hm?"][Math.floor(Math.random() * 4)];
+      say("pc", hi);
+      lastSaid = "";
+      speak(hi).then(function () { if (convo) turn(); });
+    });
+  }
+  window.BG_wakeTest = function (text) { wakeClip(new Float32Array(1600), 16000, text); };   // the suite (the PC honours test_heard only in its test mode)
+  $("wakeBtn").onclick = function () {
+    if (wake.broken) { wake.broken = ""; wake.fails = 0; }
+    else wakeMine = !wakeMine;
+    kset("wake", wakeMine ? "" : "0");
+    if (wakeMine) wakeStart(); else wakeStop();
+    msg("talkMsg", wakeMine ? "👂 Listening for \"Hi " + ((assistant() || {}).name || "") + "\" while the app is open." : "👂 Not listening for its name - tap 🎙 Talk.");
+  };
+  kget("wake").then(function (v) { wakeMine = v !== "0"; if (!wakeMine) wakeStop(); });
+  setInterval(function () { if (!wake.on && wakeWanted()) wakeStart(); }, 4000);   // after a recording lets the microphone go, a reconnect…
   $("talkEnd").onclick = function () { endConvo("Talk again any time."); };
   $("phrases").onchange = function () { kset("phrases", $("phrases").value); };
   $("talkSpeak").onchange = function () { kset("talkSpeak", $("talkSpeak").checked ? "1" : "0"); };
@@ -1057,6 +1154,7 @@
       S.info = i; if (i.relay !== undefined) saveRelay(i.relay); connOk();
       fillStyles(); paintWh(); show(S.view === "connect" ? "create" : S.view);
       checkUpdate(false);
+      wakeStart();                                                            // 2.927.0: 👂 "Hi <name>"
     }).catch(function (e) { conn("● can't reach the PC", "bad"); msg("goMsg", e.message, "bad"); show("create"); });
   }
   layout();
@@ -1078,7 +1176,8 @@
   setInterval(function () { if (!document.hidden && S.key && S.via !== "relay") api("/api/remote/me", { timeout: 10000, lanOnly: true }).catch(function () { /* reach() sorts it out */ }); }, 30000);
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden && !S.key && P.LanInfo) { findAndConnect(); return; }
-    if (document.hidden || !S.key) return;
-    reach().then(function () { if (S.view === "queue") loadJobs(); estimate(true); if (S.via !== "relay") checkUpdate(false); connOk(); });   // 📶 / ☁ again after a while away
+    if (document.hidden) { wakeStop(); return; }                              // 2.927.0: never listening in the background
+    if (!S.key) return;
+    reach().then(function () { if (S.view === "queue") loadJobs(); estimate(true); if (S.via !== "relay") checkUpdate(false); connOk(); wakeStart(); });   // 📶 / ☁ again after a while away
   });
 })();
