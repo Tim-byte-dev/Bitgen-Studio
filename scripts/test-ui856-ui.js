@@ -23,6 +23,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   p.on("dialog", (d) => d.accept().catch(() => {}));
   const ev = (f, a) => p.evaluate(f, a);
+  // 2.926.0 (TM-002): the 👁 Preview is its own origin now - its page is read through Playwright's frame, not contentDocument
+  const pf = async () => { const h = await p.$("#wbPrev"); return h && h.contentFrame(); };
+  const pev = async (fn) => (await pf()).evaluate(fn);
+  const pwait = async (fn, ms) => { const t0 = Date.now(); for (;;) { try { const f = await pf(); if (f && await f.evaluate(fn)) return true; } catch { /* loading */ } if (Date.now() - t0 > (ms || 10000)) return false; await new Promise((r) => setTimeout(r, 200)); } };
   const api = (u, body) => fetch(new URL(u, URL_), body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}).then((r) => r.json());
   try {
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
@@ -67,11 +71,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("typing on the page goes back into the file's <body> (the head, doctype, links as written)", /<h1>Welcome to [^<]* Today<\/h1>/.test(code1) && /^<!DOCTYPE html>/.test(code1) && /<link rel="stylesheet" href="css\/style\.css">/.test(code1) && !/<base /.test(code1) && /<script src="js\/main\.js"><\/script>/.test(code1), code1.slice(0, 900));
     // preview
     await p.click('#webdock .wbtab[data-tab="prev"]');
-    await p.waitForFunction(() => { const d = document.getElementById("wbPrev").contentDocument; return d && d.querySelector("h1") && /Today/.test(d.querySelector("h1").textContent); }, null, { timeout: 10000 });
+    await pwait(() => { const d = document; return d && d.querySelector("h1") && /Today/.test(d.querySelector("h1").textContent); }, 10000);
     const pv = await ev(() => ({ note: document.getElementById("wbPrevNote").textContent }));
     await p.click("#wbSave"); await p.waitForTimeout(800);   // 💾 Save shows the saved page again
-    await p.waitForFunction(() => { const d = document.getElementById("wbPrev").contentDocument; return d && d.querySelector("[data-year]") && d.querySelector("[data-year]").textContent; }, null, { timeout: 10000 });
-    const pv2 = await ev(() => ({ src: document.getElementById("wbPrev").getAttribute("src"), year: document.getElementById("wbPrev").contentDocument.querySelector("[data-year]").textContent, h1: document.getElementById("wbPrev").contentDocument.querySelector("h1").textContent }));
+    await pwait(() => { const d = document; return d && d.querySelector("[data-year]") && d.querySelector("[data-year]").textContent; }, 10000);
+    const pv2 = Object.assign(await ev(() => ({ src: document.getElementById("wbPrev").getAttribute("src") })), await pev(() => ({ year: document.querySelector("[data-year]").textContent, h1: document.querySelector("h1").textContent })));
     await p.click('.wbw[data-w="390px"]'); await p.waitForTimeout(400); const pw = await ev(() => document.getElementById("wbPrev").getBoundingClientRect().width);
     check("👁 Preview: unsaved changes drawn from the text (said); saved = the real page from /web-preview with its script run; 📱 phone width", /unsaved/.test(pv.note) && /^\/web-preview\/index\.html/.test(pv2.src) && /^\d{4}$/.test(pv2.year) && /Today/.test(pv2.h1) && pw > 380 && pw < 400, { pv, pv2, pw });
     // CRM

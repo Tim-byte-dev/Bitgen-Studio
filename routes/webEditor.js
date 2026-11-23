@@ -71,7 +71,8 @@ function mount(app) {
   app.post("/api/web/db/create", J, wrap((req) => DB().create(req.body || {})));
   app.post("/api/web/db/unlink", J, wrap(() => DB().unlink()));
   app.get(/^\/web-preview(\/.*)?$/, (req, res) => {
-    try { const rel = decodeURIComponent((req.params[0] || "/").slice(1)); res.set("Cache-Control", "no-store"); res.sendFile(W().file(rel), { dotfiles: "deny" }); }
+    try { const rel = decodeURIComponent((req.params[0] || "/").slice(1)); res.set("Cache-Control", "no-store"); res.set("Access-Control-Allow-Origin", "*");   // 2.926.0 (TM-002): the 👁 Preview is its own (opaque) origin - its scripts may still read the site's own files (content.json)
+    res.sendFile(W().file(rel), { dotfiles: "deny" }); }
     catch (e) { res.status(e.status || 500).type("text/plain").send(e.message); }
   });
 }

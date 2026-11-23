@@ -14941,6 +14941,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui925-ui.js > /tmp/ui925.log 2>&
   && ok "2.925.0 browser test: ⟳ Updates' switches saved; the restart bar (browser: start.bat; desktop: a 60 s countdown then the restart; Later); a changed app source -> the app built again by itself in the last build's colours" \
   || { bad "2.925.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui925.log | head -12; }
 
+# ---- 2.926.0 (🛡 the threat model's fixes: lib/localGuard.js, electron/safeLinks.js, the Preview's own origin)
+node scripts/test-926.js > /tmp/t926.log 2>&1 \
+  && ok "2.926.0 units: only the studio's own page is this computer (Host / Origin / Sec-Fetch-Site - DNS rebinding and cross-site refused), a paired phone cannot change what runs programs, the desktop window hands out web / mail links only and stays on the studio, the file dialog ignores tunnel / relay, the Preview without allow-same-origin" \
+  || { bad "2.926.0 units"; grep -a "^FAIL" -A1 /tmp/t926.log | head -12; }
+curl -s -H "Host: rebind.example:8311" "http://127.0.0.1:8311/api/config" | grep -q '"guard":"local"' \
+  && ok "2.926.0 live: a request for /api/config under a rebound name is refused by the running server" \
+  || bad "2.926.0 live: a rebound Host reached /api/config"
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

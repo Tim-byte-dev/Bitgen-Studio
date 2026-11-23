@@ -100,8 +100,16 @@ function createWindow() {
   win.webContents.setWindowOpenHandler(({ url }) => {
     // 2.832.0: 🎞 Slides' audience window (the presenter view) is the app's own page - a window of the app, not the browser
     if (url === `http://127.0.0.1:${PORT}/static/slideaudience.html`) return { action: "allow", overrideBrowserWindowOptions: { autoHideMenuBar: true, backgroundColor: "#000000", title: "bitGen Studio - Slides", width: 1280, height: 760 } };
-    shell.openExternal(url);
+    // 2.926.0 (TM-004): only web and mail links leave the app - never file:, search-ms: or another program's scheme
+    if (require("./safeLinks").external(url)) shell.openExternal(url);
     return { action: "deny" };
+  });
+  // 2.926.0 (TM-005): the app window stays on bitGen Studio - another site opens in the browser, not in here with h3shell
+  win.webContents.on("will-navigate", (e, url) => {
+    const L = require("./safeLinks");
+    if (L.isApp(url, PORT)) return;
+    e.preventDefault();
+    if (L.external(url)) shell.openExternal(url);
   });
   // 2.540.6: Ctrl+Shift+R = reload without the cache, like a browser (Tim: "ctrl+shift+r resets it in firefox but not
   // in electron") - the frameless window has no menu to carry it

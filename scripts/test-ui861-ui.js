@@ -18,6 +18,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1700, height: 1050 } });
   const errs = []; p.on("pageerror", (e) => errs.push(e.message)); p.on("dialog", (d) => d.accept().catch(() => {}));
   const ev = (f, a) => p.evaluate(f, a);
+  // 2.926.0 (TM-002): the 👁 Preview is its own origin now - its page is read through Playwright's frame, not contentDocument
+  const pf = async () => { const h = await p.$("#wbPrev"); return h && h.contentFrame(); };
+  const pev = async (fn) => (await pf()).evaluate(fn);
+  const pwait = async (fn, ms) => { const t0 = Date.now(); for (;;) { try { const f = await pf(); if (f && await f.evaluate(fn)) return true; } catch { /* loading */ } if (Date.now() - t0 > (ms || 10000)) return false; await new Promise((r) => setTimeout(r, 200)); } };
   const api = (u, body) => fetch(new URL(u, URL_), body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}).then((r) => r.json());
   try {
     await api("/api/web/create", {});
@@ -36,12 +40,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForFunction(() => /Blog and news/.test(document.getElementById("wbSkOut").textContent), null, { timeout: 10000 });
     await p.click("#wbSave"); await p.waitForTimeout(500);
     await p.click('#webdock .wbtab[data-tab="prev"]');
-    await p.waitForFunction(() => { const d = document.getElementById("wbPrev").contentDocument; return d && d.querySelectorAll(".bg-blog-card").length === 2; }, null, { timeout: 10000 });
-    const t = await ev(() => [...document.getElementById("wbPrev").contentDocument.querySelectorAll(".bg-blog-card h3")].map((h) => h.textContent));
+    await pwait(() => { const d = document; return d && d.querySelectorAll(".bg-blog-card").length === 2; }, 10000);
+    const t = await pev(() => [...document.querySelectorAll(".bg-blog-card h3")].map((h) => h.textContent));
     check("＋ Blog and news on index.html, 👁 Preview: the CRM's posts as cards, newest first", t[0] === "We are open" && t[1] === "Older news", t);
     await p.frameLocator("#wbPrev").locator(".bg-blog-card").first().click();
-    await p.waitForFunction(() => { const d = document.getElementById("wbPrev").contentDocument; return d && d.querySelector(".bg-blog-post"); }, null, { timeout: 10000 });
-    const post = await ev(() => document.getElementById("wbPrev").contentDocument.querySelector(".bg-blog-post").textContent);
+    await pwait(() => { const d = document; return d && d.querySelector(".bg-blog-post"); }, 10000);
+    const post = await pev(() => document.querySelector(".bg-blog-post").textContent);
     check("...a card opens the post (its two paragraphs)", /We are open/.test(post) && /Fresh bread daily/.test(post), post);
     await p.click("#wbSk"); await p.waitForTimeout(200); if (!(await ev(() => document.getElementById("wbSkForm").classList.contains("on")))) await p.click("#wbSk");
     await p.click('#wbSkList [data-skadd="contact-map"]');
@@ -49,8 +53,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.click("#wbSave"); await p.waitForTimeout(400);
     // the starter site already has its own contact.html (kept - yours): the map + form go on the open page
     await p.click('#webdock .wbtab[data-tab="prev"]');
-    await p.waitForFunction(() => { const d = document.getElementById("wbPrev").contentDocument; return d && d.querySelector(".bg-map iframe"); }, null, { timeout: 10000 });
-    const m = await ev(() => { const d = document.getElementById("wbPrev").contentDocument; return { src: d.querySelector(".bg-map iframe").getAttribute("src"), credit: d.querySelector(".bg-map-foot").textContent, form: !!d.querySelector("form[data-bg-contact] [name=message]") }; });
+    await pwait(() => { const d = document; return d && d.querySelector(".bg-map iframe"); }, 10000);
+    const m = await pev(() => { const d = document; return { src: d.querySelector(".bg-map iframe").getAttribute("src"), credit: d.querySelector(".bg-map-foot").textContent, form: !!d.querySelector("form[data-bg-contact] [name=message]") }; });
     check("＋ Contact and map on the open page (the starter's own contact.html kept); 👁 Preview shows the OpenStreetMap map (credited) and the form", /^https:\/\/www\.openstreetmap\.org\/export\/embed\.html/.test(m.src) && /OpenStreetMap contributors/.test(m.credit) && m.form, m);
     check("no page errors", !errs.length, errs);
   } catch (e) { fail++; console.log("FAIL: " + (e.stack || e) + "\n      page errors: " + JSON.stringify(errs).slice(0, 600)); }

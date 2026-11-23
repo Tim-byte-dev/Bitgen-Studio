@@ -10569,6 +10569,21 @@ What happens then, one thing at a time and never while a render, song, picture, 
 The line under the switches says when it last looked, what GitHub has, when it looks next and what happened to the app.
 **⟳ Look now** asks at once. The PC has to be on (and bitGen Studio running) for any of this.
 
+## 🛡 What bitGen Studio protects (2.926.0)
+
+bitGen Studio can run programs on your PC (ComfyUI, Python, the LLM's commands), so it is careful about who may ask it to.
+The full threat model is in **docs/bitgen-studio-threat-model.md**. What you may notice:
+
+- **Open it at http://127.0.0.1:8311** (or localhost, or this PC's own name). Under any other address the studio answers
+  "this address is not this computer's" - a web page elsewhere pointing a name at your PC gets nothing.
+- **Other web pages cannot use it.** A request from another site in your browser is refused, even on this PC.
+- **The Web Editor's 👁 Preview** runs your site's scripts as a separate site: they can read the site's own files, never
+  bitGen's settings. The shop's cart works there but forgets on reload (no storage in a preview).
+- **The paired phone** makes, queues and plays things as before, but Settings that run programs (the ComfyUI / Python
+  paths, the LLM's folder and its ✔ Yes to commands, skills, extensions, setup, updates, building the app) are changed on
+  the PC only.
+- **Links in the desktop app** open in your browser or mail program; anything else (file:, search-ms: …) is ignored.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

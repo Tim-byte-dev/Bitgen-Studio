@@ -15,8 +15,9 @@
   function products() { if (!prodP) prodP = fetch(DATA, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return (d.products || []).filter(function (p) { return p.published !== false; }); }); return prodP; }
   function priceOf(p) { return p.sale != null && p.sale !== "" && +p.sale < +p.price ? +p.sale : +p.price; }
   function priceHtml(p) { return '<span class="bg-price">' + (priceOf(p) < +p.price ? "<s>" + money(p.price) + "</s>" : "") + money(priceOf(p)) + "</span>"; }
-  function cart() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
-  function setCart(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} paintCount(); document.dispatchEvent(new CustomEvent("bg-cart")); }
+  var MEM = null;   // 2.926.0: no storage here (a private window, a sandboxed preview) - the cart lives in the page instead
+  function cart() { if (MEM) return MEM.slice(); try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
+  function setCart(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); MEM = null; } catch (e) { MEM = c.slice(); } paintCount(); document.dispatchEvent(new CustomEvent("bg-cart")); }
   function add(slug, qty) { var c = cart(), it = c.find(function (x) { return x.slug === slug; }); if (it) it.qty += qty || 1; else c.push({ slug: slug, qty: qty || 1 }); setCart(c); }
   function paintCount() { var n = cart().reduce(function (a, x) { return a + x.qty; }, 0); document.querySelectorAll("[data-bg-cart-count]").forEach(function (e) { e.textContent = n; e.hidden = !n; }); }
   function card(p) {
