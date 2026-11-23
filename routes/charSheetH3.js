@@ -89,7 +89,9 @@ function mount(app) {
     const P = M.PROPS[sex];
     return { name, url: "/passets/images/" + encodeURIComponent(name), sheet: "/static/mannequins/" + sex + "_sheet.png",
       views: ["front", "side", "back"].map((v) => "/static/mannequins/" + sex + "_" + v + ".png"),
-      label: P.label, heads: P.heads, height_cm: Math.round(P.height_m * 100) };
+      label: P.label, heads: P.heads, height_cm: (() => {                // 2.928.0: the display mannequin's own height
+        try { return Math.round(JSON.parse(fs.readFileSync(path.join(core.BASE, "static", "mannequins", "mesh", sex + ".json"), "utf8")).height_m * 100); } catch { return Math.round(P.height_m * 100); }
+      })() };
   }));
 
   app.post("/api/charsheet/h3/preview", J, wrap(async (req) => {

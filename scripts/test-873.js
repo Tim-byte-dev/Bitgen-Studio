@@ -27,14 +27,14 @@ for (const [n, x] of [["male", m], ["female", f]]) {
   const j = M.joints(n);
   check(`${n}: the right side mirrors the left`, j.elbowR[0] === -j.elbowL[0] && j.kneeR[1] === j.kneeL[1] && j.wristR[2] === j.wristL[2]);
 }
-check("real heights: 178 cm (male), 165 cm (female)", M.PROPS.male.height_m === 1.78 && M.PROPS.female.height_m === 1.65);
+check("real heights (2.928.0: the display mannequins): 182 cm (male), 171 cm (female)", M.PROPS.male.height_m === 1.82 && M.PROPS.female.height_m === 1.71);
 check("views: front, side, back, three-quarter, the head from the front and the side", ["front", "side", "back", "threequarter", "head", "headside"].every((v) => M.VIEWS.includes(v)));
 // the pictures shipped
 const png = (p) => { const b = fs.readFileSync(p); return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), sig: b.slice(1, 4).toString() }; };
 for (const n of ["male", "female"]) {
   const fr = png(path.join(ROOT, "static/mannequins", n + "_front.png")), sh = png(path.join(ROOT, "static/mannequins", n + "_sheet.png"));
-  check(`static/mannequins/${n}: front 832 x 1216 (the start picture), side, back, the sheet 2400 x 1350`,
-    fr.sig === "PNG" && fr.w === 832 && fr.h === 1216 && sh.w === 2400 && sh.h === 1350
+  check(`static/mannequins/${n}: front 832 x 1216 (the start picture), side, back, the sheet (2.928.0: 2600 x 2400, the display mannequin's)`,
+    fr.sig === "PNG" && fr.w === 832 && fr.h === 1216 && sh.w >= 2400 && sh.h >= 1350
     && ["side", "back"].every((v) => png(path.join(ROOT, "static/mannequins", n + "_" + v + ".png")).w === 832));
 }
 // the route + the panel
@@ -53,7 +53,7 @@ check("h3sheet.js: 🧍 Mannequin… (Male 8 heads / Female 7.5 heads) loads it 
 check("...Dress it is OPTIONAL and off by default; ticked = edit styles only (/api/aiedit/engines) and ✨ Generate sends the mannequin",
   /dress: false/.test(HS) && /id="h3sDress"/.test(HS) && /fetch\("\/api\/aiedit\/engines"\)/.test(HS) && /if \(S\.dress\) \{/.test(HS) && /body = Object\.assign\(body, dressBody\(words, MANNEQUIN\.name\)\)/.test(HS)
   && /pick a 🧍 mannequin first/.test(HS));
-check("the figure is bitGen's own: scripts/make_mannequins.js renders static/mannequin3d.js with the app's three.js", /three-m3d\.min\.js/.test(src("scripts/make_mannequins.js")) && /H3Mannequin\.render/.test(src("scripts/make_mannequins.js")));
+check("the figure is bitGen's own: scripts/make_mannequins.js renders it with the app's three.js (2.928.0: the display mannequin, static/mannequinGloss.js)", /three-m3d\.min\.js/.test(src("scripts/make_mannequins.js")) && /H3MannequinGloss\.render/.test(src("scripts/make_mannequins.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

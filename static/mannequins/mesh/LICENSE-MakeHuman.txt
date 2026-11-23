@@ -1,0 +1,10 @@
+bitGen Studio's display mannequins (male.json / male.obj, female.json / female.obj) are made by scripts/make_mannequin_mesh.py
+from the MakeHuman base mesh (makehuman/data/3dobjs/base.obj), its body targets (makehuman/data/targets/macrodetails) and
+its default rig weights (makehuman/data/rigs) - https://github.com/makehumancommunity/makehuman
+
+Those MakeHuman assets are released under CC0 1.0 Universal (public domain dedication):
+"This asset was explicitly released as CC0 in september 2020" (the targets), "CC0 (c) 2021 Data Collection AB, Joel
+Palmius, Jonas Hauquier" (the rig weights) - see LICENSE.ASSETS.md in the MakeHuman repository.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The changes (the body mix, the arms lowered, the face softened, the gloss renders) are bitGen Studio's.

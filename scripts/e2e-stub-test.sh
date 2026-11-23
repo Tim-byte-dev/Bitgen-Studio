@@ -14957,6 +14957,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui927-ui.js > /tmp/ui927.log 2>&
   && ok "2.927.0 browser test: Settings ▸ General names it (Nova); the app's 👂 listens; \"Hey Nova\" opens Talk and answers; \"Hi Nova, what is …\" answered at once (the LLM told its name); other words nothing; 👂 off; the desktop's switch off" \
   || { bad "2.927.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui927.log | head -12; }
 
+# ---- 2.928.0 (🧍 the display mannequins)
+node scripts/test-928.js > /tmp/t928.log 2>&1 \
+  && ok "2.928.0 units: the display mannequins' 3D bodies (MakeHuman CC0: heights, arms down, joints, OBJ), the start pictures and the full sheets, every close-up framed, the licence note" \
+  || { bad "2.928.0 units"; grep -a "^FAIL" -A1 /tmp/t928.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

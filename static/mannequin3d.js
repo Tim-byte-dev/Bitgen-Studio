@@ -22,7 +22,7 @@
   "use strict";
   var PROPS = {
     male: {
-      heads: 8, height_m: 1.78, label: "Male",
+      heads: 8, height_m: 1.82, label: "Male",
       marks: { crown: 8, chin: 7, nipples: 6, navel: 5, crotch: 4, knee: 2.05, ankle: 0.3 },
       head: { c: [0, 7.5, 0.02], r: [0.34, 0.5, 0.43], jaw: [0, 7.14, 0.19], jr: [0.17, 0.14, 0.15], nose: [0, 7.44, 0.43], nr: [0.055, 0.1, 0.07] },
       pelvis: { c: [0, 3.95, -0.04], r: [0.64, 0.3, 0.47] },
@@ -39,7 +39,7 @@
       hand: [0.24, 0.085], foot: { len: 1.0, w: 0.2, h: 0.17 },
     },
     female: {
-      heads: 7.5, height_m: 1.65, label: "Female",
+      heads: 7.5, height_m: 1.71, label: "Female",
       marks: { crown: 7.5, chin: 6.5, nipples: 5.62, navel: 4.6, crotch: 3.75, knee: 1.92, ankle: 0.28 },
       head: { c: [0, 7.0, 0.02], r: [0.33, 0.5, 0.42], jaw: [0, 6.64, 0.18], jr: [0.15, 0.13, 0.14], nose: [0, 6.94, 0.42], nr: [0.05, 0.09, 0.065] },
       pelvis: { c: [0, 3.72, -0.06], r: [0.72, 0.3, 0.5] },

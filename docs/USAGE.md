@@ -10599,6 +10599,15 @@ The full threat model is in **docs/bitgen-studio-threat-model.md**. What you may
   faster-whisper installed), which is told the name so it spells it your way. Nothing is kept; long talk (a TV) is ignored.
 - The assistant answers to the name, and says it if you ask who it is.
 
+## 🧍 The display mannequins (2.928.0)
+
+Character Creator ▸ Sheet ▸ **🧍 Mannequin…** ▸ Male or Female now loads a white-gloss display mannequin on black (a store
+mannequin's look): a real human body - an athletic 182 cm man and a slim 171 cm woman - with the arms down by the sides.
+**▶ Generate Sheet** makes its character sheet as before; **Dress it** puts your clothes on it with an edit style.
+Each has a full reference sheet (static/mannequins/<sex>_sheet.png): every side, the head, the torso, the hips, the hands and
+the feet. The bodies are MakeHuman's open base mesh (CC0), shaped by bitGen (scripts/make_mannequin_mesh.py); their 3D files
+(static/mannequins/mesh/*.obj) are what the garment designer will drape clothes on.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
