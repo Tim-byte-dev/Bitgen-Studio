@@ -15,7 +15,8 @@
   "use strict";
   const BUTTONS = [["file.new", "🗋", "New"], ["file.open", "📂", "Open"], ["file.savebgi", "💾", "Save"], ["file.savebgias", "💾…", "Save As"], ["file.print", "🖨", "Print"], ["file.printpreview", "🔍", "Print Preview"], "|",
     ["edit.undo", "↶", "Undo"], ["edit.redo", "↷", "Redo"], "|", ["edit.cut", "✂", "Cut"], ["edit.copy", "⧉", "Copy"], ["edit.paste", "📋", "Paste"], "|", ["file.createai", "✨", "Create With the AI"],
-    ["file.charsheet", "🪪", "Character Sheet"]];   // 2.930.0: the Character Creator's sheet (🧍 mannequins, ✨ Lifelike, ▶ Generate sheet)
+    ["file.charsheet", "🪪", "Character Sheet"],    // 2.930.0: the Character Creator's sheet (🧍 mannequins, ✨ Lifelike, ▶ Generate sheet)
+    ["file.garment", "👗", "Garment Designer"]];    // 2.932.0: 👗 sewing patterns (static/garment.js - H3Garment)
   /** a page entry (pcpages) or the picture's px -> the paper in mm {w, h} (as printed: landscape = wide) */
   function paperOf(pg, wpx, hpx) {
     if (pg && pg.wmm > 0 && pg.hmm > 0) { const a = Math.min(pg.wmm, pg.hmm), b = Math.max(pg.wmm, pg.hmm), land = pg.orient === "landscape" || (pg.orient !== "portrait" && pg.wmm > pg.hmm); return land ? { w: b, h: a } : { w: a, h: b }; }
@@ -84,6 +85,11 @@
       if (!b) return say("🪪 the character sheet is part of the StoryBoard - turn it on in Settings ▸ Dockers");
       b.click();
     }, { enabled: () => !!doc.getElementById("chNewPic") }, ["File", "file.createai"]);
+    // 2.932.0: 👗 the Garment designer (static/garment.js - a dialog of the app, not of the editor)
+    E.ui.addCmd("file.garment", "👗 Garment Designer…", "", () => {
+      if (!root.H3Garment) return say("👗 the Garment designer is not loaded");
+      root.H3Garment.open({ from: "imageeditor" });
+    }, { enabled: () => !!root.H3Garment }, ["File", "file.charsheet"]);
     /* ---- the bar */
     const bar = doc.createElement("div"); bar.className = "pcquick"; bar.id = "pcQuickBar"; bar.setAttribute("role", "toolbar"); bar.setAttribute("aria-label", "Quick commands");
     const keyOf = (id) => { const c = CMD.get(id); return c && c.key ? c.key : ""; };

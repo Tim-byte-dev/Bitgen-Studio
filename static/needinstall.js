@@ -41,6 +41,10 @@
     longcat: { name: "LongCat Avatar 1.6", desc: "Makes a person talk or sing to a sound: Meituan's LongCat-Video-Avatar in ComfyUI.",
       hint: "about 28 GB: the LongCat Avatar node pack, the int8 model (16 GB), its two LoRAs, Whisper large-v3 and Wan 2.1's text encoder + VAE (skipped when you have them) into ComfyUI; ComfyUI restarted once afterwards",
       status: "/api/longcat", addon: "longcat" },
+    // 2.932.0: the Garment designer (Settings ▸ Add-ons ▸ Garment designer)
+    garment: { name: "Garment designer (GarmentCode)", desc: "Makes sewing patterns - tops, hoodies, dresses, skirts, trousers - to the mannequin's or your own measurements.",
+      hint: "about 150 MB: GarmentCode's pattern programs (MIT) and numpy, scipy and matplotlib in their own Python - no graphics card needed",
+      status: "/api/garment", addon: "garment" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }

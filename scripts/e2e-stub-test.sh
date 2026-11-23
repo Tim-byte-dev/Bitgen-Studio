@@ -14983,6 +14983,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui931-ui.js > /tmp/ui931.log 2>&
   && ok "2.931.0 browser test: a switch on each Basic Settings LoRA; off dimmed and not in Generate's list; saved; back after a reload; ✕ still removes" \
   || { bad "2.931.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui931.log | head -12; }
 
+# ---- 2.932.0 (👗 the Garment designer - GarmentCode sewing patterns + a to-scale PDF)
+node scripts/test-932.js > /tmp/t932.log 2>&1 \
+  && ok "2.932.0 units: the design tree's rules, the presets, the mannequins' measurements, words -> settings, the PDF, the store, the add-on's install" \
+  || { bad "2.932.0 units"; grep -a "^FAIL" -A1 /tmp/t932.log | head -12; }
+node scripts/test-932-live.js > /tmp/t932l.log 2>&1 \
+  && ok "2.932.0 live (GARMENT_PY / GARMENT_SRC = the real GarmentCode, else SKIP): every preset on both mannequins, made to measure, every paper" \
+  || { bad "2.932.0 live"; grep -a "^FAIL" -A1 /tmp/t932l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui932-ui.js > /tmp/ui932.log 2>&1 \
+  && ok "2.932.0 browser test: 👗 in the image editor and the sheet tab; kinds, sliders, your height, words, ⤓ PDF, your garments (or the Download / Cancel box)" \
+  || { bad "2.932.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui932.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

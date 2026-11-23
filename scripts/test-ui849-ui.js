@@ -33,7 +33,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => { document.querySelectorAll(".h3fp.dfm-float, #promptdock").forEach((d) => { d.style.display = "none"; }); const d = document.getElementById("imageeditdock"); d.style.cssText += ";position:fixed;left:10px;top:40px;width:1660px;height:960px;z-index:9999"; });
     /* ---- the toolbar */
     const bar = await ev(() => { const q = document.getElementById("pcQuickBar"), m = document.querySelector("#imageeditdock .pcmenu"); return q ? { after: q.previousElementSibling === m, icons: [...q.querySelectorAll("[data-qcmd]")].map((b) => b.textContent).join(" "), saveOff: q.querySelector('[data-qcmd="file.savebgi"]').disabled, tip: q.querySelector('[data-qcmd="file.new"]').title, h: q.getBoundingClientRect().height } : null; });
-    check("the icon toolbar right under the menu bar: 🗋 📂 💾 💾… 🖨 🔍 ↶ ↷ ✂ ⧉ 📋 ✨ 🪪 (tips with keys; Save greyed with no document)", bar && bar.after && bar.icons === "🗋 📂 💾 💾… 🖨 🔍 ↶ ↷ ✂ ⧉ 📋 ✨ 🪪" && bar.tip === "New (Ctrl+N)" && bar.h > 20, bar);
+    check("the icon toolbar right under the menu bar: 🗋 📂 💾 💾… 🖨 🔍 ↶ ↷ ✂ ⧉ 📋 ✨ 🪪 👗 (tips with keys; Save greyed with no document)", bar && bar.after && bar.icons === "🗋 📂 💾 💾… 🖨 🔍 ↶ ↷ ✂ ⧉ 📋 ✨ 🪪 👗" && bar.tip === "New (Ctrl+N)" && bar.h > 20, bar);
     await p.click('#pcQuickBar [data-qcmd="file.new"]'); await p.waitForTimeout(300);
     const newDlg = await ev(() => { const d = document.querySelector(".kxdlg.pcd"); return d ? d.querySelector("h4").textContent : null; });
     await ev(() => { const c = document.querySelector(".kxdlg.pcd .cn"); if (c) c.click(); });

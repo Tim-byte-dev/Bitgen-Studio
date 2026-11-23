@@ -284,3 +284,15 @@ you - else the unmodified mirror huggingface.co/ml-resources/sam3) into models/s
 Platforms, Inc.; commercial use and redistribution allowed with the licence kept - its LICENSE file is downloaded beside the
 weights) and runs them through Hugging Face transformers (Apache-2.0).
 
+
+## 👗 GarmentCode - the Garment designer (2.932.0)
+
+No GarmentCode code is shipped. Settings ▸ Add-ons ▸ Garment designer clones
+[maria-korosteleva/GarmentCode](https://github.com/maria-korosteleva/GarmentCode) (MIT, (c) 2024 Maria Korosteleva) into
+`garmentcode/GarmentCode` and installs numpy, scipy, svgwrite, svgpathtools, PyYAML, psutil and matplotlib from PyPI into its
+own Python. bitGen uses only its sewing-pattern programs (pygarment + `assets/garment_programs`). `lib/garment/schema.json` is
+a copy of its design tree (`assets/design_params/default.yaml`, MIT); the display mannequins' measurements
+(`static/mannequins/mesh/*.measure.json`) are measured on bitGen's own MakeHuman (CC0) bodies, the measurements that cannot be
+taken from a mesh scaled from GarmentCode's average bodies (`assets/bodies/mean_female.yaml` / `mean_male.yaml`, MIT).
+NOT used: GarmentCode's drape simulator (its NVIDIA Warp fork is under the NVIDIA Source Code License - non-commercial), its
+SMPL-based bodies, and ChatGarment (non-commercial).

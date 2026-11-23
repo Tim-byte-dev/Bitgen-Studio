@@ -435,6 +435,12 @@
           "what": "timeline exchange (OTIO, FCP XML, EDL)"
         },
         {
+          "name": "GarmentCode",
+          "by": "Maria Korosteleva, Nico Pietrani, Olga Sorkine-Hornung and others (ETH Zurich)",
+          "url": "https://github.com/maria-korosteleva/GarmentCode",
+          "what": "👗 the Garment designer's sewing-pattern programs (MIT, installed as an add-on)"
+        },
+        {
           "name": "uv",
           "by": "Astral",
           "url": "https://github.com/astral-sh/uv",
@@ -449,6 +455,12 @@
     {
       "title": "3D models",
       "items": [
+        {
+          "name": "MakeHuman base mesh",
+          "by": "the MakeHuman community",
+          "url": "https://github.com/makehumancommunity/makehuman",
+          "what": "the display mannequins' bodies (CC0) - the character sheet and the Garment designer"
+        },
         {
           "name": "Female mannequin model",
           "by": "dimasalcalde (CGTrader)",

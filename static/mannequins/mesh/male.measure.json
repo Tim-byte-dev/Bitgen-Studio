@@ -1,0 +1,49 @@
+{
+ "sex": "male",
+ "height_cm": 181.75,
+ "measured": {
+  "height": 181.75,
+  "bust": 102.22,
+  "underbust": 87.66,
+  "waist": 77.27,
+  "hips": 96.39,
+  "leg_circ": 56.04,
+  "wrist": 16.84
+ },
+ "body": {
+  "arm_length": 57.72,
+  "arm_pose_angle": 45.477,
+  "armscye_depth": 13.341,
+  "back_width": 50.438,
+  "bum_points": 16.622,
+  "bust": 102.22,
+  "bust_line": 26.339,
+  "bust_points": 17.721,
+  "crotch_hip_diff": 10.089,
+  "head_l": 27.704,
+  "height": 181.75,
+  "hip_back_width": 50.528,
+  "hip_inclination": 6.745,
+  "hips": 96.39,
+  "hips_line": 24.889,
+  "leg_circ": 56.04,
+  "neck_w": 20.663,
+  "shoulder_incl": 22.506,
+  "shoulder_w": 39.147,
+  "underbust": 87.66,
+  "vert_bust_line": 21.927,
+  "waist": 77.27,
+  "waist_back_width": 35.341,
+  "waist_line": 38.966,
+  "waist_over_bust_line": 42.283,
+  "wrist": 16.84
+ },
+ "levels_m": {
+  "bust_y": 1.387,
+  "waist_y": 1.168,
+  "hips_y": 0.908,
+  "crotch_y": 0.893
+ },
+ "reference": "GarmentCode (MIT) assets/bodies/mean_male.yaml, scaled",
+ "note": "measured on bitGen Studio's display mannequin (MakeHuman CC0): bust, height, hips, leg_circ, underbust, waist, wrist; the rest from GarmentCode's average body, scaled"
+}

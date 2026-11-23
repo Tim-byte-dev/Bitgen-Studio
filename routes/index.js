@@ -172,6 +172,7 @@ function mount(app) {
   require("./longcat").mount(app);     // 2.918.0: LongCat-Video-Avatar 1.6 (a person talking / singing to a sound) from the prompt docker (lib/longcat.js)
   require("./sheetLibrary").mount(app);  // 2.874.0: your own mannequins + character sheet templates (lib/sheetLibrary.js)
   require("./charSheetH3").mount(app);  // 2.870.0: the Character creator's sheet by the H3 Character Sheet Designer (lib/charSheetH3.js) - the pose sheets are gone
+  require("./garment").mount(app);      // 2.932.0: 👗 the Garment designer - GarmentCode sewing patterns + a to-scale PDF (lib/garment.js)
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
   require("./cadGen").mount(app);      // 2.581.0: ✨ Generate in the 📐 SolidCraft docker - a part from a description / picture (lib/cadGen.js, cad_worker.py)
   extensions.mountServers(app);        // 2.589.0: an extension's own server part (ext/<id>/ext.json "server") - the optional Team render farm (ext/teamdock)

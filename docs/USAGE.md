@@ -10631,6 +10631,31 @@ switch at the start of its weight line. **Off** (grey, the row dimmed) keeps the
 the project - but no render uses it: Generate, the StoryBoard, characters and pods all leave it out. **On** (orange) puts it
 back. ✕ still removes it for good.
 
+## 👗 The Garment designer - sewing patterns (2.932.0)
+
+Open it from the Character Creator's sheet tab (**👗 Garment…** beside 🧍 Mannequin and ✨ Lifelike - it starts on the mannequin
+picked there) or from the image editor (**👗** at the end of the icon bar, or File ▸ 👗 Garment Designer…). The first time,
+bitGen offers to install it: **Settings ▸ Add-ons ▸ Garment designer** fetches GarmentCode (MIT - the sewing-pattern programs
+of Korosteleva et al., ETH Zurich) and about 150 MB of Python packages into their own environment. No graphics card is needed.
+
+1. **Pick a kind** - T-shirt, long-sleeve top, tank top, hoodie, fitted dress, sundress, A-line, pencil or tiered skirt,
+   trousers, shorts or a jumpsuit - **or describe it** ("a knee-length dress with short sleeves and a V-neck") and press
+   **✨ Design it**: the LLM picks the settings (without an LLM, bitGen reads the words itself and says so).
+2. **Change it** - the settings that matter for that top, waistband and bottom are listed as sliders, ticks and lists
+   (lengths, widths, flare, necklines, collars and hoods, sleeves and cuffs, skirt panels and tiers, trouser legs). With
+   **☑ Auto** the pattern is made again a moment after each change; **▶ Make pattern** does it by hand.
+3. **The body** - the female or male display mannequin's own measurements (measured on its 3D body), or type your own
+   height, bust / chest, waist and hips: the other measurements (arm length, neck, back width, thigh …) follow them.
+4. **⤓ PDF** - at actual size: **A4**, **US Letter** or **A3** pages to trim and tape together, or one **A0** sheet for a
+   copy shop. Page 1 has a 10 cm test square (print at 100 % / "actual size" and measure it), the measurements it was made
+   for, the legend and the page map; every page says its place (B3 = row B, column 3) and which pages join it. Each piece
+   has its name, a grainline arrow and a lettered notch on every seam - sew A to A. Choose a **seam allowance** (1.5 cm by
+   default: cut on the solid line, sew on the dashed one) or 0 to add your own.
+
+Your garments are kept in the project (projects/<project>/garments/) - click one in the list to open it again, 🗑 deletes it.
+Make a test garment from cheap fabric first: the fit depends on the fabric and on how you sew. Draping the garment on the 3D
+mannequins and rendering it comes next.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -10746,11 +10771,13 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[Electron](https://github.com/electron/electron)** - the desktop app
 - **Python, NumPy, OpenCV, soundfile and pyaaf2** - the workers, tracking, beats, sound and AAF export
 - **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
+- **[GarmentCode](https://github.com/maria-korosteleva/GarmentCode)** (Maria Korosteleva, Nico Pietrani, Olga Sorkine-Hornung and others (ETH Zurich)) - 👗 the Garment designer's sewing-pattern programs (MIT, installed as an add-on)
 - **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python
 - **ReportLab, pypdf, jsdom and Playwright** - the Guide PDFs and the test suite
 
 ### 3D models
 
+- **[MakeHuman base mesh](https://github.com/makehumancommunity/makehuman)** (the MakeHuman community) - the display mannequins' bodies (CC0) - the character sheet and the Garment designer
 - **[Female mannequin model](https://www.cgtrader.com/designers/dimasalcalde?utm_source=credit&utm_source=credit_item_page)** (dimasalcalde (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
 - **[Female mannequin model](https://www.cgtrader.com/designers/zahers?utm_source=credit&utm_source=credit_item_page)** (zahers (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
 

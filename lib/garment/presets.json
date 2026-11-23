@@ -1,0 +1,17 @@
+{
+ "_about": "bitGen Studio's own garment starting points (2.932.0) - each is a few changes to GarmentCode's design tree (lib/garment/schema.json), by dotted path. Every one is built on both mannequins by scripts/test-932-live.js.",
+ "presets": [
+  { "id": "tshirt", "icon": "👕", "label": "T-shirt", "set": { "meta.upper": "Shirt", "sleeve.sleeveless": false, "sleeve.length": 0.3, "shirt.length": 1.2 } },
+  { "id": "longsleeve", "icon": "👚", "label": "Long-sleeve top", "set": { "meta.upper": "Shirt", "sleeve.sleeveless": false, "sleeve.length": 1.0, "sleeve.end_width": 0.6, "sleeve.cuff.type": "CuffBand", "shirt.length": 1.3 } },
+  { "id": "tank", "icon": "🎽", "label": "Tank top", "set": { "meta.upper": "FittedShirt", "sleeve.sleeveless": true, "collar.f_collar": "VNeckHalf", "collar.fc_depth": 0.8, "shirt.length": 1.2 } },
+  { "id": "hoodie", "icon": "🧥", "label": "Hoodie", "set": { "meta.upper": "Shirt", "shirt.width": 1.15, "shirt.length": 1.4, "sleeve.sleeveless": false, "sleeve.length": 1.0, "sleeve.end_width": 0.7, "sleeve.cuff.type": "CuffBand", "collar.component.style": "Hood2Panels" } },
+  { "id": "dress", "icon": "👗", "label": "Fitted dress", "set": { "meta.upper": "FittedShirt", "meta.bottom": "PencilSkirt", "sleeve.sleeveless": true, "pencil-skirt.length": 0.6, "pencil-skirt.flare": 1.1 } },
+  { "id": "sundress", "icon": "🌻", "label": "Sundress", "set": { "meta.upper": "FittedShirt", "meta.bottom": "SkirtCircle", "sleeve.sleeveless": true, "collar.f_collar": "SquareNeckHalf", "flare-skirt.length": 0.5, "flare-skirt.suns": 0.75 } },
+  { "id": "aline", "icon": "🔺", "label": "A-line skirt", "set": { "meta.wb": "StraightWB", "meta.bottom": "SkirtCircle", "flare-skirt.length": 0.45, "flare-skirt.suns": 0.4 } },
+  { "id": "pencil", "icon": "✏", "label": "Pencil skirt", "set": { "meta.wb": "FittedWB", "meta.bottom": "PencilSkirt", "pencil-skirt.length": 0.45, "pencil-skirt.back_slit": 0.3 } },
+  { "id": "tiered", "icon": "🎂", "label": "Tiered skirt", "set": { "meta.wb": "StraightWB", "meta.bottom": "SkirtLevels", "levels-skirt.num_levels": 3, "levels-skirt.level_ruffle": 1.3, "levels-skirt.length": 0.6 } },
+  { "id": "trousers", "icon": "👖", "label": "Trousers", "set": { "meta.wb": "StraightWB", "meta.bottom": "Pants", "pants.length": 0.9, "pants.width": 1.1 } },
+  { "id": "shorts", "icon": "🩳", "label": "Shorts", "set": { "meta.wb": "StraightWB", "meta.bottom": "Pants", "pants.length": 0.25, "pants.width": 1.2 } },
+  { "id": "jumpsuit", "icon": "🥼", "label": "Jumpsuit", "set": { "meta.upper": "Shirt", "meta.bottom": "Pants", "sleeve.sleeveless": false, "sleeve.length": 0.3, "pants.length": 0.85 } }
+ ]
+}

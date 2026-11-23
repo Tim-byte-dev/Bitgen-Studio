@@ -1,0 +1,49 @@
+{
+ "sex": "female",
+ "height_cm": 170.72,
+ "measured": {
+  "height": 170.72,
+  "bust": 87.53,
+  "underbust": 66.69,
+  "waist": 62.82,
+  "hips": 91.11,
+  "leg_circ": 49.07,
+  "wrist": 12.78
+ },
+ "body": {
+  "arm_length": 52.999,
+  "arm_pose_angle": 45.487,
+  "armscye_depth": 12.993,
+  "back_width": 41.484,
+  "bum_points": 15.467,
+  "bust": 87.53,
+  "bust_line": 26.262,
+  "bust_points": 14.568,
+  "crotch_hip_diff": 8.088,
+  "head_l": 26.228,
+  "height": 170.72,
+  "hip_back_width": 48.735,
+  "hip_inclination": 12.678,
+  "hips": 91.11,
+  "hips_line": 23.247,
+  "leg_circ": 49.07,
+  "neck_w": 18.256,
+  "shoulder_incl": 20.905,
+  "shoulder_w": 35.658,
+  "underbust": 66.69,
+  "vert_bust_line": 21.334,
+  "waist": 62.82,
+  "waist_back_width": 29.536,
+  "waist_line": 36.729,
+  "waist_over_bust_line": 41.079,
+  "wrist": 12.78
+ },
+ "levels_m": {
+  "bust_y": 1.25,
+  "waist_y": 1.087,
+  "hips_y": 0.871,
+  "crotch_y": 0.821
+ },
+ "reference": "GarmentCode (MIT) assets/bodies/mean_female.yaml, scaled",
+ "note": "measured on bitGen Studio's display mannequin (MakeHuman CC0): bust, height, hips, leg_circ, underbust, waist, wrist; the rest from GarmentCode's average body, scaled"
+}
