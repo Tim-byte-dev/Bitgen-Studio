@@ -14962,6 +14962,14 @@ node scripts/test-928.js > /tmp/t928.log 2>&1 \
   && ok "2.928.0 units: the display mannequins' 3D bodies (MakeHuman CC0: heights, arms down, joints, OBJ), the start pictures and the full sheets, every close-up framed, the licence note" \
   || { bad "2.928.0 units"; grep -a "^FAIL" -A1 /tmp/t928.log | head -12; }
 
+# ---- 2.929.0 (✨ Lifelike display mannequins)
+node scripts/test-929.js > /tmp/t929.log 2>&1 \
+  && ok "2.929.0 units: the lifelike prompt (each view, male / female, faceless gloss on black, the pose kept), the views route, the wiring" \
+  || { bad "2.929.0 units"; grep -a "^FAIL" -A1 /tmp/t929.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui929-ui.js > /tmp/ui929.log 2>&1 \
+  && ok "2.929.0 browser test: ✨ Lifelike beside 🧍 Male; front / side / back to the edit style in turn; the front into Your mannequins as the start picture" \
+  || { bad "2.929.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui929.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

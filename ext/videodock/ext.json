@@ -6,6 +6,7 @@
   "scripts": [
     "qedit.js",
     "h3sheet.js",
+    "mannequinlife.js",
     "characters.js",
     "audioseg.js",
     "rendersettings.js",

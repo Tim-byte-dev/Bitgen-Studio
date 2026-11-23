@@ -10608,6 +10608,16 @@ Each has a full reference sheet (static/mannequins/<sex>_sheet.png): every side,
 the feet. The bodies are MakeHuman's open base mesh (CC0), shaped by bitGen (scripts/make_mannequin_mesh.py); their 3D files
 (static/mannequins/mesh/*.obj) are what the garment designer will drape clothes on.
 
+## ✨ Making the display mannequins lifelike (2.929.0)
+
+In the Character Creator's sheet tab pick **🧍 Mannequin… ▸ Male** (or Female) and press **✨ Lifelike** beside it. Your PC's
+edit style - the one **Dress it** uses, else the first edit style (Qwen Image Edit, FLUX Kontext, P-H3 Edit …) - redraws the
+3D mannequin's front, side and back one after another as a photographed white-gloss store mannequin: a smooth faceless head,
+a sculpted body, a black background, the pose and camera kept. The note under the row shows each view's progress.
+The front is kept in **Your mannequins** ("Lifelike male display mannequin") and opens as the start picture for ▶ Generate
+Sheet; the side and back are in the Gallery. Not happy with one? Press ✨ Lifelike again (each run is a new mannequin; 🗑
+deletes one), or pick another edit style for Dress it first.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

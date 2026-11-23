@@ -67,6 +67,19 @@ function mount(app) {
   /* 2.873.0 (Tim: "create the mannequin character sheet using a 3d mannequin, for male and female"): bitGen Studio's own
      3D mannequin (static/mannequin3d.js, rendered by scripts/make_mannequins.js into static/mannequins/) kept in the
      project's Images as mannequin-<sex>.png - the sheet tab opens it as the start picture, Dress it sends it to an edit style */
+  /* 2.929.0 ✨ Make lifelike (ext/videodock/mannequinlife.js): one view of a display mannequin (front / side / back / three)
+     put in the project's Images as mannequin-<sex>-<view>.png - the edit style gets it as <Picture 1> */
+  app.post("/api/charsheet/h3/mannequin-view", J, wrap(async (req) => {
+    const b = req.body || {}, sex = String(b.sex || ""), view = String(b.view || "");
+    if (!["male", "female"].includes(sex)) throw err(400, "pick the male or the female mannequin");
+    if (!["front", "side", "back"].includes(view)) throw err(400, "the views are front, side and back");
+    const src = path.join(core.BASE, "static", "mannequins", sex + "_" + view + ".png");
+    if (!fs.existsSync(src)) throw err(500, "the mannequin picture is missing - run node scripts/make_mannequins.js");
+    const dir = core.pDir("images"); fs.mkdirSync(dir, { recursive: true });
+    const name = "mannequin-" + sex + "-" + view + ".png";
+    fs.copyFileSync(src, path.join(dir, name));
+    return { name, url: "/passets/images/" + encodeURIComponent(name) };
+  }));
   app.post("/api/charsheet/h3/mannequin", J, wrap(async (req) => {
     const sex = String((req.body || {}).sex || "");
     const M = require("../static/mannequin3d.js");
