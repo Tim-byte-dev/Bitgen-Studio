@@ -14970,6 +14970,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui929-ui.js > /tmp/ui929.log 2>&
   && ok "2.929.0 browser test: ✨ Lifelike beside 🧍 Male; front / side / back to the edit style in turn; the front into Your mannequins as the start picture" \
   || { bad "2.929.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui929.log | head -12; }
 
+# ---- 2.930.0 (🪪 Character Sheet in the image editor's icon bar)
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui930-ui.js > /tmp/ui930.log 2>&1 \
+  && ok "2.930.0 browser test: 🪪 after ✨ in the image editor's icon bar (icon only) opens the character sheet dialog; File ▸ 🪪 Character Sheet…" \
+  || { bad "2.930.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui930.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

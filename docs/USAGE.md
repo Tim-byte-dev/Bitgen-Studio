@@ -10618,6 +10618,12 @@ The front is kept in **Your mannequins** ("Lifelike male display mannequin") and
 Sheet; the side and back are in the Gallery. Not happy with one? Press ✨ Lifelike again (each run is a new mannequin; 🗑
 deletes one), or pick another edit style for Dress it first.
 
+## 🪪 The character sheet from the image editor (2.930.0)
+
+The image editor's icon bar ends with **🪪** (after ✨ Create): it opens the Character Creator's sheet dialog straight away -
+🧍 Mannequin…, ✨ Lifelike, ✨ Generate a character picture, ▶ Generate sheet - without opening the StoryBoard.
+File ▸ 🪪 Character Sheet… does the same.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

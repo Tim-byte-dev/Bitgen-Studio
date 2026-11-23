@@ -2,7 +2,9 @@
  * Tim (verbatim): "in image editor,below the file text menu add an icon menu with the tradtional shortcuts, new, save, save
  * as, print preview."
  * A row of icon buttons right under the menu bar (every view): 🗋 New · 📂 Open · 💾 Save · 💾… Save As · 🖨 Print ·
- * 🔍 Print Preview | ↶ Undo · ↷ Redo | ✂ Cut · ⧉ Copy · 📋 Paste | ✨ Create With the AI. Each runs its menu command (so
+ * 🔍 Print Preview | ↶ Undo · ↷ Redo | ✂ Cut · ⧉ Copy · 📋 Paste | ✨ Create With the AI · 🪪 Character Sheet (2.930.0 - Tim:
+ * "add an icon only button for character sheet in image-editor top icon only menubar": File ▸ 🪪 Character Sheet… opens the
+ * Character Creator's sheet dialog - the StoryBoard's 🖼 NEW). Each runs its menu command (so
  * the menus, keys and the recorder agree), is greyed when the command can't run, and says its key in its tip.
  * Save / Save As = the project (.bgi - every page, layer and undo-able thing); File ▸ Save to Images stays in the menu.
  * File ▸ 🔍 Print Preview… (Ctrl+F2): every page drawn as it prints, at the page's size (mm), ◀ ▶, a zoom, 🖨 Print = every
@@ -12,7 +14,8 @@
 (function (root) {
   "use strict";
   const BUTTONS = [["file.new", "🗋", "New"], ["file.open", "📂", "Open"], ["file.savebgi", "💾", "Save"], ["file.savebgias", "💾…", "Save As"], ["file.print", "🖨", "Print"], ["file.printpreview", "🔍", "Print Preview"], "|",
-    ["edit.undo", "↶", "Undo"], ["edit.redo", "↷", "Redo"], "|", ["edit.cut", "✂", "Cut"], ["edit.copy", "⧉", "Copy"], ["edit.paste", "📋", "Paste"], "|", ["file.createai", "✨", "Create With the AI"]];
+    ["edit.undo", "↶", "Undo"], ["edit.redo", "↷", "Redo"], "|", ["edit.cut", "✂", "Cut"], ["edit.copy", "⧉", "Copy"], ["edit.paste", "📋", "Paste"], "|", ["file.createai", "✨", "Create With the AI"],
+    ["file.charsheet", "🪪", "Character Sheet"]];   // 2.930.0: the Character Creator's sheet (🧍 mannequins, ✨ Lifelike, ▶ Generate sheet)
   /** a page entry (pcpages) or the picture's px -> the paper in mm {w, h} (as printed: landscape = wide) */
   function paperOf(pg, wpx, hpx) {
     if (pg && pg.wmm > 0 && pg.hmm > 0) { const a = Math.min(pg.wmm, pg.hmm), b = Math.max(pg.wmm, pg.hmm), land = pg.orient === "landscape" || (pg.orient !== "portrait" && pg.wmm > pg.hmm); return land ? { w: b, h: a } : { w: a, h: b }; }
@@ -75,6 +78,12 @@
       } });
     }
     E.ui.addCmd("file.printpreview", "🔍 Print Preview…", "Ctrl+F2", () => preview(), { enabled: () => !!S.w }, ["File", "file.print"]);
+    // 2.930.0: 🪪 the character sheet dialog (ext/videodock - the StoryBoard's "🖼 NEW" opens it, empty, on its Sheet tab)
+    E.ui.addCmd("file.charsheet", "🪪 Character Sheet…", "", () => {
+      const b = doc.getElementById("chNewPic");
+      if (!b) return say("🪪 the character sheet is part of the StoryBoard - turn it on in Settings ▸ Dockers");
+      b.click();
+    }, { enabled: () => !!doc.getElementById("chNewPic") }, ["File", "file.createai"]);
     /* ---- the bar */
     const bar = doc.createElement("div"); bar.className = "pcquick"; bar.id = "pcQuickBar"; bar.setAttribute("role", "toolbar"); bar.setAttribute("aria-label", "Quick commands");
     const keyOf = (id) => { const c = CMD.get(id); return c && c.key ? c.key : ""; };

@@ -153,6 +153,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **👂「Hi Gemma」- 📱 應用程式聽到名字就喚醒** — 在 設定 ▸ 一般 ▸ 🗣 The assistant 給助理取個名字（預設 Gemma），bitGen 應用程式開啟時只需說「Hi Gemma」（hey / hello / okay … 或只說名字）：應用程式開啟 Talk，回答（「Yes?」），對話像 🎙 Talk 一樣繼續——說「Hi Gemma, what's the time in Sydney?」問題會立即得到回答。手機聽到的每段短語音都傳送到電腦上常駐的 Whisper（已告知名字，依你的拼寫辨識；透過 Wi-Fi 或 Cloudflare 通道，從不經過中繼；不保存任何內容）；房間裡較長的說話（電視）會被忽略。LLM 也以這個名字回應。應用程式頂部列的 👂 表示正在聆聽——點按停止 / 開始；在背景或說話時不會聆聽。*位置：* 設定 ▸ 一般 ▸ 🗣 The assistant；應用程式的 👂（應用程式 1.12.0）。*版本：* 2.927.0
 - **🧍 角色設定表用的展示人體模特兒** — 🧍 Mannequin… 的男性和女性現在是黑色背景上的白色亮光展示模特兒：真實的人體（MakeHuman 開放的 CC0 基礎網格——肌肉型男性 182 公分，苗條女性 171 公分），雙臂垂於身側，臉部柔化，在攝影棚柔光箱下算圖；每個都有完整的參考表——正面、側面、背面、兩側、頭部正面 / ¾ / 背面、軀幹、軀幹側面、臀部、手掌、手背、手側面、腳底、腳背和腳側面。3D 身體（static/mannequins/mesh，也有 OBJ）就是即將推出的服裝設計器為其穿衣的身體。*位置：* Character Creator ▸ Sheet ▸ 🧍 Mannequin…。*版本：* 2.928.0
 - **✨ 逼真的展示模特兒** — 在 🧍 Mannequin…（選擇男性或女性）旁邊，✨ Lifelike 讓電腦上的編輯風格（Dress it 使用的那個，否則用第一個——Qwen Image Edit、FLUX Kontext、P-H3 Edit …）把 3D 模特兒的正面、側面和背面重新畫成白色亮光玻璃纖維商店模特兒的照片——光滑無臉的蛋形頭部、雕塑般的身體、黑色背景——保持姿勢、比例和鏡頭；正面放入「Your mannequins」（「Lifelike male display mannequin」）並作為起始圖片開啟，側面和背面在圖庫中。*位置：* Character Creator ▸ Sheet ▸ 🧍 Mannequin… ▸ ✨ Lifelike。*版本：* 2.929.0
+- **🪪 影像編輯器圖示列中的角色設定表** — ✨ Create 之後的純圖示 🪪 無需前往 StoryBoard 即可開啟 Character Creator 的設定表對話框（🧍 Mannequin…、✨ Lifelike、▶ Generate sheet）；也可從 File ▸ 🪪 Character Sheet… 開啟。*位置：* 影像編輯器 ▸ 圖示列。*版本：* 2.930.0
 - **音訊視覺化** — 任何正在播放的聲音都會在預覽中顯示即時視覺化效果（頻譜、波形、圓環、粒子、語譜圖）。 *Where:* Preview。 *Since:* 2.106.0
 - **360 度播放器** — 以環視檢視觀看任意等距柱狀投影影片：拖曳環顧，滾輪縮放。 *Where:* 播放器的 360 按鈕。 *Since:* 2.119.0
 

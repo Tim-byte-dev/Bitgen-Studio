@@ -11,7 +11,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 (async () => {
   const Q = require(path.join(ROOT, "ext/imageeditdock/pcquickbar.js"));
   const ids = Q.BUTTONS.filter((b) => b !== "|").map((b) => b[0]);
-  check("the toolbar: New, Open, Save, Save As, Print, Print Preview | Undo, Redo | Cut, Copy, Paste | ✨ Create - each a menu command", ids.join() === "file.new,file.open,file.savebgi,file.savebgias,file.print,file.printpreview,edit.undo,edit.redo,edit.cut,edit.copy,edit.paste,file.createai");
+  check("the toolbar: New, Open, Save, Save As, Print, Print Preview | Undo, Redo | Cut, Copy, Paste | ✨ Create (2.930.0: · 🪪 Character Sheet) - each a menu command", ids.join() === "file.new,file.open,file.savebgi,file.savebgias,file.print,file.printpreview,edit.undo,edit.redo,edit.cut,edit.copy,edit.paste,file.createai,file.charsheet");
   check("paperOf: an A4 page (mm, portrait / landscape); a plain picture from its px at its dpi", JSON.stringify(Q.paperOf({ wmm: 210, hmm: 297, orient: "portrait" })) === '{"w":210,"h":297}' && JSON.stringify(Q.paperOf({ wmm: 210, hmm: 297, orient: "landscape" })) === '{"w":297,"h":210}' && JSON.stringify(Q.paperOf(null, 960, 480)) === '{"w":254,"h":127}');
   const ph = Q.printHtml(["data:a", "data:b"], { w: 210, h: 297 }, "My <doc>");
   check("printHtml: the page's size with no margins, every page on its own sheet, the title kept safe", /@page\{size:210mm 297mm;margin:0\}/.test(ph) && (ph.match(/class="pg"/g) || []).length === 2 && /page-break-after:always/.test(ph) && /<title>My doc<\/title>/.test(ph));

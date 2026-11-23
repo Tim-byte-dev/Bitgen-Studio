@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.930.0** — 🪪 Character Sheet in the Image Editor's Icon Bar: an Icon-Only Button After ✨ Create Opens the Character Creator's Sheet Dialog (🧍 Mannequin…, ✨ Lifelike, ▶ Generate Sheet) Without the StoryBoard; File ▸ 🪪 Character Sheet… Too
 - **2.929.0** — ✨ Lifelike Display Mannequins: Beside 🧍 Mannequin… ✨ Lifelike Has Your PC's Edit Style Redraw the 3D Mannequin's Front, Side and Back as a Photographed White-Gloss Store Mannequin (a Smooth Faceless Head, a Sculpted Body, Black Background, the Pose Kept); the Front Goes Into Your Mannequins as the Start Picture, the Side and Back to the Gallery
 - **2.928.0** — 🧍 Display Mannequins for the Character Sheet: the Male and Female Are White-Gloss Store Mannequins on Black - a Real Human Body (MakeHuman's CC0 Base Mesh: an Athletic 182 cm Man, a Slim 171 cm Woman), Arms Down by the Sides, the Face Softened, Studio Softboxes; a Full Reference Sheet Each (Every Side, the Head Front / ¾ / Back, Torso, Hips, Hands and Feet); Their 3D Bodies (OBJ) for the Coming Garment Designer
 - **2.927.0** — 👂 "Hi Gemma": Name the Assistant in Settings ▸ General ▸ 🗣 The Assistant and, While the 📱 App Is Open, Say "Hi <Name>" - It Opens Talk, Answers and the Conversation Goes On ("Hi Gemma, What's the Time?" Is Answered at Once); Short Bursts of Speech Heard by Your PC's Kept-Up Whisper, Told the Name (Wi-Fi or Tunnel, Never the Relay, Nothing Kept); the LLM Answers to Its Name; 👂 in the App's Top Bar (App 1.12.0)
