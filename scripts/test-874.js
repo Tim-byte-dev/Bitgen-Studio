@@ -69,10 +69,10 @@ check("routes/sheetLibrary.js: GET the library, POST a picture, DELETE, GET the 
   /app\.get\("\/api\/charsheet\/library"/.test(RL) && /app\.post\("\/api\/charsheet\/library\/:kind", upload\.single\("file"\)/.test(RL) && /app\.delete\("\/api\/charsheet\/library\/:kind\/:id"/.test(RL)
   && /\/api\/charsheet\/library\/:kind\/:id\/file/.test(RL) && /require\("\.\/sheetLibrary"\)\.mount\(app\)/.test(src("routes/index.js")));
 check("the sheet route: template = a library id (gone = said), String Concatenate looked for, said in the job; own:<id> mannequins copied into Images",
-  /LIB\.item\("templates", String\(b\.template\)\)/.test(R) && /concat: !!\(info && info\.StringConcatenate\)/.test(R) && /" · template " \+ template\.name/.test(R)
+  /require\("\.\.\/lib\/sheetLibrary"\)\.reference\(String\(b\.template\)\)/.test(R) /* 2.934.0: reference() */ && /concat: !!\(info && info\.StringConcatenate\)/.test(R) && /" · template "\) \+ template\.name/.test(R)
   && /sex\.startsWith\("own:"\)/.test(R) && /"mannequin-own-" \+ it\.id/.test(R));
 check("h3sheet.js: Template ▾ (None / your sheets / ＋ Upload a character sheet…, 🗑), the template drawn as the layout, the Layout guide ticked + locked, sent with the sheet",
-  /id="h3sTpl"/.test(HS) && /＋ Upload a character sheet…/.test(HS) && /id="h3sTplDel"/.test(HS) && /function drawTemplate/.test(HS) && /lg\.disabled = !!t/.test(HS) && /fd\.append\("template", f\.template\)/.test(HS));
+  /id="h3sTpl"/.test(HS) && /＋ Upload a character sheet…/.test(HS) && /id="h3sTplDel"/.test(HS) && /function drawTemplate/.test(HS) && /lg\.disabled = !!r/.test(HS) /* 2.934.0: a template or the mannequin sheet */ && /fd\.append\("template", f\.template\)/.test(HS));
 check("...🧍 Mannequin… lists Your mannequins + ＋ Add your own mannequin… (🗑 for yours), loaded like bitGen's",
   /g\.label = "Your mannequins"/.test(HS) && /＋ Add your own mannequin…/.test(HS) && /loadMannequin\("own:" \+ x\.j\.id\)/.test(HS) && /id="h3sMqDel"/.test(HS));
 console.log(`\n${pass} passed, ${fail} failed`);

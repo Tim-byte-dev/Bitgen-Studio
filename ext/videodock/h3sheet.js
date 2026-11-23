@@ -24,6 +24,12 @@
  * it last had in misc/basic_settings.tmp - H3StyleBasic): size, steps, CFG, seed, checkpoint (+ LoRAs when live); unticked =
  * the style's own settings. The line under the row says which.
  *   fromSaved(vals, useModel) -> {body, words}   (pure: a style's saved Basic Settings as /api/genimage fields)
+ * 2.934.0 (Tim: "in character sheet editor the mannequin sheet is the reference sheet of poses and camera angles and another
+ * image must be loaded or generated to create the character sheet"): 🧍 Mannequin… no longer loads the mannequin as the start
+ * picture. Its REFERENCE SHEET (static/mannequins/<sex>_sheet.png, or your own mannequin's picture) is what the new sheet
+ * follows - its panels, poses and camera angles, sent as template "mannequin:<sex>" / "mannequin:own:<id>" and drawn in the
+ * Layout box - while the character comes from the picture you 📂 load or ✨ generate. Dress it is gone with that.
+ *   reference()      -> {id, name, url, w, h, mannequin} | null   what the sheet follows (a template or the mannequin's sheet)
  *   ready()          -> Promise<bool>   installed (asks once with the box when not)
  *   appendTo(fd)     the settings + part pictures onto the FormData of a take -> the settings (for ↻ Regenerate)
  *   body()           the settings as JSON (+ the part pictures sent before, by name)
@@ -36,13 +42,15 @@
   var S = { preset: "five", views: ["face_front", "face_left", "body_front", "body_left", "body_back"], clothing: "reference",
             hands: "reference", feet: "reference", style: "none", detail: "high", w: 3168, h: 1280, layout: false, tiled: false,
             roles: ["same_character", "face", "clothing"], parts: {}, viewPrompts: {}, picPrompt: "", picStyle: "",
-            // 2.873.0: the 🧍 mannequin loaded as the start picture + the OPTIONAL Dress it tick (an edit style puts clothes on it)
-            mannequin: "", dress: false, dressStyle: "",
+            // 2.934.0: the 🧍 mannequin whose reference sheet the new sheet follows (male | female | own:<id>) - never the start picture
+            mannequin: "",
             // 2.874.0: a character sheet TEMPLATE from your library (its id) - the new sheet follows its layout
             template: "" };
   var LIB = { mannequins: [], templates: [] };  // GET /api/charsheet/library - your own mannequins + sheet templates
-  var MANNEQUIN = { name: "", url: "" };  // the mannequin picture kept in the project's Images (Dress it sends it as picture 1)
-  var editIds = null;                   // the styles that can edit a picture (GET /api/aiedit/engines -> edit)
+  var MQ_NONE = { sex: "", ref: "", name: "", sheet: "", w: 0, h: 0, line: "" };
+  var MANNEQUIN = Object.assign({}, MQ_NONE);  // 2.934.0: the picked mannequin's reference sheet (POST /api/charsheet/h3/mannequin)
+  // the views bitGen's mannequin sheet shows (head front / three-quarter / back, full body front / side / back, hands, feet)
+  var MQ_VIEWS = ["face_front", "face_3q_left", "face_back", "body_front", "body_left", "body_back", "hands", "feet"];
   var refs = [null, null, null];        // File objects
   var refNames = ["", "", ""];          // what the server kept (↻ Regenerate)
   var installed = null, previewT = 0, previewN = 0, defaults = {};
@@ -136,8 +144,11 @@
     $("h3sTiled").addEventListener("change", function () { S.tiled = $("h3sTiled").checked; save(); });
     $("h3sTpl").addEventListener("change", function () {
       var v = $("h3sTpl").value;
-      if (v === "__add") { $("h3sTpl").value = S.template || ""; $("h3sTplFile").value = ""; $("h3sTplFile").click(); return; }
-      S.template = v; paintTemplate(); changed();
+      if (v === "__add") { paintTemplate(); $("h3sTplFile").value = ""; $("h3sTplFile").click(); return; }
+      if (v === "__mq") return;                              // the mannequin's sheet, already the reference
+      // 2.934.0: a template (or None) takes the place of the mannequin's reference sheet
+      if (MANNEQUIN.ref) { clearMannequin(); }
+      S.template = v; paintTemplate(); changed(); picNote();
     });
     $("h3sTplFile").addEventListener("change", function () { var f = $("h3sTplFile").files[0]; if (f) addToLibrary("templates", f); });
     $("h3sTplDel").addEventListener("click", function () { if (S.template) delFromLibrary("templates", S.template); });
@@ -249,7 +260,7 @@
   function preview() {
     clearTimeout(previewT);
     if (!C || !$("h3sCv")) return;
-    if (tplItem()) { previewN++; drawTemplate(); return; }  // 2.874.0: your template's layout is the layout (a preview on its way is dropped)
+    if (refItem()) { previewN++; drawTemplate(); return; }  // 2.874.0: your template's layout is the layout (2.934.0: or the mannequin's sheet)
     var n = ++previewN;
     fetch("/api/charsheet/h3/preview", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ choices: choices(), layout: S.layout, style: S.style, refs: present() }) })
@@ -322,7 +333,7 @@
     return go.then(function (ok) { return ok ? true : ask(); });
   }
   function fields() {
-    var t = tplItem();
+    var t = refItem();
     return { choices: choices(), layout: S.layout, style: S.style, tiled: S.tiled, template: t ? t.id : "" };
   }
   function appendTo(fd) {
@@ -396,11 +407,10 @@
     if (!bar) return;
     var row = document.createElement("div");
     row.className = "chBar"; row.id = "h3sPicBar";
-    row.innerHTML = '<select id="h3sMannequin" style="width:auto" aria-label="Start from a 3D mannequin" title="Load bitGen Studio\'s 3D mannequin as the start picture - anatomically proportioned (male 8 heads, female 7.5), in a neutral A-pose. ▶ Generate sheet makes its sheet as it is">'
+    row.innerHTML = '<select id="h3sMannequin" style="width:auto" aria-label="The mannequin reference sheet of poses and camera angles" title="The mannequin\'s sheet is the REFERENCE: the new sheet follows its panels, poses and camera angles (male 8 heads, female 7.5). The character comes from the picture you load or generate">'
       + '<option value="">🧍 Mannequin…</option><option value="male">🧍 Male (8 heads)</option><option value="female">🧍 Female (7.5 heads)</option></select>'
       + '<button class="ghost gbtn" id="h3sMqDel" type="button" title="Delete this mannequin from your library" aria-label="Delete the mannequin" hidden>🗑</button>'
       + '<input type="file" id="h3sMqFile" accept="image/png,image/jpeg,image/webp,image/bmp" style="display:none" aria-label="Choose a picture of your own mannequin">'
-      + '<label class="hint" style="display:inline-flex;gap:4px;align-items:center;white-space:nowrap" title="Optional: put clothes on the mannequin with an edit style before the sheet. Off by default - dressing can bring artefacts and clothes that do not fit"><input type="checkbox" id="h3sDress"> Dress it</label>'
       + '<input id="h3sPicPrompt" type="text" spellcheck="true" style="flex:1;min-width:160px" placeholder="Describe the character to generate…" aria-label="Describe the character to generate">'
       + '<select id="h3sPicStyle" style="width:auto;max-width:240px" aria-label="Image style for the character picture" title="The image style that makes the picture"></select>'
       + '<button class="ghost gbtn" id="h3sPicGo" type="button" title="Make the character picture with this style - it opens here, ready for the sheet" aria-label="Generate the character picture">✨ Generate</button>';
@@ -410,32 +420,29 @@
     $("h3sPicPrompt").value = S.picPrompt || "";
     $("h3sPicPrompt").addEventListener("input", function () { S.picPrompt = $("h3sPicPrompt").value; save(); });
     $("h3sPicPrompt").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); generatePic(); } });
-    $("h3sPicStyle").addEventListener("change", function () { if (S.dress) S.dressStyle = $("h3sPicStyle").value; else S.picStyle = $("h3sPicStyle").value; save(); picNote(); });
+    $("h3sPicStyle").addEventListener("change", function () { S.picStyle = $("h3sPicStyle").value; save(); picNote(); });
     $("h3sPicGo").addEventListener("click", generatePic);
-    $("h3sMannequin").value = "";
+    $("h3sMannequin").value = S.mannequin || "";
     paintMannequins();
     $("h3sMannequin").addEventListener("change", function () {
       var v = $("h3sMannequin").value;
       if (v === "__add") { $("h3sMannequin").value = ""; $("h3sMqFile").value = ""; $("h3sMqFile").click(); return; }
-      paintMqDel(); loadMannequin(v);
+      paintMqDel();
+      if (!v) { clearMannequin(); paintTemplate(); changed(); picNote(); return; }
+      loadMannequin(v);
     });
     $("h3sMqFile").addEventListener("change", function () { var f = $("h3sMqFile").files[0]; if (f) addToLibrary("mannequins", f); });
     $("h3sMqDel").addEventListener("click", function () { var v = $("h3sMannequin").value; if (/^own:/.test(v)) delFromLibrary("mannequins", v.slice(4)); });
-    $("h3sDress").checked = !!S.dress;
-    $("h3sDress").addEventListener("change", function () { S.dress = $("h3sDress").checked; save(); paintPic(); });
     var ov = $("ovrStyle"); if (ov) ov.addEventListener("change", function () { picNote(); });
   }
   function paintPic() {
     buildPic();
     var sel = $("h3sPicStyle"); if (!sel) return;
-    var dress = !!S.dress;
-    if (dress && editIds === null) { loadEditIds(); }
-    var list = imageStyles().filter(function (x) { return !dress || !editIds || editIds.indexOf(x.id) >= 0; });
-    var want = dress ? S.dressStyle : S.picStyle, ps = $("styleSel");
+    var list = imageStyles();
+    var want = S.picStyle, ps = $("styleSel");
     var pick = want && list.some(function (x) { return x.id === want; }) ? want : (ps && list.some(function (x) { return x.id === ps.value; }) ? ps.value : (list[0] ? list[0].id : ""));
-    $("h3sPicPrompt").placeholder = dress ? "Describe the clothes to put on the mannequin…" : "Describe the character to generate…";
     sel.innerHTML = "";
-    if (!list.length) { var o0 = document.createElement("option"); o0.value = ""; o0.textContent = dress ? "no edit styles" : "no image styles"; sel.appendChild(o0); }
+    if (!list.length) { var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "no image styles"; sel.appendChild(o0); }
     list.forEach(function (x) { var o = document.createElement("option"); o.value = x.id; o.textContent = x.name; sel.appendChild(o); });
     if (pick) sel.value = pick;
     picNote();
@@ -443,36 +450,41 @@
   function picNote(t) {
     var n = $("h3sPicNote"); if (!n) return;
     var id = $("h3sPicStyle") && $("h3sPicStyle").value;
-    // 2.873.0: a loaded mannequin keeps its line (a repaint of the row says it again, then the style's settings)
+    // 2.934.0: the mannequin's line (the reference) stays, then the style's settings
     n.textContent = t || [picDone || MANNEQUIN.line || "", id ? picSettings(id).words : ""].filter(Boolean).join(" · ");
   }
-  /** the edit request that dresses the mannequin (pure - tested) */
-  function dressBody(words, name) {
-    return { images: [name], prompt: "Dress the mannequin in <Picture 1>: " + String(words).trim().replace(/[.\s]+$/, "")
-      + ". Keep its pose, body proportions, head, the plain light grey background, the lighting and the camera exactly the same; only add the clothes, fitted to its body." };
-  }
-  function loadEditIds() {
-    editIds = [];
-    return fetch("/api/aiedit/engines").then(function (r) { return r.json(); }).then(function (j) {
-      editIds = ((j && j.edit) || []).map(function (x) { return x.id; });
-      paintPic();
-    }).catch(function () { editIds = null; });
-  }
-  /** 🧍 the mannequin as the start picture: kept in the project's Images (POST /api/charsheet/h3/mannequin), opened in the sheet */
-  function loadMannequin(sex) {
-    if (!sex) return Promise.resolve(null);
-    picNote("loading the " + sex + " mannequin…");
+  /** 🧍 2.934.0: the mannequin's REFERENCE SHEET - its poses and camera angles - becomes what the new sheet follows (in place of
+   *  a template); the start picture is left alone: the character is the picture you 📂 load or ✨ generate.
+   *  quiet = restoring the pick on open (the views you ticked stay) */
+  function loadMannequin(sex, quiet) {
+    if (!sex) { clearMannequin(); paintTemplate(); changed(); return Promise.resolve(null); }
+    picNote("loading the " + (/^own:/.test(sex) ? "" : sex + " ") + "mannequin's reference sheet…");
     return fetch("/api/charsheet/h3/mannequin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sex: sex }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
         if (!x.ok) throw new Error((x.j && x.j.error) || "the mannequin could not be loaded");
-        MANNEQUIN = { name: x.j.name, url: x.j.url, sex: sex }; S.mannequin = sex; save(); picDone = "";
-        if (window.H3CharSheetPic) window.H3CharSheetPic.open(x.j.url, x.j.name);
-        MANNEQUIN.line = "🧍 " + (x.j.own ? "your mannequin " + x.j.label + " loaded" : x.j.label + " mannequin loaded (" + x.j.heads + " heads)") + " - ▶ Generate sheet makes its sheet"
-          + (S.dress ? "; ✨ Generate dresses it first" : "; tick Dress it to put clothes on it first (optional)");
-        picNote();
+        var j = x.j;
+        MANNEQUIN = { sex: sex, ref: j.ref || ("mannequin:" + sex), name: j.own ? j.label : (j.label + " display mannequin (" + j.heads + " heads)"),
+                      sheet: j.sheet || j.url, w: j.sheet_w || j.w || 0, h: j.sheet_h || j.h || 0, own: !!j.own };
+        MANNEQUIN.line = "🧍 " + MANNEQUIN.name + " is the reference sheet - the new sheet follows its poses and camera angles. "
+          + "The character is the picture you 📂 load or ✨ generate, then ▶ Generate sheet";
+        S.mannequin = sex; S.template = "";
+        if (!quiet && !j.own) S.views = MQ_VIEWS.slice();      // the views bitGen's mannequin sheet shows
+        save(); picDone = "";
+        var sel = $("h3sMannequin"); if (sel && sel.value !== sex) { sel.value = sex; paintMqDel(); }
+        if (C && !quiet && $("h3sPreset")) { paintSelects(); }
+        paintTemplate(); preview(); picNote();
         test("h3s_mannequin", sex);
-        return x.j;
-      }).catch(function (e) { picNote("✗ " + (e.message || e)); return null; });
+        return j;
+      }).catch(function (e) { clearMannequin(); paintTemplate(); preview(); picNote("✗ " + (e.message || e)); return null; });
+  }
+  function clearMannequin() {
+    MANNEQUIN = Object.assign({}, MQ_NONE); S.mannequin = ""; save();
+    var sel = $("h3sMannequin"); if (sel) { sel.value = ""; paintMqDel(); }
+  }
+  /** what the new sheet follows: your template, else the mannequin's reference sheet, else nothing (the designer's own layout) */
+  function refItem() {
+    var t = tplItem(); if (t) return t;
+    return MANNEQUIN.ref ? { id: MANNEQUIN.ref, name: MANNEQUIN.name, url: MANNEQUIN.sheet, w: MANNEQUIN.w || 1, h: MANNEQUIN.h || 1, mannequin: true } : null;
   }
   /* ---- 2.874.0: your own mannequins + sheet templates (lib/sheetLibrary.js, routes/sheetLibrary.js) ---- */
   function tplItem() { return S.template ? (LIB.templates || []).filter(function (x) { return x.id === S.template; })[0] || null : null; }
@@ -480,6 +492,8 @@
     return fetch("/api/charsheet/library").then(function (r) { return r.json(); }).then(function (j) {
       LIB = { mannequins: j.mannequins || [], templates: j.templates || [] };
       paintMannequins(); paintTemplate(); preview();
+      // 2.934.0: the mannequin picked last time is the reference again (gone from your library = none)
+      if (S.mannequin && !MANNEQUIN.ref) loadMannequin(S.mannequin, true);
       return LIB;
     }).catch(function () { return LIB; });
   }
@@ -505,20 +519,23 @@
     sel.innerHTML = "";
     opt2(sel, "", "None - the designer's own layout");
     LIB.templates.forEach(function (x) { opt2(sel, x.id, x.name + " (" + x.w + " × " + x.h + ")"); });
+    if (MANNEQUIN.ref) opt2(sel, "__mq", "🧍 " + MANNEQUIN.name + " - poses and camera angles");
     opt2(sel, "__add", "＋ Upload a character sheet…");
-    var t = tplItem(); sel.value = t ? t.id : "";
+    var t = tplItem(), r = refItem(); sel.value = t ? t.id : r ? "__mq" : "";
     $("h3sTplDel").hidden = !t;
     var lg = $("h3sLayout");
-    if (lg) { lg.disabled = !!t; lg.checked = t ? true : !!S.layout; lg.parentNode.title = t ? "Your template is the layout guide" : "The designer's layout picture rides along and places the views; off = its words place them"; }
+    if (lg) { lg.disabled = !!r; lg.checked = r ? true : !!S.layout; lg.parentNode.title = r ? (t ? "Your template is the layout guide" : "The mannequin's reference sheet is the layout guide") : "The designer's layout picture rides along and places the views; off = its words place them"; }
   }
   var tplImg = null;
   function drawTemplate() {
-    var t = tplItem(), cv = $("h3sCv"), m = $("h3sCvMsg"); if (!t || !cv) return;
+    var t = refItem(), cv = $("h3sCv"), m = $("h3sCvMsg"); if (!t || !cv) return;
     var W = Math.max(200, (cv.parentNode.clientWidth || 356) - 2), H = Math.max(40, Math.round(W * t.h / t.w));
     cv.width = W; cv.height = H;
     m.textContent = "";
-    $("h3sSize").textContent = "Template: " + t.name + " - the sheet follows its layout (" + t.w + " × " + t.h + "); tick the views it shows";
-    var paint = function () { if (tplItem() === t && tplImg && tplImg.complete) cv.getContext("2d").drawImage(tplImg, 0, 0, W, H); };
+    $("h3sSize").textContent = t.mannequin
+      ? "Reference: " + t.name + " - the sheet follows its poses and camera angles (" + t.w + " × " + t.h + "); the character is your picture"
+      : "Template: " + t.name + " - the sheet follows its layout (" + t.w + " × " + t.h + "); tick the views it shows";
+    var paint = function () { var r = refItem(); if (r && r.id === t.id && tplImg && tplImg.complete) cv.getContext("2d").drawImage(tplImg, 0, 0, W, H); };
     if (tplImg && tplImg.dataset.id === t.id) { paint(); return; }
     tplImg = new Image(); tplImg.dataset.id = t.id; tplImg.onload = paint; tplImg.src = t.url;
   }
@@ -529,7 +546,7 @@
       .then(function (x) {
         if (!x.ok) throw new Error((x.j && x.j.error) || "the picture could not be added");
         return loadLibrary().then(function () {
-          if (kind === "templates") { S.template = x.j.id; save(); paintTemplate(); preview(); say("✓ template " + x.j.name + " added - the sheet follows its layout"); }
+          if (kind === "templates") { clearMannequin(); S.template = x.j.id; save(); paintTemplate(); preview(); say("✓ template " + x.j.name + " added - the sheet follows its layout"); }
           else { $("h3sMannequin").value = "own:" + x.j.id; paintMqDel(); loadMannequin("own:" + x.j.id); }
           test("h3s_lib_" + kind, x.j.id);
           return x.j;
@@ -544,22 +561,17 @@
       if (!ok) return false;
       return fetch("/api/charsheet/library/" + kind + "/" + encodeURIComponent(id), { method: "DELETE" }).then(function () {
         if (kind === "templates" && S.template === id) { S.template = ""; save(); }
-        if (kind === "mannequins" && MANNEQUIN.sex === "own:" + id) { MANNEQUIN = { name: "", url: "" }; }
-        return loadLibrary().then(function () { if (kind === "mannequins") { $("h3sMannequin").value = ""; paintMqDel(); picNote(); } return true; });
+        if (kind === "mannequins" && MANNEQUIN.sex === "own:" + id) { clearMannequin(); }
+        return loadLibrary().then(function () { if (kind === "mannequins") { paintMannequins(); paintTemplate(); preview(); picNote(); } return true; });
       });
     });
   }
   var picPoll = null, picDone = "";       // picDone: the last ✓ made, kept when the row repaints (2.874.0)
   function generatePic() {
     var words = ($("h3sPicPrompt").value || "").trim(), id = $("h3sPicStyle").value;
-    if (!words) { picNote(S.dress ? "write the clothes to put on the mannequin first" : "write what the character looks like first"); $("h3sPicPrompt").focus(); return; }
+    if (!words) { picNote("write what the character looks like first"); $("h3sPicPrompt").focus(); return; }
     if (!id) { picNote("pick an image style"); return; }
     var ps = picSettings(id), body = Object.assign({ prompt: words, style_id: id, batch: 1 }, ps.body);
-    if (S.dress) {
-      // 2.873.0: Dress it - the edit style gets the mannequin as picture 1 and keeps its pose, body and framing
-      if (!MANNEQUIN.name) { picNote("pick a 🧍 mannequin first - Dress it puts clothes on it"); return; }
-      body = Object.assign(body, dressBody(words, MANNEQUIN.name));
-    }
     var go = $("h3sPicGo"); go.disabled = true; picDone = "";
     picNote("queuing… · " + ps.words);
     var ready = window.H3PodRoute && window.H3PodRoute.ready ? Promise.resolve(window.H3PodRoute.ready("image", id)) : Promise.resolve(true);
@@ -576,7 +588,7 @@
           clearInterval(picPoll); go.disabled = false;
           var outs = (jj.outputs && jj.outputs.length ? jj.outputs : jj.output ? [jj.output] : []).map(function (n) { return "/outputs/" + encodeURIComponent(String(n).split(/[\\/]/).pop()); });
           if (jj.status !== "done" || !outs.length) { picNote(jj.status === "done" ? "✗ the picture came back empty" : "✗ render " + jj.status); return; }
-          picDone = "✓ made - drag the box over the character, then ▶ Generate sheet";
+          picDone = "✓ made - drag the box over the character, then ▶ Generate sheet" + (MANNEQUIN.ref ? " (in the 🧍 mannequin's poses and camera angles)" : "");
           picNote(picDone);
           if (window.H3CharSheetPic) { window.H3CharSheetPic.keep(outs); window.H3CharSheetPic.open(outs[0], decodeURIComponent(outs[0].split("/").pop())); }
         }).catch(function () {});
@@ -589,5 +601,5 @@
     state: function () { return JSON.parse(JSON.stringify(S)); },
     setState: function (o) { Object.keys(o || {}).forEach(function (k) { if (k in S) S[k] = o[k]; }); save(); if (C) { paintSelects(); preview(); } },
     choices: choices, fromSaved: fromSaved, picSettings: picSettings, generatePic: generatePic,
-    dressBody: dressBody, loadMannequin: loadMannequin, loadLibrary: loadLibrary, library: function () { return JSON.parse(JSON.stringify(LIB)); }, mannequin: function () { return Object.assign({}, MANNEQUIN); } };
+    MQ_VIEWS: MQ_VIEWS, loadMannequin: loadMannequin, reference: function () { var r = refItem(); return r ? Object.assign({}, r) : null; }, loadLibrary: loadLibrary, library: function () { return JSON.parse(JSON.stringify(LIB)); }, mannequin: function () { return Object.assign({}, MANNEQUIN); } };
 })();

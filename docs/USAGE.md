@@ -9692,13 +9692,13 @@ Image**. It replaces the old sheet options (Kind, Look, Pose sheet, Render style
    With Basic Settings ▸ **Override style** ticked it renders with that style's own Basic Settings (the ones on screen
    when it is the prompt docker's style, else the ones it last had); unticked, with the style's own settings - the line
    under the row says which.
-   Or start from **🧍 Mannequin…**: **Male** (8 heads, 178 cm) or **Female** (7.5 heads, 165 cm) loads bitGen Studio's
-   own 3D mannequin - anatomically proportioned, smooth, in a neutral A-pose - as the picture, and ▶ Generate sheet
-   makes its sheet as it is. **Dress it** is optional and off by default (dressing can bring artefacts and clothes that
-   do not fit): ticked, the style list holds the edit styles and ✨ Generate puts the clothes you describe on the
-   mannequin, keeping its pose and body. Its views (front, side, back, the head) are in static/mannequins/.
-   **＋ Add your own mannequin…** puts a picture of your own mannequin in your library (kept for every project); it is
-   listed under **Your mannequins** and loads the same way (🗑 deletes it).
+   **🧍 Mannequin…** (**Male** or **Female**, or one of yours) picks the **reference sheet of poses and camera angles**
+   (2.934.0): the mannequin's sheet is drawn in the Layout box and the new sheet follows its panels, poses and camera
+   angles - the mannequin is never the character. The character is the picture you 📂 load or ✨ generate; ▶ Generate
+   sheet asks for one when there is none. bitGen's mannequins also tick the views their sheet shows; a Template picked
+   sets the mannequin aside (and the other way round). **＋ Add your own mannequin…** puts a picture of your own
+   mannequin - a sheet of its poses works best - in your library (kept for every project); it is listed under **Your
+   mannequins** and is the reference the same way (🗑 deletes it).
 3. **Views**: Standard · 5 views, Basic · 4, Turnaround · 3, Head · 6, Clothing · 2, Single view, All · 13 - or tick
    your own of the 13 (six head views, three full-body views, clothing front / back, hands, feet).
 4. **Clothing** (as in the picture, pants, skirt or robe, or **No clothing · natural body surface** for an animal or a
@@ -10603,7 +10603,7 @@ The full threat model is in **docs/bitgen-studio-threat-model.md**. What you may
 
 Character Creator ▸ Sheet ▸ **🧍 Mannequin…** ▸ Male or Female now loads a white-gloss display mannequin on black (a store
 mannequin's look): a real human body - an athletic 182 cm man and a slim 171 cm woman - with the arms down by the sides.
-**▶ Generate Sheet** makes its character sheet as before; **Dress it** puts your clothes on it with an edit style.
+Since 2.934.0 its sheet is the reference of poses and camera angles for your character's sheet (see below).
 Each has a full reference sheet (static/mannequins/<sex>_sheet.png): every side, the head, the torso, the hips, the hands and
 the feet. The bodies are MakeHuman's open base mesh (CC0), shaped by bitGen (scripts/make_mannequin_mesh.py); their 3D files
 (static/mannequins/mesh/*.obj) are what the garment designer will drape clothes on.
@@ -10614,9 +10614,10 @@ In the Character Creator's sheet tab pick **🧍 Mannequin… ▸ Male** (or Fem
 edit style - the one **Dress it** uses, else the first edit style (Qwen Image Edit, FLUX Kontext, P-H3 Edit …) - redraws the
 3D mannequin's front, side and back one after another as a photographed white-gloss store mannequin: a smooth faceless head,
 a sculpted body, a black background, the pose and camera kept. The note under the row shows each view's progress.
-The front is kept in **Your mannequins** ("Lifelike male display mannequin") and opens as the start picture for ▶ Generate
-Sheet; the side and back are in the Gallery. Not happy with one? Press ✨ Lifelike again (each run is a new mannequin; 🗑
-deletes one), or pick another edit style for Dress it first.
+The three views are laid side by side into one sheet kept in **Your mannequins** ("Lifelike male mannequin - front, side,
+back") - since 2.934.0 it is the sheet's reference, not the start picture; each view is in the Gallery too. Not happy with
+one? Press ✨ Lifelike again (each run is a new mannequin; 🗑 deletes one), or pick an edit style in the picture style list
+first.
 
 ## 🪪 The character sheet from the image editor (2.930.0)
 
@@ -10824,3 +10825,17 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 
 bitGen Studio is MIT licensed. Each project above keeps its own licence - misc/NOTICE.md lists what ships, what is downloaded, and the model licences. Model weights are downloaded by you and carry their makers' terms.
 <!-- credits:end -->
+
+## 🧍 The mannequin sheet is the reference (2.934.0)
+
+In the Character Creator's sheet tab, **🧍 Mannequin… ▸ Male** (or Female, or one of Your mannequins) no longer loads the
+mannequin as the picture to make a sheet of. Its **reference sheet** - front, side, back, the head, torso, hips, hands and
+feet - is what your character's sheet follows: the panels, the poses and the camera angles. It is drawn in the **Layout** box
+("Reference: Male display mannequin …"), Template ▾ shows it, and the views that sheet shows are ticked.
+
+The character itself comes from another picture: **📂 Load picture**, or describe it and press **✨ Generate**. Drag the box
+over the character and press **▶ Generate sheet** - the character is drawn in the mannequin's poses and angles, with the
+character's own face, hair, body, clothes and style (the mannequin's white surface, its title and labels are left out).
+Without a picture, ▶ Generate sheet asks for one. Picking a Template sets the mannequin aside; **Mannequin…** (none) goes back
+to the designer's own layout. **Dress it** is gone: the mannequin is never the character. ✨ Lifelike now lays its three
+views side by side into one reference sheet.

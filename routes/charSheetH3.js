@@ -6,9 +6,12 @@
 //   POST /api/charsheet/h3/preview    {choices, layout, style, refs: [bool ×3]} -> {width, height, megapixels, panels
 //                                      [{id, rect, view}], defaults {view: instruction}, summary, experimental}
 //                                      | {offline: true, summary} (ComfyUI not running) | {nopack: true, summary} | 400 {error}
-//   POST /api/charsheet/h3/mannequin  {sex: male|female} -> {name, url, sheet, views, label, heads, height_cm} (2.873.0)
+//   POST /api/charsheet/h3/mannequin  {sex: male|female} -> {name, url, sheet, sheet_w, sheet_h, ref, views, label, heads,
+//                                      height_cm} (2.873.0; 2.934.0 ref = the template value for its reference sheet)
 //   POST /api/charsheet/h3            multipart: image (the character), ref1..ref3 (part pictures); fields choices (JSON),
-//                                      layout, style, tiled, seed, file (an earlier upload, for ↻), ref_files (JSON [3 names])
+//                                      layout, style, tiled, seed, file (an earlier upload, for ↻), ref_files (JSON [3 names]),
+//                                      template (a sheet template id, or 2.934.0 "mannequin:<sex>" / "mannequin:own:<id>" - the
+//                                      mannequin's reference sheet of poses and camera angles; the character is the image)
 //                                      -> a graph job + {input, refs, summary} | 400 / 409 / 503 {error, needs?}
 "use strict";
 const express = require("express");
@@ -66,7 +69,8 @@ function mount(app) {
 
   /* 2.873.0 (Tim: "create the mannequin character sheet using a 3d mannequin, for male and female"): bitGen Studio's own
      3D mannequin (static/mannequin3d.js, rendered by scripts/make_mannequins.js into static/mannequins/) kept in the
-     project's Images as mannequin-<sex>.png - the sheet tab opens it as the start picture, Dress it sends it to an edit style */
+     project's Images as mannequin-<sex>.png. 2.934.0: the sheet tab no longer opens it as the start picture - its reference
+   sheet (ref) is what the new sheet follows: its poses and camera angles; the character is the picture you load or generate */
   /* 2.929.0 ✨ Make lifelike (ext/videodock/mannequinlife.js): one view of a display mannequin (front / side / back / three)
      put in the project's Images as mannequin-<sex>-<view>.png - the edit style gets it as <Picture 1> */
   app.post("/api/charsheet/h3/mannequin-view", J, wrap(async (req) => {
@@ -90,7 +94,8 @@ function mount(app) {
       const dir0 = core.pDir("images"); fs.mkdirSync(dir0, { recursive: true });
       const nm = "mannequin-own-" + it.id + path.extname(it.file);
       fs.copyFileSync(LIB.file("mannequins", it.id), path.join(dir0, nm));
-      return { name: nm, url: "/passets/images/" + encodeURIComponent(nm), label: it.name, own: true, w: it.w, h: it.h };
+      return { name: nm, url: "/passets/images/" + encodeURIComponent(nm), label: it.name, own: true, w: it.w, h: it.h,
+        ref: "mannequin:own:" + it.id, sheet: "/api/charsheet/library/mannequins/" + encodeURIComponent(it.id) + "/file", sheet_w: it.w, sheet_h: it.h };
     }
     if (!M.SEXES.includes(sex)) throw err(400, "pick the male or the female mannequin");
     const src = path.join(core.BASE, "static", "mannequins", sex + "_front.png");
@@ -99,8 +104,9 @@ function mount(app) {
     fs.mkdirSync(dir, { recursive: true });
     const name = "mannequin-" + sex + ".png";
     fs.copyFileSync(src, path.join(dir, name));
-    const P = M.PROPS[sex];
+    const P = M.PROPS[sex], ref = require("../lib/sheetLibrary").mannequinSheet(sex) || {};
     return { name, url: "/passets/images/" + encodeURIComponent(name), sheet: "/static/mannequins/" + sex + "_sheet.png",
+      ref: "mannequin:" + sex, sheet_w: ref.w || 0, sheet_h: ref.h || 0,
       views: ["front", "side", "back"].map((v) => "/static/mannequins/" + sex + "_" + v + ".png"),
       label: P.label, heads: P.heads, height_cm: (() => {                // 2.928.0: the display mannequin's own height
         try { return Math.round(JSON.parse(fs.readFileSync(path.join(core.BASE, "static", "mannequins", "mesh", sex + ".json"), "utf8")).height_m * 100); } catch { return Math.round(P.height_m * 100); }
@@ -154,11 +160,12 @@ function mount(app) {
     const rolled = require("../lib/imageSeed").forRequest(b.seed === undefined || b.seed === "" ? null : Number(b.seed));
     const dir = core.pDir("images");
     // 2.874.0: a character sheet TEMPLATE from your library - its layout is followed (lib/charSheetH3.js graph)
+    // 2.934.0: or a 🧍 mannequin's reference sheet ("mannequin:<sex>" / "mannequin:own:<id>") - its poses and camera angles
     let template = null;
     if (b.template) {
-      const LIB = require("../lib/sheetLibrary"), it = LIB.item("templates", String(b.template));
-      if (!it) throw err(400, "that sheet template is not in your library any more - pick another or upload it again");
-      template = { path: LIB.file("templates", it.id), w: it.w, h: it.h, name: it.name };
+      template = require("../lib/sheetLibrary").reference(String(b.template));
+      if (!template) throw err(400, /^mannequin:/.test(String(b.template)) ? "that mannequin's reference sheet is not there any more - pick the mannequin again"
+        : "that sheet template is not in your library any more - pick another or upload it again");
     }
     const built = S().graph({ state: st, layout: truthy(b.layout), style, seed: rolled.seed, names: rd.names, tiled: truthy(b.tiled),
       template, concat: !!(info && info.StringConcatenate),
@@ -171,7 +178,7 @@ function mount(app) {
       graph_file: "(H3 Character Sheet Designer " + S().PACK.version + " + MiniMax H3 Image)",
       graph_uploads: built.uploads,
       graph_warnings: template && !(info && info.StringConcatenate) ? ["this ComfyUI has no String Concatenate node - the template rides as the layout guide without its extra words (update ComfyUI)"] : [],
-      graph_applied: [summary + (template ? " · template " + template.name : truthy(b.layout) ? " · layout guide" : "") + (style !== "none" ? " · style " + style : "")
+      graph_applied: [summary + (template ? (template.kind === "mannequin" ? " · poses and camera angles from " : " · template ") + template.name : truthy(b.layout) ? " · layout guide" : "") + (style !== "none" ? " · style " + style : "")
         + (used ? ` · ${used} part picture${used > 1 ? "s" : ""}` : "") + " · seed " + rolled.seed],
       seed: rolled.seed, seed_random: rolled.random, prompt: "",
     });

@@ -4,6 +4,8 @@
  * Against the running studio (H3_URL): the Character Creator's sheet tab, 🧍 Male picked -> ✨ Lifelike shows; pressed:
  * the front, side and back go to the edit style one after another (each as <Picture 1>, the prompt keeping the pose and
  * asking for a faceless gloss mannequin on black), the front lands in Your mannequins and opens as the start picture.
+ * 2.934.0: the three views are laid side by side into ONE reference sheet in Your mannequins - the sheet's reference (its poses
+ * and camera angles), never the start picture.
  * The renders are stand-ins (Playwright answers /api/genimage, /api/jobs, /outputs); the library is the real one (the item
  * is deleted after). No Playwright = SKIP. */
 "use strict";
@@ -56,7 +58,11 @@ const PNG = (() => {
     check("the front, side and back went to the edit style one after another, each as <Picture 1> (mannequin-male-<view>.png)",
       sent.length === 3 && sent.map((x) => x.images && x.images[0]).join() === "mannequin-male-front.png,mannequin-male-side.png,mannequin-male-back.png" && sent.every((x) => x.style_id === "edit929"), sent.map((x) => x.images));
     check("…the prompt keeps the pose and asks for a faceless glossy white mannequin on black, the view named", sent.every((x) => /<Picture 1>/.test(x.prompt) && /faceless/.test(x.prompt) && /Keep the pose/.test(x.prompt) && /black background/.test(x.prompt)) && /from the side/.test(sent[1].prompt) && /from behind/.test(sent[2].prompt));
-    check("the front went into Your mannequins (\"Lifelike male display mannequin\") and is the start picture now", made && made.id && /Lifelike male display mannequin/.test(made.name) && await ev((id) => document.getElementById("h3sMannequin").value === "own:" + id, made.id), made);
+    await p.waitForFunction((id) => { const r = window.H3SheetDesign.reference(); return r && r.id === "mannequin:own:" + id; }, made && made.id, { timeout: 15000 }).catch(() => {});
+    check("2.934.0: the three views became ONE sheet side by side in Your mannequins (\"... - front, side, back\"), picked, and it is the sheet's reference",
+      made && made.id && /Lifelike male mannequin - front, side, back/.test(made.name) && made.w > made.h * 2 && await ev((id) => document.getElementById("h3sMannequin").value === "own:" + id
+        && window.H3SheetDesign.reference().id === "mannequin:own:" + id, made.id), made);
+    check("...never the start picture (the sheet's canvas stays empty)", await ev(() => { const d = document.getElementById("chMaskCanvas").getContext("2d").getImageData(2, 2, 1, 1).data; return d[0] === 12 && d[1] === 10 && d[2] === 8; }));
     check("the note says so (the side and back in the Gallery)", /Gallery/.test(await ev(() => document.getElementById("h3sPicNote").textContent)));
     const v = await (await fetch(URL_ + "/api/charsheet/h3/mannequin-view", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sex: "female", view: "nope" }) })).json();
     check("the views route takes front / side / back only", /front, side and back/.test(v.error || ""), v);

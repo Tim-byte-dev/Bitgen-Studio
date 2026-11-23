@@ -15005,6 +15005,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui933-ui.js > /tmp/ui933.log 2>&
   && ok "2.933.0 browser test: 🧍 Drape from the dialog - progress, the three views, → References, 🧊 3D layer, ⤓ OBJ (or the no-Blender refusal)" \
   || { bad "2.933.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui933.log | head -12; }
 
+# ---- 2.934.0 (🧍 the mannequin sheet is the reference of poses and camera angles)
+node scripts/test-934.js > /tmp/t934.log 2>&1 \
+  && ok "2.934.0 units: reference() (mannequin:<sex> / own / template), the mannequin words, the route, the sheet tab (no start picture, no Dress it), Lifelike's sheet" \
+  || { bad "2.934.0 units"; grep -a "^FAIL" -A1 /tmp/t934.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui934-ui.js > /tmp/ui934.log 2>&1 \
+  && ok "2.934.0 browser test: 🧍 Male = the reference (Layout box, views ticked), the start picture empty, ▶ Generate sheet needs a picture then sends mannequin:male, kept over a reload" \
+  || { bad "2.934.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui934.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -3,10 +3,13 @@
  * don't look human" -> "3D + your PC makes them real" -> "go next".
  * Beside 🧍 Mannequin… (Male / Female picked) ✨ Lifelike sends the 3D mannequin's front, side and back
  * (POST /api/charsheet/h3/mannequin-view) one at a time to an EDIT style (Qwen Image Edit, FLUX Kontext, P-H3 Edit … the
- * one Dress it uses, else the first) with a prompt that keeps the pose, the proportions and the camera and makes it a
+ * picked picture style when it can edit, else the first) with a prompt that keeps the pose, the proportions and the camera and makes it a
  * photographed white-gloss fibreglass display mannequin: a smooth faceless head, sculpted body, black background. The front
  * goes into YOUR mannequins ("Lifelike male display mannequin") and opens as the start picture; the side and back stay in
  * the Gallery. (window.H3MannequinLife; prompt(sex, view) is pure - scripts/test-929.js)
+ * 2.934.0: the mannequin is the REFERENCE SHEET of poses and camera angles, never the start picture - the three lifelike views
+ * are laid side by side into one sheet (front | side | back, sheetLayout(sizes) is pure) and THAT goes into Your mannequins
+ * and becomes the sheet's reference; the views stay in the Gallery too.
  */
 (function () {
   "use strict";
@@ -23,7 +26,16 @@
       + "Keep the pose, the body proportions, the arms, the camera angle and the framing exactly the same. Pure black background, "
       + "no clothes, no text, no stand.";
   }
-  if (typeof document === "undefined") { if (typeof module !== "undefined" && module.exports) module.exports = { prompt: prompt, VIEWS: VIEWS }; return; }
+  /** 2.934.0: the reference sheet's layout - the views side by side at one height, a gap between (pure) */
+  function sheetLayout(sizes, height, gap) {
+    var H = Math.max(64, Math.round(height || 1200)), G = Math.max(0, Math.round(gap == null ? 24 : gap)), x = G, cells = [];
+    (sizes || []).forEach(function (s) {
+      var w = Math.max(1, Math.round(H * (s.w || 1) / (s.h || 1)));
+      cells.push({ x: x, y: G, w: w, h: H }); x += w + G;
+    });
+    return { w: Math.max(G * 2 + 1, x), h: H + G * 2, cells: cells };
+  }
+  if (typeof document === "undefined") { if (typeof module !== "undefined" && module.exports) module.exports = { prompt: prompt, sheetLayout: sheetLayout, VIEWS: VIEWS }; return; }
   function $(id) { return document.getElementById(id); }
   function note(t) { var n = $("h3sPicNote"); if (n) n.textContent = t; }
   function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ("HTTP " + r.status)); return j; }); }); }
@@ -31,7 +43,7 @@
     return fetch("/api/aiedit/engines").then(function (r) { return r.json(); }).then(function (j) {
       var ids = ((j && j.edit) || []).map(function (x) { return x.id; });
       var st = window.H3SheetDesign && window.H3SheetDesign.state ? window.H3SheetDesign.state() : {};
-      return st.dressStyle && ids.indexOf(st.dressStyle) >= 0 ? st.dressStyle : ids[0] || "";
+      return st.picStyle && ids.indexOf(st.picStyle) >= 0 ? st.picStyle : ids[0] || "";
     });
   }
   function waitJob(id, label) {
@@ -45,6 +57,17 @@
           else ok(outs[0]);
         }).catch(function () { /* next poll */ });
       }, 1500);
+    });
+  }
+  function sheetBlob(urls) {
+    return Promise.all(urls.map(function (u) {
+      return new Promise(function (ok, bad) { var im = new Image(); im.onload = function () { ok(im); }; im.onerror = function () { bad(new Error("a lifelike view could not be read")); }; im.src = u; });
+    })).then(function (ims) {
+      var L = sheetLayout(ims.map(function (im) { return { w: im.naturalWidth, h: im.naturalHeight }; }), Math.min(1600, Math.max.apply(null, ims.map(function (im) { return im.naturalHeight; }))));
+      var cv = document.createElement("canvas"); cv.width = L.w; cv.height = L.h;
+      var g = cv.getContext("2d"); g.fillStyle = "#000"; g.fillRect(0, 0, L.w, L.h);
+      ims.forEach(function (im, i) { var c = L.cells[i]; g.drawImage(im, c.x, c.y, c.w, c.h); });
+      return new Promise(function (ok, bad) { cv.toBlob(function (b) { if (b) ok(b); else bad(new Error("the reference sheet could not be made")); }, "image/png"); });
     });
   }
   var busy = false;
@@ -71,22 +94,22 @@
         }, Promise.resolve());
       });
     }).then(function () {
-      note("✨ keeping it in your mannequins…");
-      return fetch(out.front).then(function (r) { return r.blob(); }).then(function (blob) {
+      note("✨ laying the views into a reference sheet…");
+      return sheetBlob([out.front, out.side, out.back]).then(function (blob) {
         var fd = new FormData();
-        fd.append("file", blob, "lifelike-" + sex + ".png");
-        fd.append("name", "Lifelike " + sex + " display mannequin");
+        fd.append("file", blob, "lifelike-" + sex + "-sheet.png");
+        fd.append("name", "Lifelike " + sex + " mannequin - front, side, back");
         return fetch("/api/charsheet/library/mannequins", { method: "POST", body: fd }).then(function (r) { return r.json(); })
           .then(function (it) { if (!it || !it.id) throw new Error("it could not be kept in your mannequins: " + ((it && it.error) || "no answer") + " (the views are in the Gallery)"); return it; });
       });
     }).then(function (it) {
       busy = false; paint();
-      var D = window.H3SheetDesign, said = "✓ Lifelike " + sex + " mannequin made - in Your mannequins (the side and back are in the Gallery)";
+      var D = window.H3SheetDesign, said = "✓ Lifelike " + sex + " mannequin sheet made (front, side, back) - in Your mannequins and now the reference (each view is in the Gallery too); load or ✨ generate your character, then ▶ Generate sheet";
       note(said);
       return Promise.resolve(D && D.loadLibrary ? D.loadLibrary() : null).then(function () {
         var sel = $("h3sMannequin");
         if (sel && it && it.id) { sel.value = "own:" + it.id; if (D && D.loadMannequin) return D.loadMannequin("own:" + it.id); }
-      }).catch(function () { /* the start picture by hand */ }).then(function () { note(said); paint(); return { views: out, item: it }; });
+      }).catch(function () { /* pick it by hand */ }).then(function () { note(said); paint(); return { views: out, item: it }; });
     }).catch(function (e) { busy = false; paint(); note("✗ " + (e.message || e)); return null; });
   }
   function paint() {
@@ -102,7 +125,7 @@
     if ($("h3sLife")) return;
     var b = document.createElement("button");
     b.type = "button"; b.className = "ghost gbtn"; b.id = "h3sLife"; b.hidden = true;
-    b.title = "Make this display mannequin lifelike on your PC: an edit style redraws its front, side and back as a photographed glossy white store mannequin (faceless head, sculpted body) keeping the pose - the front goes into Your mannequins";
+    b.title = "Make this display mannequin lifelike on your PC: an edit style redraws its front, side and back as a photographed glossy white store mannequin (faceless head, sculpted body) keeping the pose - the three views become one reference sheet in Your mannequins";
     b.textContent = "✨ Lifelike";
     sel.parentNode.insertBefore(b, sel.nextSibling);
     b.addEventListener("click", function () { make(sel.value); });
@@ -110,5 +133,5 @@
     paint();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
-  window.H3MannequinLife = { prompt: prompt, make: make, VIEWS: VIEWS };
+  window.H3MannequinLife = { prompt: prompt, sheetLayout: sheetLayout, make: make, VIEWS: VIEWS };
 })();

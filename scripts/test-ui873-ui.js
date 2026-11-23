@@ -2,7 +2,10 @@
 /* bitGen Studio — 2.873.0 in a REAL browser: the Character creator's sheet tab - 🧍 Mannequin… Male / Female loads bitGen's
  * 3D mannequin as the start picture (kept in the project's Images, opened in the sheet's canvas at 832 x 1216); Dress it is off
  * by default; ticked, the style list holds only the edit styles and ✨ Generate sends the mannequin as picture 1 with the
- * clothes; without a mannequin it asks for one. The render is answered by the test. Against the running app (H3_URL). */
+ * clothes; without a mannequin it asks for one. The render is answered by the test. Against the running app (H3_URL).
+ * 2.934.0 (Tim: "the mannequin sheet is the reference sheet of poses and camera angles and another image must be loaded or
+ * generated"): picking a mannequin leaves the start picture alone, its reference sheet is drawn in the Layout box; Dress it is
+ * gone and ✨ Generate makes the character from words (scripts/test-ui934-ui.js has the rest). */
 "use strict";
 const path = require("path");
 const { execSync } = require("child_process");
@@ -21,49 +24,34 @@ const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX
   const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   const ev = (f, a) => p.evaluate(f, a);
   const sent = [];
-  let editId = "";
   await p.route("**/api/genimage", async (route) => { sent.push(JSON.parse(route.request().postData() || "{}")); route.fulfill({ json: { id: "fake873", status: "queued" } }); });
   await p.route("**/api/jobs/fake873", (route) => route.fulfill({ json: { id: "fake873", status: "done", outputs: ["dressed873.png"] } }));
   await p.route("**/outputs/dressed873.png", (route) => route.fulfill({ body: PNG, contentType: "image/png" }));
   await p.route("**/api/characters/gens", (route) => route.request().method() === "POST" ? route.fulfill({ json: { gens: [] } }) : route.continue());
-  await p.route("**/api/aiedit/engines", async (route) => {
-    const r = await route.fetch(); const j = await r.json(); editId = ((j.edit || [])[0] || {}).id || "";
-    route.fulfill({ json: j });
-  });
   try {
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3SheetDesign && document.getElementById("chNewPic") && document.getElementById("styleSel") && document.getElementById("styleSel").options.length > 1, null, { timeout: 60000 });
     await p.waitForTimeout(800);
     await ev(() => { localStorage.removeItem("h3sheet.v1"); document.getElementById("chNewPic").click(); });
     await p.waitForFunction(() => document.getElementById("h3sMannequin"), null, { timeout: 15000 });
-    const v0 = await ev(() => ({ opts: [...document.getElementById("h3sMannequin").options].map((o) => o.value), dress: document.getElementById("h3sDress").checked }));
-    check("🧍 Mannequin… with Male / Female (+ 2.874.0 ＋ Add your own); Dress it off by default", v0.opts.join() === ",male,female,__add" && v0.dress === false, v0);
-    // Dress it ticked with no mannequin yet -> asked for one
-    await ev(() => document.getElementById("h3sDress").click());
-    await p.waitForFunction(() => document.getElementById("h3sPicStyle").options.length > 0 && document.getElementById("h3sPicPrompt").placeholder.includes("clothes"), null, { timeout: 15000 });
-    await p.fill("#h3sPicPrompt", "a red wool coat and black jeans");
-    await ev(() => document.getElementById("h3sPicGo").click());
-    const v1 = await ev(() => document.getElementById("h3sPicNote").textContent);
-    check("Dress it without a mannequin: asked for one, nothing sent", /pick a 🧍 mannequin first/.test(v1) && sent.length === 0, v1);
-    // load the male mannequin
+    const v0 = await ev(() => ({ opts: [...document.getElementById("h3sMannequin").options].map((o) => o.value), dress: !!document.getElementById("h3sDress") }));
+    check("🧍 Mannequin… with Male / Female (+ 2.874.0 ＋ Add your own); 2.934.0: no Dress it", v0.opts.join() === ",male,female,__add" && v0.dress === false, v0);
     await p.selectOption("#h3sMannequin", "male");
-    await p.waitForFunction(() => /mannequin loaded/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
-    await p.waitForFunction(() => { const c = document.getElementById("chMaskCanvas"); return c && c.width > 100; }, null, { timeout: 10000 }).catch(() => {});
-    const v2 = await ev(() => { const c = document.getElementById("chMaskCanvas"); return { w: c.width, h: c.height, note: document.getElementById("h3sPicNote").textContent, m: window.H3SheetDesign.mannequin() }; });
-    check("Male: the mannequin opens in the sheet's canvas (832 x 1216 kept in proportion), kept as mannequin-male.png, said with its 8 heads",
-      v2.w > 100 && Math.abs(v2.h / v2.w - 1216 / 832) < 0.02 && v2.m.name === "mannequin-male.png" && /Male mannequin loaded \(8 heads\)/.test(v2.note), v2);
-    const v3 = await ev(() => [...document.getElementById("h3sPicStyle").options].map((o) => o.value));
-    check("...Dress it ticked: only the edit styles are offered", editId && v3.includes(editId) && v3.length <= (await ev(() => document.getElementById("styleSel").options.length)), { v3, editId });
+    await p.waitForFunction(() => /is the reference sheet/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
+    const v2 = await ev(() => { const d = document.getElementById("chMaskCanvas").getContext("2d").getImageData(2, 2, 1, 1).data;
+      return { empty: d[0] === 12 && d[1] === 10 && d[2] === 8, note: document.getElementById("h3sPicNote").textContent, r: window.H3SheetDesign.reference() }; });
+    check("Male: NOT opened as the start picture (the canvas stays empty); its sheet is the reference (8 heads said)",
+      v2.empty && v2.r && v2.r.id === "mannequin:male" && /Male display mannequin \(8 heads\)/.test(v2.note) && /📂 load or ✨ generate/.test(v2.note), v2);
+    await p.waitForFunction(() => document.getElementById("h3sPicStyle").options.length > 0, null, { timeout: 15000 });
+    await p.fill("#h3sPicPrompt", "a knight in a red wool coat");
     await ev(() => document.getElementById("h3sPicGo").click());
     await p.waitForFunction(() => /✓ made/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
     const s0 = sent[0] || {};
-    check("✨ Generate dresses it: the mannequin as picture 1, the clothes, an edit style", (s0.images || []).join() === "mannequin-male.png" && /^Dress the mannequin in <Picture 1>: a red wool coat and black jeans\./.test(s0.prompt) && v3.includes(s0.style_id), s0);
-    // the female one, Dress it off
-    await ev(() => document.getElementById("h3sDress").click());
+    check("✨ Generate makes the CHARACTER from words (no mannequin picture sent), said in the mannequin's poses", s0.prompt === "a knight in a red wool coat" && !s0.images
+      && /in the 🧍 mannequin's poses and camera angles/.test(await ev(() => document.getElementById("h3sPicNote").textContent)), s0);
     await p.selectOption("#h3sMannequin", "female");
-    await p.waitForFunction(() => /Female mannequin loaded \(7\.5 heads\)/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
-    const v4 = await ev(() => ({ note: document.getElementById("h3sPicNote").textContent, ph: document.getElementById("h3sPicPrompt").placeholder }));
-    check("Female, Dress it off: loaded, the line says dressing is optional, the prompt describes a character again", /tick Dress it to put clothes on it first \(optional\)/.test(v4.note) && /Describe the character/.test(v4.ph), v4);
+    await p.waitForFunction(() => /Female display mannequin \(7\.5 heads\) is the reference sheet/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
+    check("Female: the reference now", await ev(() => window.H3SheetDesign.reference().id) === "mannequin:female");
     check("no page errors", !errs.length, errs);
   } catch (e) { fail++; console.log("FAIL: " + (e && e.stack || e)); }
   finally { await b.close(); }

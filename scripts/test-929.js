@@ -21,7 +21,7 @@ const EJ = JSON.parse(src("ext/videodock/ext.json"));
 check("ext.json: mannequinlife.js right after h3sheet.js", EJ.scripts.indexOf("mannequinlife.js") === EJ.scripts.indexOf("h3sheet.js") + 1);
 const R = src("routes/charSheetH3.js"), ML = src("ext/videodock/mannequinlife.js");
 check("POST /api/charsheet/h3/mannequin-view puts the view in the project's Images (front / side / back only)", /app\.post\("\/api\/charsheet\/h3\/mannequin-view"/.test(R) && /"mannequin-" \+ sex \+ "-" \+ view \+ "\.png"/.test(R) && /\["front", "side", "back"\]\.includes\(view\)/.test(R));
-check("the client: an EDIT style (Dress it's, else the first), one view at a time, the front into the library, a failure said", /\/api\/aiedit\/engines/.test(ML) && /st\.dressStyle/.test(ML) && /VIEWS\.reduce/.test(ML) && /\/api\/charsheet\/library\/mannequins/.test(ML) && /could not be kept in your mannequins/.test(ML));
+check("the client: an EDIT style (2.934.0: the picked style when it edits, else the first), one view at a time, the sheet into the library, a failure said", /\/api\/aiedit\/engines/.test(ML) && /st\.picStyle/.test(ML) && /VIEWS\.reduce/.test(ML) && /\/api\/charsheet\/library\/mannequins/.test(ML) && /could not be kept in your mannequins/.test(ML));
 check("server.js untouched", !/mannequin-view/.test(src("misc/server.js")));
 console.log("\n" + P + " passed, " + F + " failed");
 process.exit(F ? 1 : 0);

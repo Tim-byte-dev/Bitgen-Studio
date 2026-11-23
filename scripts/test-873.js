@@ -45,14 +45,12 @@ const win = { localStorage: { getItem: () => null, setItem: () => {} } };
 const ctx = { window: win, document: { getElementById: () => null }, localStorage: win.localStorage, console };
 vm.createContext(ctx); vm.runInContext(HS, ctx);
 const D = win.H3SheetDesign;
-const d = D.dressBody("a red wool coat and black jeans.", "mannequin-male.png");
-check("Dress it: the mannequin as picture 1, the clothes, the pose / body / background / camera kept", d.images.join() === "mannequin-male.png"
-  && /^Dress the mannequin in <Picture 1>: a red wool coat and black jeans\. Keep its pose, body proportions/.test(d.prompt) && /only add the clothes/.test(d.prompt), d);
-check("h3sheet.js: 🧍 Mannequin… (Male 8 heads / Female 7.5 heads) loads it as the start picture (H3CharSheetPic.open)",
-  /id="h3sMannequin"/.test(HS) && /Male \(8 heads\)/.test(HS) && /Female \(7\.5 heads\)/.test(HS) && /fetch\("\/api\/charsheet\/h3\/mannequin"/.test(HS) && /H3CharSheetPic\.open\(x\.j\.url, x\.j\.name\)/.test(HS));
-check("...Dress it is OPTIONAL and off by default; ticked = edit styles only (/api/aiedit/engines) and ✨ Generate sends the mannequin",
-  /dress: false/.test(HS) && /id="h3sDress"/.test(HS) && /fetch\("\/api\/aiedit\/engines"\)/.test(HS) && /if \(S\.dress\) \{/.test(HS) && /body = Object\.assign\(body, dressBody\(words, MANNEQUIN\.name\)\)/.test(HS)
-  && /pick a 🧍 mannequin first/.test(HS));
+// 2.934.0 (Tim: "the mannequin sheet is the reference sheet of poses and camera angles and another image must be loaded or
+// generated"): the mannequin is no longer the start picture and Dress it is gone - scripts/test-934.js pins the new way
+check("h3sheet.js: 🧍 Mannequin… (Male 8 heads / Female 7.5 heads) asks the route for it (2.934.0: its sheet = the reference, not the start picture)",
+  /id="h3sMannequin"/.test(HS) && /Male \(8 heads\)/.test(HS) && /Female \(7\.5 heads\)/.test(HS) && /fetch\("\/api\/charsheet\/h3\/mannequin"/.test(HS)
+  && !/H3CharSheetPic\.open\(x\.j\.url/.test(HS) && typeof D.loadMannequin === "function");
+check("...2.934.0: Dress it is gone (the mannequin is never the character)", !/id="h3sDress"/.test(HS) && !D.dressBody && !/dressBody/.test(HS));
 check("the figure is bitGen's own: scripts/make_mannequins.js renders it with the app's three.js (2.928.0: the display mannequin, static/mannequinGloss.js)", /three-m3d\.min\.js/.test(src("scripts/make_mannequins.js")) && /H3MannequinGloss\.render/.test(src("scripts/make_mannequins.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

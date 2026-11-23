@@ -100,7 +100,7 @@
       + '<select id="gmFabric" aria-label="Fabric"><option value="cotton">Cotton</option><option value="jersey">Jersey (stretchy)</option><option value="silk">Silk (light)</option><option value="denim">Denim (stiff)</option></select>'
       + '<input type="color" id="gmColor" value="#8c1f29" aria-label="Fabric colour" title="Fabric colour"><span id="gmDrapeNote"></span></div>'
       + '<div class="gmdrape" id="gmDrapeBox" hidden><div class="gmviews" id="gmViews"></div>'
-      + '<div class="gmbar"><button type="button" class="ghost" id="gmToRefs" title="Put the three views in the References docker (for Dress it, Edit, a video)">→ References</button>'
+      + '<div class="gmbar"><button type="button" class="ghost" id="gmToRefs" title="Put the three views in the References docker (for Edit, a video, a character sheet part picture)">→ References</button>'
       + '<button type="button" class="ghost" id="gmTo3d" title="Open the dressed mannequin as a 🧊 3D layer in the image editor (Blender)">🧊 3D layer in the image editor</button>'
       + '<a class="ghost" id="gmObj" download href="#" title="The draped garment as an OBJ file (+ its .mtl)">⤓ OBJ</a></div></div>'
       + '<div class="gmbar"><b>Your garments</b></div><div class="gmlist" id="gmList"></div>'

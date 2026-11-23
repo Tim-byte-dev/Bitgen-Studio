@@ -2,7 +2,9 @@
 /* bitGen Studio — 2.874.0 in a REAL browser: the 🪪 Character sheet tab - ＋ Upload a character sheet… puts your sheet in the
  * library and picks it as the Template (drawn as the layout, the Layout guide ticked + locked, its name said); ▶ Generate sheet
  * sends it; ＋ Add your own mannequin… adds yours to 🧍 Mannequin… (Your mannequins) and opens it in the sheet's canvas; a
- * template / mannequin deleted from the library leaves the lists. The sheet render is answered by the test. (H3_URL) */
+ * template / mannequin deleted from the library leaves the lists. The sheet render is answered by the test. (H3_URL)
+ * 2.934.0: your mannequin is the REFERENCE sheet (in place of the template, drawn in the Layout box, sent as
+ * "mannequin:own:<id>"), never the start picture - the character is a picture loaded separately. */
 "use strict";
 const path = require("path"), fs = require("fs"), os = require("os"), zlib = require("zlib");
 const { execSync } = require("child_process");
@@ -53,20 +55,36 @@ function png(w, h) {
       return { pick: s.selectedOptions[0].textContent, lg: lg.checked && lg.disabled, del: !document.getElementById("h3sTplDel").hidden, ratio: cv.width / cv.height, size: document.getElementById("h3sSize").textContent }; });
     check("＋ Upload: the sheet is in your library and picked (its size), drawn as the layout (2:1), the Layout guide ticked + locked, 🗑 shown",
       v1.pick === "studio sheet (1600 × 800)" && v1.lg && v1.del && Math.abs(v1.ratio - 2) < 0.05 && /the sheet follows its layout/.test(v1.size), v1);
-    // own mannequin
+    // own mannequin -> the reference (2.934.0), the template set aside
     await p.setInputFiles("#h3sMqFile", path.join(dir, "wooden doll.png"));
-    await p.waitForFunction(() => /your mannequin wooden doll loaded/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
-    await p.waitForFunction(() => { const c = document.getElementById("chMaskCanvas"); return c && c.height > c.width * 2; }, null, { timeout: 10000 }).catch(() => {});
-    const v2 = await ev(() => { const s = document.getElementById("h3sMannequin"), c = document.getElementById("chMaskCanvas");
-      return { pick: s.selectedOptions[0].textContent, group: s.selectedOptions[0].parentNode.label, del: !document.getElementById("h3sMqDel").hidden, ratio: c.height / c.width, m: window.H3SheetDesign.mannequin() }; });
-    check("＋ Add your own mannequin: listed under Your mannequins, picked, opened in the sheet's canvas (its shape), kept in Images",
-      v2.pick === "wooden doll" && v2.group === "Your mannequins" && v2.del && Math.abs(v2.ratio - 2.5) < 0.05 && /^mannequin-own-.*\.png$/.test(v2.m.name), v2);
-    // ▶ Generate sheet sends the template
+    await p.waitForFunction(() => /wooden doll is the reference sheet/.test(document.getElementById("h3sPicNote").textContent), null, { timeout: 15000 });
+    const v2 = await ev(() => { const s = document.getElementById("h3sMannequin"), cv = document.getElementById("h3sCv"), t = document.getElementById("h3sTpl"), d = document.getElementById("chMaskCanvas").getContext("2d").getImageData(2, 2, 1, 1).data;
+      return { pick: s.selectedOptions[0].textContent, group: s.selectedOptions[0].parentNode.label, del: !document.getElementById("h3sMqDel").hidden, ratio: cv.height / cv.width,
+               tpl: t.value, tplText: t.selectedOptions[0].textContent, empty: d[0] === 12 && d[1] === 10 && d[2] === 8, size: document.getElementById("h3sSize").textContent, r: window.H3SheetDesign.reference() }; });
+    check("＋ Add your own mannequin: listed under Your mannequins, picked, its picture is the REFERENCE (Layout box, its shape; Template ▾ says so), not the start picture",
+      v2.pick === "wooden doll" && v2.group === "Your mannequins" && v2.del && Math.abs(v2.ratio - 2.5) < 0.05 && v2.tpl === "__mq" && /wooden doll - poses and camera angles/.test(v2.tplText)
+      && v2.empty && /^Reference: wooden doll/.test(v2.size) && /^mannequin:own:/.test(v2.r && v2.r.id), v2);
+    // ▶ Generate sheet with no character picture -> asked for one; with one -> the mannequin's reference rides along
+    await ev(() => document.getElementById("chSheetGen").click());
+    await p.waitForTimeout(400);
+    check("▶ Generate sheet with no picture: nothing sent (the character must be loaded or generated)", sheets.length === 0);
+    await p.route("**/outputs/char874.png", (route) => route.fulfill({ body: png(300, 600), contentType: "image/png" }));
+    await ev(() => window.H3CharSheetPic.open("/outputs/char874.png", "char874.png"));
+    await p.waitForFunction(() => { const d = document.getElementById("chMaskCanvas").getContext("2d").getImageData(2, 2, 1, 1).data; return !(d[0] === 12 && d[1] === 10 && d[2] === 8); }, null, { timeout: 10000 }).catch(() => {});
     await ev(() => document.getElementById("chSheetGen").click());
     for (let i = 0; i < 50 && !sheets.length; i++) await p.waitForTimeout(100);
     const lib = await ev(() => window.H3SheetDesign.library());
-    const tid = lib.templates[0] && lib.templates[0].id;
-    check("▶ Generate sheet: the template's id rides with the picture", sheets.length === 1 && new RegExp(`name="template"\\r\\n\\r\\n${tid}\\r\\n`).test(sheets[0]), sheets[0] && sheets[0].slice(0, 300));
+    const tid = lib.templates[0] && lib.templates[0].id, mid = lib.mannequins[0] && lib.mannequins[0].id;
+    check("...with your picture: the mannequin's reference rides as template=mannequin:own:<id>", sheets.length === 1 && new RegExp(`name="template"\\r\\n\\r\\nmannequin:own:${mid}\\r\\n`).test(sheets[0]), sheets[0] && sheets[0].slice(0, 300));
+    // the template picked again -> the mannequin set aside; ▶ Generate sheet sends the template
+    await ev(() => { try { document.getElementById("chSheetDlg").close(); } catch (e) {} });
+    await p.selectOption("#h3sTpl", tid);
+    check("Template picked: the mannequin is no longer the reference", await ev(() => document.getElementById("h3sMannequin").value === "" && window.H3SheetDesign.reference().id) === tid);
+    await ev(() => window.H3CharSheetPic.open("/outputs/char874.png", "char874.png"));
+    await p.waitForTimeout(400);
+    await ev(() => document.getElementById("chSheetGen").click());
+    for (let i = 0; i < 50 && sheets.length < 2; i++) await p.waitForTimeout(100);
+    check("▶ Generate sheet: the template's id rides with the picture", sheets.length === 2 && new RegExp(`name="template"\\r\\n\\r\\n${tid}\\r\\n`).test(sheets[1]), sheets[1] && sheets[1].slice(0, 300));
     // remembered over a reload
     await p.reload({ waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3SheetDesign && document.getElementById("chNewPic"), null, { timeout: 60000 });
