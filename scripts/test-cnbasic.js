@@ -117,10 +117,10 @@ const TL = require(path.join(ROOT, "lib", "tempLoras"));
   const RI = read("routes", "index.js");
   check("GET/POST /api/controlnet/basic (the record + its LoRAs + the types)",
     RI.includes('app.get("/api/controlnet/basic"') && RI.includes('app.post("/api/controlnet/basic"')
-    && RI.includes('res.json({ settings: cnBasics.read(pdir), loras: tempLoras.read(pdir, "cnet"),'));
+    && RI.includes('res.json({ settings: cnBasics.read(pdir), loras: tempLoras.read(pdir, "cnet", { all: true }),'));
   check("/api/temploras and the project answer carry the cnet list",
-    RI.includes('cnet: tempLoras.read(pdir, "cnet") });          // 2.316.0')
-    && RI.includes('cnet: tempLoras.read(pdir, "cnet") };   // 2.111.0 (+ 2.316.0 ControlNet)'));
+    RI.includes('cnet: tempLoras.read(pdir, "cnet", all) });          // 2.316.0')
+    && RI.includes('cnet: tempLoras.read(pdir, "cnet", A) };   // 2.111.0 (+ 2.316.0 ControlNet)'));
   check("/api/genimage attaches the pass only when the request asks - 2.318.0: with the panel's settings sent inline (always on), or true = the saved record",
     RI.includes('if (featOn("controlnet") && (b.controlnet === true || (b.controlnet && typeof b.controlnet === "object"))) {')   // 2.593.0: + only while the add-on is on
     && RI.includes('? cnBasics.normalize({ ...b.controlnet, v: 2, enabled: true }) : cnBasics.read(pdir);')

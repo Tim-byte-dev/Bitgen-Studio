@@ -48,7 +48,7 @@
   function snap(kind) {
     const sel = $(KINDS[kind].sel); if (!sel) return null;
     const o = sel.selectedOptions && sel.selectedOptions[0], on = ovrOn();
-    const tl = typeof tempLoras === "function" ? tempLoras(kind) : [];   // eslint-disable-line no-undef
+    const tl = typeof tempLoras === "function" ? tempLoras(kind, undefined, true) : [];   // eslint-disable-line no-undef   (2.931.0: with the switched-off ones)
     return { style: sel.value, name: o ? o.textContent.trim() : sel.value, ovr: on, fields: on ? fieldsOf(controls(kind)) : {}, loras: on ? tl : [], at: Date.now() };
   }
   function save() { clearTimeout(S.saveT); S.saveT = setTimeout(() => { fetch("/api/model-settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ settings: S.data }) }).catch(() => {}); }, 400); }
@@ -74,7 +74,7 @@
           else if (String(c.value) !== String(v)) { c.value = v; fire(c, "input"); fire(c, "change"); }
         });
         if (typeof paintTempLoras === "function") {   // eslint-disable-line no-undef
-          const all = { image: tempLoras("image"), video: tempLoras("video"), cnet: tempLoras("cnet") }; all[kind] = s.loras || [];   // eslint-disable-line no-undef
+          const all = { image: tempLoras("image", undefined, true), video: tempLoras("video", undefined, true), cnet: tempLoras("cnet", undefined, true) }; all[kind] = s.loras || [];   // eslint-disable-line no-undef
           paintTempLoras(all); if (typeof saveTempLoras === "function") saveTempLoras(kind);   // eslint-disable-line no-undef
         }
       }

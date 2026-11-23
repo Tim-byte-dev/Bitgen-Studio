@@ -1116,6 +1116,15 @@
   .lorarow.stacked .lline { display: flex; align-items: center; gap: 6px; }
   .lorarow.stacked .lline input[type=range] { flex: 1; width: auto; min-width: 0; }
   .lorarow.stacked .lline .lw { width: 40px; }
+  /* 2.931.0: a temporary LoRA's on / off switch; off = dimmed, kept, not rendered */
+  .lswitch { position: relative; display: inline-block; width: 30px; height: 16px; flex: none; cursor: pointer; }
+  .lswitch .lon { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+  .lswitch .lknob { position: absolute; inset: 0; border-radius: 9px; background: var(--line, #444); transition: background .15s; }
+  .lswitch .lknob::after { content: ""; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink, #ddd); transition: transform .15s; }
+  .lswitch .lon:checked + .lknob { background: var(--tiger, #f59e2c); }
+  .lswitch .lon:checked + .lknob::after { transform: translateX(14px); background: #fff; }
+  .lswitch .lon:focus-visible + .lknob { outline: 2px solid var(--tiger, #f59e2c); outline-offset: 1px; }
+  .lorarow.loff > :not(.lline), .lorarow.loff .lline > :not(.lswitch):not(.lx) { opacity: .45; }
   .cmrow { display: flex; justify-content: space-between; gap: 8px; }
   .cmrow small { color: var(--dim); font-family: var(--mono); font-size: .6rem; flex: none; }
   /* ---- media lightbox (2.80.0) ---- */
@@ -13404,19 +13413,29 @@ let tempLoraTimer = null;
 /* 2.777.0: Basic Settings ▸ Use model / Use temporary LoRAs (static/ovruse.js; on when it has not loaded) */
 function useTL(kind) { return !window.H3OvrUse || H3OvrUse.loras(kind); }
 function useMD(kind) { return !window.H3OvrUse || H3OvrUse.model(kind); }
-function tempLoras(kind, hostId) {
+/* 2.931.0 (Tim: "add a toggle switch to the added loras in basic settings so we can toggle loras on and off without removing
+   them"): each row has an on / off switch. tempLoras(kind) = the ones ON (what Generate sends); all = true -> every row with
+   on:false on the switched-off ones (what is saved; the server never renders those - lib/tempLoras.js). */
+function tempLoras(kind, hostId, all) {
   const box = $(hostId || tempLoraHost[kind]); if (!box) return [];
-  return [...box.querySelectorAll(".lorarow")].map((r) => { const [t, g] = r.querySelectorAll("input"); return { path: t.value.trim(), weight: parseFloat(g.value) }; }).filter((l) => l.path);
+  return [...box.querySelectorAll(".lorarow")].map((r) => {
+    const t = r.querySelector("input[type=text], input:not([type])") || r.querySelectorAll("input")[0], g = r.querySelector("input[type=range]");
+    const sw = r.querySelector(".lon"), on = !sw || sw.checked;
+    const l = { path: (t ? t.value : "").trim(), weight: parseFloat(g ? g.value : 1) };
+    if (!on) l.on = false;
+    return l;
+  }).filter((l) => l.path && (all || l.on !== false));
 }
+window.tempLoras = tempLoras;
 function saveTempLoras(kind, hostId) {
   clearTimeout(tempLoraTimer);
   tempLoraTimer = setTimeout(() => {
-    const list = tempLoras(kind, hostId);
+    const list = tempLoras(kind, hostId, true);
     fetch(`/api/temploras/${kind}`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ loras: list }) }).catch(() => {});
     if (hostId && hostId !== tempLoraHost[kind]) {      // keep Basic Settings in step
       const box = $(tempLoraHost[kind]);
-      if (box) { box.innerHTML = ""; for (const l of list) addTempLora(kind, l); }
+      if (box) { box.innerHTML = ""; for (const l of list) addTempLora(kind, l); }      // (with their on / off)
     }
   }, 300);
 }
@@ -13428,11 +13447,19 @@ function addTempLora(kind, l, hostId) {
   row.classList.add("stacked");
   const line = document.createElement("div");
   line.className = "lline";
-  line.append(row.querySelector("input[type=range]"), row.querySelector(".lw"), row.querySelector(".lx"));
+  // 2.931.0: an on / off switch - off keeps the LoRA here (and saved) but leaves it out of every render
+  const sw = document.createElement("label");
+  sw.className = "lswitch"; sw.title = "On: used in the render. Off: kept here, not used - switch it back on any time";
+  sw.innerHTML = '<input type="checkbox" class="lon" aria-label="Use this LoRA"><span class="lknob"></span>';
+  const on = sw.querySelector(".lon"); on.checked = !(l && l.on === false);
+  const look = () => { row.classList.toggle("loff", !on.checked); sw.title = on.checked ? "On - used in the render (click to switch it off, it stays here)" : "Off - kept here, not used (click to switch it on)"; };
+  line.append(sw, row.querySelector("input[type=range]"), row.querySelector(".lw"), row.querySelector(".lx"));
   row.appendChild(line);
-  const [t, g] = row.querySelectorAll("input");
+  look();
+  const [t, g] = [row.querySelector("input[type=text], input:not([type])") || row.querySelectorAll("input")[0], row.querySelector("input[type=range]")];
   const sel = row.querySelector(".cmfile");
   const save = () => saveTempLoras(kind, hostId);
+  on.addEventListener("change", () => { look(); save(); if (window.H3LoraSel && H3LoraSel.refresh) { try { H3LoraSel.refresh(); } catch {} } });
   t.addEventListener("input", save); g.addEventListener("input", save); g.addEventListener("change", save);
   if (sel) sel.addEventListener("change", save);
   const x = row.querySelector(".lx"); const orig = x.onclick;

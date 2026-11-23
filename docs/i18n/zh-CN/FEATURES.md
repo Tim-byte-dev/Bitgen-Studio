@@ -154,6 +154,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🧍 角色设定表用的展示人体模特** — 🧍 Mannequin… 的男性和女性现在是黑色背景上的白色亮光展示模特：真实的人体（MakeHuman 开放的 CC0 基础网格——肌肉型男性 182 厘米，苗条女性 171 厘米），双臂垂于身侧，面部柔化，在影棚柔光箱下渲染；每个都有完整的参考表——正面、侧面、背面、两侧、头部正面 / ¾ / 背面、躯干、躯干侧面、臀部、手掌、手背、手侧面、脚底、脚背和脚侧面。3D 身体（static/mannequins/mesh，也有 OBJ）就是即将推出的服装设计器为其穿衣的身体。*位置：* Character Creator ▸ Sheet ▸ 🧍 Mannequin…。*版本：* 2.928.0
 - **✨ 逼真的展示模特** — 在 🧍 Mannequin…（选择男性或女性）旁边，✨ Lifelike 让电脑上的编辑风格（Dress it 使用的那个，否则用第一个——Qwen Image Edit、FLUX Kontext、P-H3 Edit …）把 3D 模特的正面、侧面和背面重新画成白色亮光玻璃钢商店模特的照片——光滑无脸的蛋形头部、雕塑般的身体、黑色背景——保持姿势、比例和镜头；正面放入「Your mannequins」（「Lifelike male display mannequin」）并作为起始图片打开，侧面和背面在图库中。*位置：* Character Creator ▸ Sheet ▸ 🧍 Mannequin… ▸ ✨ Lifelike。*版本：* 2.929.0
 - **🪪 图像编辑器图标栏中的角色设定表** — ✨ Create 之后的纯图标 🪪 无需前往 StoryBoard 即可打开 Character Creator 的设定表对话框（🧍 Mannequin…、✨ Lifelike、▶ Generate sheet）；也可从 File ▸ 🪪 Character Sheet… 打开。*位置：* 图像编辑器 ▸ 图标栏。*版本：* 2.930.0
+- **🔀 临时 LoRA 的开关** — 在 Basic Settings 中添加的每个 LoRA（图片、视频、ControlNet，以及视频停靠窗的 ⚙ 列表）都有开关：关闭后它仍留在列表中——包括权重，随项目保存——但不参与任何渲染（Generate、StoryBoard、角色、Pod）；随时可以重新打开；✕ 仍会删除它。*位置：* Basic Settings ▸ Temporary LoRAs。*版本：* 2.931.0
 - **音频可视化** — 任何正在播放的声音都会在预览中显示实时可视化效果（频谱、波形、圆环、粒子、语谱图）。 *Where:* Preview。 *Since:* 2.106.0
 - **360 度播放器** — 以环视视图观看任意等距柱状投影视频：拖动环顾，滚轮缩放。 *Where:* 播放器的 360 按钮。 *Since:* 2.119.0
 

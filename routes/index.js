@@ -1816,7 +1816,7 @@ function mount(app) {
      "cnet" temporary list (/api/temploras/cnet) */
   app.get("/api/controlnet/basic", (_req, res) => {
     const pdir = core.projDir(core.getProject());
-    res.json({ settings: cnBasics.read(pdir), loras: tempLoras.read(pdir, "cnet"),
+    res.json({ settings: cnBasics.read(pdir), loras: tempLoras.read(pdir, "cnet", { all: true }),
                types: cnTypes.catalogue() });
   });
   app.post("/api/controlnet/basic", (req, res) => {
@@ -2295,8 +2295,9 @@ function mount(app) {
     // 2.107.0: the ACTIVE timeline comes from projects/<p>/timelines/<name>.json
     if (data) data = timelines.attach(core.projDir(core.getProject()), data);
     const pdir = core.projDir(core.getProject());
-    const temp_loras = { image: tempLoras.read(pdir, "image"), video: tempLoras.read(pdir, "video"),
-                         cnet: tempLoras.read(pdir, "cnet") };   // 2.111.0 (+ 2.316.0 ControlNet)
+    const A = { all: true };                                  // 2.931.0: the switched-off ones too (shown, not rendered)
+    const temp_loras = { image: tempLoras.read(pdir, "image", A), video: tempLoras.read(pdir, "video", A),
+                         cnet: tempLoras.read(pdir, "cnet", A) };   // 2.111.0 (+ 2.316.0 ControlNet)
     return { name: core.getProject(), data, missing_references: missing, temp_loras };
   };
   /* NAMED TIMELINES (2.107.0): files under projects/<p>/timelines/. The
@@ -2305,8 +2306,9 @@ function mount(app) {
   /* TEMPORARY LoRAs (2.111.0): projects/<p>/<kind>-loras-temp.json */
   app.get("/api/temploras", (_req, res) => {
     const pdir = core.projDir(core.getProject());
-    res.json({ image: tempLoras.read(pdir, "image"), video: tempLoras.read(pdir, "video"),
-               cnet: tempLoras.read(pdir, "cnet") });          // 2.316.0
+    const all = { all: true };                                 // 2.931.0: the switched-off ones too (Basic Settings shows them)
+    res.json({ image: tempLoras.read(pdir, "image", all), video: tempLoras.read(pdir, "video", all),
+               cnet: tempLoras.read(pdir, "cnet", all) });          // 2.316.0
   });
   app.post("/api/temploras/:kind", (req, res) => {
     try {

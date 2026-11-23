@@ -10624,6 +10624,13 @@ The image editor's icon bar ends with **🪪** (after ✨ Create): it opens the 
 🧍 Mannequin…, ✨ Lifelike, ✨ Generate a character picture, ▶ Generate sheet - without opening the StoryBoard.
 File ▸ 🪪 Character Sheet… does the same.
 
+## 🔀 Switching temporary LoRAs on and off (2.931.0)
+
+Each LoRA you add in **Basic Settings** (the picture and video lists, ControlNet's, and the video docker's ⚙ list) has a small
+switch at the start of its weight line. **Off** (grey, the row dimmed) keeps the LoRA in the list with its weight - saved with
+the project - but no render uses it: Generate, the StoryBoard, characters and pods all leave it out. **On** (orange) puts it
+back. ✕ still removes it for good.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

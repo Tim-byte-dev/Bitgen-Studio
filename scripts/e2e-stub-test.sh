@@ -14975,6 +14975,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui930-ui.js > /tmp/ui930.log 2>&
   && ok "2.930.0 browser test: 🪪 after ✨ in the image editor's icon bar (icon only) opens the character sheet dialog; File ▸ 🪪 Character Sheet…" \
   || { bad "2.930.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui930.log | head -12; }
 
+# ---- 2.931.0 (🔀 temporary LoRAs on / off)
+node scripts/test-931.js > /tmp/t931.log 2>&1 \
+  && ok "2.931.0 units: on:false kept in the file, left out of normalize / read / merge (every render); the lists that show them ask for all" \
+  || { bad "2.931.0 units"; grep -a "^FAIL" -A1 /tmp/t931.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui931-ui.js > /tmp/ui931.log 2>&1 \
+  && ok "2.931.0 browser test: a switch on each Basic Settings LoRA; off dimmed and not in Generate's list; saved; back after a reload; ✕ still removes" \
+  || { bad "2.931.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui931.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

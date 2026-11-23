@@ -94,7 +94,7 @@ const RS = require(path.join(ROOT, "lib", "renderSettings"));
     && RC.includes("...(rs.upscale_stage && rs.upscale_auto ? { upscale_stage: rs.upscale_stage } : {}),"));
   check("the routes: GET/POST /api/scenes/render-settings (the LoRAs and the pack state ride the GET)",
     RC.includes('app.get("/api/scenes/render-settings"') && RC.includes('app.post("/api/scenes/render-settings"')
-    && RC.includes('loras: tempLoras.read(pdir, "video"), upscale_pack: pack,'));
+    && RC.includes('loras: tempLoras.read(pdir, "video", { all: true }), upscale_pack: pack,'));
   check("the pack: Settings' pack installer knows the MMH3 Ultimate Upscale repo; packInstalled is a cheap folder check",
     CM.includes('upscale: { url: "https://github.com/bbaudio-2025/Comfyui-MMH3-UltimateUpscale.git",')
     && CM.includes("function packInstalled(what)"));

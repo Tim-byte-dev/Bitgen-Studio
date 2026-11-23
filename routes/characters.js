@@ -2566,7 +2566,7 @@ function mount(app) {
     const pdir = core.projDir(core.getProject());
     let pack = null;
     try { pack = require("../lib/comfy").packInstalled("upscale"); } catch { /* no comfy lib */ }
-    res.json({ settings: renderSettings.read(pdir), loras: tempLoras.read(pdir, "video"), upscale_pack: pack,
+    res.json({ settings: renderSettings.read(pdir), loras: tempLoras.read(pdir, "video", { all: true }), upscale_pack: pack,
                options: { res: renderSettings.RES, aspects: renderSettings.ASPECTS,
                           upscale_res: renderSettings.UPSCALE_RES } });
   });
