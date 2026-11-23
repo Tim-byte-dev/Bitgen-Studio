@@ -18,7 +18,7 @@
  */
 (function (root) {
   "use strict";
-  var IDS = ["pushpulldock", "timelinedock", "imageeditdock"];
+  var IDS = ["pushpulldock", "timelinedock", "imageeditdock", "chasedock"];   // 2.935.0: 🚓 Police Chase too
   /** the mode a maximize takes: in the main column = "push", anywhere else (floating, in a ▣ docker, a side column) = "full" */
   function modeFor(inColumn) { return inColumn ? "push" : "full"; }
   /** the height a pushed docker takes: the column's visible height less its padding (120 at least) */

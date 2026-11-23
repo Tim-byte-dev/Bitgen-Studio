@@ -1,0 +1,11 @@
+{
+  "id": "chasedock",
+  "name": "Police Chase",
+  "order": 100,
+  "html": "dock.html",
+  "scripts": [
+    "chasecore.js",
+    "chasedock.js"
+  ],
+  "server": "chaseserver.js"
+}

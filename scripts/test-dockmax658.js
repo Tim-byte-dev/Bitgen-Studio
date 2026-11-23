@@ -11,7 +11,7 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 400))); } };
 const M = require(path.join(ROOT, "static/dockmax.js"));
-check("the three dockers: the Sketcher, the timeline, the image editor", M.IDS.join() === "pushpulldock,timelinedock,imageeditdock");
+check("the three dockers: the Sketcher, the timeline, the image editor (2.935.0: + Police Chase)", M.IDS.join() === "pushpulldock,timelinedock,imageeditdock,chasedock");
 check("modeFor: in the main column = push (grow, the ones below pushed down), anywhere else = full (the whole window)", M.modeFor(true) === "push" && M.modeFor(false) === "full");
 check("pushHeight: the column's height less its padding, 120 at least", M.pushHeight(900, 4, 10) === 886 && M.pushHeight(50, 0, 0) === 120);
 const H = read("static/index.html"), J = read("static/dockmax.js"), F = read("static/dockfull.js"), D = read("ext/pushpulldock/dock.html"), PF = read("ext/pushpulldock/ppframe.js");

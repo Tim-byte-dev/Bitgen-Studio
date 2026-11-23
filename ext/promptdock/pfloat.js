@@ -273,7 +273,7 @@
     let lastOver = null;
     window.addEventListener("pointermove", (e) => { lastOver = e.target; }, true);
     window.addEventListener("keydown", (ev) => {
-      const a = document.activeElement, OWN = "#imageeditdock, #pushpulldock, #sheetdock, #slidesdock, #slShow, #slPresenter";   // 2.831.0: + 🎞 Slides (P = the show's back)   // 2.619.0: + the PushPull docker (P = its Push/Pull); 2.822.0: + the spreadsheet (P is typed into a cell)
+      const a = document.activeElement, OWN = "#imageeditdock, #pushpulldock, #sheetdock, #slidesdock, #slShow, #slPresenter, #chasedock";   // 2.935.0: + 🚓 Police Chase (P = pause)   // 2.831.0: + 🎞 Slides (P = the show's back)   // 2.619.0: + the PushPull docker (P = its Push/Pull); 2.822.0: + the spreadsheet (P is typed into a cell)
       const owner = !!((lastOver && lastOver.closest && lastOver.closest(OWN)) || (a && a.closest && a.closest(OWN)));
       if (!wantsToggle(ev, a, !!document.querySelector("dialog[open]"), owner)) return;
       ev.preventDefault(); ev.stopImmediatePropagation();

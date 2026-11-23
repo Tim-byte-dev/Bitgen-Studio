@@ -31,7 +31,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       ie: (() => { const e = document.getElementById("tIE"); return { t: e.textContent, title: e.title }; })(),
       sk: (() => { const e = document.getElementById("tX_pushpulldock"); return { t: e.textContent, title: e.title }; })() }; });
     check("the strip sits in the menu bar after the project buttons", s.inMenubar && s.afterProj, s);
-    check("| 🖼 Editor ✉ Mail (2.818.0) | 📐 SolidCraft 📏 Sketcher |: separator, group 1, separator, group 2, separator", JSON.stringify(s.kids) === JSON.stringify(["asep:", "asgrp:tIE,tX_maildock", "asep:", "asgrp:tX_solidcraftdock,tX_pushpulldock", "asep:"]), s.kids);
+    check("| 🖼 Editor ✉ Mail ▦ 🎞 🗄 🌐 📒 | 📐 SolidCraft 📏 Sketcher 🚓 Police Chase (2.935.0) |: separator, group 1, separator, group 2, separator", JSON.stringify(s.kids) === JSON.stringify(["asep:", "asgrp:tIE,tX_maildock,tX_sheetdock,tX_slidesdock,tX_dbdock,tX_webdock,tX_acctdock", "asep:", "asgrp:tX_solidcraftdock,tX_pushpulldock,tX_chasedock", "asep:"]), s.kids);
     check("moved out of the statusbar (none left there)", s.sbHas.length === 0, s.sbHas);
     check("icon only, the name in the tooltip", s.ie.t === "🖼" && /Image editor/.test(s.ie.title) && s.sk.t === "📏" && /Sketcher/.test(s.sk.title), s);
     const was = await ev(() => !document.getElementById("imageeditdock").classList.contains("dockgone"));

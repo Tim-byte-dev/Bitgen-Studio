@@ -15013,6 +15013,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui934-ui.js > /tmp/ui934.log 2>&
   && ok "2.934.0 browser test: 🧍 Male = the reference (Layout box, views ticked), the start picture empty, ▶ Generate sheet needs a picture then sends mannequin:male, kept over a reload" \
   || { bad "2.934.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui934.log | head -12; }
 
+# ---- 2.935.0 (🚓 Police Chase - a 3D maze-chase game in its own docker)
+node scripts/test-935.js > /tmp/t935.log 2>&1 \
+  && ok "2.935.0 units: 360 cities (one piece, no dead ends, mirrored), driving, the four police, the jammer, busted / cleared / extra car, a bot plays, the high scores, the docker's parts" \
+  || { bad "2.935.0 units"; grep -a "^FAIL" -A1 /tmp/t935.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui935-ui.js > /tmp/ui935.log 2>&1 \
+  && ok "2.935.0 browser test: 🚓 hidden first then shown, the city drawn, keys drive and stay in the game, pauses (P / focus / hidden / a render), GAME OVER -> name -> 🏆" \
+  || { bad "2.935.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui935.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

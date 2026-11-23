@@ -1,0 +1,58 @@
+    <div class="bdock" id="chasedock" data-own-space="1">
+      <div class="bhead" data-collapse="chasedock">▾ 🚓 Police Chase<button id="pcMaxBtn" class="maxbtn" data-max="chasedock" type="button" title="Maximize" aria-label="Maximize" style="margin-left:auto">⛶</button><button id="pcCloseBtn" class="ghost" type="button" title="Close the docker (the 🚓 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="pcBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.935.0 (Tim: "lets make it with cars, call it police chase"): a 3D maze chase for a break during work - the
+             getaway car, the cash, the police, the 📡 jammer. Rules: chasecore.js (window.H3ChaseCore); the 3D view, keys,
+             sound and the high scores: chasedock.js (window.H3Chase); the scores file: chaseserver.js. -->
+        <style>
+          #chasedock .bbody { padding: 4px; }
+          .pcbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
+          .pcbar button { padding: 2px 8px; }
+          .pcbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
+          .pcbar select { width: auto; font-size: 12px; }
+          #pcStage { position: relative; flex: 1; min-height: 320px; background: #070a14; border-radius: 6px; overflow: hidden; outline: none; }
+          #pcStage:focus-visible { box-shadow: 0 0 0 2px var(--tiger) inset; }
+          #pcStage canvas { display: block; width: 100%; height: 100%; }
+          .pchud { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; padding: 6px 10px; pointer-events: none;
+                   font: 600 14px/1.2 system-ui, sans-serif; color: #fff; text-shadow: 0 1px 3px #000; }
+          .pchud small { display: block; font-weight: 400; font-size: 10px; opacity: .7; letter-spacing: .08em; }
+          #pcJam { position: absolute; left: 50%; top: 40px; transform: translateX(-50%); width: 160px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); display: none; pointer-events: none; }
+          #pcJam i { display: block; height: 100%; border-radius: 3px; background: #5ad8ff; }
+          #pcMsg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; pointer-events: none;
+                   color: #fff; text-align: center; text-shadow: 0 2px 6px #000; }
+          #pcMsg b { font: 800 30px/1 system-ui, sans-serif; letter-spacing: .06em; }
+          #pcMsg span { font-size: 13px; opacity: .9; max-width: 80%; }
+          #pcMsg.dim { background: rgba(5, 8, 18, .55); }
+          #pcScores { position: absolute; right: 8px; top: 34px; width: 250px; max-height: calc(100% - 44px); overflow: auto; display: none; background: rgba(10, 14, 28, .92);
+                      border: 1px solid var(--line); border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; }
+          #pcScores.on { display: block; }
+          #pcScores table { width: 100%; border-collapse: collapse; }
+          #pcScores td { padding: 2px 4px; }
+          #pcScores td.n { text-align: right; font-variant-numeric: tabular-nums; }
+          #pcScores tr.me td { color: var(--tiger); }
+          #pcName { display: none; position: absolute; left: 50%; top: 62%; transform: translateX(-50%); gap: 4px; align-items: center; }
+          #pcName.on { display: flex; }
+          #pcName input { width: 150px; }
+          #pcHint { font-size: 11px; color: var(--dim); }
+        </style>
+        <div class="pcbar">
+          <button class="ghost" id="pcNew" type="button" title="Start a new game (Enter)">▶ New game</button>
+          <button class="ghost" id="pcPause" type="button" title="Pause / carry on (P or Space)">⏸ Pause</button>
+          <span class="sep"></span>
+          <button class="ghost" id="pcCam" type="button" title="Camera: the whole city from above, or behind your car (C)">🎥 City</button>
+          <button class="ghost" id="pcSound" type="button" title="Sound on / off (M) - off to start with">🔇</button>
+          <button class="ghost" id="pcHi" type="button" title="High scores on this PC">🏆</button>
+          <span class="sep"></span>
+          <label class="hint" for="pcRender" title="While bitGen renders, the game can stay light (30 frames a second, fewer pixels) or pause so the render has the graphics card">While rendering</label>
+          <select id="pcRender" aria-label="While a render runs"><option value="light">play lighter</option><option value="pause">pause</option></select>
+          <span id="pcHint">Arrows / WASD drive · P pause · C camera · M sound</span>
+        </div>
+        <div id="pcStage" tabindex="0" aria-label="Police Chase - click here, then drive with the arrow keys">
+          <div class="pchud"><div><small>SCORE</small><span id="pcScore">0</span></div><div style="text-align:center"><small>HIGH SCORE</small><span id="pcBest">0</span></div><div style="text-align:right"><small>LEVEL <span id="pcLevel">1</span></small><span id="pcLives"></span></div></div>
+          <div id="pcJam"><i></i></div>
+          <div id="pcMsg" class="dim"><b>🚓 POLICE CHASE</b><span>Pick up every bag of cash and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key.</span></div>
+          <div id="pcName"><input id="pcNameIn" type="text" maxlength="16" placeholder="Your name" aria-label="Your name for the high scores"><button id="pcNameOk" type="button">Save</button></div>
+          <div id="pcScores" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>

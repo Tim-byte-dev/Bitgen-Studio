@@ -10839,3 +10839,29 @@ character's own face, hair, body, clothes and style (the mannequin's white surfa
 Without a picture, ▶ Generate sheet asks for one. Picking a Template sets the mannequin aside; **Mannequin…** (none) goes back
 to the designer's own layout. **Dress it** is gone: the mannequin is never the character. ✨ Lifelike now lays its three
 views side by side into one reference sheet.
+
+## 🚓 Police Chase - a game for a break (2.935.0)
+
+Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Police Chase docker opens, taking the column's height
+when it would not fit (⛶ / 🗗 as usual; ✕ or 🚓 again hides it). It is hidden until you open it the first time.
+
+**Click the city**, then press **Enter** or an arrow key. You drive the orange getaway car: **arrows** or **W A S D** (a
+gamepad's d-pad or stick, or a swipe on a touch screen). Pick up every green bag of cash to clear the city - the next level is
+a new, bigger city with faster police. Four police cars come out of the station in the middle: one heads straight for you,
+one for where you are going, one comes from the side and the rookie sometimes takes a wrong turn. Now and then they patrol
+their corners instead. Caught = **BUSTED** (three cars to start with, one more at 10,000 points).
+
+A **📡 jammer** (the four blue gems in the corners) jams their radios for a few seconds: the police turn grey, slow down and
+scatter (the blue bar shows how long is left) - bump one and it drives back to the station, 200, 400, 800 then 1,600 points.
+A gold diamond shows up now and then below the station for a bonus.
+
+**🎥 City / Chase** (C) - the whole city from above (turned a quarter in a tall, narrow docker), or behind your car, where ↑
+drives straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
+and is off to start with. **P**, **Space** or **Esc** pauses. **🏆** - the best ten on this PC; a score that makes the ten asks
+for your name (kept in police_chase.json in the install folder).
+
+It keeps out of the way of your work: the keys only reach the game while it has the focus (they never reach the timeline or
+the image editor); it pauses when the docker is hidden or folded, the window goes to the background or you click elsewhere,
+and draws nothing while paused. **While rendering**: *play lighter* (30 frames a second, fewer pixels - the default) or
+*pause* until the render is done.
+
