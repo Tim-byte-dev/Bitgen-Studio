@@ -10656,6 +10656,24 @@ Your garments are kept in the project (projects/<project>/garments/) - click one
 Make a test garment from cheap fabric first: the fit depends on the fabric and on how you sew. Draping the garment on the 3D
 mannequins and rendering it comes next.
 
+## 🧍 Draping the garment on the mannequin (2.933.0)
+
+Once a pattern is made, **🧍 Drape on the mannequin** (under the pattern's PDF row) sews its pieces together and drapes them
+on the display mannequin with Blender's cloth simulation - the mannequin stands with its arms raised, the way GarmentCode
+cuts the sleeves. Pick the **fabric** (cotton, jersey - stretchy, silk - light, denim - stiff) and its **colour** first. It
+takes from about 20 seconds to a few minutes; the line beside the button says what it is doing.
+
+You get the **front, side and back** views (click one to see it full size), and:
+- **→ References** puts the three views in the References docker - for Dress it, ✏ Edit or a video.
+- **🧊 3D layer in the image editor** opens the dressed mannequin as a 3D layer (orbit it, render it, generate from it).
+- **⤓ OBJ** downloads the draped garment (with its .mtl) for other 3D programs.
+
+Each drape says how well it sits: **✓** when the seams closed and it stayed on, **⚠** with the reason when a seam stayed
+open, the garment slid down or part of it ended up inside the body. T-shirts, tops and skirts drape well; trousers and
+sleeveless fitted bodices can slide down (their rise and straps are drafted for GarmentCode's own body) - try another fabric
+or change the settings a little. The drape is always on the display mannequin, even when the pattern was made to your own
+measurements. Blender must be installed (Settings ▸ Blender finds it).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

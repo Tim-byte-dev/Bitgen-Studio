@@ -7,6 +7,8 @@
  *   - every GarmentCode setting that matters for that top / waistband / bottom, as sliders / ticks / lists (made from its
  *     design tree - static/garmentspec.js), the pattern made again a moment after a change (☑ Auto)
  *   - the body: the female / male display mannequin's measurements, or your own height / bust / waist / hips (cm)
+ *   - 🧍 Drape on the mannequin (2.933.0): Blender's cloth sews it onto the A-pose display mannequin - fabric + colour,
+ *     front / side / back views, -> References, 🧊 a 3D layer in the image editor, ⤓ OBJ; its quality said (lib/garmentDrape.js)
  *   - the pattern (SVG), its pieces and seams; ⤓ PDF at actual size (A4 / Letter / A3 pages to tape, A0 for a copy shop),
  *     with or without seam allowance; your garments, kept in the project (projects/<p>/garments/)
  * The server: routes/garment.js. Not installed -> the Download / Cancel box (H3NeedInstall "garment").
@@ -60,7 +62,10 @@
       + ".gmdlg .gmlist{display:flex;flex-direction:column;gap:3px;max-height:150px;overflow:auto}"
       + ".gmdlg .gmitem{display:flex;gap:6px;align-items:center;font-size:.76rem;border:1px solid var(--line);border-radius:5px;padding:3px 6px;cursor:pointer}"
       + ".gmdlg .gmitem.on{border-color:var(--tiger)}.gmdlg .gmitem span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
-      + ".gmdlg .gmnote{font-size:.72rem;opacity:.75;margin:0}";
+      + ".gmdlg .gmnote{font-size:.72rem;opacity:.75;margin:0}"
+      + ".gmdlg .gmdrape{display:flex;flex-direction:column;gap:6px}.gmdlg .gmviews{display:flex;gap:6px}"
+      + ".gmdlg .gmviews img{flex:1;min-width:0;max-height:240px;object-fit:contain;background:#111;border-radius:5px;cursor:zoom-in}"
+      + ".gmdlg #gmDrapeNote{font-size:.76rem}.gmdlg #gmDrapeNote.bad{color:var(--bad,#e66)}.gmdlg input[type=color]{width:36px;height:26px;padding:0}";
     document.head.appendChild(s);
   }
 
@@ -91,6 +96,13 @@
       + '<label title="Added round every piece - the cutting line; the stitching line is dashed. 0 = none">Seam allowance <input type="number" id="gmSa" min="0" max="5" step="0.5" value="1.5" style="width:58px"> cm</label>'
       + '<button type="button" class="ghost" id="gmPdf" disabled>⤓ PDF</button></div>'
       + '<p class="gmnote">Print at 100 % ("actual size") and check the 10 cm square on page 1. Make a test garment first - the fit depends on your fabric.</p>'
+      + '<div class="gmbar"><button type="button" class="ghost" id="gmDrape" disabled title="Sew the pieces and drape them on the display mannequin with Blender\'s cloth simulation, then render it from the front, side and back">🧍 Drape on the mannequin</button>'
+      + '<select id="gmFabric" aria-label="Fabric"><option value="cotton">Cotton</option><option value="jersey">Jersey (stretchy)</option><option value="silk">Silk (light)</option><option value="denim">Denim (stiff)</option></select>'
+      + '<input type="color" id="gmColor" value="#8c1f29" aria-label="Fabric colour" title="Fabric colour"><span id="gmDrapeNote"></span></div>'
+      + '<div class="gmdrape" id="gmDrapeBox" hidden><div class="gmviews" id="gmViews"></div>'
+      + '<div class="gmbar"><button type="button" class="ghost" id="gmToRefs" title="Put the three views in the References docker (for Dress it, Edit, a video)">→ References</button>'
+      + '<button type="button" class="ghost" id="gmTo3d" title="Open the dressed mannequin as a 🧊 3D layer in the image editor (Blender)">🧊 3D layer in the image editor</button>'
+      + '<a class="ghost" id="gmObj" download href="#" title="The draped garment as an OBJ file (+ its .mtl)">⤓ OBJ</a></div></div>'
       + '<div class="gmbar"><b>Your garments</b></div><div class="gmlist" id="gmList"></div>'
       + '<p class="gmnote">Patterns by GarmentCode (MIT - Korosteleva et al., ETH Zurich). Settings ▸ Add-ons ▸ Garment designer.</p>'
       + '</div></div>';
@@ -100,6 +112,9 @@
     $("gmReset").addEventListener("click", function () { S.values = {}; paintKinds(); paintGroups(); changed(); });
     $("gmMake").addEventListener("click", function () { make(true); });
     $("gmPdf").addEventListener("click", pdf);
+    $("gmDrape").addEventListener("click", drape);
+    $("gmToRefs").addEventListener("click", toRefs);
+    $("gmTo3d").addEventListener("click", to3d);
     $("gmSex").addEventListener("change", function () { bodyFromMannequin(); changed(); });
     ["gmHeight", "gmBust", "gmWaist", "gmHips"].forEach(function (id) { $(id).addEventListener("change", changed); });
     $("gmGroups").addEventListener("toggle", function (e) { var t = e.target; if (t && t.dataset && t.dataset.group) S.open[t.dataset.group] = t.open; }, true);
@@ -209,7 +224,64 @@
     $("gmInfo").textContent = g ? (g.name + " - " + g.panels + " pieces, " + g.stitches + " seams, the pieces as they sit round the body " + g.size_cm.join(" x ") + " cm"
       + (g.self_intersecting ? ". ⚠ A piece crosses itself - change the settings a little." : "")) : "";
     $("gmPdf").disabled = !g;
+    $("gmDrape").disabled = !g || S.draping;
+    showDrape(g && g.drape, g);
     Array.prototype.forEach.call(document.querySelectorAll("#gmList .gmitem"), function (it) { it.classList.toggle("on", !!g && it.dataset.slug === g.slug); });
+  }
+  /* ---- 2.933.0: 🧍 the drape (lib/garmentDrape.js - Blender's cloth simulation on the A-pose display mannequin) */
+  function dnote(t, bad) { var n = $("gmDrapeNote"); if (n) { n.textContent = t || ""; n.classList.toggle("bad", !!bad); } }
+  function showDrape(d, g) {
+    var box = $("gmDrapeBox"); if (!box) return;
+    box.hidden = !(d && d.urls);
+    if (!d || !d.urls) { if (!S.draping) dnote(""); return; }
+    var v = $("gmViews"); v.textContent = "";
+    ["front", "side", "back"].forEach(function (k) {
+      if (!d.urls[k]) return;
+      var im = el("img", { alt: "the " + k + " of the draped garment", "data-view": k }); im.src = d.urls[k] + "?t=" + encodeURIComponent(d.at || "");
+      im.addEventListener("click", function () { window.open(im.src, "_blank"); });
+      v.appendChild(im);
+    });
+    $("gmObj").href = d.urls.obj || "#"; $("gmObj").hidden = !d.urls.obj;
+    $("gmTo3d").disabled = !d.model;
+    var b = (g && g.body) || {};
+    if (!S.draping) dnote((d.good ? "✓ " : "⚠ ") + (d.quality || "") + " - on the " + (d.sex || b.sex || "") + " display mannequin" + (b.height ? " (not your own measurements)" : ""), !d.good);
+  }
+  function drape() {
+    if (!S.cur || S.draping) return Promise.resolve(null);
+    S.draping = true; $("gmDrape").disabled = true; dnote("⏳ starting Blender…");
+    var slug = S.cur.slug;
+    return api("/api/garment/" + encodeURIComponent(slug) + "/drape", { fabric: $("gmFabric").value, color: $("gmColor").value }).then(function (r) {
+      test("gm_drape", slug);
+      return new Promise(function (ok) {
+        var t = setInterval(function () {
+          api("/api/garment/drape/" + encodeURIComponent(r.id)).then(function (j) {
+            if (j.state !== "done" && j.state !== "error") { dnote("⏳ " + (j.note || j.state) + " " + (j.pct || 0) + " %"); return; }
+            clearInterval(t); S.draping = false;
+            if (j.state === "error") { dnote(j.note, true); $("gmDrape").disabled = false; ok(null); return; }
+            if (S.cur && S.cur.slug === slug) S.cur.drape = j.result;
+            $("gmDrape").disabled = false; showDrape(j.result, S.cur); dnote(j.note, !(j.result && j.result.good));
+            test("gm_draped", slug); ok(j.result);
+          }).catch(function () { /* next poll */ });
+        }, 1500);
+      });
+    }).catch(function (e) { S.draping = false; $("gmDrape").disabled = !S.cur; dnote("✗ " + e.message, true); return null; });
+  }
+  function toRefs() {
+    var d = S.cur && S.cur.drape; if (!d || !d.images) return;
+    var n = 0;
+    ["front", "side", "back"].forEach(function (k) {
+      var nm = d.images[k]; if (!nm) return;
+      try { if (typeof window.addRefImageByUrl === "function") { window.addRefImageByUrl("/passets/images/" + encodeURIComponent(nm), nm); n++; } } catch (e) { /* the docker */ }
+    });
+    dnote(n ? "→ " + n + " views in the References docker" : "the References docker is not here - the views are in Assets ▸ Images", !n);
+    test("gm_refs", n);
+  }
+  function to3d() {
+    var d = S.cur && S.cur.drape; if (!d || !d.model) return;
+    if (!window.H3To3D || !window.H3To3D.deliver) { dnote("🧊 " + d.model + " is in models3d/ - the image editor's 3D layers can open it", true); return; }
+    try { $("gmDlg").close(); } catch (e) { /* closed */ }
+    Promise.resolve(window.H3To3D.deliver(d.model, "editor")).catch(function (e) { dnote("✗ " + e.message, true); });
+    test("gm_3d", d.model);
   }
   function pdf() {
     if (!S.cur) return;
@@ -299,5 +371,5 @@
     b.addEventListener("click", function () { open({ sex: sel.value === "male" ? "male" : sel.value === "female" ? "female" : "", from: "sheet" }); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
-  window.H3Garment = { open: open, make: make, describe: describe, state: function () { return { values: S.values, cur: S.cur, installed: !!(S.data && S.data.installed) }; } };
+  window.H3Garment = { open: open, make: make, describe: describe, drape: drape, state: function () { return { values: S.values, cur: S.cur, installed: !!(S.data && S.data.installed) }; } };
 })();

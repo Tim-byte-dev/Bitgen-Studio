@@ -14,7 +14,11 @@ import base64, collections, json, os, sys
 import numpy as np
 
 DATA = sys.argv[1] if len(sys.argv) > 1 else "/tmp/mh/makehuman/data"
-OUT = os.path.join(os.path.dirname(__file__), "..", "static", "mannequins", "mesh")
+OUT = os.environ.get("MANNEQUIN_OUT") or os.path.join(os.path.dirname(__file__), "..", "static", "mannequins", "mesh")
+# 2.933.0: --drape = the same body with the arms raised to GarmentCode's A-pose (its sleeves are placed for arms about 45 deg
+# below the horizontal - arm_pose_angle in static/mannequins/mesh/<sex>.measure.json): <sex>_drape.obj, what 👗 drapes on
+DRAPE = "--drape" in sys.argv
+if DRAPE: sys.argv.remove("--drape")
 RACES = ["african", "asian", "caucasian"]
 
 BODIES = {
@@ -132,6 +136,10 @@ def eyeballs(V, groups, used):
 
 
 def build(sex):
+    drape_deg = None
+    if DRAPE:
+        m = json.load(open(os.path.join(OUT, sex + ".measure.json")))
+        drape_deg = 90.0 - float(m["body"]["arm_pose_angle"])
     V, groups = read_obj(os.path.join(DATA, "3dobjs", "base.obj"))
     joint = lambda g: V[sorted({i for f in groups[g] for i in f})].mean(0)
     for rel, wt, per_race in BODIES[sex]:
@@ -146,7 +154,7 @@ def build(sex):
     nb = neighbours(len(B), F)
     # the arms down by the sides (a display mannequin's stance - MakeHuman stands in an A pose, arms forward): the whole arm
     # turned about the shoulder, each vertex as much as MakeHuman's own rig weights put it on the arm (CC0, default_weights.mhw)
-    B = pose_arms(B, used, V)
+    B = pose_arms(B, used, V) if drape_deg is None else pose_arms(B, used, V, out_deg=drape_deg)
     # MakeHuman's own head kept (a human skull, jaw and neck), the face softened like a sculpted mannequin's; the eyes
     # closed over with its eyeball helpers (the body has eye openings). The faceless gloss is your image model's job
     # (✨ Make lifelike on your PC) - this is the shape it follows and the body the garments drape on.
@@ -171,6 +179,13 @@ def build(sex):
         if side in HANDS: marks[key] = ((HANDS[side] - np.array([0, floor, 0])) * 0.1).round(4).tolist()
     os.makedirs(OUT, exist_ok=True)
     pos = B.astype(np.float32)
+    if drape_deg is not None:                                          # 2.933.0: only the OBJ for the drape
+        with open(os.path.join(OUT, sex + "_drape.obj"), "w") as o:
+            o.write("# bitGen Studio display mannequin (%s) for draping garments - arms %.1f deg out (GarmentCode's A-pose). Metres, +Y up, facing +Z. MakeHuman base mesh + targets (CC0 1.0).\n" % (sex, drape_deg))
+            for p in pos: o.write("v %.5f %.5f %.5f\n" % tuple(p))
+            for t in tris: o.write("f %d %d %d\n" % (t[0] + 1, t[1] + 1, t[2] + 1))
+        print(sex, "drape body: arms %.1f deg out" % drape_deg, len(pos), "verts")
+        return
     json.dump({"sex": sex, "height_m": round(float(pos[:, 1].max()), 3), "verts": len(pos), "tris": len(tris),
                "pos": base64.b64encode(pos.tobytes()).decode(), "idx": base64.b64encode(tris.tobytes()).decode(),
                "joints": {k: marks[k] for k in marks if not k.startswith("l-finger") and not k.startswith("r-finger") and "eye" not in k},

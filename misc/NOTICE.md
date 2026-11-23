@@ -296,3 +296,10 @@ a copy of its design tree (`assets/design_params/default.yaml`, MIT); the displa
 taken from a mesh scaled from GarmentCode's average bodies (`assets/bodies/mean_female.yaml` / `mean_male.yaml`, MIT).
 NOT used: GarmentCode's drape simulator (its NVIDIA Warp fork is under the NVIDIA Source Code License - non-commercial), its
 SMPL-based bodies, and ChatGarment (non-commercial).
+
+## 🧍 The garment drape (2.933.0)
+
+The drape is Blender's own cloth simulation, run as a separate program (Blender is GPL; nothing of it is shipped - bitGen
+runs the Blender you installed with scripts/garment_drape.py). GarmentCode's simulator is still not used.
+`static/mannequins/mesh/<sex>_drape.obj` is bitGen's display mannequin (MakeHuman base mesh + targets, CC0) with its arms
+raised to GarmentCode's A-pose by scripts/make_mannequin_mesh.py --drape.

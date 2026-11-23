@@ -8,6 +8,8 @@
 //   GET    /api/garment/file/:slug/:file the pattern's SVG / outline / specification / a PDF
 //   GET    /api/garment/:slug            one garment
 //   DELETE /api/garment/:slug
+//   POST   /api/garment/:slug/drape      {fabric, color "#rrggbb", frames} -> {id} (2.933.0, one at a time; 409 without Blender)
+//   GET    /api/garment/drape/:id        {state, pct, note, result (meta.drape with urls)}
 "use strict";
 const express = require("express");
 
@@ -40,6 +42,9 @@ function mount(app) {
       res.sendFile(f);
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
+  // 2.933.0: 🧍 the drape on the mannequin (lib/garmentDrape.js - Blender's cloth)
+  app.post("/api/garment/:slug/drape", json, wrap(async (req) => require("../lib/garmentDrape").start(req.params.slug, req.body || {})));
+  app.get("/api/garment/drape/:id", wrap(async (req) => require("../lib/garmentDrape").get(req.params.id)));
   app.get("/api/garment/:slug", wrap(async (req) => G().get(req.params.slug)));
   app.delete("/api/garment/:slug", wrap(async (req) => G().remove(req.params.slug)));
 }

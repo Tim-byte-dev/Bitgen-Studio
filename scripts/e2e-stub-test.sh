@@ -14994,6 +14994,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui932-ui.js > /tmp/ui932.log 2>&
   && ok "2.932.0 browser test: 👗 in the image editor and the sheet tab; kinds, sliders, your height, words, ⤓ PDF, your garments (or the Download / Cancel box)" \
   || { bad "2.932.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui932.log | head -12; }
 
+# ---- 2.933.0 (🧍 the garment draped on the mannequin - Blender's cloth)
+node scripts/test-933.js > /tmp/t933.log 2>&1 \
+  && ok "2.933.0 units: the drape job (stand-in Blender), its files, models3d + Images, the quality words, the A-pose bodies, refusals" \
+  || { bad "2.933.0 units"; grep -a "^FAIL" -A1 /tmp/t933.log | head -12; }
+node scripts/test-933-live.js > /tmp/t933l.log 2>&1 \
+  && ok "2.933.0 live (Blender + GARMENT_PY / GARMENT_SRC, else SKIP): a T-shirt and an A-line skirt drape well, a hoodie says its quality; real PNG / glb / OBJ" \
+  || { bad "2.933.0 live"; grep -a "^FAIL" -A1 /tmp/t933l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui933-ui.js > /tmp/ui933.log 2>&1 \
+  && ok "2.933.0 browser test: 🧍 Drape from the dialog - progress, the three views, → References, 🧊 3D layer, ⤓ OBJ (or the no-Blender refusal)" \
+  || { bad "2.933.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui933.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -334,6 +334,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✨ 逼真的展示模特兒** — 在 🧍 Mannequin…（選擇男性或女性）旁邊，✨ Lifelike 讓電腦上的編輯風格（Dress it 使用的那個，否則用第一個——Qwen Image Edit、FLUX Kontext、P-H3 Edit …）把 3D 模特兒的正面、側面和背面重新畫成白色亮光玻璃纖維商店模特兒的照片——光滑無臉的蛋形頭部、雕塑般的身體、黑色背景——保持姿勢、比例和鏡頭；正面放入「Your mannequins」（「Lifelike male display mannequin」）並作為起始圖片開啟，側面和背面在圖庫中。*Where:* Character Creator ▸ Sheet ▸ 🧍 Mannequin… ▸ ✨ Lifelike。*Since:* 2.929.0
 - **🪪 影像編輯器圖示列中的角色設定表** — ✨ Create 之後的純圖示 🪪 無需前往 StoryBoard 即可開啟 Character Creator 的設定表對話框（🧍 Mannequin…、✨ Lifelike、▶ Generate sheet）；也可從 File ▸ 🪪 Character Sheet… 開啟。*Where:* 影像編輯器 ▸ 圖示列。*Since:* 2.930.0
 - **👗 服裝設計器 - 依尺寸製作縫紉紙型** — 選擇一種服裝（T 恤、長袖上衣、背心、連帽衫、修身連衣裙、太陽裙、A 字裙 / 鉛筆裙 / 層次裙、長褲、短褲、連身褲）或用文字描述（由 LLM 選擇設定；沒有 LLM 時 bitGen 自己讀懂文字），用 GarmentCode 自己的設定（滑桿、核取方塊和清單）修改（每次修改後稍等片刻即重新產生），並查看依女性或男性展示模特兒的尺寸——或你自己的身高、胸圍、腰圍和臀圍——製作的縫紉紙型；⤓ 依實際尺寸輸出 PDF：A4 / Letter / A3 頁面，裁邊後拼貼（10 公分測試方塊、頁面拼圖、帶字母的對位記號——A 縫 A、布紋線、含或不含縫份），或在影印店列印的一張 A0；你的服裝儲存在專案中。Settings ▸ Add-ons ▸ Garment designer 安裝 GarmentCode（MIT，不需顯示卡）。*Where:* Character Creator ▸ Sheet ▸ 👗 Garment…；影像編輯器 ▸ 圖示列的 👗 / File ▸ 👗 Garment Designer…。*Since:* 2.932.0
+- **🧍 把服裝披掛到模特兒身上** — 在服裝設計器中，🧍 Drape on the mannequin 用 Blender 自己的布料模擬把紙型的各片縫合起來，披掛到展示模特兒身上（手臂抬起，與袖子的裁剪方式一致）：選擇布料（棉、針織、絲綢、牛仔布）和顏色，得到正面、側面和背面視圖，→ References（用於 Dress it、Edit、影片），🧊 把穿好衣服的模特兒作為影像編輯器中的 3D 圖層，⤓ 把披掛好的服裝匯出為 OBJ。每次披掛都會說明合身程度——縫線是否閉合、是否下滑、是否進入身體。上衣和裙子效果很好；長褲和無袖修身上身可能會下滑（發生時會說明）。需要 Blender。*Where:* 服裝設計器 ▸ 🧍 Drape on the mannequin。*Since:* 2.933.0
 
 ### StoryBoard（場景板）與電影
 
