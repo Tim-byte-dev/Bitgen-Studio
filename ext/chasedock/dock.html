@@ -6,10 +6,6 @@
              sound and the high scores: chasedock.js (window.H3Chase); the scores file: chaseserver.js. -->
         <style>
           #chasedock .bbody { padding: 4px; }
-          /* 2.940.0: ⛶ = the whole screen */
-          #chasedock:fullscreen { display: flex; flex-direction: column; width: 100vw; height: 100vh; background: var(--panel, #14110e); }
-          #chasedock:fullscreen .bbody { flex: 1 1 auto; min-height: 0; display: flex !important; }
-          #chasedock:fullscreen #pcStage { min-height: 0; border-radius: 0; }
           .pcbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
           .pcbar button { padding: 2px 8px; }
           .pcbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
@@ -22,6 +18,17 @@
           .pchud small { display: block; font-weight: 400; font-size: 10px; opacity: .7; letter-spacing: .08em; }
           #pcJam { position: absolute; left: 50%; top: 40px; transform: translateX(-50%); width: 160px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); display: none; pointer-events: none; }
           #pcJam i { display: block; height: 100%; border-radius: 3px; background: #ff8a3a; }   /* 2.938.0: the rocket launcher's time */
+          #pcTurbo { position: absolute; left: 50%; top: 50px; transform: translateX(-50%); width: 160px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); display: none; pointer-events: none; }
+          #pcTurbo i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #40e0ff, #ffd23a); box-shadow: 0 0 8px #40e0ff; }   /* 2.942.0: ⚡ speed boost */
+          /* 2.942.0: maximized = full screen like the image editor's 🎨 Full Screen - the game alone, no frame */
+          #pcExitFull { display: none; }
+          body.pc-full #pcExitFull { display: inline-block; }
+          body.pc-full #chasedock { position: fixed !important; left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important;
+                                    min-height: 0 !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+                                    z-index: 2147483000 !important; display: flex !important; flex-direction: column; background: #05070d; transform: none !important; }
+          body.pc-full #chasedock > .bhead { display: none !important; }
+          body.pc-full #chasedock .bbody { flex: 1 1 auto !important; min-height: 0 !important; max-height: none !important; height: auto !important; display: flex !important; padding: 4px !important; }
+          body.pc-full #pcStage { min-height: 0; border-radius: 0; }
           #pcMsg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; pointer-events: none;
                    color: #fff; text-align: center; text-shadow: 0 2px 6px #000; }
           #pcMsg b { font: 800 30px/1 system-ui, sans-serif; letter-spacing: .06em; }
@@ -44,14 +51,16 @@
           <select id="pcTheme" aria-label="The setting" title="The setting: a new one each level, or always the same"><option value="auto">🗺 Auto</option><option value="city">🏙 City</option><option value="suburbs">🏡 Suburbs</option><option value="forest">🌲 Forest</option><option value="country">🌾 Countryside</option></select>
           <button class="ghost" id="pcSound" type="button" title="Sound on / off (M) - off to start with">🔇</button>
           <button class="ghost" id="pcHi" type="button" title="High scores on this PC">🏆</button>
+          <button class="ghost" id="pcExitFull" type="button" title="Back to the docker (Ctrl+Esc, or Shift+right-click)">🗗 Exit full screen</button>
           <span class="sep"></span>
           <label class="hint" for="pcRender" title="While bitGen renders, the game can stay light (30 frames a second, fewer pixels) or pause so the render has the graphics card">While rendering</label>
           <select id="pcRender" aria-label="While a render runs"><option value="light">play lighter</option><option value="pause">pause</option></select>
-          <span id="pcHint">Arrows / WASD drive · Space fires 🚀 · P pause · V view · M sound</span>
+          <span id="pcHint">Arrows / WASD drive · 🚀 fires by itself (Space too) · P pause · V view · M sound</span>
         </div>
         <div id="pcStage" tabindex="0" aria-label="Police Chase - click here, then drive with the arrow keys">
           <div class="pchud"><div><small>SCORE</small><span id="pcScore">0</span></div><div style="text-align:center"><small>HIGH SCORE</small><span id="pcBest">0</span></div><div style="text-align:right"><small>LEVEL <span id="pcLevel">1</span></small><span id="pcLives"></span></div></div>
           <div id="pcJam"><i></i></div>
+          <div id="pcTurbo"><i></i></div>
           <div id="pcMsg" class="dim"><b>🚓 POLICE CHASE</b><span>Pick up every burger and keep away from the police. A 🚀 rocket launcher turns the tables for a few seconds - the police run, and Space fires a rocket that sends a car two burgers ahead back to the station (or bump it).<br>Click here, then press Enter or an arrow key.</span></div>
           <div id="pcScores" aria-live="polite"></div>
         </div>

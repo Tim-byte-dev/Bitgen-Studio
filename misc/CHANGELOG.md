@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.942.0** — 🚓 Police Chase: ⛶ Is Full Screen Like the Image Editor's, 🚀 the Launcher Fires by Itself Two Car Lengths Away, Hit Police Cars and Your Caught Car Explode (Fire, Smoke, Flying Bits), the Police Try to Dodge, ⚡ Speed Boosts for Whoever Gets There First
 - **2.941.0** — 🔒 Settings ▸ Security: an Optional Email (Kept on This PC) and 💬 Join the Community - Opens the Community Panel With Its Join Form Filled In (User ID, Name, Email; Nothing Sent Until You Press Join)
 - **2.940.0** — 🔒 Settings ▸ Security (Local Only: a Sign-in at Start-up, Username and Password - a Salted Hash, Never Online - and a Preferred Name the Chat's LLM Uses in a Friendly Way), Settings ▸ General ▸ Hide the Splash Screen, 🚓 Police Chase ⛶ Goes Fullscreen and Saves High Scores Under Your Name Without Asking
 - **2.939.0** — 🚓 Police Chase: Settings - City, Suburbs, Forest and Countryside (🗺 Auto Changes Each Level; Houses, Trees, Barns, Fields, Lamps and Fireflies Made in Code), Modern Lighting (Filmic Tone Mapping, Soft Shadows, Glowing Lights, the Setting's Sky) and V for the Overview, a Drone View and a Driving View

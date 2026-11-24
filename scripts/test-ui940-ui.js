@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.940.0 in a REAL browser: 🔒 Settings ▸ Security (save, the sign-in cover at the next start, a wrong
  * password, the right one, a reload in the same start doesn't ask, unticked = no cover), General ▸ Hide the splash screen,
- * 🚓 Police Chase ⛶ = the whole screen and back. Against the running app (H3_URL). Leaves the test server's security off. */
+ * (🚓 Police Chase's ⛶: scripts/test-ui942-ui.js since 2.942.0.) Against the running app (H3_URL). Leaves the test server's security off. */
 "use strict";
 const path = require("path");
 const { execSync } = require("child_process");
@@ -83,28 +83,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForTimeout(2500);
     check("unticked: the next start has no cover", !(await ev(() => !!document.getElementById("h3sec"))));
-    // 🚓 ⛶ = the whole screen
-    await p.waitForFunction(() => typeof toggleDockGone === "function" && document.getElementById("chasedock"), null, { timeout: 30000 });
-    await ev(() => { const d = document.getElementById("chasedock"); if (d.classList.contains("dockgone")) toggleDockGone("chasedock", "tX_chasedock"); });
-    await p.waitForTimeout(800);
-    await ev(() => { if (document.getElementById("chasedock").classList.contains("maxed")) toggleMax("chasedock", false); });
-    await p.waitForTimeout(300);
-    await ev(() => document.getElementById("pcMaxBtn").scrollIntoView({ block: "nearest" }));
-    await p.click("#pcMaxBtn");
-    await p.waitForFunction(() => document.fullscreenElement && document.fullscreenElement.id === "chasedock", null, { timeout: 8000 });
-    await p.waitForTimeout(500);
-    const f1 = await ev(() => { const st = document.getElementById("pcStage").getBoundingClientRect(); return { max: document.getElementById("chasedock").classList.contains("maxed"), w: st.width, h: st.height, W: innerWidth, H: innerHeight }; });
-    check("🚓 ⛶: the game takes the whole screen", f1.max && f1.w >= f1.W - 20 && f1.h >= f1.H * 0.8, f1);
-    await p.click("#pcMaxBtn");
-    await p.waitForFunction(() => !document.fullscreenElement, null, { timeout: 8000 });
-    await p.waitForTimeout(300);
-    check("...🗗: back to the docker (not maximized, not fullscreen)", !(await ev(() => document.getElementById("chasedock").classList.contains("maxed"))));
-    await p.click("#pcMaxBtn");
-    await p.waitForFunction(() => document.fullscreenElement && document.fullscreenElement.id === "chasedock", null, { timeout: 8000 });
-    await ev(() => document.exitFullscreen());          // what Esc does
-    await p.waitForFunction(() => !document.fullscreenElement, null, { timeout: 8000 });
-    await p.waitForTimeout(300);
-    check("...leaving fullscreen (Esc) un-maximizes it too", !(await ev(() => document.getElementById("chasedock").classList.contains("maxed"))));
+    // 🚓 ⛶: Artist-mode full screen since 2.942.0 - scripts/test-ui942-ui.js
     check("no page errors", !errs.length, errs);
   } catch (e) { fail++; console.log("FAIL: " + (e && e.stack || e)); }
   finally {

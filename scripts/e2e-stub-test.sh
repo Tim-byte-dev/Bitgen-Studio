@@ -15045,7 +15045,7 @@ node scripts/test-940.js > /tmp/t940.log 2>&1 \
   && ok "2.940.0 units: local sign-in (salted hash, never online), preferred name to the chat LLM, hide splash, 🚓 ⛶ fullscreen, scores under bitGen's name" \
   || { bad "2.940.0 units"; grep -a "^FAIL" -A1 /tmp/t940.log | head -12; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui940-ui.js > /tmp/ui940.log 2>&1 \
-  && ok "2.940.0 browser test: Security tab saves, the sign-in cover at the next start (wrong / right password), hide splash, 🚓 ⛶ = the whole screen" \
+  && ok "2.940.0 browser test: Security tab saves, the sign-in cover at the next start (wrong / right password), hide splash" \
   || { bad "2.940.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui940.log | head -12; }
 # ---- 2.941.0 (🔒 Security: optional email + 💬 Join the community)
 node scripts/test-941.js > /tmp/t941.log 2>&1 \
@@ -15054,6 +15054,13 @@ node scripts/test-941.js > /tmp/t941.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui941-ui.js > /tmp/ui941.log 2>&1 \
   && ok "2.941.0 browser test: a wrong email refused, 💬 Join saves, closes Settings, opens Community filled in, sends nothing" \
   || { bad "2.941.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui941.log | head -12; }
+# ---- 2.942.0 (🚓 Police Chase: full screen like the image editor's, explosions, auto-fire, dodging, ⚡ speed boosts)
+node scripts/test-942.js > /tmp/t942.log 2>&1 \
+  && ok "2.942.0 units: auto-fire two car lengths away, police wrecks, your car explodes, dodging, ⚡ boosts for whoever gets there first, full screen" \
+  || { bad "2.942.0 units"; grep -a "^FAIL" -A1 /tmp/t942.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui942-ui.js > /tmp/ui942.log 2>&1 \
+  && ok "2.942.0 browser test: ⛶ = full screen like the image editor's (Esc pauses; Ctrl+Esc / 🗗 / Shift+right-click leave), explosions drawn, ⚡ turbo" \
+  || { bad "2.942.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui942.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

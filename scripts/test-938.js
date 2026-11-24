@@ -25,24 +25,25 @@ function straight() {
     }
   }
 }
+Object.keys(C.EVADE).forEach((k) => { C.EVADE[k] = 0; }); C.ROCKET.auto = 0;   // 2.942.0: no dodging, no auto-fire in these (test-942 has both)
 let { s, x, y } = straight();
 let ev = run(s, 0.05, { fire: true });
 check("no launcher, no rocket", !ev.includes("fire") && s.rockets.length === 0);
 s.jamT = 5; const cop = s.police[0]; cop.x = x + 2; cop.y = y;
 ev = run(s, 0.5, { fire: true });
-check("🚀 armed: Space fires straight ahead; a police car two burgers away is hit - back to the station, +200, a boom", ev.includes("fire") && ev.includes("tag") && ev.includes("boom") && cop.mode === "back" && s.fx.length >= 1, ev);
-({ s, x, y } = straight()); s.jamT = 5; s.police[0].x = x + 4; s.police[0].y = y;
-ev = run(s, 0.25, { fire: true });
-check("...four burgers away is out of range (the rocket bursts after 2.4 tiles)", ev.includes("fire") && ev.includes("boom") && !ev.includes("tag") && s.police[0].mode === "jammed", ev);
+check("🚀 armed: Space fires straight ahead; a police car two burgers away is hit - it explodes (2.942.0), +200, a boom", ev.includes("fire") && ev.includes("tag") && ev.includes("boom") && ev.includes("kaboom") && cop.mode === "wreck" && s.fx.length >= 1, ev);
+({ s, x, y } = straight()); s.jamT = 5; s.police[0].x = x + 5; s.police[0].y = y;
+ev = run(s, 0.45, { fire: true });
+check("...five burgers away is out of range (2.942.0: the rocket bursts after 3.2 tiles)", ev.includes("fire") && ev.includes("boom") && !ev.includes("tag") && s.police[0].mode === "jammed", ev);
 ({ s, x, y } = straight()); s.jamT = 5;
 run(s, 0.01, { fire: true }); const ev2 = run(s, 0.1, { fire: true });
 check("...one rocket every 0.35 s", !ev2.includes("fire"));
 // Rookie's shield
-({ s, x, y } = straight()); s.jamT = 5; const rk = s.police[3]; rk.x = x + 2; rk.y = y; rk.shield = true;
+({ s, x, y } = straight()); s.jamT = 5; const rk = s.police[3]; rk.x = x + 2; rk.y = y; rk.dir = 1; rk.shield = true;   // 2.942.0: coming this way (slower rockets)
 ev = run(s, 0.5, { fire: true });
 check("🛡 Rookie's shield stops the first rocket (he stays out)", ev.includes("shield") && !ev.includes("tag") && rk.shield === false && rk.mode === "jammed", ev);
-run(s, 0.5); rk.x = x + 2; rk.y = y; rk.dir = 1; ev = run(s, 0.3, { fire: true });
-check("...the second one gets him", ev.includes("tag") && rk.mode === "back", ev);
+run(s, 0.5); rk.x = x + 2; rk.y = y; rk.dir = 1; rk.mode = "jammed"; s.player.x = x; s.player.y = y; s.player.face = 3; s.fireCd = 0; ev = run(s, 0.3, { fire: true });   // 2.942.0: he may have bumped into the car meanwhile
+check("...the second one gets him", ev.includes("tag") && rk.mode === "wreck", ev);
 check("...his shield is back when he comes out of the station", (() => { run(s, 4); return rk.mode !== "back" && rk.shield; })(), rk);
 // Sarge's roadblock
 ({ s, x, y } = straight());
@@ -69,7 +70,7 @@ check("spike strip under the car: slowed (0.55x) for 2.5 s, the strip used up", 
 check("abilities: Roadblock, Nitro, Spike strip, Shield", C.ABILITY.sarge.name === "Roadblock" && C.ABILITY.cutter.name === "Nitro" && C.ABILITY.flanker.name === "Spike strip" && C.ABILITY.rookie.name === "Shield");
 // the view, the pack
 const JS = src("ext/chasedock/chasedock.js"), A = src("scripts/chase_assets.py"), DH = src("ext/chasedock/dock.html");
-check("Space / F (gamepad A / X / right trigger, a tap) fire; P / Esc pause", /e\.code === "Space" \|\| e\.code === "KeyF"/.test(JS) && /G\.fire = true/.test(JS) && /e\.code === "KeyP" \|\| e\.code === "Escape"/.test(JS) && /fire: G\.fire/.test(JS) && /Space fires 🚀/.test(DH));
+check("Space / F (gamepad A / X / right trigger, a tap) fire; P / Esc pause", /e\.code === "Space" \|\| e\.code === "KeyF"/.test(JS) && /G\.fire = true/.test(JS) && /e\.code === "KeyP" \|\| e\.code === "Escape"/.test(JS) && /fire: G\.fire/.test(JS) && /🚀 fires by itself \(Space too\)/.test(DH));
 check("drawn: the launcher pick-up and on the car's roof, rockets, explosions lighting the street, roadblocks, spike strips, Rookie's shield, Cutter's nitro flame, headlight beams",
   ["function makeLauncher", "function makeRocket", "function makeBlock", "function makeSpikes", "function addBeams", "V.boomLight", "shieldMesh", "c.nitro = fl", "V.player.launcher"].every((k) => JS.includes(k)));
 check("the buildings: chase_assets.py --dress - brick on the walls, a sheen on the glass, a lights map (some windows lit warm or cool)",

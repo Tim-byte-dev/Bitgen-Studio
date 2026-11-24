@@ -63,8 +63,7 @@ check("...startPrefs: default off, custom.settings on, a broken file = the splas
 fs.rmSync(t2, { recursive: true, force: true });
 
 const CJ = src("ext/chasedock/chasedock.js"), DH = src("ext/chasedock/dock.html");
-check("🚓 ⛶ = the whole screen (Fullscreen API on the docker); 🗗 / Esc / un-maximized = back", /function fullOn\(\)/.test(CJ) && /d\.requestFullscreen\(/.test(CJ) && /closest\("#pcMaxBtn"\)/.test(CJ)
-  && /fullscreenchange/.test(CJ) && /root\.toggleMax\("chasedock", false\)/.test(CJ) && /doc\.fullscreenElement === d\) fullOff\(\)/.test(CJ) && /#chasedock:fullscreen/.test(DH));
+check("🚓 ⛶ = the whole screen (2.942.0: frameless like the image editor's Full Screen, the window full screen - test-942)", /function setFull\(on\)/.test(CJ) && /de\.requestFullscreen\(/.test(CJ) && /body\.pc-full #chasedock/.test(DH));
 check("🚓 no name asked: a top-ten score is saved under bitGen's name (preferred, else username, else Driver)", !/pcNameIn/.test(DH + CJ) && /if \(qual\) saveScore\(\)/.test(CJ) && /root\.H3Security/.test(CJ) && /"Driver"/.test(CJ));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

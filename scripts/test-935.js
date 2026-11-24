@@ -91,9 +91,9 @@ const b = C.newGame(11, 0); run(b, 2.1); run(b, 3);
 const cop = b.police.find((c) => c.mode === "run"); cop.x = b.player.x; cop.y = b.player.y;
 ev = run(b, 0.02);
 check("caught: BUSTED, a car less", ev.includes("busted") && b.phase === "busted" && b.lives === 2, { ev, lives: b.lives });
-run(b, 2);
+run(b, 2.4);   // 2.942.0: the crash burns 2.2 s
 check("...back to the start, the police in the station, READY again (the cash stays picked up)", b.phase === "ready" && b.player.x === b.maze.start[0] && b.police.every((c) => c.mode === "wait"));
-b.lives = 1; run(b, 2.1); const cop2 = b.police[0]; cop2.mode = "run"; cop2.x = b.player.x; cop2.y = b.player.y; run(b, 0.02); ev = run(b, 2);
+b.lives = 1; run(b, 2.1); const cop2 = b.police[0]; cop2.mode = "run"; cop2.x = b.player.x; cop2.y = b.player.y; run(b, 0.02); ev = run(b, 2.4);
 check("the last car caught: GAME OVER", b.phase === "over" && ev.includes("over") && b.lives === 0);
 // a city cleared
 const c = C.newGame(5, 0); run(c, 2.1); const g1 = Buffer.from(c.maze.grid);
@@ -163,8 +163,8 @@ const call = (k, body) => new Promise((ok) => { routes[k]({ body }, { json: (j) 
   check("...hidden the first time; sound off to start with; the scores from /api/police-chase/scores; no window.prompt",
     /localStorage\.getItem\("h3\.g\.chasedock"\) == null\) root\.localStorage\.setItem\("h3\.g\.chasedock", "1"\)/.test(JS) && /LS\.get\("sound", "0"\) === "1"/.test(JS)
     && /\/api\/police-chase\/scores/.test(JS) && !/window\.prompt|root\.prompt\(/.test(JS));
-  check("the top bar: 🚓 after 📐 SolidCraft and 📏 Sketcher; ⛶ takes the column's height (static/dockmax.js)",
-    /\["tX_chasedock", "🚓", "Police Chase"\]/.test(src("static/appstrip.js")) && /"chasedock"\]/.test(src("static/dockmax.js")));
+  check("the top bar: 🚓 after 📐 SolidCraft and 📏 Sketcher; ⛶ = Artist-mode full screen (2.942.0 - no longer static/dockmax.js)",
+    /\["tX_chasedock", "🚓", "Police Chase"\]/.test(src("static/appstrip.js")) && !/"chasedock"\]/.test(src("static/dockmax.js")) && /function setFull\(on\)/.test(src("ext/chasedock/chasedock.js")));
   check("police_chase.json is this PC's: .gitignore + make_zips.sh", /^police_chase\.json$/m.test(src(".gitignore")) && /! -name "police_chase\.json"/.test(src("scripts/make_zips.sh")));
   check("server.js untouched", !/police|chase/i.test(src("misc/server.js")));
   console.log(`\n${pass} passed, ${fail} failed`);

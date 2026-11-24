@@ -10842,9 +10842,10 @@ views side by side into one reference sheet.
 
 ## 🚓 Police Chase - a game for a break (2.935.0)
 
-Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Police Chase docker opens, taking the column's height
-when it would not fit (✕ or 🚓 again hides it). **⛶** puts the game on the whole screen (2.940.0); **🗗** or **Esc** brings it
-back to the docker. It is hidden until you open it the first time.
+Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Police Chase docker opens (full screen when it
+would not fit in the column; ✕ or 🚓 again hides it). **⛶** puts the game on the whole screen like the image editor's 🎨 Full Screen (2.942.0): the
+game alone, no bars and no frame. **Esc** pauses and stays; **🗗 Exit full screen**, **Ctrl+Esc** or **Shift+right-click** brings it back.
+It is hidden until you open it the first time.
 
 **Click the city**, then press **Enter** or an arrow key. You drive the orange getaway car: **arrows** or **W A S D** (a
 gamepad's d-pad or stick, or a swipe on a touch screen). Pick up every burger to clear the city (green bags of cash before 2.937.0) - the next level is
@@ -10907,6 +10908,19 @@ Each police car has its own trick:
 Every car has headlights on the road ahead, and explosions light the street. With the art pack (v3), the buildings have brick
 walls, glass with a sheen and windows lit warm or cool (`python3 scripts/chase_assets.py --dress` makes them from the pack's
 pictures).
+
+### Explosions, auto-fire, dodging and ⚡ speed boosts (2.942.0)
+
+- **🚀 It fires by itself.** While the rocket launcher lasts, it fires at a police car in a straight, open line no more than
+  two car lengths away - whichever way the road goes (the roof launcher turns). **Space** still fires straight ahead.
+- **A rocket hit blows the police car up**: fire, smoke and flying bits. It burns as a harmless wreck for a moment, then a new
+  car comes out of the station. Rookie's 🛡 shield still stops one rocket.
+- **The police try to dodge.** A police car in your line of fire may turn off at its next corner and swerve away - Cutter is
+  the best at it, Rookie the worst. A car with no corner to turn into gets hit.
+- **Caught = your car explodes** - thrown up, rolled and burnt out - before the next car starts.
+- **⚡ Speed boosts** (a lightning bolt over a ring) appear on random roads now and then (at most two, blinking before they
+  go). Whoever gets there first takes it: you go about 1.45x as fast for 4 s (flames from the exhaust, a ⚡ bar under the
+  score); a police car goes faster too (a yellow nitro flame).
 
 ### Settings and modern lighting (2.939.0)
 
