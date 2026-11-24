@@ -60,7 +60,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     };
     if (i1.pending !== "puzzle") { await ev(() => { const s = window.H3Life.state(); }); }
     const z1 = i1.pending === "puzzle" ? await tryAnswer(true) : null;
-    const v1 = await ev(() => ({ ok: !!document.querySelector("#lcAct .ok"), on: !!document.getElementById("lcOn"), timer: !!document.getElementById("lcTime") }));
+    const v1 = await ev(() => ({ ok: !!document.querySelector("#lcPz .ok"), on: !!document.getElementById("lcOn"), timer: !!document.getElementById("lcTime") }));
     check("🎲 Roll -> a high school puzzle with a clock; the right answer -> ✔ Right", i1.pending === "puzzle" && z1 && v1.ok && v1.on, { i1, v1 });
     const cash0 = await ev(() => window.H3Life.state().players[0].cash);
     await p.keyboard.press("Enter"); await p.waitForTimeout(200);
@@ -72,7 +72,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("the bots take their turns by themselves (fast), then it is yours again", r2.round === 2 && r2.botsMoved, r2);
     // a wrong answer: the right one shown
     let z2 = null; for (let t = 0; t < 6 && !z2; t++) { await p.click("#lcRoll"); await p.waitForTimeout(250); if ((await info()).pending === "puzzle") z2 = await tryAnswer(false); else await p.waitForFunction(() => window.H3Life.info().human && !window.H3Life.info().pending, null, { timeout: 20000 }); }
-    const v2 = await ev(() => ({ no: (document.querySelector("#lcAct .no") || {}).textContent || "" }));
+    const v2 = await ev(() => ({ no: (document.querySelector("#lcPz .no") || {}).textContent || "" }));
     check("a wrong answer: ✘ and the right answer shown", z2 && /The answer:/.test(v2.no) && v2.no.includes(z2.answer), { z2, v2 });
     await p.keyboard.press("Enter"); await p.waitForTimeout(200);
     check("...counted (1 of 3 allowed)", (await ev(() => window.H3Life.state().players[0].hsWrong)) === 1);

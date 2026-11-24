@@ -15120,6 +15120,13 @@ node scripts/test-950.js > /tmp/t950.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui950-ui.js > /tmp/ui950.log 2>&1 \
   && ok "2.950.0 browser test: 🚓 Esc / the window leaving full screen / 🗗 Exit back to the docker (paused), every roof made (a touch darker than the roads); 🎓 Esc (even typing) back to the docker" \
   || { bad "2.950.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui950.log | head -12; }
+# ---- 2.951.0 (🎓 the puzzle dialog, the calculator, the dice in the centre)
+node scripts/test-951.js > /tmp/t951.log 2>&1 \
+  && ok "2.951.0 units: the calculator's own parser (order, brackets, %, no float dust, errors in words, never eval), the dialog + its 20 keys, the dice in the centre" \
+  || { bad "2.951.0 units"; grep -a "^FAIL" -A1 /tmp/t951.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui951-ui.js > /tmp/ui951.log 2>&1 \
+  && ok "2.951.0 browser test: 🎲 the dice drawn in the centre circle, the puzzle in the dialog, 12 × 7 = 84 on the keys, ➜ into the answer, Enter never answers, ÷ 0 in words, Carry on closes it" \
+  || { bad "2.951.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui951.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

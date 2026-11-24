@@ -11055,6 +11055,14 @@ the investment rings a written-off car, a storm on your dearest property or a te
 inheritance and a lottery win. Inside, the **first die** moves you (the apprenticeship stays one square a turn); on the
 **investment** and **land & houses** rings the **pair's total** moves you. The dice, what they brought and a 2-12 luck
 meter show above your turn; your own last roll stays in view while the bots play (they roll the same dice).
+Since 2.951.0 the pair of dice is also drawn in the board's **centre circle** - they tumble while you roll, then land with
+the total and the luck under them, in the colour of whoever rolled.
+
+**🧩 The puzzle box and 🧮 the calculator (2.951.0)**: a puzzle opens in a box low over the board (the dice and the squares
+stay in view). Answer there - 1-4 or click a choice, or type the answer and press Enter; the clock runs while the game is on
+screen. Beside it is a **calculator**: click its keys or type a sum (× ÷ − or * / -, brackets, decimals, 50% = 0.5); the result
+so far shows under it, **=** or **Enter** works it out (Enter there never answers or rolls), **C** clears, **⌫** deletes the last,
+and **➜ Use as the answer** puts the result in the answer box. **Carry on ➜** closes the box.
 
 **💸 Bills, 🛡 insurance and 🧾 tax (2.947.0)**: once you work, every quarter brings itemised bills - rent (until you own a
 house or a unit), utilities, phone and internet, getting around, food and fun - and the premiums of any cover you hold.

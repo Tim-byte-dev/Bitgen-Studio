@@ -13,11 +13,15 @@
  *               luck meter and what happened (#lcDice); your own last roll stays in view while the bots play
  *   2.947.0     💸 Budget, 🛡 insurance and tax on your turn (lifemoney.js): food and fun, health / car / home cover, the last
  *               quarter's bills, the last tax return; ❤ wellbeing in the players' table
+ *   2.951.0     (Tim: "use a dialog to show questions, add a calculator to the dialog, show the dice roll in the center
+ *               circle"): the puzzle opens in a dialog over the board (#lcPz) with a 🧮 calculator (lifecalc.js) beside it -
+ *               ➜ puts its result in the answer box; the pair of dice is drawn in the board's centre circle (tumbling while
+ *               you roll), who rolled and the luck under it
  * window.H3Life: newGame(opts), state(), act(), info() (tests)
  */
 (function (root) {
   "use strict";
-  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles, MN = root.H3LifeMoney;
+  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles, MN = root.H3LifeMoney, K = root.H3LifeCalc;
   if (!doc || !C || !P || !MN) return;
   var $ = function (id) { return doc.getElementById(id); };
   var LS = {
@@ -117,11 +121,16 @@
     [["LAND & HOUSES", 0.99], ["INVESTMENT", 0.827], ["JOBS", 0.667], ["COLLEGE", 0.518]].forEach(function (t) { pill(t[0], g.cx, g.cy - t[1] * g.R); });
     pill("APPRENTICESHIP", g.cx, g.cy + 0.518 * g.R);
     pill("🏭 FACTORY ➜", g.cx + Math.cos(fa) * 0.45 * g.R, g.cy + Math.sin(fa) * 0.45 * g.R, "rgba(255,200,120,.95)");
-    // the centre: high school's heart + the fork
+    // the centre: high school's heart + the fork - 2.951.0: the pair of dice once anyone has rolled (tumbling while you roll)
     x.beginPath(); x.arc(g.cx, g.cy, LAY.hs[0] * g.R - 3, 0, Math.PI * 2); x.fillStyle = "#121a33"; x.fill();
-    x.fillStyle = "#fff"; x.font = "800 " + Math.round(Math.max(10, g.R * 0.055)) + "px system-ui, sans-serif"; x.fillText("LIFE", g.cx, g.cy - g.R * 0.05);
-    x.fillText("CHOICES", g.cx, g.cy + g.R * 0.03); x.font = Math.round(Math.max(8, g.R * 0.03)) + "px system-ui, sans-serif"; x.fillStyle = "rgba(255,255,255,.6)";
-    x.fillText("HIGH SCHOOL ➜ THE FORK", g.cx, g.cy + g.R * 0.1);
+    var L = s && s.luck, spin = G.spin;
+    G.centre = spin ? { dice: spin.slice(), rolling: true } : L ? { dice: L.dice.slice(), total: L.level, who: L.who } : null;   // info() for the tests
+    if (spin || L) centreDice(x, g, spin || L.dice, spin ? null : L, s);
+    else {
+      x.fillStyle = "#fff"; x.font = "800 " + Math.round(Math.max(10, g.R * 0.055)) + "px system-ui, sans-serif"; x.fillText("LIFE", g.cx, g.cy - g.R * 0.05);
+      x.fillText("CHOICES", g.cx, g.cy + g.R * 0.03); x.font = Math.round(Math.max(8, g.R * 0.03)) + "px system-ui, sans-serif"; x.fillStyle = "rgba(255,255,255,.6)";
+      x.fillText("HIGH SCHOOL ➜ THE FORK", g.cx, g.cy + g.R * 0.1);
+    }
     // the pieces
     if (s) s.players.forEach(function (p, i) {
       var q = p.ring === "fork" ? { cx: g.cx, cy: g.cy - g.R * 0.15 } : find(g, p.ring, p.pos); if (!q) return;
@@ -131,6 +140,39 @@
       x.lineWidth = cur === p ? 2.5 : 1.2; x.strokeStyle = cur === p ? "#fff" : "#000"; x.stroke();
       x.fillStyle = "#000"; x.font = "700 " + Math.round(r * 1.1) + "px system-ui, sans-serif"; x.fillText(p.name.charAt(0).toUpperCase(), px, py + 0.5);
     });
+  }
+  /** 2.951.0: two dice in the centre circle - the roller's colour round them, the total and the luck word under them */
+  var PIPS = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
+               5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] };
+  function centreDice(x, g, dice, L, s) {
+    var d = Math.max(16, g.R * 0.078), gap = d * 0.28, top = g.cy - g.R * 0.035 - d / 2;
+    var who = L && s ? s.players[L.who] : null, edge = who ? who.color : "#fff";
+    dice.forEach(function (v, k) {
+      var left = g.cx + (k ? gap / 2 : -gap / 2 - d), r = d * 0.18;
+      x.save(); x.translate(left + d / 2, top + d / 2); if (!L) x.rotate((v * 7 + k * 3) % 5 * 0.08 - 0.16);
+      x.beginPath(); x.moveTo(-d / 2 + r, -d / 2); x.arcTo(d / 2, -d / 2, d / 2, d / 2, r); x.arcTo(d / 2, d / 2, -d / 2, d / 2, r);
+      x.arcTo(-d / 2, d / 2, -d / 2, -d / 2, r); x.arcTo(-d / 2, -d / 2, d / 2, -d / 2, r); x.closePath();
+      x.fillStyle = "#f6f3ea"; x.fill(); x.lineWidth = Math.max(1.5, d * 0.07); x.strokeStyle = edge; x.stroke();
+      x.fillStyle = v === 1 ? "#c0392b" : "#1b1f2a";
+      (PIPS[v] || []).forEach(function (p) { x.beginPath(); x.arc(p[0] * d * 0.26, p[1] * d * 0.26, d * 0.085, 0, Math.PI * 2); x.fill(); });
+      x.restore();
+    });
+    var fs = Math.round(Math.max(9, g.R * 0.034)), y = top + d + fs * 0.95;
+    x.textAlign = "center"; x.textBaseline = "middle";
+    if (!L) { x.font = "600 " + fs + "px system-ui, sans-serif"; x.fillStyle = "rgba(255,255,255,.7)"; x.fillText("rolling…", g.cx, y); return; }
+    x.font = "800 " + Math.round(fs * 1.15) + "px system-ui, sans-serif"; x.fillStyle = LUCKCOL[L.level] || "#fff";
+    x.fillText(L.dice[0] + " + " + L.dice[1] + " = " + L.level, g.cx, y);
+    x.font = fs + "px system-ui, sans-serif"; x.fillStyle = "rgba(255,255,255,.75)";
+    x.fillText((who ? who.name + " · " : "") + L.word + (L.level === 12 ? " · roll again!" : ""), g.cx, y + fs * 1.25);
+  }
+  /** the tumbling dice only (the centre circle repainted - cheap: the whole board waits for the landing) */
+  function drawSpin() {
+    var cv = $("lcBoard"), g = G.geo; if (!cv || !g || !G.spin) return draw();
+    var x = cv.getContext("2d"), dpr = cv.width / Math.max(1, cv.getBoundingClientRect().width || g.cx * 2);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.beginPath(); x.arc(g.cx, g.cy, LAY.hs[0] * g.R - 3, 0, Math.PI * 2); x.fillStyle = "#121a33"; x.fill();
+    G.centre = { dice: G.spin.slice(), rolling: true };
+    centreDice(x, g, G.spin, null, G.s);
   }
   /** what a square does, for the hover tip */
   function squareText(q) {
@@ -183,7 +225,11 @@
     var s = G.s; if (!s || !C.canRoll(s) || !human(s) || G.rolling) return;
     if (C.current(s).ring === "fork") { C.roll(s); after(); return; }
     G.rolling = true; var n = 0;
-    var t = setInterval(function () { diceView(true); if (++n >= 4) { clearInterval(t); G.rolling = false; if (G.s === s && C.canRoll(s)) { C.roll(s); after(); } } }, 45);
+    var face = function () { return 1 + Math.floor(Math.random() * 6); };
+    var t = setInterval(function () {
+      G.spin = [face(), face()]; diceView(true); drawSpin();                     // 2.951.0: tumbling in the centre circle too
+      if (++n >= 4) { clearInterval(t); G.rolling = false; G.spin = null; if (G.s === s && C.canRoll(s)) { C.roll(s); after(); } else draw(); }
+    }, 45);
   }
   function logView() {
     var b = $("lcLog"), s = G.s; if (!b) return;
@@ -191,8 +237,12 @@
   }
   function human(s) { var p = s && !s.over ? C.current(s) : null; return p && !p.bot ? p : null; }
   var TOPIC = { math: "Maths", word: "Words", quiz: "Quiz" }, LEVEL = { hs: "high school", college: "university", trade: "trade", work: "work" };
+  /** 2.951.0: the puzzle dialog over the board - on while YOUR puzzle is pending */
+  function pzShow(on) { var d = $("lcPz"); if (d) d.classList.toggle("on", !!on); }
   function act() {
     var b = $("lcAct"), s = G.s; if (!b) return;
+    var pdz = s && !s.over && human(s) && s.pending && s.pending.type !== "choice";
+    if (!pdz) pzShow(false);
     if (!s) { b.innerHTML = "<h4>🎓 Life Choices</h4><div>From high school to retirement - your choices, your puzzles.</div><button class=\"big\" id=\"lcGo\" type=\"button\">▶ New game</button>"; $("lcGo").onclick = setup; return; }
     if (s.over) {
       b.innerHTML = "<h4>🏁 Everyone has retired</h4><table>" + C.standings(s).map(function (r, i) {
@@ -221,27 +271,62 @@
       Array.prototype.forEach.call(b.querySelectorAll("[data-opt]"), function (el) { el.onclick = function () { C.choose(s, el.getAttribute("data-opt")); after(); }; });
       return;
     }
-    // a puzzle
+    // a puzzle - 2.951.0: in the dialog (#lcPz), the 🧮 calculator beside it
     var key = s.round + ":" + s.turn + ":" + pd.level + ":" + pd.square;
     if (!s.puz || s.puz.key !== key) { s.puz = { key: key, p: P.make(pd.level, pd.topic), left: 0, done: null }; s.puz.left = s.puz.p.secs; save(); }
-    var z = s.puz, q = z.p;
-    var head = "<h4>🧩 " + esc(pd.square) + (pd.square === TOPIC[q.topic] ? "" : " · " + TOPIC[q.topic]) + " · " + LEVEL[q.level] + " level</h4>";
+    var z = s.puz, q = z.p, box = $("lcPzQ");
+    if (G.calcKey !== key) { G.calcKey = key; calcSet(""); }
+    $("lcCalcUse").hidden = q.kind === "choice";
+    b.innerHTML = "<h4>🧩 " + esc(pd.square) + "</h4><div class=\"hint\">" + (z.done ? "See the puzzle box - Carry on ➜" : "Answer the puzzle in the box over the board (🧮 a calculator beside it).") + "</div>";
+    var head = "<h3 id=\"lcPzHead\">🧩 " + esc(pd.square) + (pd.square === TOPIC[q.topic] ? "" : " · " + TOPIC[q.topic]) + " · " + LEVEL[q.level] + " level</h3>";
+    pzShow(true);
     if (z.done) {
-      b.innerHTML = head + "<div class=\"q\">" + esc(q.q) + "</div><div class=\"" + (z.done.ok ? "ok\">✔ Right!" : "no\">✘ " + (z.done.timeout ? "Time's up." : "Not this time.") + " The answer: " + esc(String(q.answer))) +
+      box.innerHTML = head + "<div class=\"q\">" + esc(q.q) + "</div><div class=\"" + (z.done.ok ? "ok\">✔ Right!" : "no\">✘ " + (z.done.timeout ? "Time's up." : "Not this time.") + " The answer: " + esc(String(q.answer))) +
         "</div><button class=\"big\" id=\"lcOn\" type=\"button\">Carry on ➜</button>";
       $("lcOn").onclick = carryOn; $("lcOn").focus();
       return;
     }
-    b.innerHTML = head + "<div class=\"q\">" + esc(q.q) + "</div>" + (q.hint ? "<div class=\"hint\">" + esc(q.hint) + "</div>" : "") +
+    box.innerHTML = head + "<div class=\"q\">" + esc(q.q) + "</div>" + (q.hint ? "<div class=\"hint\">" + esc(q.hint) + "</div>" : "") +
       (q.kind === "choice" ? "<div class=\"opts\">" + q.choices.map(function (c, i) { return "<button type=\"button\" data-ans=\"" + i + "\">" + (i + 1) + ". " + esc(c) + "</button>"; }).join("") + "</div>"
         : "<div class=\"row\"><input type=\"text\" id=\"lcAns\" autocomplete=\"off\" placeholder=\"" + (q.kind === "fraction" ? "e.g. 5/36" : q.kind === "word" ? "the word" : "a number") + "\"><button type=\"button\" id=\"lcSubmit\">Answer</button></div>") +
       "<div class=\"timer\"><i id=\"lcTime\" style=\"width:" + Math.round(100 * z.left / q.secs) + "%\"></i></div>";
-    Array.prototype.forEach.call(b.querySelectorAll("[data-ans]"), function (el) { el.onclick = function () { give(q.choices[+el.getAttribute("data-ans")]); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-ans]"), function (el) { el.onclick = function () { give(q.choices[+el.getAttribute("data-ans")]); }; });
     if ($("lcAns")) {
       $("lcSubmit").onclick = function () { give($("lcAns").value); };
       $("lcAns").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); give($("lcAns").value); } });
       setTimeout(function () { try { $("lcAns").focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 0);
     }
+  }
+  /* ---------------- 2.951.0: the 🧮 calculator (lifecalc.js does the sums) ---------------- */
+  function calcSet(t) { var i = $("lcCalcIn"); if (i) i.value = t; G.calcFresh = false; calcPeek(); }
+  /** what the sum comes to so far, under it (dim; nothing while it is unfinished) */
+  function calcPeek() {
+    var i = $("lcCalcIn"), o = $("lcCalcOut"); if (!i || !o) return;
+    o.classList.remove("bad");
+    if (!i.value.trim()) { o.textContent = ""; return; }
+    try { o.textContent = "= " + K.show(K.evaluate(i.value)); } catch (e) { o.textContent = ""; }
+  }
+  function calcEquals() {
+    var i = $("lcCalcIn"), o = $("lcCalcOut");
+    try { var v = K.show(K.evaluate(i.value)); o.textContent = i.value + " ="; o.classList.remove("bad"); i.value = v; G.calcFresh = true; return v; }
+    catch (e) { o.textContent = e.message; o.classList.add("bad"); return null; }
+  }
+  function calcKey(k) {
+    var i = $("lcCalcIn"); if (!i) return;
+    if (k === "C") calcSet("");
+    else if (k === "BS") { i.value = i.value.slice(0, -1); G.calcFresh = false; calcPeek(); }
+    else if (k === "=") calcEquals();
+    else {
+      // after =, a digit starts a new sum; an operator carries on from the result
+      if (G.calcFresh && /^[0-9.(]$/.test(k)) i.value = "";
+      G.calcFresh = false; i.value += k; calcPeek();
+    }
+  }
+  function calcUse() {
+    var i = $("lcCalcIn"), a = $("lcAns"); if (!i || !a) return;
+    var v = i.value.trim() ? (G.calcFresh ? i.value : calcEquals()) : null;
+    if (v == null || v === "") return;
+    a.value = v; try { a.focus({ preventScroll: true }); } catch (e) { /* fine */ }
   }
   /* ---------------- 2.947.0: budget, insurance and tax (lifemoney.js) ---------------- */
   function moneyPanel(b, s, p) {
@@ -354,6 +439,11 @@
     $("lcHelpClose").onclick = function () { $("lcHelp").classList.remove("on"); };
     $("lcHi").onclick = showScores;
     $("lcScoresClose").onclick = function () { $("lcScores").classList.remove("on"); };
+    // 2.951.0: the calculator - its keys, Enter = work it out (never a roll), ➜ into the answer box
+    Array.prototype.forEach.call(d.querySelectorAll("#lcCalc [data-k]"), function (el) { el.onclick = function () { calcKey(el.getAttribute("data-k")); }; });
+    $("lcCalcIn").addEventListener("input", function () { G.calcFresh = false; calcPeek(); });
+    $("lcCalcIn").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === "=") { e.preventDefault(); e.stopPropagation(); calcEquals(); } });
+    $("lcCalcUse").onclick = calcUse;
     $("lcSpeed").value = G.speed;
     $("lcSpeed").onchange = function () { G.speed = this.value; LS.set("speed", G.speed); pump(); };
     $("lcCloseBtn").onclick = function (e) { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("lifedock", "tX_lifedock"); };
@@ -416,7 +506,7 @@
     newGame: newGame, state: function () { return G.s; }, act: act, draw: draw, setup: setup, scores: showScores,
     speed: function (v) { if (v) { G.speed = v; LS.set("speed", v); pump(); } return G.speed; },
     _geo: function () { return G.geo; }, _hit: function (x, y) { return G.geo ? hit(G.geo, x, y) : null; },
-    info: function () { var s = G.s; return { game: !!s, over: !!(s && s.over), round: s ? s.round : 0, turn: s ? s.turn : -1, human: !!human(s), pending: s && s.pending ? s.pending.type : null,
+    info: function () { var s = G.s; return { centre: G.centre || null, dialog: !!($("lcPz") && $("lcPz").classList.contains("on")), game: !!s, over: !!(s && s.over), round: s ? s.round : 0, turn: s ? s.turn : -1, human: !!human(s), pending: s && s.pending ? s.pending.type : null,
                                              puzzle: s && s.puz ? { kind: s.puz.p.kind, done: !!s.puz.done } : null, shown: shown(), squares: G.geo ? G.geo.sq.length : 0, speed: G.speed }; },
   };
 })(window);

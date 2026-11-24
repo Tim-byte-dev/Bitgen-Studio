@@ -69,6 +69,34 @@
           .lcpanel table { width: 100%; border-collapse: collapse; }
           .lcpanel td { padding: 2px 4px; }
           .lcpanel td.n { text-align: right; font-variant-numeric: tabular-nums; }
+          /* 2.951.0 (Tim: "use a dialog to show questions, add a calculator to the dialog"): the puzzle dialog over the board */
+          /* low over the board, no dimming: the centre circle (the dice) and the squares stay in view and hoverable */
+          #lcPz { background: none; pointer-events: none; align-items: flex-end; padding-bottom: 10px; }
+          #lcPz > .lcpzBox { pointer-events: auto; box-shadow: 0 8px 28px rgba(0, 0, 0, .55); }
+          #lcSetup, #lcHelp, #lcScores { z-index: 4; }   /* above the puzzle dialog */
+          #lcPz > .lcpzBox { display: flex; flex-wrap: wrap; gap: 14px; max-width: 780px; width: 94%; padding: 12px 14px; max-height: 62%; overflow: auto; box-sizing: border-box; }
+          #lcPzQ { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+          #lcPzQ h3 { margin: 0; font-size: 14px; }
+          #lcPzQ .q { font-size: 16px; line-height: 1.4; user-select: text; }
+          #lcPzQ .opts { display: flex; flex-direction: column; gap: 5px; }
+          #lcPzQ .opts button { text-align: left; white-space: normal; font-size: 13px; padding: 5px 9px; }
+          #lcPzQ .row { display: flex; gap: 5px; align-items: center; }
+          #lcPzQ input[type=text] { flex: 1; font-size: 14px; }
+          #lcPzQ .timer { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .12); overflow: hidden; }
+          #lcPzQ .timer i { display: block; height: 100%; background: var(--tiger); }
+          #lcPzQ .ok { color: #5ccf6c; font-weight: 600; font-size: 14px; }
+          #lcPzQ .no { color: #ff6b6b; font-weight: 600; font-size: 14px; }
+          #lcPzQ .big { font-size: 14px; padding: 6px 12px; align-self: flex-start; }
+          #lcCalc { flex: 1 0 180px; max-width: 230px; display: flex; flex-direction: column; gap: 5px; border-left: 1px solid var(--line); padding-left: 14px; }
+          #lcCalc .cHead { font-weight: 600; color: var(--dim); }
+          #lcCalcIn { font-size: 15px; text-align: right; font-variant-numeric: tabular-nums; }
+          #lcCalcOut { min-height: 18px; text-align: right; font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; }
+          #lcCalcOut.bad { color: #ff8b6b; }
+          #lcCalc .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+          #lcCalc .keys button { padding: 6px 0; font-size: 14px; }
+          #lcCalc .keys button.op { background: rgba(255, 255, 255, .08); }
+          #lcCalc .keys button.eq { background: var(--tiger); color: #000; font-weight: 700; }
+          #lcCalcUse { font-size: 12px; }
         </style>
         <div class="lcbar">
           <button class="ghost" id="lcNew" type="button" title="Set up a new game">▶ New game</button>
@@ -78,7 +106,7 @@
           <span class="sep"></span>
           <label class="hint" for="lcSpeed">Bots</label>
           <select id="lcSpeed" aria-label="How fast the bots play"><option value="normal">normal</option><option value="fast">fast</option><option value="instant">instant</option></select>
-          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · the game is saved as you play</span>
+          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · 🧮 in the puzzle box · the game is saved as you play</span>
         </div>
         <div id="lcMain">
           <div id="lcBoardWrap"><canvas id="lcBoard" aria-label="The Life Choices board"></canvas><div id="lcTip"></div></div>
@@ -100,6 +128,8 @@
           </div></div>
           <div class="lcpanel" id="lcHelp"><div>
             <h3>❔ How to play Life Choices</h3>
+            <p><b>Puzzles</b> open in a box over the board with a 🧮 <b>calculator</b> beside it (➜ puts its result in the answer box).
+              The dice you roll land in the centre circle.</p>
             <p><b>High school</b> (the centre): every square is a quiz, maths or word puzzle - right = money and IQ. Five right and you
               graduate; three wrong and you drop out (trades or the factory are still open).</p>
             <p><b>The fork</b>: 🎓 <b>college</b> (needs the diploma; exams at university level, six passes = a degree, three fails = out;
@@ -127,6 +157,23 @@
             <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification + $2,000 for every ❤ wellbeing point over 50 (less below).
               "IQ" here is a game score, not a real IQ test.</p>
             <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>
+          </div></div>
+          <!-- 2.951.0: the puzzle dialog - the question (lifedock.js fills #lcPzQ) and the 🧮 calculator (lifecalc.js) -->
+          <div class="lcpanel" id="lcPz" role="dialog" aria-modal="true" aria-labelledby="lcPzHead"><div class="lcpzBox">
+            <div id="lcPzQ" aria-live="polite"></div>
+            <div id="lcCalc" aria-label="Calculator">
+              <div class="cHead">🧮 Calculator</div>
+              <input type="text" id="lcCalcIn" autocomplete="off" spellcheck="false" aria-label="The sum" placeholder="e.g. 48 ÷ 6 + 3">
+              <div id="lcCalcOut" aria-live="polite"></div>
+              <div class="keys">
+                <button type="button" class="op" data-k="C" title="Clear">C</button><button type="button" class="op" data-k="BS" title="Delete the last">⌫</button><button type="button" class="op" data-k="(">(</button><button type="button" class="op" data-k=")">)</button>
+                <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" class="op" data-k="÷">÷</button>
+                <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" class="op" data-k="×">×</button>
+                <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" class="op" data-k="−">−</button>
+                <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" class="eq" data-k="=" title="Work it out (Enter)">=</button><button type="button" class="op" data-k="+">+</button>
+              </div>
+              <button type="button" id="lcCalcUse" title="Put the result in the answer box">➜ Use as the answer</button>
+            </div>
           </div></div>
           <div class="lcpanel" id="lcScores"><div><div id="lcScoresBody"></div><div style="text-align:right;margin-top:8px"><button id="lcScoresClose" type="button">Close</button></div></div></div>
         </div>

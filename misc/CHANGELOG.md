@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.951.0** — 🎓 Life Choices: Puzzles in a Dialog Box Over the Board With a 🧮 Calculator Beside It (Its Own Parser; ➜ Puts the Result in the Answer Box); the Pair of Dice Drawn in the Board's Centre Circle - Tumbling While You Roll, Then the Total and the Luck
 - **2.950.1** — 🚓 Quieter Roofs: a Touch Darker Than the Roads (the Art Pack's Roofs Follow Its Asphalt), Only a Faint Rim Shows Each Block - the Cars Stay the Brightest Thing
 - **2.950.0** — 🚓 Police Chase and 🎓 Life Choices: Esc, 🗗 Exit and Leaving the Window's Full Screen All Go Back to the Docker (the Chase Paused); 🚓 Lit Roofs - Every Building's Roof Glows With a Bright Rim, a Rooftop Unit and a Skylight, So the Blocks Read From Above at Night
 - **2.949.0** — ⇄ the Swap Dialog's OpenJutsu Engine: D3voz's OpenJutsu Workflows (Shipped Unmodified, MIT) Run by bitGen - SAM 3.1 Follows the Person (or 1-4 People With Roles, or a Thing to Change, Remove or Put Behind), a Grey Mannequin Carries the Movement and MiniMax H3 Repaints Only Them; Segments Up to a Minute; 👁 Check Mask, 🎨 Fix Colours, an Opt-In 🙂 Fix Faces (Non-Commercial / AGPL-3.0 Models); Settings ▸ Add-ons ▸ OpenJutsu Swap Installs the Node Packs, the DMAD LoRA and SAM 3.1 and Uses the MiniMax H3 Files You Have
