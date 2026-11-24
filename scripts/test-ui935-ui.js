@@ -44,7 +44,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const v1 = await ev(() => { const d = document.getElementById("chasedock"), r = d.getBoundingClientRect(), c = document.getElementById("maincol").getBoundingClientRect(), cv = document.querySelector("#pcStage canvas");
       return { shown: !d.classList.contains("dockgone"), inView: r.bottom <= c.bottom + 4, canvas: !!cv && cv.width > 100, msg: document.getElementById("pcMsg").textContent, i: window.H3Chase.info() }; });
     check("🚓 shows it, all in view (⛶ when it would not fit); the city is drawn (three.js), the title says how to play", v1.shown && v1.inView && v1.canvas && /POLICE CHASE/.test(v1.msg) && /burger/.test(v1.msg) && v1.i.phase === "title", v1);
-    check("...the title is one picture - nothing keeps drawing", !v1.i.looping);
+    // (the art pack's pictures each ask for one more frame as they arrive - then it stops)
+    const still = await p.waitForFunction(() => !window.H3Chase.info().looping, null, { timeout: 15000 }).then(() => true).catch(() => false);
+    check("...the title is one picture - nothing keeps drawing (once the pictures are in)", still);
     // a game
     await ev(() => window.H3Chase.newGame(4242));
     await p.waitForFunction(() => window.H3Chase.info().phase === "play", null, { timeout: 30000 });
@@ -75,6 +77,13 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const c1 = await ev(() => ({ cam: window.H3Chase.info().cam, btn: document.getElementById("pcCam").textContent }));
     await p.keyboard.press("KeyC");
     check("C: the chase camera behind the car, C again: the city", c1.cam === "chase" && /Chase/.test(c1.btn) && (await info()).cam === "city", c1);
+    // 2.938.0: 🚀 armed, Space fires a rocket (and never pauses any more)
+    await ev(() => { window.H3Chase.state().jamT = 5; });
+    await p.keyboard.press("Space");
+    await p.waitForFunction(() => { const s = window.H3Chase.state(); return s.rockets.length > 0 || s.fx.length > 0; }, null, { timeout: 10000 }).catch(() => {});
+    const fr = await ev(() => ({ r: window.H3Chase.state().rockets.length, fx: window.H3Chase.state().fx.length, paused: window.H3Chase.info().paused }));
+    check("2.938.0: with the rocket launcher, Space fires a rocket (and does not pause)", (fr.r > 0 || fr.fx > 0) && !fr.paused, fr);
+    await ev(() => { window.H3Chase.state().jamT = 0; });
     // a render running
     // a render "runs": the app's job list held still for the moment (its poll would reset a hand-set liveJobsById)
     // (the app's job poll may hold the original refreshJobs - the running job is put back every 50 ms while this part runs)
@@ -100,11 +109,13 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await clickCity();
     await p.waitForTimeout(300);
     // busted to game over -> the name -> 🏆
-    await ev(() => { const s = window.H3Chase.state(); s.score = 4321; s.lives = 1; const c = s.police[0]; c.mode = "run"; c.x = s.player.x; c.y = s.player.y; });
+    // a score bigger than every earlier run's (the scores file on a test server keeps them)
+    const SC = 1000000 + Math.floor(Date.now() / 1000) % 1000000;
+    await ev((sc) => { const s = window.H3Chase.state(); s.score = sc; s.lives = 1; const c = s.police[0]; c.mode = "run"; c.x = s.player.x; c.y = s.player.y; }, SC);
     await p.waitForFunction(() => window.H3Chase.info().phase === "over", null, { timeout: 30000 });
     await p.waitForTimeout(300);
     const o1 = await ev(() => ({ msg: document.getElementById("pcMsg").textContent, name: document.getElementById("pcName").classList.contains("on") }));
-    check("the last car caught: GAME OVER with the score; a score for the ten asks for a name", /GAME OVER/.test(o1.msg) && /4321/.test(o1.msg) && o1.name, o1);
+    check("the last car caught: GAME OVER with the score; a score for the ten asks for a name", /GAME OVER/.test(o1.msg) && new RegExp(String(SC)).test(o1.msg) && o1.name, o1);
     const go1 = (await info()).drawn; await p.waitForTimeout(600);
     check("...GAME OVER is one still picture (nothing keeps drawing)", (await info()).drawn === go1 && !(await info()).looping);
     await p.fill("#pcNameIn", "Tester 935");
@@ -113,8 +124,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const sj = await (await saved).json();
     await p.waitForTimeout(300);
     const o2 = await ev(() => ({ on: document.getElementById("pcScores").classList.contains("on"), me: (document.querySelector("#pcScores tr.me") || {}).textContent || "", best: document.getElementById("pcBest").textContent }));
-    check("...Enter saves it (POST /api/police-chase/scores) and 🏆 shows the ten with yours lit", sj.rank >= 1 && o2.on && /Tester 935/.test(o2.me) && /4321/.test(o2.me) && +o2.best >= 4321, { sj, o2 });
-    const g = await ev(async () => (await (await fetch("/api/police-chase/scores")).json()).scores.some((x) => x.name === "Tester 935" && x.score === 4321));
+    check("...Enter saves it (POST /api/police-chase/scores) and 🏆 shows the ten with yours lit", sj.rank >= 1 && o2.on && /Tester 935/.test(o2.me) && new RegExp(String(SC)).test(o2.me) && +o2.best >= SC, { sj, o2 });
+    const g = await ev(async (sc) => (await (await fetch("/api/police-chase/scores")).json()).scores.some((x) => x.name === "Tester 935" && x.score === sc), SC);
     check("...kept on this PC (read back)", g);
     await p.keyboard.press("Enter");
     await p.waitForTimeout(500);

@@ -14,6 +14,9 @@
  *   Kind to work  paused when the docker is hidden or folded, the window is in the background or the game loses the
  *               focus; nothing is drawn while paused. While a render runs: play lighter (30 frames a second, one pixel
  *               per pixel) or pause (the select - kept). Hidden the first time (the 🚓 button on the top bar shows it).
+ *   2.938.0     the 📡 jammer is a 🚀 rocket launcher: Space / F (a gamepad's A, X or right trigger; a tap) fires straight
+ *               ahead - a car two burgers away is hit; the police's tricks drawn (🚧 roadblock, ⚡ nitro, spike strip, 🛡
+ *               shield); headlight beams on every car; explosions light the street. P / Esc pause (Space fires now).
  *   Sound       made on the spot with Web Audio (a siren that grows as the police close in, pick-ups, the jammer, a bust)
  *               - off to start with, M / 🔇 turns it on (kept)
  *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten asks for a name
@@ -80,6 +83,7 @@
       var L = new T.PointLight(0xff2030, 0, 3.2, 2); scene.add(L); V.lights.push(L);
     });
     // the pick-ups
+    fxSetup(V, scene);                                             // 2.938.0: rockets, explosions, roadblocks, spikes, shield, nitro, headlights
     V.jamGeo = new T.OctahedronGeometry(0.17);
     V.jamMat = new T.MeshStandardMaterial({ color: 0x39d0ff, emissive: 0x39d0ff, emissiveIntensity: 1.1, metalness: 0.2, roughness: 0.3 });
     V.bonus = makeCake();
@@ -179,6 +183,110 @@
     add(new T.SphereGeometry(0.014, 8, 6), S(0xffd060, { emissive: 0xffa000, emissiveIntensity: 2 }), 0.27).position.x = 0.05;
     return g;
   }
+  /* ---- 2.938.0: rocket launchers, rockets, explosions, the police's tricks, headlights ---- */
+  function SM(c, p) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.5 }, p || {})); }
+  function part(g, geo, mat, x, y, z) { var o = new T.Mesh(geo, mat); o.position.set(x || 0, y || 0, z || 0); g.add(o); return o; }
+  /** the pick-up: a launcher tube on a grip, a red warhead peeping out, glowing a little */
+  function makeLauncher() {
+    var g = new T.Group(), tube = SM(0x3f5a2a, { metalness: 0.4 }), dark = SM(0x1a1d22), red = SM(0xd02020, { emissive: 0x501010 });
+    var t = part(g, new T.CylinderGeometry(0.045, 0.045, 0.34, 14), tube, 0, 0.09, 0); t.rotation.x = Math.PI / 2;
+    var w = part(g, new T.ConeGeometry(0.04, 0.08, 12), red, 0, 0.09, -0.2); w.rotation.x = -Math.PI / 2;
+    part(g, new T.BoxGeometry(0.03, 0.07, 0.04), dark, 0, 0.035, 0.04);
+    part(g, new T.BoxGeometry(0.06, 0.04, 0.05), dark, 0, 0.13, -0.02);
+    var glow = part(g, new T.SphereGeometry(0.2, 12, 8), new T.MeshBasicMaterial({ color: 0xff6a20, transparent: true, opacity: 0.12, depthWrite: false, blending: T.AdditiveBlending }), 0, 0.09, 0);
+    glow.userData.glow = true;
+    return g;
+  }
+  function makeRocket() {
+    var g = new T.Group(), body = SM(0xdadde2, { metalness: 0.5 }), red = SM(0xd02020);
+    var b = part(g, new T.CylinderGeometry(0.025, 0.025, 0.16, 10), body); b.rotation.x = Math.PI / 2;
+    var n = part(g, new T.ConeGeometry(0.025, 0.06, 10), red, 0, 0, -0.11); n.rotation.x = -Math.PI / 2;
+    var f = part(g, new T.ConeGeometry(0.035, 0.18, 10), new T.MeshBasicMaterial({ color: 0xffa030, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false }), 0, 0, 0.17);
+    f.rotation.x = Math.PI / 2; g.userData.flame = f;
+    return g;
+  }
+  /** Sarge's roadblock: a striped barrier on two legs and two cones */
+  function makeBlock() {
+    var g = new T.Group(), white = SM(0xf2f2f2, { emissive: 0x202020 }), red = SM(0xe02a1a, { emissive: 0x300800 }), leg = SM(0x333333), cone = SM(0xff7a1a, { emissive: 0x401800 });
+    for (var i = 0; i < 6; i++) part(g, new T.BoxGeometry(0.12, 0.07, 0.04), i % 2 ? white : red, -0.3 + i * 0.12, 0.2, 0);
+    part(g, new T.BoxGeometry(0.03, 0.18, 0.03), leg, -0.3, 0.09, 0); part(g, new T.BoxGeometry(0.03, 0.18, 0.03), leg, 0.3, 0.09, 0);
+    part(g, new T.ConeGeometry(0.05, 0.14, 12), cone, -0.38, 0.07, 0.12); part(g, new T.ConeGeometry(0.05, 0.14, 12), cone, 0.38, 0.07, -0.12);
+    var lamp = part(g, new T.SphereGeometry(0.025, 8, 6), SM(0xffb000, { emissive: 0xffb000, emissiveIntensity: 2 }), 0, 0.26, 0); g.userData.lamp = lamp;
+    return g;
+  }
+  /** Flanker's spike strip: a dark band with a row of steel teeth */
+  function makeSpikes() {
+    var g = new T.Group(), steel = SM(0xb8c0c8, { metalness: 0.9, roughness: 0.3 });
+    part(g, new T.BoxGeometry(0.7, 0.015, 0.12), SM(0x202226), 0, 0.008, 0);
+    for (var i = 0; i < 9; i++) part(g, new T.ConeGeometry(0.018, 0.05, 6), steel, -0.32 + i * 0.08, 0.04, 0);
+    return g;
+  }
+  function beamTexture() {
+    var c = doc.createElement("canvas"); c.width = 64; c.height = 128; var g = c.getContext("2d");
+    var gr = g.createLinearGradient(0, 128, 0, 0); gr.addColorStop(0, "rgba(255,240,200,0.85)"); gr.addColorStop(1, "rgba(255,240,200,0)");
+    g.fillStyle = gr; g.beginPath(); g.moveTo(26, 128); g.lineTo(38, 128); g.lineTo(64, 0); g.lineTo(0, 0); g.closePath(); g.fill();
+    return new T.CanvasTexture(c);
+  }
+  /** headlight beams on the road ahead of a car (a soft additive patch, turns with the car) */
+  function addBeams(c, tex, color) {
+    var mat = new T.MeshBasicMaterial({ map: tex, color: color || 0xfff0c8, transparent: true, opacity: 0.55, depthWrite: false, blending: T.AdditiveBlending });
+    var beam = new T.Mesh(new T.PlaneGeometry(0.75, 1.3), mat); beam.rotation.x = -Math.PI / 2; beam.position.set(0, 0.012, -0.98);
+    c.g.add(beam); c.beam = beam;
+  }
+  function fxSetup(V, scene) {
+    var pool = function (n, make) { var a = []; for (var i = 0; i < n; i++) { var o = make(); o.visible = false; scene.add(o); a.push(o); } return a; };
+    V.rocketPool = pool(8, makeRocket);
+    V.boomPool = pool(8, function () { return new T.Mesh(new T.SphereGeometry(0.3, 16, 10), new T.MeshBasicMaterial({ color: 0xffa040, transparent: true, depthWrite: false, blending: T.AdditiveBlending })); });
+    V.blockPool = pool(6, makeBlock);
+    V.spikePool = pool(6, makeSpikes);
+    V.boomLight = new T.PointLight(0xff8830, 0, 4, 2); scene.add(V.boomLight);
+    var bt = beamTexture();
+    addBeams(V.player, bt);
+    V.police.forEach(function (c) {
+      addBeams(c, bt);
+      var sh = new T.Mesh(new T.SphereGeometry(0.55, 20, 14), new T.MeshBasicMaterial({ color: 0x60c8ff, transparent: true, opacity: 0.22, depthWrite: false, blending: T.AdditiveBlending }));
+      sh.position.y = 0.2; sh.visible = false; c.g.add(sh); c.shieldMesh = sh;
+      var fl = new T.Mesh(new T.ConeGeometry(0.07, 0.4, 10), new T.MeshBasicMaterial({ color: 0x60b0ff, transparent: true, opacity: 0.85, depthWrite: false, blending: T.AdditiveBlending }));
+      fl.rotation.x = Math.PI / 2; fl.position.set(0, 0.12, 0.62); fl.visible = false; c.g.add(fl); c.nitro = fl;
+    });
+    // the launcher on the getaway car's roof while it lasts
+    var rl = makeLauncher(); rl.children.forEach(function (o) { if (o.userData.glow) o.visible = false; }); rl.scale.setScalar(1.1); rl.position.set(0, 0.3, 0.05);
+    rl.visible = false; V.player.g.add(rl); V.player.launcher = rl;
+  }
+  function fxDraw(V, s, m, t, dt) {
+    var put = function (o, x, y) { var w = world(m, x, y); o.position.x = w[0]; o.position.z = w[1]; };
+    V.rocketPool.forEach(function (o, i) {
+      var r = s.rockets && s.rockets[i]; o.visible = !!r; if (!r) return;
+      put(o, r.x, r.y); o.position.y = 0.3; o.rotation.y = ANG[r.dir]; o.userData.flame.scale.y = 0.8 + Math.random() * 0.5;
+    });
+    var bl = 0, boom = null;
+    V.boomPool.forEach(function (o, i) {
+      var f = (s.fx || [])[i]; o.visible = !!f; if (!f) return;
+      put(o, f.x, f.y); o.position.y = 0.25;
+      var k = f.t / 0.7; o.scale.setScalar(f.kind === "shield" ? 1.2 + k * 1.5 : 0.4 + k * 2.2); o.material.opacity = Math.max(0, 1 - k) * (f.kind === "shield" ? 0.5 : 0.9);
+      o.material.color.setHex(f.kind === "shield" ? 0x60c8ff : k < 0.3 ? 0xfff0a0 : 0xff7030);
+      if (f.kind === "boom" && (!boom || f.t < boom.t)) boom = f;
+    });
+    if (boom) { put(V.boomLight, boom.x, boom.y); V.boomLight.position.y = 0.6; V.boomLight.intensity = 6 * Math.max(0, 1 - boom.t / 0.5); } else V.boomLight.intensity = 0;
+    V.blockPool.forEach(function (o, i) {
+      var b = (s.blocks || [])[i]; o.visible = !!b && (b.t > 1 || Math.floor(t * 8) % 2 === 0); if (!b) return;
+      put(o, b.x, b.y); o.rotation.y = C.open(m, b.x - 1, b.y) || C.open(m, b.x + 1, b.y) ? Math.PI / 2 : 0;
+      o.userData.lamp.material.emissiveIntensity = Math.floor(t * 4) % 2 ? 2.5 : 0.2;
+    });
+    V.spikePool.forEach(function (o, i) {
+      var b = (s.spikes || [])[i]; o.visible = !!b; if (!b) return;
+      put(o, b.x, b.y); o.rotation.y = C.open(m, b.x - 1, b.y) || C.open(m, b.x + 1, b.y) ? Math.PI / 2 : 0;
+    });
+    s.police.forEach(function (c, i) {
+      var v = V.police[i];
+      v.shieldMesh.visible = !!c.shield && c.mode !== "wait" && c.mode !== "back";
+      if (v.shieldMesh.visible) v.shieldMesh.material.opacity = 0.16 + Math.sin(t * 5) * 0.06;
+      v.nitro.visible = c.boost > 0; if (c.boost > 0) v.nitro.scale.y = 0.8 + Math.random() * 0.6;
+      v.beam.visible = c.mode !== "back";
+    });
+    V.player.launcher.visible = s.jamT > 0;
+    V.player.beam.material.opacity = s.slowT > 0 && Math.floor(t * 10) % 2 ? 0.2 : 0.55;
+  }
   var world = function (m, x, y) { return [x - m.W / 2 + 0.5, y - m.H / 2 + 0.5]; };
 
   /** the city for this level's maze: the painted ground, the buildings, the cash, the jammers */
@@ -262,7 +370,7 @@
     for (var i = 0; i < m.W * m.H; i++) if (s.items[i] === 1) cashIdx.push(i);
     V.cash = burgerParts().map(function (p) { var im = new T.InstancedMesh(p.geo, p.mat, Math.max(1, cashIdx.length)); im.count = cashIdx.length; city.add(im); return im; });
     V.cashIdx = cashIdx;
-    V.jams = m.jammers.map(function (j) { var o = new T.Mesh(V.jamGeo, V.jamMat); var w = world(m, j[0], j[1]); o.position.set(w[0], 0.25, w[1]); city.add(o); o.userData.k = j[1] * m.W + j[0]; return o; });
+    V.jams = m.jammers.map(function (j) { var o = makeLauncher(); var w = world(m, j[0], j[1]); o.position.set(w[0], 0.25, w[1]); city.add(o); o.userData.k = j[1] * m.W + j[0]; return o; });
     G.mazeOf = m;
     k = 0;
     return k;
@@ -292,8 +400,14 @@
   }
   /** one building of the pack on every tile in list [[x, y, quarter turns]]: a box wearing its five pictures */
   function packBuildings(city, m, b, list) {
-    var F = b.faces || {}, sz = b.size_m || [1, 1, 1];
-    var mat = function (f) { return F[f] ? new T.MeshStandardMaterial({ map: packTexture(F[f]), color: 0xe2e6f0, roughness: 0.85, emissive: 0x2a2f3a, emissiveMap: packTexture(F[f]), emissiveIntensity: 0.35 }) : new T.MeshStandardMaterial({ color: 0x161b26 }); };
+    var F = b.faces || {}, D = b.dressed || {}, LT = b.lights || {}, sz = b.size_m || [1, 1, 1];
+    // 2.938.0: the dressed pictures (brick, glass) when the pack has them, and their lit windows glowing at night
+    var mat = function (f) {
+      if (!F[f]) return new T.MeshStandardMaterial({ color: 0x161b26 });
+      var pic = packTexture(D[f] || F[f]);
+      return LT[f] ? new T.MeshStandardMaterial({ map: pic, color: 0xe2e6f0, roughness: 0.6, metalness: 0.1, emissive: 0xffffff, emissiveMap: packTexture(LT[f]), emissiveIntensity: 0.95 })
+        : new T.MeshStandardMaterial({ map: pic, color: 0xe2e6f0, roughness: 0.85, emissive: 0x2a2f3a, emissiveMap: pic, emissiveIntensity: 0.35 });
+    };
     var mats = [mat("px"), mat("nx"), mat("py"), new T.MeshStandardMaterial({ color: 0x161b26 }), mat("pz"), mat("nz")];
     var k = 0.94 / Math.max(sz[0], sz[1], 0.01), sx = sz[0] * k, sd = sz[1] * k, h = Math.min(1.8, sz[2] * k);
     var im = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), mats, list.length), M = new T.Matrix4(), Q = new T.Quaternion(), Y = new T.Vector3(0, 1, 0);
@@ -326,6 +440,12 @@
     var mk = function (lit) {
       var c = doc.createElement("canvas"); c.width = 64; c.height = 64; var g = c.getContext("2d");
       g.fillStyle = lit ? "#000" : "#e8e8e8"; g.fillRect(0, 0, 64, 64);
+      if (!lit) {                                   // 2.938.0: brick on the walls
+        g.fillStyle = "#c98a72"; g.fillRect(0, 0, 64, 64);
+        g.strokeStyle = "rgba(235,225,215,.8)"; g.lineWidth = 1;
+        for (var by = 0; by < 64; by += 4) { g.beginPath(); g.moveTo(0, by + 0.5); g.lineTo(64, by + 0.5); g.stroke();
+          for (var bx = (by / 4) % 2 ? 4 : 0; bx < 64; bx += 8) { g.beginPath(); g.moveTo(bx + 0.5, by); g.lineTo(bx + 0.5, by + 4); g.stroke(); } }
+      }
       var R = C.rng(77);
       for (var r = 0; r < 2; r++) for (var q = 0; q < 4; q++) {
         var on = R() < 0.55;
@@ -378,7 +498,8 @@
         M4.compose(P3, Q, S3); for (var L = 0; L < V.cash.length; L++) V.cash[L].setMatrixAt(j, M4);
       });
       V.cash.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
-      V.jams.forEach(function (o, j) { o.visible = s.items[o.userData.k] === 2; o.rotation.y = t * 2; o.position.y = 0.25 + Math.sin(t * 4 + j) * 0.05; });
+      V.jams.forEach(function (o, j) { o.visible = s.items[o.userData.k] === 2; o.rotation.y = t * 2; o.position.y = 0.12 + Math.sin(t * 4 + j) * 0.04; });
+      fxDraw(V, s, m, t, dt);
       V.bonus.visible = !!s.bonus && (s.bonus.t > 2 || Math.floor(t * 6) % 2 === 0);
       if (s.bonus) { var bw = world(m, s.bonus.x, s.bonus.y); V.bonus.position.set(bw[0], 0.02 + Math.abs(Math.sin(t * 3)) * 0.05, bw[1]); V.bonus.rotation.y = t * 1.5; }
       camera(dt, m, pw, p.face);
@@ -440,7 +561,7 @@
     var dt = G.last ? Math.min(0.1, (now - G.last) / 1000) : 1 / 60; G.last = now;
     pad();
     var running = G.s && !G.paused && !G.demo && G.s.phase !== "over";          // GAME OVER: one last picture, then still
-    if (running) { var evs = C.step(G.s, dt, { dir: G.input }); G.input = -1; evs.forEach(onEvent); }
+    if (running) { var evs = C.step(G.s, dt, { dir: G.input, fire: G.fire }); G.input = -1; G.fire = false; evs.forEach(onEvent); }
     draw(dt, now / 1000);
     hud();
     G.frames++;
@@ -486,7 +607,7 @@
     LS.set("name", name); hideName();
     return fetch("/api/police-chase/scores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, score: s.score, level: s.level }) })
       .then(function (r) { return r.json(); }).then(function (j) {
-        if (j && j.scores) { G.scores = j.scores; G.hiFile = j.scores.length ? j.scores[0].score : 0; paintScores(j.rank); $("pcScores").classList.add("on"); }
+        if (j && j.scores) { G.scores = j.scores; G.hiFile = j.scores.length ? j.scores[0].score : 0; paintScores(j.rank); $("pcScores").classList.add("on"); hud(); }
         focus(); return j;
       }).catch(function () { return null; });
   }
@@ -520,8 +641,8 @@
     if (key === G.msgKey) return;
     G.msgKey = key;
     var m = $("pcMsg"), b = "", t = "", dim = false;
-    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every burger and keep away from the police. A 📡 jammer turns the tables for a few seconds - bump a police car to send it back to the station.<br>Click here, then press Enter or an arrow key." + (G.pack && G.pack.json.credits && G.pack.json.credits.length ? '<br><small style="opacity:.65">' + G.pack.json.credits.map(esc).join(" · ") + "</small>" : ""); dim = true; }
-    else if (G.paused) { b = "PAUSED"; t = (G.why && G.why !== "paused" ? esc(G.why) + " · " : "") + "P, Space or a click carries on"; dim = true; }
+    if (!live) { b = "🚓 POLICE CHASE"; t = "Pick up every burger and keep away from the police. A 🚀 rocket launcher turns the tables for a few seconds - the police run, and Space fires a rocket that sends a car two burgers ahead back to the station (or bump it). Watch out: Sarge drops 🚧 roadblocks, Cutter has ⚡ nitro, Flanker lays spike strips, Rookie wears a 🛡 shield.<br>Click here, then press Enter or an arrow key." + (G.pack && G.pack.json.credits && G.pack.json.credits.length ? '<br><small style="opacity:.65">' + G.pack.json.credits.map(esc).join(" · ") + "</small>" : ""); dim = true; }
+    else if (G.paused) { b = "PAUSED"; t = (G.why && G.why !== "paused" ? esc(G.why) + " · " : "") + "P or a click carries on"; dim = true; }
     else if (s.phase === "ready") { b = "LEVEL " + s.level; t = "Get ready…"; }
     else if (s.phase === "busted") { b = "BUSTED!"; t = s.lives > 0 ? s.lives + " car" + (s.lives > 1 ? "s" : "") + " left" : ""; }
     else if (s.phase === "clear") { b = "CITY CLEARED"; t = "On to the next city…"; }
@@ -543,7 +664,8 @@
       else { if (G.paused) resume(); G.input = toWorld(KEYS[e.code]); }
       snd("unlock");
     }
-    else if (e.code === "KeyP" || e.code === "Space" || e.code === "Escape") togglePause();
+    else if (e.code === "Space" || e.code === "KeyF" || e.code === "ControlRight") { if (live && !G.paused && G.s.phase === "play") G.fire = true; }   // 2.938.0: 🚀 fire
+    else if (e.code === "KeyP" || e.code === "Escape") togglePause();
     else if (e.code === "KeyC") setCamera(G.cam === "chase" ? "city" : "chase");
     else if (e.code === "KeyM") setSound(!G.sound);
     else if (e.code === "Enter") { if (!live || G.s.phase === "over") newGame(); else if (G.paused) resume(); }
@@ -557,6 +679,8 @@
     var b = function (n) { return !!(gp.buttons[n] && gp.buttons[n].pressed); }, ax = gp.axes[0] || 0, ay = gp.axes[1] || 0, d = -1;
     if (b(12) || ay < -0.55) d = 0; else if (b(14) || ax < -0.55) d = 1; else if (b(13) || ay > 0.55) d = 2; else if (b(15) || ax > 0.55) d = 3;
     if (d >= 0 && G.s && !G.demo && !G.paused) G.input = toWorld(d);
+    if ((b(0) || b(2) || b(7)) && !G.padPrev.fire && G.s && !G.demo && !G.paused) G.fire = true;      // 2.938.0: A / X / right trigger fire
+    G.padPrev.fire = b(0) || b(2) || b(7);
     var st = b(9);
     if (st && !G.padPrev.start) { if (!G.s || G.demo || G.s.phase === "over") newGame(); else togglePause(); }
     G.padPrev.start = st;
@@ -593,6 +717,13 @@
     if (!G.sound) return;
     if (e === "unlock") { actx(); return; }
     if (e === "cash") { blip ^= 1; tone("square", blip ? 1046 : 1318, blip ? 1046 : 1318, 0.05, 0.05); }
+    else if (e === "fire") { noise(0.12, 0.08); tone("sawtooth", 900, 200, 0.25, 0.05); }
+    else if (e === "boom") { noise(0.45, 0.3); tone("sine", 120, 40, 0.4, 0.12); }
+    else if (e === "block") { tone("square", 160, 120, 0.12, 0.06); }
+    else if (e === "nitro") { tone("sawtooth", 300, 1200, 0.5, 0.05); }
+    else if (e === "spikes") { tone("triangle", 1800, 1500, 0.08, 0.04); tone("triangle", 1800, 1500, 0.08, 0.04, 0.1); }
+    else if (e === "slow") { noise(0.3, 0.12); tone("square", 500, 120, 0.4, 0.05); }
+    else if (e === "shield") { tone("sine", 1500, 2200, 0.2, 0.07); }
     else if (e === "jammer") { tone("sawtooth", 220, 1400, 0.35, 0.07); tone("sine", 1400, 300, 0.3, 0.05, 0.3); }
     else if (e === "tag") { noise(0.18, 0.18); tone("square", 180, 60, 0.2, 0.08); tone("sine", 660, 1320, 0.15, 0.05, 0.12); }
     else if (e === "busted") { noise(0.4, 0.25); [880, 660, 880, 660].forEach(function (f, i) { tone("triangle", f, f, 0.22, 0.07, 0.25 + i * 0.25); }); }
@@ -637,7 +768,7 @@
     st.addEventListener("pointerup", function (e) {
       var w = G.swipe; G.swipe = null; if (!w || !G.s || G.demo) return;
       var dx = e.clientX - w.x, dy = e.clientY - w.y;
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) { if (!G.paused && G.s.phase === "play") G.fire = true; return; }   // a tap fires
       G.input = toWorld(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 3) : (dy < 0 ? 0 : 2));
     });
     // the bar's buttons keep the focus on the city (a click there is no reason to pause)

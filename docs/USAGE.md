@@ -10857,7 +10857,7 @@ A cake (a gold diamond before 2.937.0) shows up now and then below the station f
 
 **🎥 City / Chase** (C) - the whole city from above (turned a quarter in a tall, narrow docker), or behind your car, where ↑
 drives straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
-and is off to start with. **P**, **Space** or **Esc** pauses. **🏆** - the best ten on this PC; a score that makes the ten asks
+and is off to start with. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten asks
 for your name (kept in police_chase.json in the install folder).
 
 It keeps out of the way of your work: the keys only reach the game while it has the focus (they never reach the timeline or
@@ -10886,3 +10886,22 @@ To put your own cars in: `python scripts/chase_car.py --in car.fbx --out getaway
 Blender's bpy, or `blender -b --python scripts/chase_car.py -- ...`) cuts a car down to game size, turns its nose the right
 way (--turn) and names the paint (--paint "body") so the game can colour it; then
 `python3 scripts/chase_assets.py --getaway getaway.glb --police police.glb` puts them in the pack.
+
+### Rocket launchers and the police's tricks (2.938.0)
+
+The four corner pick-ups are now **🚀 rocket launchers** (the 📡 jammers before). While one lasts (the orange bar at the top)
+the police run from you and the launcher sits on your roof: **Space** (or F, a gamepad's A / X / right trigger, a tap on a
+touch screen) fires a rocket straight ahead. It reaches two burgers ahead: a police car it hits goes back to the station -
+200, 400, 800, 1,600 points - and bumping one still works too.
+
+Each police car has its own trick:
+- **Sarge - 🚧 roadblock**: now and then he leaves a striped barrier on the road behind him. You can't drive through it for
+  five seconds - turn round, or blow it up with a rocket.
+- **Cutter - ⚡ nitro**: when he sees you down a straight road he fires up his nitro (a blue flame) and closes in fast.
+- **Flanker - spike strip**: he lays a strip of spikes behind him; drive over it and you are slowed for a moment.
+- **Rookie - 🛡 shield**: a blue bubble that stops one rocket; it comes back each time he leaves the station.
+
+Every car has headlights on the road ahead, and explosions light the street. With the art pack (v3), the buildings have brick
+walls, glass with a sheen and windows lit warm or cool (`python3 scripts/chase_assets.py --dress` makes them from the pack's
+pictures).
+

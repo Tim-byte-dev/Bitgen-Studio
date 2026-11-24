@@ -9,6 +9,8 @@
 #   buildings/<id>_{px,nx,pz,nz,py}.jpg   each building of the city .blend as five pictures (scripts/chase_bake.py renders
 #                                         them - the models themselves are not in the pack)
 #   roads/{straight,plain,pavement,plaza}.jpg   squares cut from the roads kit's texture atlas (ROAD_CROPS)
+#   buildings/<id>_<face>_d.jpg / _e.jpg  (2.938.0, --dress) the pictures with brick on the walls and a sheen on the glass,
+#                                         and a lights map: some windows lit for the night (the game's emissive map)
 #   cars/getaway.glb, cars/police.glb    (2.937.0) cars made by scripts/chase_car.py, copied in (--getaway / --police)
 #   pack.json   {version: 1, buildings: [{id, name, size_m, faces}], roads: {...}, cars: {getaway, police}, credits: [...]}
 # Needs Pillow; the buildings need Blender (the app, run headless) or a Python with the bpy module.
@@ -64,6 +66,61 @@ def to_jpg(src, dst):
     bg.convert("RGB").save(dst, quality=86)
 
 
+def dress(out, pack, seed=7):
+    """2.938.0 (Tim: "add some brick and glass textures to the buildings and some lights to the buildings"): each side
+    picture gets brick on its plain walls, a blue sheen on its glass, and a lights map with some windows lit (pure numpy on
+    the pictures - the walls are the light, grey pixels, the glass the bluish or dark ones; the empty fill is left alone)."""
+    import numpy as np
+    from PIL import Image, ImageFilter
+    rng = np.random.default_rng(seed)
+    for b in pack.get("buildings", []):
+        sx, sy, sz = (b.get("size_m") or [10, 10, 10])[:3]
+        b["dressed"], b["lights"] = {}, {}
+        for face, rel in b["faces"].items():
+            src = os.path.join(out, rel)
+            a = np.asarray(Image.open(src).convert("RGB")).astype(np.float32)
+            H, W = a.shape[:2]
+            r, g, bl = a[..., 0], a[..., 1], a[..., 2]
+            mx, mn = a.max(axis=2), a.min(axis=2); lum = 0.299 * r + 0.587 * g + 0.114 * bl
+            sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1), 0)
+            bg = (np.abs(a - np.array(FILL, np.float32)).sum(axis=2) < 18)
+            glass = ~bg & (((bl > r + 8) & (lum < 170)) | (lum < 58))
+            # tidy the glass: a soft blur, then a threshold (whole panes, not speckles)
+            gm = Image.fromarray((glass * 255).astype(np.uint8)).filter(ImageFilter.BoxBlur(2))
+            glass = (np.asarray(gm) > 110) & ~bg
+            wall = ~bg & ~glass & (lum > 105) & (sat < 0.2)
+            o = a.copy(); e = np.zeros_like(a)
+            if face != "py":
+                wide = sx if face in ("pz", "nz") else sy
+                ppm = W / max(wide, 0.01)                                # pixels a metre
+                course = max(3.0, 0.28 * ppm); brick = max(7.0, 0.7 * ppm)
+                yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+                row = np.floor(yy / course); off = (row % 2) * brick / 2
+                col = np.floor((xx + off) / brick)
+                mortar = ((yy % course) < 1.0) | (((xx + off) % brick) < 1.0)
+                tone = 0.86 + 0.14 * ((np.sin(row * 12.9898 + col * 78.233) * 43758.5453) % 1.0)
+                brickc = np.stack([182 * tone, 96 * tone, 72 * tone], axis=2)
+                mix = np.where(mortar[..., None], np.array([196, 190, 180], np.float32), brickc)
+                o = np.where(wall[..., None], o * 0.35 + mix * 0.65 * (lum[..., None] / 200.0 + 0.35), o)
+                sheen = (0.25 + 0.35 * (1 - yy / max(H, 1)))[..., None]
+                o = np.where(glass[..., None], o * (1 - sheen) + np.array([88, 128, 170], np.float32) * sheen, o)
+                # the lights: the glass in a grid of window cells, some cells lit warm, some cool
+                cw = max(4, int(0.95 * ppm)); ch = max(4, int(0.9 * ppm))
+                cells = rng.random(((H // ch) + 2, (W // cw) + 2))
+                cy = (yy // ch).astype(int); cx = (xx // cw).astype(int)
+                lit = cells[cy, cx] < 0.4
+                warm = cells[cy, cx] < 0.3
+                col_e = np.where(warm[..., None], np.array([255, 196, 120], np.float32), np.array([170, 205, 255], np.float32))
+                e = np.where((glass & lit)[..., None], col_e, 0)
+            base = rel[:-4]
+            Image.fromarray(np.clip(o, 0, 255).astype(np.uint8)).save(os.path.join(out, base + "_d.jpg"), quality=86)
+            b["dressed"][face] = base + "_d.jpg"
+            if face != "py":
+                Image.fromarray(np.clip(e, 0, 255).astype(np.uint8)).save(os.path.join(out, base + "_e.jpg"), quality=82)
+                b["lights"][face] = base + "_e.jpg"
+    return pack
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Police Chase's art pack")
     ap.add_argument("--city", help="a .blend whose collections are buildings")
@@ -74,6 +131,7 @@ def main(argv=None):
     ap.add_argument("--bpy-python", default=None)
     ap.add_argument("--credit", action="append", default=[])
     ap.add_argument("--getaway", help="the getaway car: a .glb from scripts/chase_car.py")
+    ap.add_argument("--dress", action="store_true", help="brick, glass and lit windows on the buildings (2.938.0)")
     ap.add_argument("--police", help="the police car: a .glb from scripts/chase_car.py (its paint material named Body)")
     a = ap.parse_args(argv)
     out = os.path.abspath(a.out)
@@ -110,6 +168,8 @@ def main(argv=None):
                 pack["buildings"].append({"id": b["id"], "name": b["name"], "size_m": b["size_m"], "faces": faces})
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
+    if a.dress:
+        dress(out, pack)
     with open(old, "w") as fh:
         json.dump(pack, fh, indent=1)
     print("pack:", old, "-", len(pack["buildings"]), "buildings,", len(pack["roads"]), "road pictures,", len(pack["cars"]), "cars")

@@ -12,6 +12,14 @@
  *   newGame(seed, hi) -> state;  step(state, dt, input {dir}) -> [event]   ("cash", "jammer", "tag", "busted", "clear",
  *                                "over", "extra", "bonus", "bonusup", "go", "back", "mode")
  *   targetOf(state, i) -> [x, y]   where police car i heads now;  open(maze, x, y) -> bool
+ * 2.938.0 (Tim: "we make pacmans magic pills into rocket launchers so we can chase the police cars and fire from 2
+ * hamburgers away. give each police car it's own ability"): the 📡 jammer is now a 🚀 ROCKET LAUNCHER - while it lasts
+ * (s.jamT) the police run and step(s, dt, {fire: true}) fires a rocket straight ahead (s.rockets): it flies ROCKET.range
+ * tiles (2 burgers away) or to the next block, and a police car it hits goes back to the station like a bump. Each police
+ * car has its own ability (ABILITY): Sarge drops a 🚧 roadblock behind him (blocks the getaway car; a rocket blows it up),
+ * Cutter fires up ⚡ nitro on a straight with you in sight, Flanker drops a spike strip (drive over it: slowed), Rookie wears
+ * a 🛡 shield that stops one rocket (back again when he comes out of the station). New events: fire, boom, block, nitro,
+ * spikes, slow, shield. s.blocks / s.spikes / s.fx (explosions) for the view.
  *   POLICE  the four patrol cars: Sarge (straight at you), Cutter (where you are going), Flanker (from the side),
  *           Rookie (sometimes takes a wrong turn)
  */
@@ -29,6 +37,13 @@
   // patrol / pursue - the police patrol their corners, then pursue; a jammer stops the clock
   var MODES = [["patrol", 7], ["pursue", 20], ["patrol", 7], ["pursue", 20], ["patrol", 5], ["pursue", 20], ["patrol", 5], ["pursue", Infinity]];
   var SCORE = { cash: 10, jammer: 50, tag: 200, extraAt: 10000 };
+  var ROCKET = { range: 2.4, speed: 13, cooldown: 0.35, hit: 0.55 };          // range: hits a car two burgers away
+  var ABILITY = {
+    sarge: { name: "Roadblock", every: 9, last: 5 },
+    cutter: { name: "Nitro", every: 7, last: 1.6, boost: 1.6, sight: 8 },
+    flanker: { name: "Spike strip", every: 8, last: 9, slow: 0.55, slowFor: 2.5 },
+    rookie: { name: "Shield" },
+  };
 
   function rng(seed) {
     var a = (Number(seed) >>> 0) || 1;
@@ -143,9 +158,11 @@
     var spots = [[st.x, st.y - 1], [st.x - 1, st.y], [st.x + 1, st.y], [st.x, st.y + 1]];
     s.police = POLICE.map(function (p, i) {
       return { kind: p.kind, name: p.name, color: p.color, x: spots[i][0], y: spots[i][1], dir: i % 2 ? 3 : 1, mode: "wait",
-               releaseAt: i * sp.release, home: m.homes[i] };
+               releaseAt: i * sp.release, home: m.homes[i], cd: abilityEvery(p.kind, s.level) * (0.5 + 0.2 * i), boost: 0,
+               shield: p.kind === "rookie", last: null };
     });
     s.t = 0; s.modeIdx = 0; s.modeT = MODES[0][1]; s.mode = MODES[0][0]; s.jamT = 0; s.chain = 0;
+    s.rockets = []; s.blocks = []; s.spikes = []; s.fx = []; s.fireCd = 0; s.slowT = 0;
     s.phase = "ready"; s.phaseT = 2;
   }
   var dist2 = function (ax, ay, bx, by) { return (ax - bx) * (ax - bx) + (ay - by) * (ay - by); };
@@ -173,12 +190,52 @@
     o.forEach(function (d) { var v = dist2(x + DIRS[d][0], y + DIRS[d][1], t[0], t[1]); if (v < bd - EPS) { bd = v; best = d; } });
     return best;
   }
+  function blockedAt(s, x, y) { for (var i = 0; i < (s.blocks || []).length; i++) if (s.blocks[i].x === x && s.blocks[i].y === y) return true; return false; }
+  function openFor(s, x, y) { return open(s.maze, x, y) && !blockedAt(s, x, y); }      // the getaway car: roadblocks too
+  function abilityEvery(kind, level) { var a = ABILITY[kind]; return a && a.every ? Math.max(a.every * 0.55, a.every - 0.5 * (level - 1)) : 0; }
   function choosePlayer(s, x, y) {
-    var p = s.player, m = s.maze;
-    if (p.want >= 0 && open(m, x + DIRS[p.want][0], y + DIRS[p.want][1])) return p.want;
+    var p = s.player;
+    if (p.want >= 0 && openFor(s, x + DIRS[p.want][0], y + DIRS[p.want][1])) return p.want;
     // once driving, the car keeps going the way it goes (a turn asked for too early waits for its road)
-    if ((p.moving || p.started) && open(m, x + DIRS[p.dir][0], y + DIRS[p.dir][1])) return p.dir;
+    if ((p.moving || p.started) && openFor(s, x + DIRS[p.dir][0], y + DIRS[p.dir][1])) return p.dir;
     return -1;
+  }
+  /** the getaway car's rocket: straight ahead from the car, while the launcher lasts */
+  function fire(s, out) {
+    var p = s.player;
+    if (s.jamT <= 0 || s.fireCd > 0) return false;
+    s.fireCd = ROCKET.cooldown;
+    s.rockets.push({ x: p.x, y: p.y, dir: p.face, flown: 0 });
+    ev(s, out, "fire");
+    return true;
+  }
+  function boom(s, out, x, y) { s.fx.push({ kind: "boom", x: x, y: y, t: 0 }); ev(s, out, "boom"); }
+  function tagCar(s, out, c) { s.chain++; c.mode = "back"; c.boost = 0; addScore(s, out, SCORE.tag * Math.pow(2, Math.min(3, s.chain - 1))); ev(s, out, "tag"); }
+  /** is there a straight, open road from the police car to the getaway car, no further than n tiles? */
+  function inSight(s, c, n) {
+    var p = s.player, cx = Math.round(c.x), cy = Math.round(c.y), px = Math.round(p.x), py = Math.round(p.y);
+    if (cx !== px && cy !== py) return -1;
+    var d = cx === px ? (py > cy ? 2 : 0) : (px > cx ? 3 : 1), len = Math.abs(px - cx) + Math.abs(py - cy);
+    if (len > n || len === 0) return -1;
+    for (var k = 1; k < len; k++) if (!open(s.maze, cx + DIRS[d][0] * k, cy + DIRS[d][1] * k)) return -1;
+    return d;
+  }
+  /** each police car's own trick, at its tile centres while it is out chasing (not jammed, not going back) */
+  function ability(s, out, c, x, y) {
+    if (c.mode !== "run") { c.last = [x, y]; return; }
+    var A = ABILITY[c.kind], p = s.player, prev = c.last; c.last = [x, y];
+    if (!A || c.cd > 0) return;
+    var st = s.maze.station, inStation = Math.abs(x - st.x) <= 1 && Math.abs(y - st.y) <= 1;
+    if (c.kind === "sarge" || c.kind === "flanker") {
+      // dropped on the tile just left - never on the station square, never under or just in front of the getaway car
+      if (!prev || inStation || (prev[0] === s.maze.start[0] && prev[1] === s.maze.start[1])) return;
+      if (dist2(prev[0], prev[1], p.x, p.y) < 1.6 * 1.6 || blockedAt(s, prev[0], prev[1])) return;
+      if (c.kind === "sarge") { s.blocks.push({ x: prev[0], y: prev[1], t: A.last }); ev(s, out, "block"); }
+      else { s.spikes.push({ x: prev[0], y: prev[1], t: A.last }); ev(s, out, "spikes"); }
+      c.cd = abilityEvery(c.kind, s.level);
+    } else if (c.kind === "cutter") {
+      if (inSight(s, c, A.sight) >= 0) { c.boost = A.last; c.cd = abilityEvery(c.kind, s.level); ev(s, out, "nitro"); }
+    }
   }
   /** drive e `dist` tiles; choose(x, y) at each tile centre -> a direction or -1 (stop) */
   function drive(e, dist, choose, arrive) {
@@ -230,6 +287,7 @@
       return out;
     }
     var n = Math.max(1, Math.ceil(dt / (1 / 120)));
+    if (input && input.fire) fire(s, out);
     for (var k = 0; k < n && s.phase === "play"; k++) tick(s, dt / n, out);
     return out;
   }
@@ -248,11 +306,43 @@
         ev(s, out, "mode");
       }
     }
+    // timers: the rocket's reload, the spikes' slow-down, roadblocks and spike strips, explosions, abilities
+    s.fireCd = Math.max(0, s.fireCd - dt); s.slowT = Math.max(0, s.slowT - dt);
+    s.blocks = s.blocks.filter(function (b) { b.t -= dt; return b.t > 0; });
+    s.spikes = s.spikes.filter(function (b) { b.t -= dt; return b.t > 0; });
+    s.fx = s.fx.filter(function (f) { f.t += dt; return f.t < 0.7; });
+    s.police.forEach(function (c) { if (c.cd > 0) c.cd -= dt; if (c.boost > 0) c.boost = Math.max(0, c.boost - dt); });
     // the getaway car: a U-turn at once, anywhere
     if (p.want >= 0 && p.moving && p.want === (p.dir + 2) % 4) { p.dir = p.want; }
-    drive(p, sp.player * dt, function (x, y) { return choosePlayer(s, x, y); });
+    drive(p, sp.player * (s.slowT > 0 ? ABILITY.flanker.slow : 1) * dt, function (x, y) { return choosePlayer(s, x, y); });
     if (p.moving) p.face = p.dir;
-    // cash, jammers, the bonus
+    // a spike strip under the car: slowed for a moment (the strip is used up)
+    for (var si = 0; si < s.spikes.length; si++) {
+      if (dist2(p.x, p.y, s.spikes[si].x, s.spikes[si].y) < 0.4 * 0.4) { s.spikes.splice(si, 1); s.slowT = ABILITY.flanker.slowFor; ev(s, out, "slow"); break; }
+    }
+    // rockets: straight on, a block or the range stops them; a police car hit = back to the station (Rookie's shield stops one)
+    s.rockets = s.rockets.filter(function (r) {
+      var D = DIRS[r.dir], stepD = Math.min(ROCKET.speed * dt, ROCKET.range - r.flown);
+      r.x += D[0] * stepD; r.y += D[1] * stepD; r.flown += stepD;
+      for (var ci = 0; ci < s.police.length; ci++) {
+        var c = s.police[ci];
+        if (c.mode === "wait" || c.mode === "back") continue;
+        if (dist2(r.x, r.y, c.x, c.y) < ROCKET.hit * ROCKET.hit) {
+          if (c.shield) { c.shield = false; s.fx.push({ kind: "shield", x: c.x, y: c.y, t: 0 }); ev(s, out, "shield"); }
+          else tagCar(s, out, c);
+          boom(s, out, r.x, r.y); return false;
+        }
+      }
+      var ax = Math.round(r.x + D[0] * 0.45), ay = Math.round(r.y + D[1] * 0.45);
+      if (!open(m, ax, ay)) { boom(s, out, r.x, r.y); return false; }
+      for (var bi = 0; bi < s.blocks.length; bi++) {
+        var b = s.blocks[bi];
+        if (dist2(r.x, r.y, b.x, b.y) < 0.5 * 0.5) { s.blocks.splice(bi, 1); boom(s, out, b.x, b.y); return false; }
+      }
+      if (r.flown >= ROCKET.range - 1e-9) { boom(s, out, r.x, r.y); return false; }
+      return true;
+    });
+    // burgers, rocket launchers, the cake
     var tx = Math.round(p.x), ty = Math.round(p.y), ti = ty * m.W + tx;
     if (Math.abs(p.x - tx) + Math.abs(p.y - ty) < 0.45 && s.items[ti]) {
       var it = s.items[ti]; s.items[ti] = 0; s.left--; s.eaten++;
@@ -273,9 +363,12 @@
     // the police
     s.police.forEach(function (c, i) {
       if (c.mode === "wait") { if (s.t >= c.releaseAt) { c.mode = s.jamT > 0 ? "jammed" : "run"; } else return; }
-      var v = c.mode === "back" ? sp.back : c.mode === "jammed" ? sp.jammed : sp.police;
+      var v = c.mode === "back" ? sp.back : c.mode === "jammed" ? sp.jammed : sp.police * (c.boost > 0 ? ABILITY.cutter.boost : 1);
       drive(c, v * dt, function (x, y) { return choosePolice(s, i, x, y); }, function (x, y) {
-        if (c.mode === "back" && x === m.station.x && y === m.station.y) { c.mode = s.jamT > 0 ? "jammed" : "run"; ev(s, out, "back"); }
+        if (c.mode === "back" && x === m.station.x && y === m.station.y) {
+          c.mode = s.jamT > 0 ? "jammed" : "run"; if (c.kind === "rookie") c.shield = true; ev(s, out, "back");
+        }
+        ability(s, out, c, x, y);
       });
     });
     // caught - or, while jammed, a police car bumped back to the station
@@ -283,14 +376,15 @@
       var c = s.police[i];
       if (c.mode === "wait" || c.mode === "back") continue;
       if (dist2(p.x, p.y, c.x, c.y) < 0.6 * 0.6) {
-        if (c.mode === "jammed") { s.chain++; c.mode = "back"; addScore(s, out, SCORE.tag * Math.pow(2, Math.min(3, s.chain - 1))); ev(s, out, "tag"); }
+        if (c.mode === "jammed") tagCar(s, out, c);
         else { s.lives--; s.phase = "busted"; s.phaseT = 1.8; ev(s, out, "busted"); return; }
       }
     }
   }
 
   var API = { DIRS: DIRS, NAMES: NAMES, POLICE: POLICE, MODES: MODES, SCORE: SCORE, rng: rng, open: open, makeMaze: makeMaze,
-              reach: reach, speeds: speeds, newGame: newGame, newLevel: newLevel, step: step, targetOf: targetOf, drive: drive };
+              reach: reach, speeds: speeds, newGame: newGame, newLevel: newLevel, step: step, targetOf: targetOf, drive: drive,
+              ROCKET: ROCKET, ABILITY: ABILITY, fire: fire, inSight: inSight, openFor: openFor };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.H3ChaseCore = API;
 })(typeof window !== "undefined" ? window : this);
