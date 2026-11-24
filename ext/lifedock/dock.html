@@ -44,6 +44,15 @@
           #lcAct .ok { color: #5ccf6c; font-weight: 600; }
           #lcAct .no { color: #ff6b6b; font-weight: 600; }
           #lcAct .big { font-size: 14px; padding: 6px 12px; }
+          /* 2.946.0: the pair of dice and the luck they brought */
+          #lcDice { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; }
+          #lcDice:empty { display: none; }
+          #lcDice .faces { font-size: 34px; line-height: 1; letter-spacing: 2px; }
+          #lcDice .row { display: flex; gap: 8px; align-items: center; }
+          #lcDice .meter { display: flex; gap: 2px; }
+          #lcDice .meter i { flex: 1; height: 7px; border-radius: 2px; opacity: .28; }
+          #lcDice .meter i.on { opacity: 1; outline: 1px solid #fff; }
+          #lcDice .mine { font-size: 11px; color: var(--dim); }
           #lcLog { flex: 1; min-height: 80px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-size: 11px; line-height: 1.4; }
           #lcLog div { border-bottom: 1px dotted rgba(255, 255, 255, .06); }
           .lcpanel { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(5, 8, 18, .72); z-index: 3; }
@@ -70,6 +79,7 @@
           <div id="lcBoardWrap"><canvas id="lcBoard" aria-label="The Life Choices board"></canvas><div id="lcTip"></div></div>
           <div id="lcSide">
             <div id="lcPlayers"></div>
+            <div id="lcDice" aria-live="polite"></div>
             <div id="lcAct" aria-live="polite"></div>
             <div id="lcLog" aria-label="What happened"></div>
           </div>
@@ -98,6 +108,10 @@
             <p><b>The land &amp; houses ring</b> (outside, through the 🗺 Land office): 🌳 blocks of land (no rent - build a house at a 🏗 Builder
               or when you land on your own block), 🏡 houses in good condition (full rent) and 🏚 houses that need renovating (cheap, little
               rent - renovate for a quarter of the value and it is worth half as much again). Council rates, and an auction at 85%.</p>
+            <p><b>Luck</b>: every turn you roll a pair of dice. The total is your luck for those three months - double 1 (2) is the
+              worst, 6 to 8 is an ordinary few months, double 6 (12) is the best and you roll again. At school it's lost bus passes and
+              birthday gifts, at work fines and tax refunds, with money and property storms, inheritances and lottery wins. Inside, the
+              first die moves you; on the investment and land &amp; houses rings the pair's total moves you.</p>
             <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification.
               "IQ" here is a game score, not a real IQ test.</p>
             <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>

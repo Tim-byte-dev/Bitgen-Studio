@@ -15082,6 +15082,13 @@ node scripts/test-945.js > /tmp/t945.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui945-ui.js > /tmp/ui945.log 2>&1 \
   && ok "2.945.0 browser test: the ring drawn outside, a renovator bought and renovated, the tip, an old save upgraded" \
   || { bad "2.945.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui945.log | head -12; }
+# ---- 2.946.0 (🎓 Life Choices: 🎲 luck with a pair of dice)
+node scripts/test-946.js > /tmp/t946.log 2>&1 \
+  && ok "2.946.0 units: luck tables by stage, school losses capped, property bad luck, the outer rings move by the pair, double 6 rolls again, fair dice" \
+  || { bad "2.946.0 units"; grep -a "^FAIL" -A1 /tmp/t946.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui946-ui.js > /tmp/ui946.log 2>&1 \
+  && ok "2.946.0 browser test: the dice and their luck with the meter, your last roll in view, double six rolls again" \
+  || { bad "2.946.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui946.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

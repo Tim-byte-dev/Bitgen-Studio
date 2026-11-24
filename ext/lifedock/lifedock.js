@@ -9,6 +9,8 @@
  *   The bots    rule-based players (careful saver, property tycoon, risk-taker) that answer right as often as the setup says
  *               - normal, fast or instant; they only play while the docker is on screen
  *   Saved       the whole game in localStorage h3.life.save after every move (a reload carries on, the puzzle too)
+ *   2.946.0     🎲 a pair of dice every turn: the total is your luck (2 worst - 12 best, roll again), shown with the dice, a
+ *               luck meter and what happened (#lcDice); your own last roll stays in view while the bots play
  * window.H3Life: newGame(opts), state(), act(), info() (tests)
  */
 (function (root) {
@@ -160,6 +162,26 @@
         "</td><td class=\"n\">" + M(p.cash) + "</td><td>" + p.iq + "</td><td>" + esc(work) + (p.qual !== "none" ? " · " + ({ diploma: "🎓HS", trade: "🔧", degree: "🎓" })[p.qual] : "") + "</td><td class=\"n\">" + k$(C.netWorth(s, p)) + "</td></tr>";
     }).join("") + "</table>";
   }
+  /* 2.946.0: the pair of dice and the luck - the last roll on the table, your own last roll below it */
+  var FACE = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+  var LUCKCOL = { 2: "#c0392b", 3: "#d35400", 4: "#e67e22", 5: "#e6a23c", 6: "#8a8f98", 7: "#8a8f98", 8: "#8a8f98", 9: "#8bc34a", 10: "#5cb85c", 11: "#2ecc71", 12: "#f1c40f" };
+  function meter(lv) { var h = ""; for (var i = 2; i <= 12; i++) h += "<i style=\"background:" + LUCKCOL[i] + "\"" + (i === lv ? " class=\"on\"" : "") + " title=\"" + i + "\"></i>"; return "<div class=\"meter\" aria-label=\"Luck " + lv + " of 12\">" + h + "</div>"; }
+  function luckLine(L) { return "<b>" + L.dice[0] + " + " + L.dice[1] + " = " + L.level + "</b> · " + esc(L.word) + (L.text ? ": " + esc(L.text) + (L.amount ? " <b>" + (L.amount > 0 ? "+" : "") + M(L.amount) + "</b>" : "") : "") + (L.level === 12 ? " · 🎲 roll again!" : ""); }
+  function diceView(spin) {
+    var b = $("lcDice"), s = G.s; if (!b) return;
+    if (spin) { b.innerHTML = "<div class=\"row\"><span class=\"faces\">" + FACE[1 + Math.floor(Math.random() * 6)] + FACE[1 + Math.floor(Math.random() * 6)] + "</span><span>rolling…</span></div>"; return; }
+    var L = s && s.luck; if (!L) { b.innerHTML = ""; return; }
+    var who = s.players[L.who], me = s.players.filter(function (q) { return !q.bot; })[0];
+    b.innerHTML = "<div class=\"row\"><span class=\"faces\" style=\"color:" + who.color + "\">" + FACE[L.dice[0]] + FACE[L.dice[1]] + "</span><span>" + esc(who.name) + " rolled " + luckLine(L) + "</span></div>" + meter(L.level) +
+      (me && who !== me && me.lastLuck ? "<div class=\"mine\">Your last roll: " + luckLine(me.lastLuck) + "</div>" : "");
+  }
+  /** your roll: the dice tumble for a moment, then land */
+  function doRoll() {
+    var s = G.s; if (!s || !C.canRoll(s) || !human(s) || G.rolling) return;
+    if (C.current(s).ring === "fork") { C.roll(s); after(); return; }
+    G.rolling = true; var n = 0;
+    var t = setInterval(function () { diceView(true); if (++n >= 4) { clearInterval(t); G.rolling = false; if (G.s === s && C.canRoll(s)) { C.roll(s); after(); } } }, 45);
+  }
   function logView() {
     var b = $("lcLog"), s = G.s; if (!b) return;
     b.innerHTML = s ? s.log.slice(-60).reverse().map(function (l) { return "<div>" + esc(l.t) + "</div>"; }).join("") : "";
@@ -182,10 +204,11 @@
       return;
     }
     if (!pd) {
-      var lbl = p.ring === "trade" ? "➜ Next square" : "🎲 Roll";
-      b.innerHTML = "<h4>Your turn, " + esc(p.name) + "</h4><div>Age " + Math.floor(p.age) + " · " + M(p.cash) + " · IQ " + p.iq + " · " + RINGNAME[p.ring] + (p.job ? " · " + esc(p.job.title) : "") +
+      var lbl = p.ring === "trade" ? "🎲 Roll for luck (then one square)" : "🎲 Roll the dice";
+      var again = s.luck && s.luck.who === p.id && s.luck.again;
+      b.innerHTML = "<h4>" + (again ? "🎲 Double six - roll again, " : "Your turn, ") + esc(p.name) + "</h4><div>Age " + Math.floor(p.age) + " · " + M(p.cash) + " · IQ " + p.iq + " · " + RINGNAME[p.ring] + (p.job ? " · " + esc(p.job.title) : "") +
         (s.news ? "<br><span class=\"hint\">📰 " + esc(s.news) + "</span>" : "") + "</div><button class=\"big\" id=\"lcRoll\" type=\"button\">" + lbl + "</button>";
-      $("lcRoll").onclick = function () { C.roll(s); after(); };
+      $("lcRoll").onclick = doRoll;
       return;
     }
     if (pd.type === "choice") {
@@ -218,7 +241,7 @@
   }
   function give(v) { var z = G.s && G.s.puz; if (!z || z.done) return; z.done = { ok: P.check(z.p, v), given: String(v) }; save(); act(); }
   function carryOn() { var s = G.s, z = s && s.puz; if (!z || !z.done) return; var ok = z.done.ok; s.puz = null; C.answer(s, ok); after(); }
-  function after() { save(); draw(); players(); logView(); act(); pump(); }
+  function after() { save(); draw(); players(); diceView(); logView(); act(); pump(); }
 
   /* ---------------- bots ---------------- */
   function pump() {
@@ -309,7 +332,7 @@
       else if (/^[1-9]$/.test(e.key) && s.pending && s.pending.type === "choice") {
         var on = s.pending.options[+e.key - 1]; if (on && !on.off) { C.choose(s, on.id); after(); e.preventDefault(); e.stopPropagation(); }
       } else if (e.key === "Enter") {
-        if (z && z.done) carryOn(); else if (!s.pending && t && t.tagName !== "BUTTON") { C.roll(s); after(); } else return;
+        if (z && z.done) carryOn(); else if (!s.pending && t && t.tagName !== "BUTTON") doRoll(); else return;
         e.preventDefault(); e.stopPropagation();
       }
     });
@@ -333,7 +356,7 @@
     }).observe(d, { attributes: true, attributeFilter: ["class"] });
     setFull(d.classList.contains("maxed") && !d.classList.contains("dockgone"));
     doc.addEventListener("visibilitychange", function () { if (!doc.hidden) pump(); });
-    draw(); players(); logView(); act(); pump();
+    draw(); players(); diceView(); logView(); act(); pump();
     if (!G.s && shown()) setup();
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();

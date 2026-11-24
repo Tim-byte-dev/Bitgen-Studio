@@ -10952,7 +10952,7 @@ same one. The game is the same maze; the setting changes what stands on the bloc
 The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
 render runs and the game plays lighter, the shadows are left out.
 
-## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0)
+## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0)
 
 Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker** (or ⛶) puts it back.
 It is hidden until you open it the first time, and it is saved as you play - close it and carry on later.
@@ -10983,6 +10983,15 @@ how fast they play (normal, fast, instant). They only play while the game is on 
   only a little rent - renovate for a quarter of the value and it becomes a good house worth half as much again). Land
   grows in value a little faster than houses. **Council rates** take 1% of what you own out here; the **Auction** offers
   a free lot at 85% of its value. Works not covered by cash go on a loan (20% from cash), within the bank's limit.
+
+**🎲 Luck (2.946.0)**: every turn you roll a pair of dice (🎲 **Roll the dice**, or **Enter**). The total is your luck for
+those three months: **double 1** (2) is terrible luck, 3-5 a bit unlucky, **6-8** an ordinary few months, 9-11 lucky and
+**double 6** (12) brilliant luck - and you **roll again**. What happens depends on your stage of life: at school a lost bus
+pass or a birthday gift (school losses never take more than you have), at work a speeding fine or a tax refund, out on
+the investment rings a written-off car, a storm on your dearest property or a tenant who leaves owing rent - or an
+inheritance and a lottery win. Inside, the **first die** moves you (the apprenticeship stays one square a turn); on the
+**investment** and **land & houses** rings the **pair's total** moves you. The dice, what they brought and a 2-12 luck
+meter show above your turn; your own last roll stays in view while the bots play (they roll the same dice).
 
 **Puzzles**: click an answer (or press **1**-**4**), or type it and press **Enter** - numbers, fractions such as 5/36, or the
 word. The bar under the question is your time. A wrong answer shows the right one. **Enter** also rolls and carries on.

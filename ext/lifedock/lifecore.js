@@ -24,6 +24,13 @@
  *   in good condition (full rent) and renovators (cheap, a little rent; renovate for 25% of the value -> a good house worth
  *   half as much again). Council rates, an auction (a lot at 85%). s.estate[k] = {type: land | good | reno, value, owner};
  *   lot keys "1".."15" = the investment ring's property, "e1".."e19" = the estate ring's lots.
+ * 2.946.0 (Tim: "user gets to roll a pair of dice this dictates their luck. 1-12 levels of luck 12 gets to roll again ... in high
+ *   school luck would be finding money, getting gifts etc. when moved to the investment layer, players avatar will move with
+ *   the dice roll and include the luck features"): every roll is a PAIR of dice. Their total is the turn's LUCK (2 = double
+ *   1, the worst; 6-8 an ordinary few months; 12 = double 6, the best + a roll again) from the life stage's own table (LUCK
+ *   school / work / money - found money and gifts at school, fines and refunds at work, storms, inheritances and lotteries
+ *   with property). On the investment and land & houses rings the pair's total moves you; inside, the first die does
+ *   (small rings), the apprenticeship stays one square. s.luck = the last roll {who, dice, level, word, text, amount, again}.
  * WINNER at the end: net worth + (IQ - 100) x $1,000 + a qualification bonus (diploma $10k, trade $30k, degree $50k).
  *
  * newGame({seed, retire, players: [{name, bot: null | "saver" | "tycoon" | "risk", skill 0-1}]}) -> state (plain JSON -
@@ -134,16 +141,58 @@
 
   /* ---------------- moving ---------------- */
   function canRoll(s) { return !s.over && s.phase === "roll" && !s.pending; }
-  function roll(s, die) {
+  /* ---- 2.946.0: luck - a pair of dice, 2 (double 1) to 12 (double 6, roll again) ---- */
+  var LUCKWORD = { 2: "terrible luck", 3: "bad luck", 4: "a bit unlucky", 5: "a bit unlucky", 6: "an ordinary few months", 7: "an ordinary few months",
+                   8: "an ordinary few months", 9: "a bit lucky", 10: "a bit lucky", 11: "good luck", 12: "brilliant luck" };
+  var LUCK = {
+    school: { 2: ["Your bike is stolen", -400], 3: ["You crack your phone screen", -250], 4: ["A library fine", -60], 5: ["You lose your bus pass", -30],
+              9: ["You find $50 on the footpath", 50], 10: ["A birthday gift from your grandparents", 150], 11: ["You win a school prize", 300],
+              12: ["A local business gives you a bursary", 600] },
+    work: { 2: ["Your car is written off - not insured", -8000], 3: ["A burst pipe floods your flat", -3000], 4: ["A speeding fine", -450], 5: ["A dentist's bill", -250],
+            9: ["A tax refund", 600], 10: ["You sell things you no longer need", 1200], 11: ["A scratch-card win", 5000], 12: ["An award at work, with a bonus", 10000] },
+    money: { 2: ["Your car is written off - not insured", -12000], 3: ["A burst pipe floods your place", -6000], 4: ["A legal bill", -5000], 5: ["Car repairs", -1500],
+             9: ["Interest on your savings", 1000], 10: ["A tip on a deal pays off", 8000], 11: ["An inheritance from a great-aunt", 25000], 12: ["A lottery win", 75000] },
+  };
+  function stageOf(p) { return p.ring === "invest" || p.ring === "estate" ? "money" : p.ring === "jobs" ? "work" : "school"; }
+  /** the luck of a roll: the stage's event for the total (property owners' bad luck hits their property); school losses never
+   *  take more than you have */
+  function luck(s, p, d1, d2) {
+    var lv = d1 + d2, st = stageOf(p), ev = LUCK[st][lv], text = "", amt = 0;
+    if (ev) {
+      text = ev[0]; amt = ev[1];
+      var mine = lotsOf(s, p);
+      if (st === "money" && mine.length && lv <= 3) {
+        var big = mine.sort(function (a, b) { return lot(s, b).value - lot(s, a).value; })[0], v = lot(s, big).value;
+        if (lv === 2) { text = "A storm damages your " + lotName(big) + " - not insured"; amt = -Math.max(20000, Math.round(v * 0.05 / 1000) * 1000); }
+        else { text = "A tenant leaves owing rent"; amt = -Math.max(8000, Math.round(v * 0.02 / 1000) * 1000); }
+      }
+      if (st === "money" && lv === 9) amt = Math.max(1000, Math.round(Math.max(0, p.cash) * 0.01));
+      if (st === "school" && amt < 0) amt = -Math.min(-amt, Math.max(0, p.cash));
+      p.cash += amt;
+    }
+    s.luck = { who: p.id, dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt, again: lv === 12 };
+    p.lastLuck = { dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt };
+    log(s, "🎲 " + p.name + " rolls " + d1 + " + " + d2 + " = " + lv + " - " + LUCKWORD[lv] + (text ? ": " + text + (amt ? " (" + (amt > 0 ? "+" : "") + money(amt) + ")" : "") : "") + (lv === 12 ? " - and rolls again!" : "") + ".");
+    if (lv === 12) p.again = true;
+    return lv;
+  }
+  /** roll(s) = the pair of dice (roll(s, d1, d2) to set them); roll(s, n) with ONE number = a plain move of n squares, no luck (tests) */
+  function roll(s, a, b) {
     if (!canRoll(s)) return [];
     var p = cur(s);
     if (p.ring === "fork") { forkChoice(s, p); return ["fork"]; }
-    var d = p.ring === "trade" ? 1 : (die >= 1 && die <= 6 ? Math.floor(die) : 1 + Math.floor(rng(s) * 6));
+    var d, plain = a != null && b == null;
+    if (plain) d = Math.max(1, Math.min(12, Math.floor(a)));
+    else {
+      var d1 = a >= 1 && a <= 6 ? Math.floor(a) : 1 + Math.floor(rng(s) * 6), d2 = b >= 1 && b <= 6 ? Math.floor(b) : 1 + Math.floor(rng(s) * 6);
+      luck(s, p, d1, d2);
+      d = p.ring === "invest" || p.ring === "estate" ? d1 + d2 : d1;          // the outer rings: the pair's total; inside: the first die
+    }
     s.lastRoll = d;
     var n = RINGS[p.ring].length;
     if (p.ring === "trade") p.pos = Math.min(n - 1, p.pos + 1);
     else p.pos = (p.pos + d) % n;
-    log(s, p.name + (p.ring === "trade" ? " moves one square" : " rolls " + d) + " -> " + square(p)[1] + ".");
+    log(s, p.name + (p.ring === "trade" ? " moves one square" : " moves " + d) + " -> " + square(p)[1] + ".");
     land(s, p);
     if (!s.pending) finishTurn(s);
     return ["roll"];
@@ -409,6 +458,10 @@
   function finishTurn(s) {
     var p = cur(s);
     if (s.pending) return;
+    if (p.again && !p.retired && !s.over) {                                   // 2.946.0: double 6 - the same player rolls again
+      p.again = false; s.phase = "roll"; s._botBuys = 0; log(s, "🎲 " + p.name + " rolls again."); return;
+    }
+    p.again = false;
     p.age = Math.round((p.age + 0.25) * 100) / 100;
     if (p.ring === "college" && !p.night) p.studentDebt += MONEY.tuition;
     if (p.ring === "trade") p.cash += MONEY.apprentice;
@@ -509,6 +562,7 @@
               newGame: newGame, current: cur, square: square, canRoll: canRoll, roll: roll, answer: answer, choose: choose, botStep: botStep,
               offers: offers, loanLimit: loanLimit, netWorth: netWorth, score: score, standings: standings, propsOf: propsOf, sharesValue: sharesValue,
               money: money, coName: coName, rng: rng,
+              LUCK: LUCK, LUCKWORD: LUCKWORD, luck: luck, stageOf: stageOf,
               ESTATE: ESTATE, WORKS: WORKS, YIELD: YIELD, LANDRENT: LANDRENT, upgrade: upgrade, lot: lot, lotType: lotType, lotName: lotName, lotsOf: lotsOf, works: works };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.H3LifeCore = API;
