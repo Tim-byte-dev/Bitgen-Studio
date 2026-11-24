@@ -395,6 +395,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 - **Viggle engines** — Viggle-Animate through ComfyUI, or bitGen's own native engine that keeps the model loaded between segments. *Where:* the Swap dialog's Engine. *Since:* 2.344.0
 - **Several first frames** — make up to four first frames per segment and pick one. *Where:* the Swap dialog. *Since:* 2.348.0
 - **Safe mode** — a black take is rendered again with everything that can blacken it switched off. *Where:* the Swap dialog's settings. *Since:* 2.350.0
+- **OpenJutsu engine** — D3voz's OpenJutsu workflows: SAM 3.1 follows the person (or 1-4 people with roles, or a thing to change, remove or put behind), a grey mannequin carries the movement and MiniMax H3 repaints only them; segments up to a minute; 👁 Check mask, 🎨 Fix colours and an opt-in 🙂 Fix faces (non-commercial / AGPL-3.0 models). *Where:* the Swap dialog's Engine ▸ OpenJutsu; Settings ▸ Add-ons ▸ OpenJutsu swap. *Since:* 2.949.0
 - **VR swap** — swaps a person in 360 or 180-degree footage through a virtual camera; stereo eyes rebuilt from depth. *Where:* the Swap dialog's VR line
 
 ### VR

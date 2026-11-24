@@ -67,6 +67,7 @@ const swapPrompt = require("../lib/swapPrompt");
 const RS = require("../lib/rippleSwap");              // 2.339.0
 const VS = require("../lib/viggleSwap");              // 2.344.0: the Viggle engine
 const VN = require("../lib/viggleNative");            // 2.351.0: Viggle (native) - our own engine
+const OJ = require("../lib/openjutsu");               // 2.949.0: the OpenJutsu engine (routes/openjutsu.js: its bar's endpoints)
 const ltx = require("../lib/ltx");
 const sceneEdit = require("../lib/sceneEdit");
 const aiEdit = require("../lib/aiEdit");
@@ -76,6 +77,9 @@ const tempLoras = require("../lib/tempLoras");       // 2.342.0: the ⚙ dialog'
 const pdir = () => core.projDir(core.getProject());
 const videoPath = (name) => path.join(core.pDir("video"), path.basename(String(name || "")));
 const fileOf = (r) => path.join(SS.dirOf(pdir(), r.where), r.file);
+/** 2.949.0: the longest segment one job takes - OpenJutsu chains its clips itself (up to a minute), the rest one H3 run. */
+const ceilFor = (st) => (st && st.engine === "openjutsu" ? OJ.CEILING : swap.ceiling(core.getConfig()));
+const OJ_BEST = 30;                                   // OpenJutsu's default segment (✂ Auto segment): 30 s
 const PIC_EXT = [".png", ".jpg", ".jpeg", ".webp", ".bmp"];
 
 function jobOf(id) {
@@ -92,7 +96,8 @@ function take(state, r, output) {
   const src = path.join(core.pDir("output"), path.basename(String(output)));
   if (!fs.existsSync(src)) throw new Error(`${output} is not in the project's output folder`);
   const dir = SS.dirOf(pdir(), "temp");
-  const name = SS.uniquify(dir, SS.resultName(r.video, SS.indexOf(state, r.seg), r.start, r.dur, r.upscaled, r.vr));
+  const tag = ["mask", "color", "face"].includes(r.oj) ? r.oj : "";             // 2.949.0: an OpenJutsu check / fix
+  const name = SS.uniquify(dir, SS.resultName(r.video, SS.indexOf(state, r.seg), r.start, r.dur, r.upscaled, r.vr, tag));
   const dst = path.join(dir, name);
   try { fs.renameSync(src, dst); }
   catch { fs.copyFileSync(src, dst); try { fs.unlinkSync(src); } catch { /* the copy is what counts */ } }
@@ -204,7 +209,7 @@ function videoInfo(name) {
 const swapLoras = () => tempLoras.read(pdir(), "swap");
 
 function view(st) {
-  const ceil = swap.ceiling(core.getConfig());
+  const ceil = ceilFor(st);
   const vi = videoInfo(st.video);
   // 2.574.0 (Tim: "show step number of steps for all generations"): a running take / first frame carries its step
   const JS = require("../lib/jobSteps");
@@ -213,7 +218,9 @@ function view(st) {
     results: Array.isArray(st.results) ? st.results.map((r) => (r && r.status === "running" ? withPr(r, r.job) : r)) : st.results,
     segments: Array.isArray(st.segments) ? st.segments.map((g) => (g && g.ff && g.ff.status === "running" && (g.ff.jobs || []).length
       ? { ...g, ff: withPr(g.ff, (g.ff.jobs || []).find((id) => JS.progressOf(id)) || g.ff.jobs[0]) } : g)) : st.segments };
-  return { ...st, ceiling: ceil, max_seconds: SS.maxSeconds(ceil), best_seconds: SS.bestSeconds(ceil), qualities: swap.QUALITIES,
+  const best = st.engine === "openjutsu" ? Math.min(SS.maxSeconds(ceil), SS.snapDown(OJ_BEST * SS.FPS) / SS.FPS) : SS.bestSeconds(ceil);
+  return { ...st, ceiling: ceil, max_seconds: SS.maxSeconds(ceil), best_seconds: best, qualities: swap.QUALITIES,
+           oj_modes: OJ.MODES, oj_licence: OJ.LICENCE,                       // 2.949.0: the OpenJutsu bar
            engines: RS.ENGINES,
            // 2.342.0: the ⚙ dialog - the video's own size, the size a render uses, the swap LoRAs
            video_info: vi, render_size: (RS.isViggle(st.engine) ? VS : RS).sizeFor(st.settings, vi && vi.width, vi && vi.height), loras: swapLoras(),
@@ -250,6 +257,7 @@ function vrInject(file, mode) {
 
 /** Queue one window as a swap job; -> {result} or {error}. */
 function queue(st, seg, o) {
+  if ((o.engine || st.engine) === "openjutsu") return queueOpenjutsu(st, seg, o);       // 2.949.0
   if (RS.usesFirstFrame(o.engine || st.engine)) return queueRipple(st, seg, { ...o, engine: o.engine || st.engine });
   const pic = st.picture ? path.join(SS.dirOf(pdir(), "temp"), st.picture) : "";
   if (!pic || !fs.existsSync(pic)) return { error: "pick the new character's picture first (the box on the left)" };
@@ -284,6 +292,35 @@ function queue(st, seg, o) {
 }
 
 const engineName = (e) => (RS.ENGINES.find((x) => x.id === e) || RS.ENGINES[0]).label;
+
+/** 2.949.0: one window through OpenJutsu (lib/openjutsu.js builds the graph, misc/openjutsu_worker.py renders it).
+ *  o.ojKind = mask | color | face (routes/openjutsu.js), else the bar's swap mode; o.source = the take a 🎨 / 🙂 fix
+ *  works on. The pictures are COPIED into the job's folder (a later pick must not change what a queued job renders). */
+function queueOpenjutsu(st, seg, o) {
+  const kind = o.ojKind || OJ.kindFor(st.oj);
+  if (o.stage) return { error: "⏫ upscale is for MiniMax H3 takes - an OpenJutsu take is rendered at its size (set it in the OpenJutsu bar and ↻)" };
+  if ((o.vr !== undefined ? o.vr : SS.vrParams(st.vr))) return { error: "OpenJutsu swaps flat video - turn VR off (or use the MiniMax H3 engine)" };
+  const video = o.source || (st.video ? videoPath(st.video) : "");
+  if (!video || !fs.existsSync(video)) return { error: o.source ? "that take's file is gone" : "load the video to swap first (📂 Load video)" };
+  const tdir = SS.dirOf(pdir(), "temp");
+  const pic = st.picture && fs.existsSync(path.join(tdir, st.picture)) ? path.join(tdir, st.picture) : "";
+  const oj = OJ.settingsSafe(st.oj);
+  const id = crypto.randomBytes(6).toString("hex");
+  const dir = path.join(core.JOBS_DIR, id);
+  fs.mkdirSync(dir, { recursive: true });
+  const copy = (src, name) => { if (!src) return ""; const d = path.join(dir, name + path.extname(src).toLowerCase()); fs.copyFileSync(src, d); return d; };
+  const picture = kind === "mask" || kind === "color" ? "" : copy(pic, "oj_character_1");
+  const pictures = kind === "advanced" || kind === "advanced_maxq"
+    ? oj.pictures.map((f, i) => (f && fs.existsSync(path.join(tdir, f)) ? copy(path.join(tdir, f), "oj_character_" + (i + 2)) : "")).filter(Boolean) : [];
+  const seed = Number.isFinite(o.seed) && o.seed >= 0 ? o.seed : RS.seedFor(st.settings, () => crypto.randomInt(0, 2 ** 31));
+  const p = OJ.jobParams({ kind, settings: oj, seed, video, start: o.source ? 0 : seg.start, length: o.source ? 0 : seg.dur,
+                           frames: seg.frames, picture, pictures });
+  if (p.error) { fs.rmSync(dir, { recursive: true, force: true }); return { error: p.error }; }
+  p.no_assets = true;
+  p.swapdlg = { seg: seg.id || "", upscaled: false };
+  const job = core.makeJob(p, id, dir);
+  return { job, seed, vr: null, engine: "openjutsu", oj: kind, note: OJ.summary(p) + (p.notes.length ? " - " + p.notes.join("; ") : "") };
+}
 /** 2.339.0: one segment through LTX Ripple - 2.344.0: or Viggle (its ✎ first frame must be done). */
 function queueRipple(st, seg, o) {
   const eng = o.engine || st.engine, viggle = RS.isViggle(eng), native = eng === "viggle_native", nm = engineName(eng);
@@ -360,9 +397,10 @@ function mount(app) {
       st.video = v;
     }
     if (b.text != null) st.text = String(b.text).slice(0, 1500);
-    if (b.max != null) st.max = SS.clampMax(b.max, swap.ceiling(core.getConfig()));
     if (b.quality != null) st.quality = swap.qualityOf(String(b.quality));        // 2.336.0
     if (b.engine != null) st.engine = RS.engineOf(b.engine);                     // 2.339.0
+    if (b.max != null) st.max = SS.clampMax(b.max, ceilFor(st));                // 2.949.0: after the engine (OpenJutsu's minute)
+    else if (b.engine != null && st.max) st.max = SS.clampMax(st.max, ceilFor(st));
     if (b.settings && typeof b.settings === "object") st.settings = RS.settingsSafe({ ...st.settings, ...b.settings });   // 2.342.0: ⚙
     if (b.vr && typeof b.vr === "object") st.vr = SS.vrSafe({ ...st.vr, ...b.vr });   // 2.330.0
     res.json(view(SS.save(pdir(), st)));
@@ -432,7 +470,7 @@ function mount(app) {
   app.post("/api/swapdlg/segments", trap.guard((req, res) => {
     const b = req.body || {};
     let st = current();
-    const ceil = swap.ceiling(core.getConfig());
+    const ceil = ceilFor(st);
     const op = String(b.op || "");
     if (op === "clear") st.segments = [];
     else if (op === "remove") st = SS.removeSegment(st, b.id);
@@ -442,7 +480,7 @@ function mount(app) {
       if (!info || !(info.duration > 0)) return res.status(400).json({ error: `could not read ${st.video} (is ffprobe installed?)` });
       if (op === "auto") {
         if (b.max != null) st.max = SS.clampMax(b.max, ceil);
-        const pl = SS.plan(info.duration, 0, st.max || SS.bestSeconds(ceil), ceil);
+        const pl = SS.plan(info.duration, 0, st.max || view(st).best_seconds, ceil);
         st = SS.setSegments(st, pl.segments);
         const saved = SS.save(pdir(), st);
         return res.json({ ...view(saved), note: `${pl.segments.length} segment(s) of up to ${(pl.frames / SS.FPS).toFixed(2)}s`
@@ -467,7 +505,7 @@ function mount(app) {
     } else if (b.start != null) {
       const info = st.video && fs.existsSync(videoPath(st.video)) ? refSelect.probe(videoPath(st.video)) : null;
       if (!info) return res.status(400).json({ error: "load the video to swap first (📂 Load video)" });
-      const g = SS.one(info.duration, b.start, b.dur, swap.ceiling(core.getConfig()));
+      const g = SS.one(info.duration, b.start, b.dur, ceilFor(st));
       if (!g) return res.status(400).json({ error: "that window is shorter than 5 frames or past the end" });
       const r = SS.addSegment(st, g);
       st = r.state; segs = [r.seg];
@@ -477,7 +515,7 @@ function mount(app) {
     const busy = new Set(st.results.filter((r) => r.status === "queued" || r.status === "running").map((r) => r.seg));
     const todo = segs.filter((g) => !busy.has(g.id));
     if (!todo.length) return res.status(409).json({ error: "those segments are already in the queue", ...view(st) });
-    if (!st.picture) return res.status(400).json({ error: "pick the new character's picture first (the box on the left)" });
+    if (!st.picture && st.engine !== "openjutsu") return res.status(400).json({ error: "pick the new character's picture first (the box on the left)" });
     // 2.351.0: Viggle (native) renders without ComfyUI - only a missing ✎ first frame (Qwen) needs it
     const down = st.engine !== "viggle_native" || todo.some((g) => !ffReady(g)) ? await comfyUp() : "";
     if (down) return res.status(502).json({ error: down });
@@ -508,7 +546,7 @@ function mount(app) {
       const q = queue(st, g, { width: b.width, height: b.height, styleId: b.video_style_id, text: b.text });
       if (q.error) { SS.save(pdir(), st); return res.status(400).json({ error: q.error, queued }); }
       const r = SS.addResult(st, { seg: g.id, video: st.video, start: g.start, dur: g.dur, frames: g.frames,
-                                   seed: q.seed, job: q.job.id, vr: q.vr ? q.vr.mode : "", aim: q.vr, engine: st.engine });
+                                   seed: q.seed, job: q.job.id, vr: q.vr ? q.vr.mode : "", aim: q.vr, engine: st.engine, oj: q.oj });
       st = r.state; queued.push(r.result.id);
     }
     const auto = RS.settingsSafe(st.settings).auto_render;
@@ -526,8 +564,11 @@ function mount(app) {
     const r0 = st.results.find((x) => x.id === String(b.id));
     if (!r0) return res.status(404).json({ error: "no such result" });
     let stage = null;
-    if (upscale && RS.usesFirstFrame(r0.engine))
+    if (upscale && (RS.usesFirstFrame(r0.engine) || r0.engine === "openjutsu"))
       return res.status(400).json({ error: `⏫ upscale is for MiniMax H3 takes - a ${engineName(r0.engine)} take is rendered at its size (set the size and ↻)` });
+    // 2.949.0: a 🎨 / 🙂 fix is redone from the take it fixed - ↻ on the swap take, then fix that again
+    if (r0.oj === "color" || r0.oj === "face")
+      return res.status(400).json({ error: `↻ redoes a swap - ${r0.oj === "color" ? "🎨 Fix colours" : "🙂 Fix faces"} again on the take it came from` });
     if (upscale) {
       if (r0.status !== "done") return res.status(400).json({ error: "that segment has not finished yet" });
       const rs = renderSettings.read(pdir());
@@ -547,12 +588,12 @@ function mount(app) {
     const saveVideo = st.video;
     st.video = r0.video || st.video;         // the window belongs to ITS video
     const q = queue(st, seg, { width: b.width, height: b.height, styleId: b.video_style_id,
-                               seed: upscale ? r0.seed : undefined, stage, engine: r0.engine,
+                               seed: upscale ? r0.seed : undefined, stage, engine: r0.engine, ojKind: r0.oj === "mask" ? "mask" : undefined,
                                vr: r0.vr ? { mode: r0.vr, ...(r0.aim || {}) } : null });
     st.video = saveVideo;
     if (q.error) return res.status(400).json({ error: q.error });
     const r = SS.addResult(st, { seg: r0.seg, video: r0.video, start: r0.start, dur: r0.dur, frames: r0.frames,
-                                 seed: q.seed, job: q.job.id, upscaled: !!stage, vr: r0.vr, aim: r0.aim, engine: r0.engine });
+                                 seed: q.seed, job: q.job.id, upscaled: !!stage, vr: r0.vr, aim: r0.aim, engine: r0.engine, oj: q.oj });
     st = r.state;
     res.json({ ...view(SS.save(pdir(), st)), queued: [r.result.id],
                note: upscale ? `⏫ ${r0.file}: the same window and seed ${r0.seed} again with ${stage.model} -> `
@@ -666,6 +707,7 @@ function mount(app) {
     const st = current();
     const r = st.results.find((x) => x.id === String(b.id));
     if (!r || r.status !== "done") return res.status(404).json({ error: "no finished segment with that id" });
+    if (r.oj === "mask" && b.keep !== false) return res.status(400).json({ error: "👁 a mask check is a preview of what OpenJutsu will repaint - not a take to keep (⇄ Swap the segment)" });
     const to = b.keep === false ? "temp" : "keep";
     if (r.where !== to) {
       const src = fileOf(r);
@@ -875,6 +917,9 @@ function mount(app) {
     if (!fs.existsSync(f)) return res.status(404).json({ error: "not found" });
     res.sendFile(f);
   });
+
+  // 2.949.0: the OpenJutsu bar (its settings, pictures 2-4, 👁 mask check, 🎨 / 🙂 fixes) shares this dialog's record
+  require("./openjutsu").mount(app, { current, view, queue, pdir, fileOf, videoPath, comfyUp, PIC_EXT, upload });
 }
 
 module.exports = { mount };

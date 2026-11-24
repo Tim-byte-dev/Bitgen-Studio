@@ -303,3 +303,26 @@ The drape is Blender's own cloth simulation, run as a separate program (Blender 
 runs the Blender you installed with scripts/garment_drape.py). GarmentCode's simulator is still not used.
 `static/mannequins/mesh/<sex>_drape.obj` is bitGen's display mannequin (MakeHuman base mesh + targets, CC0) with its arms
 raised to GarmentCode's A-pose by scripts/make_mannequin_mesh.py --drape.
+
+## ⇄ OpenJutsu - the swap dialog's OpenJutsu engine (2.949.0)
+
+bitGen ships OpenJutsu's ComfyUI workflows UNMODIFIED in `comfy_workflows/openjutsu/` (simple, advanced, advanced_maxq,
+object, mask, color, face `.api.json`) - [D3voz/openjutsu](https://github.com/D3voz/openjutsu) at commit 7fe118b (2026-10-30),
+MIT, Copyright (c) 2026 D3voz; its licence is beside them (`LICENSE.txt`). `lib/openjutsu.js` fills them the way OpenJutsu's
+own `lib/*.ts` do (a port - checked graph-for-graph against its code). OpenJutsu's Next.js page and comfy-api-proxy are NOT
+used. Settings ▸ Add-ons ▸ OpenJutsu swap clones into your ComfyUI's custom_nodes (none of it is shipped):
+[comfyui-h3-oneclick-swap](https://github.com/D3voz/comfyui-h3-oneclick-swap) (MIT, D3voz),
+[ComfyUI-MiniMaxH3-Contex-Loop](https://github.com/ethanfel/ComfyUI-MiniMaxH3-Contex-Loop) 0.7.3+ (GPL-3.0),
+[ComfyUI-Fantastic-MiniMaxH3-PromptBuilder](https://github.com/Adudeguyman/ComfyUI-Fantastic-MiniMaxH3-PromptBuilder) (MIT),
+ComfyUI-KJNodes and ComfyUI-VideoHelperSuite (GPL-3.0), [comfyui-image-detail-contrast](https://github.com/D3voz/comfyui-image-detail-contrast)
+(MIT) and [Orion4D_FXMax](https://github.com/orion4d/Orion4D_FXMax) (MIT, Philippe Joye) for 🎨 Fix colours, and - only when
+ticked - [ComfyUI-Spectrum-MiniMax-H3](https://github.com/xmarre/ComfyUI-Spectrum-MiniMax-H3) (GPL-3.0). It downloads the DMAD
+4-step LoRA ([Kijai/MiniMax-H3-experimental](https://huggingface.co/Kijai/MiniMax-H3-experimental), from ByteDance + Texas A&M's
+DMAD), SAM 3.1 ([Comfy-Org/sam3.1](https://huggingface.co/Comfy-Org/sam3.1), the SAM License) and - only when ComfyUI has none -
+MiniMax H3's files (the MiniMax H3 Community License: its Applicable Territory excludes the EU, the UK, South Korea and the USA).
+
+🙂 Fix faces is OPT-IN (off until you tick "I accept" in the dialog): it installs
+[ComfyUI-H3-FaceRefine](https://github.com/Carasibana/ComfyUI-H3-FaceRefine) (MIT) and ComfyUI-Impact-Pack (GPL-3.0), downloads
+the Ultralytics YOLOv8 face / person detectors from [Bingsu/adetailer](https://huggingface.co/Bingsu/adetailer) (AGPL-3.0) and
+SAM ViT-B (Apache-2.0); H3-FaceRefine fetches InsightFace's buffalo_l on first use, which is licensed for NON-COMMERCIAL
+RESEARCH ONLY. bitGen ships none of these weights.

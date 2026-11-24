@@ -1380,6 +1380,66 @@ Some limits:
 - The Direction box's plain words ride along (e.g. "rain on her coat"); an H3
   prompt with `<Video 1>` tags is ignored.
 
+**Engine: OpenJutsu** (2.949.0) — [OpenJutsu](https://github.com/D3voz/openjutsu)
+(by D3voz, MIT) swaps people or things in a video on MiniMax H3: SAM 3.1
+finds and follows them, a grey mannequin carries their movement, and H3
+repaints only them. The rest of the shot and the sound stay. bitGen runs
+OpenJutsu's own ComfyUI workflows (they ship with bitGen) and fills them the
+way OpenJutsu does. OpenJutsu chains its own 6 s clips, so a segment can be up
+to a minute; **✂ Auto segment** cuts 30 s pieces. A 6 s clip at 480p takes
+about 6-13 minutes on a 16 GB card.
+
+- **Install:** Settings ▸ Add-ons ▸ **OpenJutsu swap** → ⤓ Install. It adds the
+  node packs (Context Loop 0.7.3 or newer - an older copy is updated -
+  Oneclick Swap, PromptBuilder, KJNodes, VideoHelperSuite, Detail Contrast,
+  Orion4D FX), the DMAD 4-step LoRA and SAM 3.1. MiniMax H3's model, text
+  encoder, VAEs and the Qwen3-VL 8B describer are downloaded only when your
+  ComfyUI has none. When OpenJutsu names a file you have under another name
+  (the NVFP4 text encoder, the fp16 video VAE), bitGen uses yours and says so
+  in the job's log. It needs ComfyUI 0.41.2 or newer; restart ComfyUI once
+  after installing.
+- **The OpenJutsu bar** opens under the menubar when you pick Engine ▸
+  OpenJutsu. Every change is saved at once.
+  - **Mode:** *Simple* (the picture on the left replaces the main person -
+    **Replace** names someone else, e.g. "the drummer", **Track** is what SAM
+    follows: person, cat ...). *Advanced* takes 1-4 characters: the picture on
+    the left is character 1, click 2-4 for more and give each a role (blank =
+    by screen time). Only those people are repainted. *One pass per person*
+    does two characters, one pass each (slower, cleaner). *Object*: **Change**
+    (What = "hair, top", Becomes = "short pink hair", or leave Becomes blank and
+    use the picture), **Remove** (what shows behind comes back) or
+    **Background** (everything but What is replaced). **only the biggest**
+    keeps one of each; **keep outline** keeps the grey shape (the face and hands
+    around it stay, but so does the old silhouette).
+  - **Size** 480p (a quick preview) to 1080p (about 2.5x slower than 736p), or
+    a custom size (in 32 px steps, centre-cropped). **Motion** is the size of
+    the grey-mannequin reference H3 follows. **Margin** is how far the repainted
+    area reaches past the person. **hat fix** also repaints their hat. **no
+    lip-sync** is for people who do not sing or talk along: H3 hears silence
+    and is told nobody sings. **Clip** is the longest piece per H3 run.
+    **DMAD** = 6 steps; without it, 20 or more (and ⚡ **Spectrum**, an
+    approximate speed-up, can be used).
+  - **👁 Check mask** renders the box as a preview: cyan = what will be
+    repainted, orange = the tracked person, beside the grey mannequin. It
+    lands in Finished as `..._mask.mp4` and cannot be kept.
+  - **🎨 Fix colours** (on the take in the Result preview) softens H3's
+    crunchy fine detail and grades it (OpenJutsu's "H3 soft"). It makes a new
+    take of the same segment, `..._color.mp4`.
+  - **🙂 Fix faces** redraws the face of the person in the picture. It is
+    **off** until you tick **I accept**: it uses InsightFace's buffalo_l
+    models, which are licensed for **non-commercial research only**, and the
+    Ultralytics YOLO detectors (**AGPL-3.0**). Tick 🙂 Fix faces in the
+    add-on to install it.
+- The Direction box, ⚙ LoRAs and **Quality** do not apply (OpenJutsu's
+  describer writes each clip's prompt). The ⚙ seed rule does. **⏫ Upscale**
+  and VR are not for OpenJutsu takes; ↻ Retry redoes a swap or a mask check,
+  and a 🎨 / 🙂 fix is redone from the take it fixed.
+- OpenJutsu's own limits: no mirrors or reflections, swapped mouths can smile
+  wider than the original, Spectrum is approximate. Not in bitGen yet:
+  OpenJutsu's *Add* (a box drawn on the video), Montage / Find people, From
+  picture and Relight.
+- Not tried on real hardware in this release - tell us how it goes.
+
 **✎ Write prompt** (2.335.0) — the vision model looks at the new character's
 picture and at the video in the middle of the box, and the LLM (the one picked
 under the Prompt docker's prompt) writes a swap prompt into the box: who to
@@ -10721,6 +10781,8 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[PAN 2](https://github.com/ifm-ai/PAN2)** (the Institute of Foundation Models (IFM) at MBZUAI) - the world-model video style and its caption rewriter policy + fixed negative (Apache-2.0); Comfy-Org's repack of the files
 - **[LongCat-Video-Avatar 1.6](https://github.com/meituan-longcat/LongCat-Video)** (the Meituan LongCat Team) - the audio-driven avatar video style (MIT weights)
 - **[ComfyUI-LongCat-Avatar](https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar)** (PedroMarinhoDev) - LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)
+- **[OpenJutsu](https://github.com/D3voz/openjutsu)** (D3voz) - the ⇄ Swap dialog's OpenJutsu engine - its ComfyUI workflows (MIT, shipped unmodified in comfy_workflows/openjutsu) and its comfyui-h3-oneclick-swap + comfyui-image-detail-contrast packs (MIT, installed into your ComfyUI)
+- **[MiniMax H3 Context Loop, Fantastic PromptBuilder, H3-FaceRefine, Orion4D FXMax](https://github.com/ethanfel/ComfyUI-MiniMaxH3-Contex-Loop)** (ethanfel / NikoDemon80, Adudeguyman, Carasibana, Philippe Joye (Orion4D)) - the node packs OpenJutsu's workflows run on (GPL-3.0 / MIT, installed into your ComfyUI - not shipped); DMAD (ByteDance + Texas A&M, Kijai's ComfyUI conversion) and SAM 3.1 (Meta) are downloaded from their own pages
 - **[SAVA and Voice Isolator](https://inworld.ai/open-source)** (Inworld AI) - the voice conversation's end-of-turn detection and noise isolation (Apache-2.0 code and weights)
 
 ### Image models

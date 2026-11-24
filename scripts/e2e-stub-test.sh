@@ -15103,6 +15103,16 @@ node scripts/test-948.js > /tmp/t948.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui948-ui.js > /tmp/ui948.log 2>&1 \
   && ok "2.948.0 browser test: share a house, housemate luck under the dice, the halved rent" \
   || { bad "2.948.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui948.log | head -12; }
+# ---- 2.949.0 (⇄ the swap dialog's OpenJutsu engine)
+node scripts/test-949.js > /tmp/t949.log 2>&1 \
+  && ok "2.949.0 units: OpenJutsu's workflows shipped unmodified, every class core or a listed pack, the graphs filled as OpenJutsu does (simple / advanced / one pass per person / object / mask / colours / faces), the window, the record, the add-on (bitGen's H3 files used, an old Context Loop updated, Fix faces opt-in), the lists" \
+  || { bad "2.949.0 units"; grep -a "^FAIL" -A1 /tmp/t949.log | head -12; }
+python3 scripts/test-openjutsu949.py > /tmp/to949.log 2>&1 \
+  && ok "2.949.0 picks + LIVE worker on the stub: the window cut with its sound and uploaded, OpenJutsu's file names pointed at the ones ComfyUI has, advanced / object / mask / colours / faces; no pack / no DMAD said" \
+  || { bad "2.949.0 picks + worker"; grep -a "^FAIL" -A1 /tmp/to949.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui949-ui.js > /tmp/ui949.log 2>&1 \
+  && ok "2.949.0 browser test: Engine ▸ OpenJutsu opens its bar, modes / characters / size saved, 30 s segments; END TO END a take, 🎨 Fix colours, 👁 Check mask (never kept), 🙂 only after I accept" \
+  || { bad "2.949.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui949.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

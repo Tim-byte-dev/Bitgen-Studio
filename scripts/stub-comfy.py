@@ -583,6 +583,97 @@ def render_longcat(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+OJ_PLANS = {"H3OneClickSwapPlan": 736, "H3AdvancedSwapPlan": 736, "H3ObjectSwapPlan": 736}
+OJ_RES = {"480p": 480, "576p": 576, "736p": 736, "768p": 768, "1080p": 1080}
+
+
+def is_openjutsu(g):
+    cts = {str((v or {}).get("class_type", "")) for v in g.values()}
+    return bool(cts & set(OJ_PLANS)) or ("VHS_LoadVideo" in cts and bool(cts & {"ImageDetailContrast", "Orion4D_FXMax_DCTLToneMapper", "H3FaceStitch", "ImageAndMaskPreview"}))
+
+
+def render_openjutsu(pid, g):
+    """2.949.0: an OpenJutsu graph (comfy_workflows/openjutsu) answered like its packs would. Checked the way the real
+    nodes need it: every link points at a node in the graph, VHS_LoadVideo's video + every LoadImage were UPLOADED,
+    force_rate 24, frame_load_cap = the window (skip 0 - the worker cuts the window itself), a swap plan's resolution one
+    of the pack's presets (or short_edge with the custom ImageScale), the Assemble / VideoCombine at the end. The video
+    is as long as frame_load_cap / 24 (the whole file when 0) at the plan's size (the source's for a fix / mask check, the
+    mask check side by side); a mask preview PNG rides the history first, as Context Loop's preview does."""
+    def err(nid, ct, msg):
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_start", {"prompt_id": pid, "timestamp": 1}],
+            ["execution_error", {"prompt_id": pid, "node_id": str(nid), "node_type": ct, "exception_type": "ValueError",
+                                 "exception_message": msg, "traceback": ["  File \"custom_nodes/comfyui-h3-oneclick-swap/__init__.py\""]}]]},
+            "outputs": {}}
+    for nid, v in g.items():
+        for name, val in ((v or {}).get("inputs") or {}).items():
+            if isinstance(val, list) and len(val) == 2 and isinstance(val[0], str) and isinstance(val[1], int) and val[0] not in g:
+                return err(nid, v.get("class_type"), f"input {name} links to node {val[0]}, which is not in the prompt")
+    lv = [(k, v) for k, v in g.items() if v.get("class_type") == "VHS_LoadVideo"]
+    if len(lv) != 1:
+        return err("?", "VHS_LoadVideo", f"expected one VHS_LoadVideo, found {len(lv)}")
+    vid, v = lv[0]
+    vi = v.get("inputs") or {}
+    f = vi.get("video")
+    if f not in UPLOADED:
+        return err(vid, "VHS_LoadVideo", f"video {f!r} is not in ComfyUI's input folder (not uploaded)")
+    if int(vi.get("force_rate") or 0) != 24:
+        return err(vid, "VHS_LoadVideo", "OpenJutsu loads at force_rate 24")
+    for k, x in g.items():
+        if x.get("class_type") == "LoadImage" and (x.get("inputs") or {}).get("image") not in UPLOADED:
+            return err(k, "LoadImage", f"image {(x.get('inputs') or {}).get('image')!r} was not uploaded")
+    src = INPUTS / str(f)
+    pr = _probe(src) if src.is_file() else {}
+    sw, sh = int(pr.get("w") or 320), int(pr.get("h") or 240)
+    whole = float(pr.get("dur") or 0)
+    skip, cap = int(vi.get("skip_first_frames") or 0), int(vi.get("frame_load_cap") or 0)
+    secs = (cap / 24.0) if cap else max(0.0, whole - skip / 24.0)
+    secs = min(secs, max(0.0, whole - skip / 24.0)) if whole else secs
+    plan = next(((k, x) for k, x in g.items() if x.get("class_type") in OJ_PLANS), (None, None))
+    w, h, kind = sw, sh, "fix"
+    if plan[0]:
+        pi = plan[1].get("inputs") or {}
+        short = int(pi.get("short_edge") or 0)
+        if not short:
+            if pi.get("resolution") not in OJ_RES:
+                return err(plan[0], plan[1].get("class_type"), f"resolution {pi.get('resolution')!r} is not one of {sorted(OJ_RES)}")
+            short = OJ_RES[pi["resolution"]]
+        elif "custom_size" not in g:
+            return err(plan[0], plan[1].get("class_type"), "short_edge without the custom size ImageScale")
+        sc = short / max(1, min(sw, sh))
+        w, h = max(32, int(round(sw * sc / 32)) * 32), max(32, int(round(sh * sc / 32)) * 32)
+        kind = "swap"
+        if not any(x.get("class_type") == "MiniMaxH3ChainAssemble" for x in g.values()):
+            return err(plan[0], plan[1].get("class_type"), "a swap ends in the Context Loop Assemble")
+    elif any(x.get("class_type") == "ImageAndMaskPreview" for x in g.values()):
+        kind, w = "mask", sw * 2
+    final = next((k for k, x in g.items() if x.get("class_type") == "MiniMaxH3ChainAssemble"), None) \
+        or next((k for k, x in g.items() if x.get("class_type") == "VHS_VideoCombine"), None)
+    fn = f"openjutsu_{kind}_{pid}.mp4"
+    ow, oh = max(32, w // 4 // 2 * 2), max(32, h // 4 // 2 * 2)
+    args = ["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={ow}x{oh}:rate=24"]
+    if pr.get("audio") and kind != "mask":
+        args += ["-ss", f"{skip / 24.0:.3f}", "-i", str(src), "-map", "0:v", "-map", "1:a", "-c:a", "aac"]
+    args += ["-t", f"{max(secs, 0.2):.3f}", "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "ultrafast", str(OUT / fn)]
+    subprocess.run(args, check=False)
+    rec = {"_openjutsu": kind, "_classes": sorted({str(x.get("class_type", "")) for x in g.values()}), "_size": [w, h],
+           "_seconds": secs, "_inputs": {k: (x.get("inputs") or {}) for k, x in g.items()}}
+    Path(OUT / f"video_{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
+    prev = next((k for k, x in g.items() if x.get("class_type") == "PreviewImage"), None)
+    outs = {}
+    if prev:
+        png = f"openjutsu_maskpreview_{pid}.png"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "color=c=gray:s=64x36", "-frames:v", "1", str(OUT / png)], check=False)
+        outs[str(prev)] = {"images": [{"filename": png, "subfolder": "", "type": "temp"}]}
+    if final and g[final].get("class_type") == "MiniMaxH3ChainAssemble":
+        outs[str(final)] = {"text": [f"assembled {max(1, int(secs // 6) + 1)} generated clips -> {fn}"],
+                            "images": [{"filename": fn, "subfolder": "h3_oneclick_swap", "type": "output"}], "animated": [True]}
+    else:
+        save = bool((g[final].get("inputs") or {}).get("save_output", True)) if final else True
+        outs[str(final or "0")] = {"gifs": [{"filename": fn, "subfolder": "", "type": "output" if save else "temp", "format": "video/h264-mp4"}]}
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True}, "outputs": outs}
+
+
 def render_img_upscale(pid, g):
     """2.733.0: a PICTURE upscale graph, answered like ComfyUI would: SeedVR2 - the LOADED picture times the Resize
     node's multiplier (SeedVR2 pads to 16, as the real one does: a size a few pixels over); an upscale model - the
@@ -879,6 +970,8 @@ def _render(pid, g):
         return render_pan2(pid, g)                     # 2.890.0
     if any(v.get("class_type") == "LongCatAvatarVideo" for v in g.values()):
         return render_longcat(pid, g)                  # 2.918.0
+    if is_openjutsu(g):
+        return render_openjutsu(pid, g)                # 2.949.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
         return render_dlss5(pid, g)                    # 2.504.0
     if any(v.get("class_type") == "DenoRTXVFXVideoFinisher" for v in g.values()):
@@ -1447,6 +1540,8 @@ class H(BaseHTTPRequestHandler):
                 return self._j({})
             if os.environ.get("STUB_LONGCAT_ABSENT") and ct.startswith("LongCatAvatar"):
                 return self._j({})                     # 2.918.0: a ComfyUI without the LongCat Avatar pack
+            if os.environ.get("STUB_OPENJUTSU_ABSENT") and ct in ("H3OneClickSwapPlan", "H3AdvancedSwapPlan", "H3ObjectSwapPlan", "H3SoundtrackOrSilence"):
+                return self._j({})                     # 2.949.0: a ComfyUI without comfyui-h3-oneclick-swap
             if ct and ct != "object_info":
                 sc = SCHEMA.get(ct)
                 if sc:

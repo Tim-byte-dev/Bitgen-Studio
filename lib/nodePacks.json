@@ -1,5 +1,5 @@
 {
-  "_comment": "2.918.0: + ComfyUI-LongCat-Avatar (PedroMarinhoDev - the LongCat Avatar 1.6 video style, lib/longcat.js). 2.870.0: - ComfyUI-H3LookSheets, + H3-Character-Sheet-Designer (the Character creator's sheet, lib/charSheetH3.js). 2.555.0: + comfyui-inpaint-nodes (Acly - the Krita AI plugin's fill helpers). 2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
+  "_comment": "2.949.0: + comfyui-h3-oneclick-swap, ComfyUI-Fantastic-MiniMaxH3-PromptBuilder, comfyui-image-detail-contrast, Orion4D_FXMax (the swap dialog's OpenJutsu engine, lib/openjutsu.js; ComfyUI-H3-FaceRefine is NOT here - only the opt-in Fix faces installs it, lib/openjutsuAddon.js). 2.918.0: + ComfyUI-LongCat-Avatar (PedroMarinhoDev - the LongCat Avatar 1.6 video style, lib/longcat.js). 2.870.0: - ComfyUI-H3LookSheets, + H3-Character-Sheet-Designer (the Character creator's sheet, lib/charSheetH3.js). 2.555.0: + comfyui-inpaint-nodes (Acly - the Krita AI plugin's fill helpers). 2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
   "packs": [
     { "id": "manager", "folder": "ComfyUI-Manager", "url": "https://github.com/Comfy-Org/ComfyUI-Manager",
       "for": "installing / updating node packs from inside ComfyUI", "provides": [] },
@@ -58,6 +58,18 @@
       "provides": ["INPAINT_LoadFooocusInpaint", "INPAINT_ApplyFooocusInpaint", "INPAINT_VAEEncodeInpaintConditioning", "INPAINT_LoadInpaintModel", "INPAINT_InpaintWithModel"] },
     { "id": "longcat", "folder": "ComfyUI-LongCat-Avatar", "url": "https://github.com/PedroMarinhoDev/ComfyUI-LongCat-Avatar",
       "for": "the LongCat Avatar 1.6 video style (2.918.0): Meituan's LongCat-Video-Avatar natively in ComfyUI (GPL-3.0 code, MIT weights)",
-      "provides": ["LongCatAvatarModelLoader", "LongCatAvatarAudioEncode", "LongCatAvatarVideo"] }
+      "provides": ["LongCatAvatarModelLoader", "LongCatAvatarAudioEncode", "LongCatAvatarVideo"] },
+    { "id": "oneclick", "folder": "comfyui-h3-oneclick-swap", "url": "https://github.com/D3voz/comfyui-h3-oneclick-swap",
+      "for": "the swap dialog's OpenJutsu engine (2.949.0): its swap plans, people masks, grey mannequins and shot lists (MIT)",
+      "provides": ["H3OneClickSwapPlan", "H3AdvancedSwapPlan", "H3ObjectSwapPlan", "H3SoundtrackOrSilence", "H3SourceSlice", "H3PeopleMask", "H3GreyMannequins", "H3ClipShots", "H3FillShots", "H3TrackCrops", "H3TrackRoles", "H3RoleMask", "H3SubjectPrompt", "H3FaceChunks", "H3FaceJoin"] },
+    { "id": "fantasticpb", "folder": "ComfyUI-Fantastic-MiniMaxH3-PromptBuilder", "url": "https://github.com/Adudeguyman/ComfyUI-Fantastic-MiniMaxH3-PromptBuilder",
+      "for": "the OpenJutsu engine (2.949.0): the video-edit latent - source + mask + audio (MIT)",
+      "provides": ["MiniMaxH3FantasticVideoEditLatent"] },
+    { "id": "detailcontrast", "folder": "comfyui-image-detail-contrast", "url": "https://github.com/D3voz/comfyui-image-detail-contrast",
+      "for": "OpenJutsu 🎨 Fix colours (2.949.0): softens H3's crunchy fine detail (MIT)",
+      "provides": ["ImageDetailContrast"] },
+    { "id": "orionfx", "folder": "Orion4D_FXMax", "url": "https://github.com/orion4d/Orion4D_FXMax",
+      "for": "OpenJutsu 🎨 Fix colours (2.949.0): the DCTL tone mapper (MIT)",
+      "provides": ["Orion4D_FXMax_DCTLToneMapper"] }
   ]
 }

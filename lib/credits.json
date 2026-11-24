@@ -125,6 +125,18 @@
           "what": "LongCat-Video-Avatar 1.6 natively in ComfyUI and its single-file copies of the release (GPL-3.0 code, installed into your ComfyUI - not shipped)"
         },
         {
+          "name": "OpenJutsu",
+          "by": "D3voz",
+          "url": "https://github.com/D3voz/openjutsu",
+          "what": "the ⇄ Swap dialog's OpenJutsu engine - its ComfyUI workflows (MIT, shipped unmodified in comfy_workflows/openjutsu) and its comfyui-h3-oneclick-swap + comfyui-image-detail-contrast packs (MIT, installed into your ComfyUI)"
+        },
+        {
+          "name": "MiniMax H3 Context Loop, Fantastic PromptBuilder, H3-FaceRefine, Orion4D FXMax",
+          "by": "ethanfel / NikoDemon80, Adudeguyman, Carasibana, Philippe Joye (Orion4D)",
+          "url": "https://github.com/ethanfel/ComfyUI-MiniMaxH3-Contex-Loop",
+          "what": "the node packs OpenJutsu's workflows run on (GPL-3.0 / MIT, installed into your ComfyUI - not shipped); DMAD (ByteDance + Texas A&M, Kijai's ComfyUI conversion) and SAM 3.1 (Meta) are downloaded from their own pages"
+        },
+        {
           "name": "SAVA and Voice Isolator",
           "by": "Inworld AI",
           "url": "https://inworld.ai/open-source",

@@ -395,6 +395,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Viggle 引擎** — 通過 ComfyUI 執行的 Viggle-Animate，或 bitGen 自己的原生引擎，後者在各分段之間始終保持模型已載入。 *Where:* Swap 對話方塊的 Engine。 *Since:* 2.344.0
 - **多個首幀** — 每個分段最多生成四個首幀，再從中選擇一個。 *Where:* Swap 對話方塊。 *Since:* 2.348.0
 - **安全模式** — 出現黑屏的鏡次會在關閉所有可能導致黑屏的選項後重新渲染。 *Where:* Swap 對話方塊的設定。 *Since:* 2.350.0
+- **OpenJutsu 引擎** — D3voz 的 OpenJutsu 工作流程：SAM 3.1 追蹤人物（1-4 個帶角色的人，或要更換、移除、作為背景的物體），灰色人體模型傳遞動作，MiniMax H3 只重繪這些部分；每段最長一分鐘；👁 檢查遮罩、🎨 修正顏色和可選的 🙂 修正臉部（非商業 / AGPL-3.0 模型）。*位置：* Swap 對話框的 Engine ▸ OpenJutsu；Settings ▸ Add-ons ▸ OpenJutsu swap。*版本：* 2.949.0
 - **VR 替換** — 通過虛擬攝影機替換 360 度或 180 度影片中的人物；立體雙眼畫面根據深度重建。 *Where:* Swap 對話方塊的 VR 一行
 
 ### VR

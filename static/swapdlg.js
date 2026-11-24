@@ -194,7 +194,7 @@
       + '<label>Duration <input type="number" class="swDur" min="0.25" step="0.04"> s</label>'
       + '<span class="swF swBoxF"></span>'
       + '<label title="The longest segment - ✂ Auto segment cuts the whole movie into pieces of this length (at most one H3 run). 5 s is the default: the new character holds best on 4-5 s shots, longer runs can drift back to the original performer">Max <input type="number" class="swMax" min="1" step="0.5"> s</label>'
-      + '<label title="MiniMax H3 = the swap LoRA through H3, one job per segment. Viggle (H3) = the same ✎ first frame, carried through the clip by Viggle-Animate on MiniMax H3 (3 steps). Viggle (native) = the same model in bitGen\'s own engine - no ComfyUI, the weights streamed to the GPU (⚙ to install it). LTX Ripple = ✎ Qwen Image 2.1 puts the character into each segment\'s first frame (check it, touch it up), then the LTX Ripple IC-LoRA carries that edit through the original clip">Engine <select class="swEng"><option value="h3">MiniMax H3</option><option value="ripple">LTX Ripple</option><option value="viggle">Viggle (H3)</option><option value="viggle_native">Viggle (native)</option></select></label>'
+      + '<label title="MiniMax H3 = the swap LoRA through H3, one job per segment. Viggle (H3) = the same ✎ first frame, carried through the clip by Viggle-Animate on MiniMax H3 (3 steps). Viggle (native) = the same model in bitGen\'s own engine - no ComfyUI, the weights streamed to the GPU (⚙ to install it). LTX Ripple = ✎ Qwen Image 2.1 puts the character into each segment\'s first frame (check it, touch it up), then the LTX Ripple IC-LoRA carries that edit through the original clip. OpenJutsu = SAM 3.1 follows the person (or 1-4 people with roles, or a thing), a grey mannequin carries the movement and MiniMax H3 repaints only them - its settings bar opens under this one (Settings ▸ Add-ons ▸ OpenJutsu swap installs it)">Engine <select class="swEng"><option value="h3">MiniMax H3</option><option value="ripple">LTX Ripple</option><option value="viggle">Viggle (H3)</option><option value="viggle_native">Viggle (native)</option><option value="openjutsu">OpenJutsu</option></select></label>'
       + '<button type="button" class="ghost gbtn swFFAll" hidden title="LTX Ripple / Viggle: make another first frame (✎×N) for the segment in the box - the box becomes a segment if it is not one yet (Qwen Image 2.1)">✎ First frames</button>'
       // 2.348.0: how many candidates each ✎ makes
       + '<select class="swFFN" hidden title="How many ✎ first-frame candidates each press makes - click one on its card to use it, double-click to see it big"><option value="1">✎×1</option><option value="2">✎×2</option><option value="3">✎×3</option><option value="4">✎×4</option></select>'
@@ -293,11 +293,13 @@
     if (ql && document.activeElement !== ql) ql.value = st.quality || "full";
     var en = cur.q("swEng"), rip = !!FF_ENGINES[st.engine];                     // 2.339.0 (2.344.0: + Viggle)
     if (en && document.activeElement !== en) en.value = st.engine || "h3";
-    cur.q("swQualL").hidden = rip;
+    var ojE = st.engine === "openjutsu";                                        // 2.949.0: OpenJutsu has its own bar
+    cur.q("swQualL").hidden = rip || ojE;
     cur.q("swFFAll").hidden = !rip;
     cur.q("swFFN").hidden = !rip;
-    cur.q("swUp").hidden = rip;
+    cur.q("swUp").hidden = rip || ojE;
     paintFF();
+    if (window.H3OjSwap) { try { window.H3OjSwap.paint(cur, st); } catch (e) { msg("⚠ OpenJutsu bar: " + (e && e.message || e), true); } }   // static/ojswap.js
     if (st.video !== prevVideo) loadVideo(st.video);
     schedule();
     return st;
@@ -1086,7 +1088,9 @@
         apply(j);
         if (!j.error) msg(FF_ENGINES[j.engine] ? FF_ENGINES[j.engine] + ": ⇄ Swap makes each segment's ✎ first frame (Qwen Image 2.1), then renders it (⚙ to check the frames first)"
           + (j.engine === "viggle" ? " - Viggle-Animate on MiniMax H3, 3 steps" : "")
-          + (j.engine === "viggle_native" ? " - Viggle-Animate in bitGen's own engine (no ComfyUI), 4 steps" : "") : "MiniMax H3");
+          + (j.engine === "viggle_native" ? " - Viggle-Animate in bitGen's own engine (no ComfyUI), 4 steps" : "")
+          : j.engine === "openjutsu" ? "OpenJutsu: set it up in the bar under the menubar (mode, size, roles) - segments can be up to a minute, ✂ Auto segment cuts 30 s pieces"
+          : "MiniMax H3");
         if (!j.error && j.engine === "viggle_native") vnState().then(function (s) { if (s && !s.ready) msg("⚠ " + s.note, true); });
       });
     });
@@ -1234,7 +1238,7 @@
 
   window.SwapDialog = { install: install, open: open, close: close, snapDown: snapDown, boxFrames: boxFrames, fmt: fmt,
                         state: function () { return cur; }, aimFromClick: aimFromClick, aimToFrame: aimToFrame,
-                        _api: { vnInstall: vnInstall, vnState: vnState, vnCheck: vnCheck, viewInPreview: viewInPreview, backToVideo: backToVideo, failNews: failNews, writePrompt: writePrompt, swapBox: swapBox, swapAll: swapAll, auto: auto, compile: compile, again: again,
+                        _api: { apply: apply, msg: msg, jpost: jpost, vnInstall: vnInstall, vnState: vnState, vnCheck: vnCheck, viewInPreview: viewInPreview, backToVideo: backToVideo, failNews: failNews, writePrompt: writePrompt, swapBox: swapBox, swapAll: swapAll, auto: auto, compile: compile, again: again,
                                 saveOut: saveOut, setSel: setSel, showOut: showOut, refresh: refresh, setVideo: setVideo,
                                 setVr: setVr, pickVideo: pickVideo, importPath: importPath, uploadVideo: uploadVideo,
                                 proxyFor: proxyFor, look: look, openSettings: openSettings, saveSettings: saveSettings, readSettings: readSettings, sizeFrom: sizeFrom } };

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.949.0** — ⇄ the Swap Dialog's OpenJutsu Engine: D3voz's OpenJutsu Workflows (Shipped Unmodified, MIT) Run by bitGen - SAM 3.1 Follows the Person (or 1-4 People With Roles, or a Thing to Change, Remove or Put Behind), a Grey Mannequin Carries the Movement and MiniMax H3 Repaints Only Them; Segments Up to a Minute; 👁 Check Mask, 🎨 Fix Colours, an Opt-In 🙂 Fix Faces (Non-Commercial / AGPL-3.0 Models); Settings ▸ Add-ons ▸ OpenJutsu Swap Installs the Node Packs, the DMAD LoRA and SAM 3.1 and Uses the MiniMax H3 Files You Have
 - **2.948.0** — 🏘 Life Choices: Share a House for About Half the Rent - the Same Dice Bring Housemate Luck, From a Housemate Who Leaves Owing Rent to One Who Becomes a Best Friend
 - **2.947.0** — 💸 Life Choices: Bills, Insurance and Australian Tax - Itemised Quarterly Bills (Rent, Utilities, Phone, Getting Around, Food and Fun - a Picnic Costs Less Than the Cinema), ❤ Wellbeing, Health / Car / Home Cover With an Excess, Pay Taxed on the 2026-27 Australian Scale With the Medicare Levy and Surcharge, a Tax Return Every Birthday With Deductions
 - **2.946.0** — 🎲 Life Choices: Luck With a Pair of Dice - the Total Is Your Luck (Double 1 Terrible, 6-8 Ordinary, Double 6 Brilliant and a Roll Again), Fitted to Your Stage of Life; on the Investment Rings the Pair Moves You
