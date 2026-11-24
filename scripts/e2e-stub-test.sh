@@ -15089,6 +15089,13 @@ node scripts/test-946.js > /tmp/t946.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui946-ui.js > /tmp/ui946.log 2>&1 \
   && ok "2.946.0 browser test: the dice and their luck with the meter, your last roll in view, double six rolls again" \
   || { bad "2.946.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui946.log | head -12; }
+# ---- 2.947.0 (🎓 Life Choices: bills, insurance and Australian tax)
+node scripts/test-947.js > /tmp/t947.log 2>&1 \
+  && ok "2.947.0 units: the 2026-27 scale (published examples), offset, Medicare levy + surcharge, PAYG, bills, cover with excess, tax returns with deductions" \
+  || { bad "2.947.0 units"; grep -a "^FAIL" -A1 /tmp/t947.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui947-ui.js > /tmp/ui947.log 2>&1 \
+  && ok "2.947.0 browser test: budget picked, cover ticked, the quarter's bills itemised, a birthday's tax return, ❤ in the table" \
+  || { bad "2.947.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui947.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

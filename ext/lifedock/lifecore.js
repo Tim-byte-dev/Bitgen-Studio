@@ -31,6 +31,13 @@
  *   school / work / money - found money and gifts at school, fines and refunds at work, storms, inheritances and lotteries
  *   with property). On the investment and land & houses rings the pair's total moves you; inside, the first die does
  *   (small rings), the apprenticeship stays one square. s.luck = the last roll {who, dice, level, word, text, amount, again}.
+ * 2.947.0 (Tim: "make insurance plans, bills (utilities, food, entertainment) going to a cinema is different price from going
+ *   on a picnic etc. life expenses. user can choose to buy health insurance or house insurance or car insurance ... taxes and
+ *   deductions (use au tax scale)"): lifemoney.js. Once out of study, every quarter's bills are itemised (rent until you own a
+ *   place, utilities, phone, getting around, food and fun from p.budget, insurance premiums from p.ins); fun keeps
+ *   p.wellbeing up (scored at the end). Pay is taxed on the 2026-27 Australian scale (PAYG each quarter); each birthday is a
+ *   tax return (p.fy: salary, rent, dividends, deductions, withheld -> a refund or a bill). Luck events a cover pays (car,
+ *   home, health) cost only the excess when insured. A jobseeker payment while out of work.
  * WINNER at the end: net worth + (IQ - 100) x $1,000 + a qualification bonus (diploma $10k, trade $30k, degree $50k).
  *
  * newGame({seed, retire, players: [{name, bot: null | "saver" | "tycoon" | "risk", skill 0-1}]}) -> state (plain JSON -
@@ -39,6 +46,8 @@
  */
 (function (root) {
   "use strict";
+  // 2.947.0: life's money (bills, budget, insurance, Australian tax) - ext/lifedock/lifemoney.js
+  var MN = typeof module !== "undefined" && module.exports ? require("./lifemoney.js") : root.H3LifeMoney;
   var RINGS = {
     hs: [["quiz", "Quiz"], ["math", "Maths"], ["word", "Words"], ["allowance", "Pocket money"], ["quiz", "Quiz"], ["math", "Maths"], ["word", "Words"], ["exam", "Exam"]],
     college: [["enrol", "Enrolment"], ["exam", "Exam"], ["library", "Library"], ["exam", "Exam"], ["parttime", "Part-time work"], ["exam", "Exam"],
@@ -106,7 +115,16 @@
     return s;
   }
   /** a game saved before 2.945.0 gets the land & houses ring */
+  /** a player's 2.947.0 money fields (older saves too) */
+  function money0(p) {
+    if (!p.budget) p.budget = p.bot === "saver" ? { food: "home", fun: "picnic" } : p.bot === "risk" ? { food: "out", fun: "gigs" } : { food: "mix", fun: "cinema" };
+    if (!p.ins) p.ins = { health: false, car: false, home: false };
+    if (p.wellbeing == null) p.wellbeing = MN.WB.start;
+    if (!p.fy) p.fy = { salary: 0, rent: 0, div: 0, ded: 0, withheld: 0 };
+    return p;
+  }
   function upgrade(s) {
+    if (s && s.players) s.players.forEach(money0);
     if (s && !s.estate) { s.estate = {}; Object.keys(ESTATE).forEach(function (k) { s.estate[k] = { type: ESTATE[k][0], value: ESTATE[k][2], owner: -1 }; }); }
     return s;
   }
@@ -124,7 +142,7 @@
   function propsOf(s, p) { return Object.keys(s.props).filter(function (k) { return s.props[k].owner === p.id; }); }
   function sharesValue(s, p) { return Object.keys(p.shares).reduce(function (t, k) { return t + p.shares[k] * s.price[k]; }, 0); }
   function netWorth(s, p) { return Math.round(p.cash + lotsOf(s, p).reduce(function (t, k) { return t + lot(s, k).value; }, 0) + sharesValue(s, p) - p.loan - p.studentDebt); }
-  function score(s, p) { return netWorth(s, p) + (p.iq - 100) * 1000 + QBONUS[p.qual]; }
+  function score(s, p) { return netWorth(s, p) + (p.iq - 100) * 1000 + QBONUS[p.qual] + Math.round(((p.wellbeing == null ? MN.WB.start : p.wellbeing) - MN.WB.start) * MN.WB.point); }
   function loanLimit(p) { return p.job ? MONEY.loanX * p.job.salary : 0; }
   function jobOf(id) { var j = JOBS.filter(function (x) { return x[0] === id; })[0]; return j ? { id: j[0], title: j[1], salary: j[2], need: j[3], iq: j[4], levels: j[5] } : null; }
   function qualifies(p, j) { var need = j[3]; return p.iq >= j[4] && (need === "none" || p.qual === need || (need === "diploma" && QUAL[p.qual] >= 1)); }
@@ -136,6 +154,8 @@
   function hire(s, p, id) {
     var j = jobOf(id); if (!j) return;
     p.job = { id: j.id, title: j.title, salary: j.salary, level: 1, levels: j.levels }; p.paydays = 0;
+    money0(p);
+    if (p.bot && !p.insChosen) { p.insChosen = true; p.ins = p.bot === "saver" ? { health: true, car: true, home: true } : p.bot === "tycoon" ? { health: false, car: true, home: true } : { health: false, car: false, home: false }; }
     log(s, p.name + " starts work: " + j.title + " (" + money(j.salary) + " a year).");
   }
 
@@ -148,9 +168,9 @@
     school: { 2: ["Your bike is stolen", -400], 3: ["You crack your phone screen", -250], 4: ["A library fine", -60], 5: ["You lose your bus pass", -30],
               9: ["You find $50 on the footpath", 50], 10: ["A birthday gift from your grandparents", 150], 11: ["You win a school prize", 300],
               12: ["A local business gives you a bursary", 600] },
-    work: { 2: ["Your car is written off - not insured", -8000], 3: ["A burst pipe floods your flat", -3000], 4: ["A speeding fine", -450], 5: ["A dentist's bill", -250],
+    work: { 2: ["Your car is written off", -8000, "car"], 3: ["A burst pipe floods your flat", -3000, "home"], 4: ["A speeding fine", -450], 5: ["A night in hospital", -2500, "health"],
             9: ["A tax refund", 600], 10: ["You sell things you no longer need", 1200], 11: ["A scratch-card win", 5000], 12: ["An award at work, with a bonus", 10000] },
-    money: { 2: ["Your car is written off - not insured", -12000], 3: ["A burst pipe floods your place", -6000], 4: ["A legal bill", -5000], 5: ["Car repairs", -1500],
+    money: { 2: ["Your car is written off", -12000, "car"], 3: ["A burst pipe floods your place", -6000, "home"], 4: ["A stay in hospital", -6000, "health"], 5: ["Car repairs", -1500],
              9: ["Interest on your savings", 1000], 10: ["A tip on a deal pays off", 8000], 11: ["An inheritance from a great-aunt", 25000], 12: ["A lottery win", 75000] },
   };
   function stageOf(p) { return p.ring === "invest" || p.ring === "estate" ? "money" : p.ring === "jobs" ? "work" : "school"; }
@@ -159,15 +179,20 @@
   function luck(s, p, d1, d2) {
     var lv = d1 + d2, st = stageOf(p), ev = LUCK[st][lv], text = "", amt = 0;
     if (ev) {
-      text = ev[0]; amt = ev[1];
+      text = ev[0]; amt = ev[1]; var cover = ev[2] || null;
       var mine = lotsOf(s, p);
       if (st === "money" && mine.length && lv <= 3) {
         var big = mine.sort(function (a, b) { return lot(s, b).value - lot(s, a).value; })[0], v = lot(s, big).value;
-        if (lv === 2) { text = "A storm damages your " + lotName(big) + " - not insured"; amt = -Math.max(20000, Math.round(v * 0.05 / 1000) * 1000); }
-        else { text = "A tenant leaves owing rent"; amt = -Math.max(8000, Math.round(v * 0.02 / 1000) * 1000); }
+        if (lv === 2) { text = "A storm damages your " + lotName(big); amt = -Math.max(20000, Math.round(v * 0.05 / 1000) * 1000); cover = "home"; }
+        else { text = "A tenant leaves owing rent"; amt = -Math.max(8000, Math.round(v * 0.02 / 1000) * 1000); cover = null; }
+        if (p.fy) p.fy.ded += -MN.covered(cover || "none", p.ins, -amt);           // repairs and lost rent on a rental: deductible
       }
       if (st === "money" && lv === 9) amt = Math.max(1000, Math.round(Math.max(0, p.cash) * 0.01));
       if (st === "school" && amt < 0) amt = -Math.min(-amt, Math.max(0, p.cash));
+      if (cover && amt < 0) {                                                      // 2.947.0: insured = the excess
+        if (p.ins && p.ins[cover]) { amt = -MN.covered(cover, p.ins, -amt); text += " - insured, you pay the excess"; }
+        else text += " - not insured";
+      }
       p.cash += amt;
     }
     s.luck = { who: p.id, dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt, again: lv === 12 };
@@ -286,7 +311,7 @@
     else if (k === "exchange") { if (p.open) sharesChoice(s, p); else log(s, p.name + " watches the exchange - not open to them yet."); }
     else if (k === "rates") {
       var v = propsOf(s, p).reduce(function (t, x) { return t + s.props[x].value; }, 0), c = Math.round(v * MONEY.rates);
-      if (c) { p.cash -= c; log(s, p.name + " pays " + money(c) + " rates and land tax."); } else log(s, p.name + ": no property, no rates.");
+      if (c) { p.cash -= c; if (p.fy) p.fy.ded += c; log(s, p.name + " pays " + money(c) + " rates and land tax."); } else log(s, p.name + ": no property, no rates.");
     } else if (k === "night") nightChoice(s, p);
   }
   var TYPEWORD = { prop: "", land: "A block of land - no rent until you build on it (at a Builder, or when you land here). ", good: "A house in good condition. ", reno: "A house that needs renovating - little rent until it is done. " };
@@ -351,7 +376,7 @@
       if (mine.length) worksChoice(s, p, mine); else log(s, p.name + " chats with the builder - nothing of theirs to build on or renovate.");
     } else if (k === "council") {
       var v = lotsOf(s, p).filter(function (x) { return x.charAt(0) === "e"; }).reduce(function (t, x) { return t + lot(s, x).value; }, 0), c = Math.round(v * MONEY.rates);
-      if (c) { p.cash -= c; log(s, p.name + " pays " + money(c) + " council rates."); } else log(s, p.name + ": no land, no council rates.");
+      if (c) { p.cash -= c; if (p.fy) p.fy.ded += c; log(s, p.name + " pays " + money(c) + " council rates."); } else log(s, p.name + ": no land, no council rates.");
     } else if (k === "auction") {
       var free = Object.keys(s.estate).filter(function (x) { return s.estate[x].owner === -1; });
       if (!free.length) { log(s, "The auction has nothing for sale - every lot is owned."); return; }
@@ -465,19 +490,45 @@
     p.age = Math.round((p.age + 0.25) * 100) / 100;
     if (p.ring === "college" && !p.night) p.studentDebt += MONEY.tuition;
     if (p.ring === "trade") p.cash += MONEY.apprentice;
-    if (p.job) {
-      var pay = Math.round(p.job.salary / 4 * (1 - MONEY.tax));
-      p.cash += pay - MONEY.living; p.paydays++;
+    money0(p);
+    var adult = !!p.job || p.ring === "jobs" || p.ring === "invest" || p.ring === "estate";
+    if (p.job) {                                                                // 2.947.0: pay taxed on the Australian scale (PAYG)
+      var gross = Math.round(p.job.salary / 4), wh = MN.withholding(p.job.salary, p.ins.health);
+      p.cash += gross - wh; p.fy.salary += gross; p.fy.withheld += wh; p.paydays++;
       if (p.studentDebt > 0 && p.job.salary >= 50000) { var r = Math.min(p.studentDebt, Math.round(p.job.salary / 4 * MONEY.repay)); p.studentDebt -= r; p.cash -= r; }
       if (p.paydays >= 2 && !p.open) { p.open = true; log(s, "🔓 " + p.name + " has a stable income - the investment ring is open."); }
-    } else if (p.ring === "jobs" || p.ring === "invest" || p.ring === "estate") { p.cash -= MONEY.jobless; p.paydays = 0; }
-    if (p.loan > 0) p.cash -= Math.round(p.loan * MONEY.interest);
-    lotsOf(s, p).forEach(function (k) { p.cash += Math.round(lot(s, k).value * YIELD[lotType(s, k)]); });   // tenants (none on bare land)
-    p.cash += Math.round(sharesValue(s, p) * MONEY.dividend);
+    } else if (adult) { p.cash += MN.BILL.jobseeker; p.paydays = 0; }
+    if (adult) {                                                                // the quarter's bills
+      var mine = lotsOf(s, p), pv = mine.reduce(function (t, k) { return t + lot(s, k).value; }, 0);
+      var home = mine.some(function (k) { return lotType(s, k) !== "land"; }), b = MN.bills(p.budget, p.ins, home, pv);
+      p.cash -= b.total; p.lastBills = b;
+      if (p.ins.home && mine.length) p.fy.ded += b.insurance && MN.premium("home", pv);          // landlord insurance: deductible
+      p.wellbeing = Math.max(0, Math.min(100, Math.round((p.wellbeing + (MN.FUN[p.budget.fun] || MN.FUN.cinema)[2] - MN.WB.drift) * 10) / 10));
+    }
+    var lots = lotsOf(s, p);
+    if (p.loan > 0) { var intr = Math.round(p.loan * MONEY.interest); p.cash -= intr; if (lots.length) p.fy.ded += intr; }   // interest on an investment loan: deductible
+    lots.forEach(function (k) { var y = Math.round(lot(s, k).value * YIELD[lotType(s, k)]); p.cash += y; p.fy.rent += y; });   // tenants (none on bare land)
+    var dv = Math.round(sharesValue(s, p) * MONEY.dividend); p.cash += dv; p.fy.div += dv;
+    if (Math.abs(p.age - Math.round(p.age)) < 1e-9) taxReturn(s, p);          // every birthday: the tax return
     if (p.cash < 0) raise(s, p);
     if (p.age >= s.retire && !p.retired) { p.retired = true; log(s, "🏖 " + p.name + " retires at " + Math.floor(p.age) + " - net worth " + money(netWorth(s, p)) + "."); }
     next(s);
   }
+  /** the year's tax return: salary + rent + dividends - deductions (the $1,000 standard deduction or the real ones, whichever
+   *  is bigger) taxed on the scale, less what was withheld -> a refund or a bill */
+  function taxReturn(s, p) {
+    var f = p.fy, income = f.salary + f.rent + f.div;
+    if (income <= 0 && !f.withheld) { p.fy = { salary: 0, rent: 0, div: 0, ded: 0, withheld: 0 }; return; }
+    var ded = Math.max(f.salary > 0 ? MN.STD_DEDUCTION : 0, Math.round(f.ded)), t = MN.taxOn(income - ded, p.ins && p.ins.health), diff = f.withheld - t.total;
+    p.cash += diff;
+    p.lastTax = { income: income, deductions: ded, taxable: t.taxable, tax: t.total, withheld: f.withheld, refund: diff, surcharge: t.surcharge, age: Math.round(p.age) };
+    log(s, "🧾 " + p.name + "'s tax return: income " + money(income) + ", deductions " + money(ded) + ", tax " + money(t.total) + (t.surcharge ? " (incl. " + money(t.surcharge) + " Medicare levy surcharge - no hospital cover)" : "") +
+      " - " + (diff >= 0 ? "a refund of " + money(diff) : "a bill of " + money(-diff)) + ".");
+    p.fy = { salary: 0, rent: 0, div: 0, ded: 0, withheld: 0 };
+  }
+  /** 2.947.0: your budget and cover - setBudget(s, p, {food, fun}) / setCover(s, p, kind, on) (any time on your own turn) */
+  function setBudget(s, p, o) { money0(p); if (o && MN.FOOD[o.food]) p.budget.food = o.food; if (o && MN.FUN[o.fun]) p.budget.fun = o.fun; return p.budget; }
+  function setCover(s, p, kind, on) { money0(p); if (MN.COVER[kind]) { p.ins[kind] = !!on; log(s, (on ? "🛡 " + p.name + " takes out " : p.name + " drops ") + MN.COVER[kind].name.replace(/^\S+ /, "").toLowerCase() + " insurance."); } return p.ins; }
   /** short of cash: shares sold, then the cheapest property, then the bank; nothing left = bankrupt (out, retired) */
   function raise(s, p) {
     Object.keys(p.shares).forEach(function (k) { if (p.cash < 0) { p.cash += Math.round(p.shares[k] * s.price[k]); delete p.shares[k]; log(s, p.name + " has to sell shares in " + coName(k) + "."); } });
@@ -562,6 +613,7 @@
               newGame: newGame, current: cur, square: square, canRoll: canRoll, roll: roll, answer: answer, choose: choose, botStep: botStep,
               offers: offers, loanLimit: loanLimit, netWorth: netWorth, score: score, standings: standings, propsOf: propsOf, sharesValue: sharesValue,
               money: money, coName: coName, rng: rng,
+              MN: MN, money0: money0, taxReturn: taxReturn, setBudget: setBudget, setCover: setCover,
               LUCK: LUCK, LUCKWORD: LUCKWORD, luck: luck, stageOf: stageOf,
               ESTATE: ESTATE, WORKS: WORKS, YIELD: YIELD, LANDRENT: LANDRENT, upgrade: upgrade, lot: lot, lotType: lotType, lotName: lotName, lotsOf: lotsOf, works: works };
   if (typeof module !== "undefined" && module.exports) module.exports = API;

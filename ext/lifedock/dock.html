@@ -53,6 +53,11 @@
           #lcDice .meter i { flex: 1; height: 7px; border-radius: 2px; opacity: .28; }
           #lcDice .meter i.on { opacity: 1; outline: 1px solid #fff; }
           #lcDice .mine { font-size: 11px; color: var(--dim); }
+          /* 2.947.0: budget, insurance, tax */
+          #lcMoney summary { cursor: pointer; font-weight: 600; }
+          #lcMoney label { display: flex; gap: 6px; align-items: center; margin: 4px 0; }
+          #lcMoney select { flex: 1; min-width: 0; font-size: 12px; }
+          #lcMoney .bills { margin-top: 4px; font-size: 11px; line-height: 1.4; }
           #lcLog { flex: 1; min-height: 80px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-size: 11px; line-height: 1.4; }
           #lcLog div { border-bottom: 1px dotted rgba(255, 255, 255, .06); }
           .lcpanel { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(5, 8, 18, .72); z-index: 3; }
@@ -112,7 +117,13 @@
               worst, 6 to 8 is an ordinary few months, double 6 (12) is the best and you roll again. At school it's lost bus passes and
               birthday gifts, at work fines and tax refunds, with money and property storms, inheritances and lottery wins. Inside, the
               first die moves you; on the investment and land &amp; houses rings the pair's total moves you.</p>
-            <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification.
+            <p><b>Bills, insurance and tax</b> (once you work): every quarter rent (until you own a place), utilities, phone, getting
+              around, food and fun - pick them in 💸 Budget on your turn (a picnic costs less than the cinema; a holiday most). Fun keeps
+              your ❤ wellbeing up. 🛡 Health, car and home insurance cost a premium each quarter; when bad luck hits something they cover,
+              you pay only the excess. Pay is taxed on the 2026-27 Australian scale with the 2% Medicare levy; each birthday is a tax
+              return - deductions (the $1,000 standard deduction, or loan interest, rates and repairs on your rentals) can bring a refund.
+              A game's tax, not tax advice.</p>
+            <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification + $2,000 for every ❤ wellbeing point over 50 (less below).
               "IQ" here is a game score, not a real IQ test.</p>
             <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>
           </div></div>

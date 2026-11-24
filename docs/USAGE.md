@@ -10952,7 +10952,7 @@ same one. The game is the same maze; the setting changes what stands on the bloc
 The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
 render runs and the game plays lighter, the shadows are left out.
 
-## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0)
+## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0, bills, insurance and tax 2.947.0)
 
 Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker** (or ⛶) puts it back.
 It is hidden until you open it the first time, and it is saved as you play - close it and carry on later.
@@ -10993,12 +10993,31 @@ inheritance and a lottery win. Inside, the **first die** moves you (the apprenti
 **investment** and **land & houses** rings the **pair's total** moves you. The dice, what they brought and a 2-12 luck
 meter show above your turn; your own last roll stays in view while the bots play (they roll the same dice).
 
+**💸 Bills, 🛡 insurance and 🧾 tax (2.947.0)**: once you work, every quarter brings itemised bills - rent (until you own a
+house or a unit), utilities, phone and internet, getting around, food and fun - and the premiums of any cover you hold.
+Open **💸 Budget, 🛡 insurance and tax** under 🎲 Roll the dice on your turn:
+
+- **Food**: cook at home ($1,500 a quarter), a mix of home and takeaway ($2,400) or eat out a lot ($3,900).
+- **Fun**: picnics, parks and the beach ($150), cinema and cafés ($450), concerts, dinners out and sport ($1,300) or a
+  holiday every year ($2,800). Fun keeps your **❤ wellbeing** up (it drops 1 a quarter, a picnic holds it, a holiday lifts it
+  3); at the end every point above 50 is worth $2,000 (and costs $2,000 below).
+- **🛡 Insurance**: 🏥 health ($650 a quarter, $500 excess - and no Medicare levy surcharge), 🚗 car ($320, $800 excess) and
+  🏠 home (0.1% of what you own a quarter; contents only, $150, while you rent; $1,000 excess). When bad luck hits something
+  you cover - a written-off car, a burst pipe, a storm on your property, a stay in hospital - you pay only the excess.
+- **Tax**: pay is taxed on the **2026-27 Australian resident scale** (nil to $18,200, 15% to $45,000, 30% to $135,000, 37% to
+  $190,000, 45% above), less the low income tax offset, plus the 2% Medicare levy - and the Medicare levy surcharge (1% to
+  1.5% over $105,000) without hospital cover. Tax comes out of each quarter's pay; **every birthday is a tax return**: salary,
+  rent and dividends, less deductions (the $1,000 standard deduction for work expenses, or - when bigger - loan interest,
+  rates, landlord insurance and repairs on your rental property), and you get a refund or a bill. A game's tax - not tax
+  advice. Out of work, a jobseeker payment helps with the bills.
+
 **Puzzles**: click an answer (or press **1**-**4**), or type it and press **Enter** - numbers, fractions such as 5/36, or the
 word. The bar under the question is your time. A wrong answer shows the right one. **Enter** also rolls and carries on.
 The maths is made fresh each time; the words and the quiz questions are bitGen's own.
 
 **Winning**: when everyone has retired, the highest score wins - net worth (cash, property and shares, less loans and the
-student debt) plus $1,000 for every IQ point over 100 plus a bonus for your qualification. **🏆** shows the best ten on
+student debt) plus $1,000 for every IQ point over 100 plus a bonus for your qualification plus $2,000 for every ❤ wellbeing
+point over 50 (less below). **🏆** shows the best ten on
 this PC. Hover over any square to see what it does.
 
 ## 🔒 Settings ▸ Security, your name for the LLM, hiding the splash (2.940.0)

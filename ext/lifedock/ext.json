@@ -4,6 +4,7 @@
   "order": 101,
   "html": "dock.html",
   "scripts": [
+    "lifemoney.js",
     "lifecore.js",
     "lifepuzzles.js",
     "lifedock.js"

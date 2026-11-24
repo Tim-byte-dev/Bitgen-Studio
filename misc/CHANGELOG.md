@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.947.0** — 💸 Life Choices: Bills, Insurance and Australian Tax - Itemised Quarterly Bills (Rent, Utilities, Phone, Getting Around, Food and Fun - a Picnic Costs Less Than the Cinema), ❤ Wellbeing, Health / Car / Home Cover With an Excess, Pay Taxed on the 2026-27 Australian Scale With the Medicare Levy and Surcharge, a Tax Return Every Birthday With Deductions
 - **2.946.0** — 🎲 Life Choices: Luck With a Pair of Dice - the Total Is Your Luck (Double 1 Terrible, 6-8 Ordinary, Double 6 Brilliant and a Roll Again), Fitted to Your Stage of Life; on the Investment Rings the Pair Moves You
 - **2.945.0** — 🎓 Life Choices: the Land & Houses Ring Outside - Blocks of Land to Build On, Houses in Good Condition and Houses That Need Renovating; Builders, Council Rates and an Auction; the Bots Use It Too
 - **2.944.0** — 🎓 Life Choices: a New Board Game of a Whole Life - You and 1-5 Bots From High School (Grade 12+ Quizzes, Maths and Word Puzzles) Through College, a Trade or the Factory, Jobs and Promotions, to Property, Shares and Bank Loans on the Investment Ring; Retire at 30, 45 or 65; a 2D Board of Rings, Saved as You Play

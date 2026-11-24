@@ -95,7 +95,7 @@ while (C.current(s) !== s.players[1]) { if (s.pending) C.choose(s, s.pending.opt
 const bot = s.players[1]; bot.ring = "invest"; bot.pos = 0; s.pending = null; const bc = bot.cash, mc = me().cash; C.roll(s, 1);
 check("...another player landing on it pays you rent (2% of its value)", me().cash - mc === 4400 && bc - bot.cash >= 4400 - 20000, { me: me().cash - mc });
 check("net worth = cash + property + shares - loans - student debt; the score adds IQ and the qualification",
-  C.netWorth(s, me()) === Math.round(me().cash + s.props[1].value - me().loan) && C.score(s, me()) === C.netWorth(s, me()) + (me().iq - 100) * 1000);
+  C.netWorth(s, me()) === Math.round(me().cash + s.props[1].value - me().loan) && C.score(s, me()) === C.netWorth(s, me()) + (me().iq - 100) * 1000 + Math.round((me().wellbeing - 50) * 2000));   // 2.947.0: + wellbeing
 
 s = solo(); for (let i = 0; i < 5; i++) { toPuzzle(); C.answer(s, true); } C.choose(s, "college");
 for (let i = 0; i < 6; i++) { toPuzzle(); if (me().ring !== "college") break; C.answer(s, true); }
@@ -138,7 +138,7 @@ SV.setFile(null); try { fs.unlinkSync(tmp); } catch { /* none */ }
 
 /* ---------------- the wiring ---------------- */
 const EJ = JSON.parse(src("ext/lifedock/ext.json")), D = src("ext/lifedock/dock.html"), J = src("ext/lifedock/lifedock.js");
-check("ext/lifedock: rules, puzzles, then the view; its own server part (never server.js)", EJ.id === "lifedock" && EJ.name === "Life Choices" && EJ.scripts.join() === "lifecore.js,lifepuzzles.js,lifedock.js" && EJ.server === "lifeserver.js" && !/life/.test(src("misc/server.js")));
+check("ext/lifedock: rules, puzzles, then the view; its own server part (never server.js)", EJ.id === "lifedock" && EJ.name === "Life Choices" && EJ.scripts.join() === "lifemoney.js,lifecore.js,lifepuzzles.js,lifedock.js" /* 2.947.0: + money */ && EJ.server === "lifeserver.js" && !/life/.test(src("misc/server.js")));
 check("🎓 on the top bar's mini-app group after 🚓; the docker's keys stay in the game (secfloat / the prompt docker's P)",
   /\["tX_chasedock", "🚓", "Police Chase"\], \["tX_lifedock", "🎓", "Life Choices"\]/.test(src("static/appstrip.js")) && /#chasedock, #lifedock/.test(src("static/secfloat.js")) && /#chasedock, #lifedock"/.test(src("ext/promptdock/pfloat.js")));
 check("life_choices.json is this PC's own: gitignored and left out of the zips", /^life_choices\.json$/m.test(src(".gitignore")) && /^life_choices\.json$/m.test(src("misc/_gitignore")) && /! -name "life_choices\.json"/.test(src("scripts/make_zips.sh")));

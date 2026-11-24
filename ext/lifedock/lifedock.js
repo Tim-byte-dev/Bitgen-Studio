@@ -11,12 +11,14 @@
  *   Saved       the whole game in localStorage h3.life.save after every move (a reload carries on, the puzzle too)
  *   2.946.0     🎲 a pair of dice every turn: the total is your luck (2 worst - 12 best, roll again), shown with the dice, a
  *               luck meter and what happened (#lcDice); your own last roll stays in view while the bots play
+ *   2.947.0     💸 Budget, 🛡 insurance and tax on your turn (lifemoney.js): food and fun, health / car / home cover, the last
+ *               quarter's bills, the last tax return; ❤ wellbeing in the players' table
  * window.H3Life: newGame(opts), state(), act(), info() (tests)
  */
 (function (root) {
   "use strict";
-  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles;
-  if (!doc || !C || !P) return;
+  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles, MN = root.H3LifeMoney;
+  if (!doc || !C || !P || !MN) return;
   var $ = function (id) { return doc.getElementById(id); };
   var LS = {
     get: function (k, d) { try { var v = root.localStorage.getItem("h3.life." + k); return v == null ? d : v; } catch (e) { return d; } },
@@ -155,11 +157,11 @@
     var s = G.s, b = $("lcPlayers"); if (!b) return;
     if (!s) { b.innerHTML = ""; return; }
     var cur = s.over ? null : C.current(s);
-    b.innerHTML = "<table><tr><th>Player</th><th>Age</th><th class=\"n\">Cash</th><th>IQ</th><th>Where / work</th><th class=\"n\">Worth</th></tr>" + s.players.map(function (p) {
+    b.innerHTML = "<table><tr><th>Player</th><th>Age</th><th class=\"n\">Cash</th><th>IQ</th><th title=\"Wellbeing\">❤</th><th>Where / work</th><th class=\"n\">Worth</th></tr>" + s.players.map(function (p) {
       var work = p.job ? p.job.title : p.ring === "fork" ? "choosing" : RINGNAME[p.ring];
-      return "<tr class=\"" + (p === cur ? "now" : "") + (p.retired ? " out" : "") + "\" title=\"" + esc(RINGNAME[p.ring] + " · " + p.qual + (p.loan ? " · loan " + M(p.loan) : "") + (p.studentDebt ? " · student debt " + M(p.studentDebt) : "") + (p.bot ? " · " + C.PERSONAS[p.bot] : "")) + "\">" +
+      return "<tr class=\"" + (p === cur ? "now" : "") + (p.retired ? " out" : "") + "\" title=\"" + esc(RINGNAME[p.ring] + " · " + p.qual + (p.loan ? " · loan " + M(p.loan) : "") + (p.studentDebt ? " · student debt " + M(p.studentDebt) : "") + (p.bot ? " · " + C.PERSONAS[p.bot] : "") + (p.ins ? " · cover: " + (Object.keys(p.ins).filter(function (k) { return p.ins[k]; }).join(", ") || "none") : "")) + "\">" +
         "<td><span class=\"dot\" style=\"background:" + p.color + "\"></span>" + esc(p.name) + (p.bot ? " 🤖" : "") + (p.retired ? (p.bankrupt ? " 💥" : " 🏖") : "") + "</td><td>" + Math.floor(p.age) +
-        "</td><td class=\"n\">" + M(p.cash) + "</td><td>" + p.iq + "</td><td>" + esc(work) + (p.qual !== "none" ? " · " + ({ diploma: "🎓HS", trade: "🔧", degree: "🎓" })[p.qual] : "") + "</td><td class=\"n\">" + k$(C.netWorth(s, p)) + "</td></tr>";
+        "</td><td class=\"n\">" + M(p.cash) + "</td><td>" + p.iq + "</td><td>" + Math.round(p.wellbeing == null ? 50 : p.wellbeing) + "</td><td>" + esc(work) + (p.qual !== "none" ? " · " + ({ diploma: "🎓HS", trade: "🔧", degree: "🎓" })[p.qual] : "") + "</td><td class=\"n\">" + k$(C.netWorth(s, p)) + "</td></tr>";
     }).join("") + "</table>";
   }
   /* 2.946.0: the pair of dice and the luck - the last roll on the table, your own last roll below it */
@@ -209,6 +211,7 @@
       b.innerHTML = "<h4>" + (again ? "🎲 Double six - roll again, " : "Your turn, ") + esc(p.name) + "</h4><div>Age " + Math.floor(p.age) + " · " + M(p.cash) + " · IQ " + p.iq + " · " + RINGNAME[p.ring] + (p.job ? " · " + esc(p.job.title) : "") +
         (s.news ? "<br><span class=\"hint\">📰 " + esc(s.news) + "</span>" : "") + "</div><button class=\"big\" id=\"lcRoll\" type=\"button\">" + lbl + "</button>";
       $("lcRoll").onclick = doRoll;
+      moneyPanel(b, s, p);
       return;
     }
     if (pd.type === "choice") {
@@ -238,6 +241,34 @@
       $("lcAns").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); give($("lcAns").value); } });
       setTimeout(function () { try { $("lcAns").focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 0);
     }
+  }
+  /* ---------------- 2.947.0: budget, insurance and tax (lifemoney.js) ---------------- */
+  function moneyPanel(b, s, p) {
+    C.money0(p);
+    var adult = !!p.job || p.ring === "jobs" || p.ring === "invest" || p.ring === "estate";
+    var d = doc.createElement("details"); d.id = "lcMoney"; if (G.moneyOpen) d.open = true;
+    d.addEventListener("toggle", function () { G.moneyOpen = d.open; });
+    var opt = function (T, cur) { return Object.keys(T).map(function (k) { return "<option value=\"" + k + "\"" + (k === cur ? " selected" : "") + ">" + esc(T[k][0]) + " - " + M(T[k][1]) + " a quarter" + (T[k][2] ? " (❤ +" + T[k][2] + ")" : "") + "</option>"; }).join(""); };
+    var mine = C.lotsOf(s, p), pv = mine.reduce(function (t, k) { return t + C.lot(s, k).value; }, 0);
+    var html = "<summary>💸 Budget, 🛡 insurance and tax · ❤ wellbeing " + Math.round(p.wellbeing) + "</summary>";
+    if (!adult) html += "<div class=\"hint\">Your bills, budget and insurance start when you start work (high school, college and the apprenticeship are covered).</div>";
+    else {
+      html += "<label>Food <select id=\"lcFood\">" + opt(MN.FOOD, p.budget.food) + "</select></label><label>Fun <select id=\"lcFun\">" + opt(MN.FUN, p.budget.fun) + "</select></label>" +
+        "<div class=\"hint\">Fun keeps your ❤ wellbeing up (it drops 1 a quarter); it counts at the end: $2,000 a point above or below 50.</div><div class=\"ins\">" +
+        Object.keys(MN.COVER).map(function (k) { var c = MN.COVER[k]; return "<label><input type=\"checkbox\" data-cover=\"" + k + "\"" + (p.ins[k] ? " checked" : "") + "> " + esc(c.name) + " - " + M(MN.premium(k, pv)) + " a quarter, " + M(c.excess) + " excess</label>"; }).join("") +
+        "</div><div class=\"hint\">🏥 also saves the Medicare levy surcharge (over $105,000 a year without hospital cover). 🏠 is contents only while you rent.</div>";
+      var L = p.lastBills;
+      if (L) html += "<div class=\"bills\"><b>Last quarter's bills " + M(L.total) + "</b>: " + [["rent", "rent"], ["utilities", "utilities"], ["phone", "phone + internet"], ["transport", "getting around"], ["food", "food"], ["fun", "fun"], ["insurance", "insurance"]]
+        .filter(function (x) { return L[x[0]]; }).map(function (x) { return x[1] + " " + M(L[x[0]]); }).join(" · ") + "</div>";
+      if (p.job) html += "<div class=\"hint\">Pay " + M(p.job.salary / 4) + " a quarter, tax taken " + M(MN.withholding(p.job.salary, p.ins.health)) + " (" + MN.YEAR + " Australian rates + 2% Medicare levy).</div>";
+    }
+    var T = p.lastTax;
+    if (T) html += "<div class=\"bills\"><b>🧾 Tax return at " + T.age + "</b>: income " + M(T.income) + " - deductions " + M(T.deductions) + " = taxable " + M(T.taxable) + "; tax " + M(T.tax) + (T.surcharge ? " (incl. " + M(T.surcharge) + " surcharge)" : "") + ", withheld " + M(T.withheld) + " → <b>" + (T.refund >= 0 ? "refund " + M(T.refund) : "bill " + M(-T.refund)) + "</b></div>";
+    d.innerHTML = html; b.appendChild(d);
+    if (!adult) return;
+    $("lcFood").onchange = function () { C.setBudget(s, p, { food: this.value }); save(); };
+    $("lcFun").onchange = function () { C.setBudget(s, p, { fun: this.value }); save(); };
+    Array.prototype.forEach.call(d.querySelectorAll("[data-cover]"), function (el) { el.onchange = function () { C.setCover(s, p, el.getAttribute("data-cover"), el.checked); save(); logView(); }; });
   }
   function give(v) { var z = G.s && G.s.puz; if (!z || z.done) return; z.done = { ok: P.check(z.p, v), given: String(v) }; save(); act(); }
   function carryOn() { var s = G.s, z = s && s.puz; if (!z || !z.done) return; var ok = z.done.ok; s.puz = null; C.answer(s, ok); after(); }
