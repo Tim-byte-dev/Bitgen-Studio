@@ -10859,8 +10859,8 @@ A cake (a gold diamond before 2.937.0) shows up now and then below the station f
 
 **🎥** (V, or C) cycles the view (2.939.0): the overview of the whole maze (turned a quarter in a tall, narrow docker), a
 drone following your car from high up, and the driving view just behind your roof - in both following views ↑ drives
-straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
-and is off to start with. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten is saved
+straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (music, the engine, a siren that grows as the
+police close in - see "Music and sound" below) and is off to start with; **⚙** sets the volumes. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten is saved
 under your name from Settings ▸ Security ▸ Preferred name (else your username, else "Driver") - nothing is asked (2.940.0);
 the scores are kept in police_chase.json in the install folder.
 
@@ -10921,6 +10921,23 @@ pictures).
 - **⚡ Speed boosts** (a lightning bolt over a ring) appear on random roads now and then (at most two, blinking before they
   go). Whoever gets there first takes it: you go about 1.45x as fast for 4 s (flames from the exhaust, a ⚡ bar under the
   score); a police car goes faster too (a yellow nitro flame).
+
+### Music and sound (2.943.0)
+
+Everything you hear is made by bitGen as you play - no sound files. **M** (or **🔇 / 🔊**) turns it all on and off.
+
+- **Music** - bitGen's own arcade chase tune. With the police far away it is just bass and drums; as the nearest police
+  car closes in it gets faster and fuller (the lead comes in). While the 🚀 rocket launcher lasts it switches to a pumped-up
+  version. Pause with **P** / **Esc** and it carries on quietly, muffled (for up to 45 seconds); it stops on the title and
+  at GAME OVER.
+- **The engine** follows your speed - it idles when you stop, drops when spikes slow you, roars during a ⚡ boost.
+- **Tyres squeal** on a hard turn or a U-turn at speed, and when a police car swerves to dodge a rocket.
+- **Explosions** are layered - a deep boom, a crack, a crackling fire and bits of debris landing a moment later. Your car
+  is the biggest, a police car big, a rocket hitting a wall small. They come from the side of the screen they happen on.
+- **⚙ Sound** (on the bar): **🎵 Music** and **💥 Effects** volumes and **Start with sound on** - all kept on this PC.
+  Opening it pauses the game; **Esc** or **✕** closes it.
+- Kind to work: the sound stops when the game is paused for any other reason (it lost the focus, a render took the
+  graphics card), when the docker is hidden or folded and when the window goes to the background.
 
 ### Settings and modern lighting (2.939.0)
 

@@ -15061,6 +15061,13 @@ node scripts/test-942.js > /tmp/t942.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui942-ui.js > /tmp/ui942.log 2>&1 \
   && ok "2.942.0 browser test: ⛶ = full screen like the image editor's (Esc pauses; Ctrl+Esc / 🗗 / Shift+right-click leave), explosions drawn, ⚡ turbo" \
   || { bad "2.942.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui942.log | head -12; }
+# ---- 2.943.0 (🚓 Police Chase: music and sound made in code - music, engine, squeals, layered explosions, ⚙ mixer)
+node scripts/test-943.js > /tmp/t943.log 2>&1 \
+  && ok "2.943.0 units: every event has a sound, the sequencer (far / close / power), tempo, engine pitch, squeals, layered blasts, the mixer, the stop rules" \
+  || { bad "2.943.0 units"; grep -a "^FAIL" -A1 /tmp/t943.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui943-ui.js > /tmp/ui943.log 2>&1 \
+  && ok "2.943.0 browser test: nothing made while off; M starts music + engine; closer = faster; power; squeal; P muffles; hidden rests; ⚙ kept" \
+  || { bad "2.943.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui943.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

@@ -113,7 +113,7 @@ check("...your car is thrown up, rolls and lands burnt out; a police wreck on it
 check("rockets you can see: bigger, a smoke trail; the roof launcher turns to the car it fires at", /o\.scale\.setScalar\(2\)/.test(J) && /emit\(P, "smoke", o\.position\.x - D\[0\]/.test(J) && /V\.player\.launcher\.rotation\.y \+= wrapA/.test(J));
 check("⚡ boosts drawn (a lightning bolt over a ring, blinking at the end); turbo flames on your car, yellow nitro on a police car; a ⚡ bar; sounds",
   /function makeBoost\(\)/.test(J) && /V\.boostPool/.test(J) && /V\.player\.turbo\.forEach/.test(J) && /c\.turbo > 0 \? 0xffd040/.test(J) && /id="pcTurbo"/.test(D)
-  && ["crash", "kaboom", "dodge", "turbo", "turbocop", "boostup"].every((e) => J.includes('e === "' + e + '"')));
+  && ["crash", "kaboom", "dodge", "turbo", "turbocop", "boostup"].every((e) => require("../ext/chasedock/chasesound.js").NAMES.includes(e)));   // 2.943.0: the sounds live in chasesound.js
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

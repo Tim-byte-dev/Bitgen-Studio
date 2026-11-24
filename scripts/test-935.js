@@ -151,7 +151,7 @@ const call = (k, body) => new Promise((ok) => { routes[k]({ body }, { json: (j) 
   // --- the docker
   const EJ = JSON.parse(src("ext/chasedock/ext.json")), DH = src("ext/chasedock/dock.html"), JS = src("ext/chasedock/chasedock.js");
   check("ext/chasedock: ext.json (Police Chase, chasecore.js then chasedock.js, its own server part chaseserver.js)",
-    EJ.id === "chasedock" && EJ.name === "Police Chase" && EJ.scripts.join() === "chasecore.js,chasetheme.js,chasedock.js" /* 2.939.0: + the settings */ && EJ.server === "chaseserver.js");
+    EJ.id === "chasedock" && EJ.name === "Police Chase" && EJ.scripts.join() === "chasecore.js,chasetheme.js,chasesound.js,chasedock.js" /* 2.939.0: + the settings; 2.943.0: + the sound */ && EJ.server === "chaseserver.js");
   check("dock.html: 🚓 Police Chase, ▶ New game, ⏸ Pause, 🎥, 🔇, 🏆, While rendering, the stage (focusable), the HUD, the name box",
     /▾ 🚓 Police Chase/.test(DH) && ["pcNew", "pcPause", "pcCam", "pcSound", "pcHi", "pcRender", "pcStage", "pcScore", "pcBest", "pcLives", "pcJam", "pcMsg", "pcScores"].every((id) => DH.includes('id="' + id + '"'))
     && /id="pcStage" tabindex="0"/.test(DH) && /data-own-space="1"/.test(DH));

@@ -6,6 +6,7 @@
   "scripts": [
     "chasecore.js",
     "chasetheme.js",
+    "chasesound.js",
     "chasedock.js"
   ],
   "server": "chaseserver.js"

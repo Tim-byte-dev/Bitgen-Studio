@@ -21,7 +21,9 @@
  *               lighting: filmic tone mapping, soft moon / sun shadows, glowing headlights, light bars and lamps, the
  *               setting's sky; V cycles the views: overview, drone (high, following), driving (behind the roof)
  *   Sound       made on the spot with Web Audio (a siren that grows as the police close in, pick-ups, the jammer, a bust)
- *               - off to start with, M / 🔇 turns it on (kept)
+ *               - off to start with, M / 🔇 turns it on (kept). 2.943.0: all of it in chasesound.js (window.H3ChaseSound) -
+ *               our own chase music (faster as they close in, a power variation with the 🚀), the engine, tyre squeals,
+ *               layered explosions panned to where they happen, ⚙ music / effects volumes + "start with sound on"
  *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten is saved under
  *               bitGen's name for the player (2.940.0: Settings ▸ Security ▸ Preferred name, else the username - never asked)
  * window.H3Chase: newGame(seed), pause(why), resume(), camera(mode), sound(on), scores(), info() (tests)
@@ -58,7 +60,9 @@
     return loading;
   }
 
-  var G = { s: null, paused: true, why: "", auto: false, cam: ({ chase: "drone", drone: "drone", drive: "drive" })[LS.get("cam", "city")] || "city", theme: LS.get("theme", "auto"), sound: LS.get("sound", "0") === "1",
+  // 2.943.0: the sound's kept settings (chasesound.js) - "Start with sound on" when ticked / unticked, else the last M
+  var SP = root.H3ChaseSound, PR = SP ? SP.prefs(LS.get) : { music: 60, sfx: 80, start: null };
+  var G = { s: null, paused: true, why: "", auto: false, cam: ({ chase: "drone", drone: "drone", drive: "drive" })[LS.get("cam", "city")] || "city", theme: LS.get("theme", "auto"), sound: PR.start == null ? LS.get("sound", "0") === "1" : PR.start,
             render: LS.get("render", "light") === "pause" ? "pause" : "light", input: -1, raf: 0, last: 0, drawn: 0, frames: 0, V: null,
             scores: [], hiFile: 0, msgKey: "", padPrev: {}, swipe: null, light: false, mazeOf: null, err: "" };
 
@@ -751,7 +755,7 @@
     var dt = G.last ? Math.min(0.1, (now - G.last) / 1000) : 1 / 60; G.last = now;
     pad();
     var running = G.s && !G.paused && !G.demo && G.s.phase !== "over";          // GAME OVER: one last picture, then still
-    if (running) { var evs = C.step(G.s, dt, { dir: G.input, fire: G.fire }); G.input = -1; G.fire = false; evs.forEach(onEvent); }
+    if (running) { var pd = G.s.player.dir, evs = C.step(G.s, dt, { dir: G.input, fire: G.fire }); G.input = -1; G.fire = false; evs.forEach(onEvent); squealCheck(pd); soundTick(); }
     draw(dt, now / 1000);
     hud();
     G.frames++;
@@ -770,7 +774,7 @@
   }
   function pause(why, auto) {
     if (!G.s || G.demo || G.s.phase === "over") return;
-    G.paused = true; G.why = why || "paused"; G.auto = !!auto; sirenOff(); hud(); kick();
+    G.paused = true; G.why = why || "paused"; G.auto = !!auto; G.pausedAt = Date.now(); soundTick(); hud(); kick();
   }
   function resume() {
     if (!G.s || G.demo || G.s.phase === "over") return;
@@ -782,7 +786,7 @@
     if (e === "over") gameOver();
   }
   function gameOver() {
-    sirenOff();
+    soundTick();
     var s = G.s, top = G.scores, qual = s.score > 0 && (top.length < 10 || s.score > top[top.length - 1].score);
     if (qual) saveScore();       // 2.940.0: no name asked - bitGen's own (Settings ▸ Security ▸ Preferred name)
   }
@@ -850,6 +854,9 @@
   function focus() { var st = $("pcStage"); if (st && doc.activeElement !== st) { try { st.focus({ preventScroll: true }); } catch (e) { st.focus(); } } }
   function onKey(e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var mixOpen = $("pcMixBox") && $("pcMixBox").classList.contains("on");
+    if (mixOpen && e.key === "Escape") { mixer(false); focus(); e.preventDefault(); e.stopPropagation(); return; }    // Esc closes the mixer first (still paused)
+    if (e.target && e.target.closest && e.target.closest("#pcMixBox")) return;                                          // the mixer's own keys never steer
     var done = true, live = G.s && !G.demo;
     if (e.code in KEYS) {
       if (!live) newGame();
@@ -883,74 +890,71 @@
   /** 2.939.0: V - the overview, the drone following the car, the driving view (C still works; "chase" = the drone) */
   function setCamera(c) { G.cam = c === "chase" ? "drone" : CAMS.indexOf(c) >= 0 ? c : "city"; LS.set("cam", G.cam); G.camSettling = 40; hud(); kick(); }
   function setTheme(id) { G.theme = id; LS.set("theme", id); G.mazeOf = null; G.camSettling = 4; kick(); }
-  function setSound(on) { G.sound = !!on; LS.set("sound", G.sound ? "1" : "0"); if (!G.sound) sirenOff(); else snd("unlock"); hud(); }
+  function setSound(on) { G.sound = !!on; LS.set("sound", G.sound ? "1" : "0"); if (AU) AU.on(G.sound); if (G.sound) { snd("unlock"); soundTick(); } hud(); }
 
-  /* ---------------- sound: made on the spot ---------------- */
-  var A = null;
-  function actx() {
-    if (!G.sound) return null;
-    if (!A) {
-      var AC = root.AudioContext || root.webkitAudioContext; if (!AC) return null;
-      try { var c = new AC(), mst = c.createGain(); mst.gain.value = 0.35; mst.connect(c.destination); A = { c: c, m: mst, siren: null }; } catch (e) { return null; }
-    }
-    if (A.c.state === "suspended") { try { A.c.resume(); } catch (e) { /* the next key */ } }
-    return A;
+  /* ---------------- sound (2.943.0: ext/chasedock/chasesound.js - the music, the engine, tyre squeals, layered
+   * explosions and the ⚙ mixer; M / 🔇 stays the master switch). A deliberate pause (P / Esc / ⏸) keeps the music, quiet
+   * and muffled, for up to PAUSE_MUSIC ms; any other pause, the docker hidden or folded, the window in the background:
+   * everything stops and the sound card rests. Nothing is made while the sound is off. ---------------- */
+  var AU = SP ? SP.create(root) : null, PAUSE_MUSIC = 45000;
+  if (AU) { AU.mix(PR.music, PR.sfx); AU.on(G.sound); }
+  var FXK = { crash: "crash", kaboom: "wreck", boom: "boom" };
+  /** where an explosion (or a police car's dodge) is on the screen -> the stereo pan */
+  function panFor(e) {
+    var s = G.s, V = G.V; if (!s || !V || !T || G.demo) return 0;
+    var x = null, y = null, k = FXK[e];
+    if (k) (s.fx || []).forEach(function (f) { if (f.kind === k) { x = f.x; y = f.y; } });
+    else if (e === "dodge") s.police.forEach(function (c) { if (c.evade) { x = c.x; y = c.y; } });
+    if (x == null) return 0;
+    var w = world(s.maze, x, y), v = new T.Vector3(w[0], 0, w[1]).project(V.cam);
+    return SP.panOf(v.x);
   }
-  function tone(type, f0, f1, dur, vol, at) {
-    var a = actx(); if (!a) return;
-    var t = a.c.currentTime + (at || 0), o = a.c.createOscillator(), g = a.c.createGain();
-    o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
-    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(a.m); o.start(t); o.stop(t + dur + 0.02);
-  }
-  function noise(dur, vol) {
-    var a = actx(); if (!a) return;
-    var n = Math.floor(a.c.sampleRate * dur), buf = a.c.createBuffer(1, n, a.c.sampleRate), d = buf.getChannelData(0);
-    for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
-    var s = a.c.createBufferSource(), g = a.c.createGain(); g.gain.value = vol; s.buffer = buf; s.connect(g); g.connect(a.m); s.start();
-  }
-  var blip = 0;
   function snd(e) {
-    if (!G.sound) return;
-    if (e === "unlock") { actx(); return; }
-    if (e === "cash") { blip ^= 1; tone("square", blip ? 1046 : 1318, blip ? 1046 : 1318, 0.05, 0.05); }
-    else if (e === "fire") { noise(0.12, 0.08); tone("sawtooth", 900, 200, 0.25, 0.05); }
-    else if (e === "boom") { noise(0.45, 0.3); tone("sine", 120, 40, 0.4, 0.12); }
-    else if (e === "block") { tone("square", 160, 120, 0.12, 0.06); }
-    else if (e === "nitro") { tone("sawtooth", 300, 1200, 0.5, 0.05); }
-    else if (e === "spikes") { tone("triangle", 1800, 1500, 0.08, 0.04); tone("triangle", 1800, 1500, 0.08, 0.04, 0.1); }
-    else if (e === "slow") { noise(0.3, 0.12); tone("square", 500, 120, 0.4, 0.05); }
-    else if (e === "shield") { tone("sine", 1500, 2200, 0.2, 0.07); }
-    else if (e === "jammer") { tone("sawtooth", 220, 1400, 0.35, 0.07); tone("sine", 1400, 300, 0.3, 0.05, 0.3); }
-    else if (e === "tag") { noise(0.18, 0.18); tone("square", 180, 60, 0.2, 0.08); tone("sine", 660, 1320, 0.15, 0.05, 0.12); }
-    else if (e === "crash") { noise(0.9, 0.45); tone("sine", 90, 28, 0.9, 0.2); tone("sawtooth", 200, 40, 0.5, 0.06); }   // 2.942.0
-    else if (e === "kaboom") { noise(0.7, 0.38); tone("sine", 110, 30, 0.7, 0.16); }
-    else if (e === "dodge") { noise(0.18, 0.06); tone("square", 1400, 900, 0.18, 0.03); }
-    else if (e === "turbo") { tone("sawtooth", 200, 1600, 0.45, 0.06); tone("sine", 800, 2400, 0.3, 0.04, 0.1); }
-    else if (e === "turbocop") { tone("sawtooth", 600, 150, 0.4, 0.05); }
-    else if (e === "boostup") { tone("sine", 1760, 2637, 0.1, 0.04); }
-    else if (e === "busted") { noise(0.4, 0.25); [880, 660, 880, 660].forEach(function (f, i) { tone("triangle", f, f, 0.22, 0.07, 0.25 + i * 0.25); }); }
-    else if (e === "clear" || e === "extra") { [523, 659, 784, 1046].forEach(function (f, i) { tone("square", f, f, 0.12, 0.05, i * 0.1); }); }
-    else if (e === "bonus") { tone("sine", 784, 1568, 0.25, 0.08); }
-    else if (e === "bonusup") { tone("sine", 1568, 1568, 0.08, 0.04); tone("sine", 2093, 2093, 0.08, 0.04, 0.09); }
-    else if (e === "start") { [392, 523, 659].forEach(function (f, i) { tone("triangle", f, f, 0.14, 0.06, i * 0.13); }); }
-    else if (e === "over") { [392, 330, 262, 196].forEach(function (f, i) { tone("triangle", f, f, 0.25, 0.07, i * 0.22); }); }
+    if (!G.sound || !AU) return;
+    if (e === "unlock") { AU.on(true); AU.unlock(); return; }
+    AU.play(e, { pan: panFor(e) });
   }
-  function sirenOff() { if (A && A.siren) { try { A.siren.o.stop(); } catch (e) { /* stopped */ } A.siren = null; } }
-  /** the siren: two tones, louder as the nearest police car closes in (silent while jammed) */
-  function siren() {
-    var s = G.s;
-    if (!G.sound || !s || G.demo || G.paused || s.phase !== "play") { sirenOff(); return; }
-    var near = Infinity;
-    s.police.forEach(function (c) { if (c.mode === "run") near = Math.min(near, Math.hypot(c.x - s.player.x, c.y - s.player.y)); });
-    var a = actx(); if (!a) return;
-    if (!a.siren) {
-      var o = a.c.createOscillator(), g = a.c.createGain(); o.type = "sine"; g.gain.value = 0; o.connect(g); g.connect(a.m); o.start();
-      a.siren = { o: o, g: g };
-    }
-    var t = a.c.currentTime, v = near === Infinity ? 0 : Math.max(0, Math.min(0.06, 0.06 * (1 - near / 10)));
-    a.siren.g.gain.setTargetAtTime(v, t, 0.1);
-    a.siren.o.frequency.setTargetAtTime(Math.floor(t / 0.45) % 2 ? 960 : 720, t, 0.02);
+  /** the getaway car's speed now (tiles a second) and its normal speed */
+  function carSpeed(s) {
+    var sp = C.speeds(s.level), p = s.player;
+    return { v: sp.player * (s.slowT > 0 ? C.ABILITY.flanker.slow : 1) * (p.turbo > 0 ? C.BOOST.player : 1), base: sp.player };
+  }
+  /** a hard turn at speed squeals (once in a while - not on every corner of a zig-zag) */
+  function squealCheck(prev) {
+    var s = G.s; if (!G.sound || !AU || !s || G.demo) return;
+    var p = s.player, cs = carSpeed(s), k = SP.turned(prev, p.dir, p.moving, cs.v / cs.base), now = Date.now();
+    if (k > 0 && now - (G.sqT || 0) > 220) { G.sqT = now; AU.squeal(k); }
+  }
+  /** what should sound now - once a frame while playing, four times a second otherwise */
+  function soundTick() {
+    if (!AU || !G.sound) return;
+    var s = G.s, live = !!(s && !G.demo);
+    if (!shown()) { AU.rest(); return; }
+    if (!live || s.phase === "over") { AU.stopAll(); return; }
+    var deliberate = G.paused && G.why === "paused" && Date.now() - (G.pausedAt || 0) < PAUSE_MUSIC;
+    if (G.paused && !deliberate) { AU.rest(); return; }
+    if (s.phase === "play") s.heard = true;
+    var play = s.phase === "play" && !G.paused, p = s.player, cs = carSpeed(s), near = Infinity;
+    s.police.forEach(function (c) { if (c.mode === "run") near = Math.min(near, Math.hypot(c.x - p.x, c.y - p.y)); });
+    AU.frame({ music: !!s.heard, paused: G.paused, busted: s.phase === "busted" || s.phase === "clear", near: near, power: s.jamT > 0,
+               engine: { play: play, moving: !!p.moving, speed: cs.v, base: cs.base, turbo: p.turbo > 0, slowed: s.slowT > 0 },
+               siren: play });
+  }
+  /** ⚙ the mixer: music and effects volumes, start with sound on (kept: h3.chase.music / sfx / startsound) */
+  function mixer(open) {
+    var b = $("pcMixBox"); if (!b) return;
+    var on = open == null ? !b.classList.contains("on") : !!open;
+    b.classList.toggle("on", on);
+    if (on && $("pcScores")) $("pcScores").classList.remove("on");           // one panel at a time (same corner)
+    if (on) { $("pcVolMusic").value = PR.music; $("pcVolSfx").value = PR.sfx; $("pcStartSound").checked = PR.start == null ? G.sound : PR.start;
+      $("pcVolMusicN").textContent = PR.music; $("pcVolSfxN").textContent = PR.sfx;
+      if (G.s && !G.demo && !G.paused && G.s.phase !== "over") pause("paused"); }
+  }
+  function mixSet(which, v) {
+    PR[which] = SP ? SP.clampVol(v, PR[which]) : PR[which]; LS.set(which, PR[which]);
+    $(which === "music" ? "pcVolMusicN" : "pcVolSfxN").textContent = PR[which];
+    if (AU) AU.mix(PR.music, PR.sfx);
+    if (which === "sfx" && G.sound && AU) AU.play("cash");                 // hear the new level
   }
 
   /* ---------------- wiring ---------------- */
@@ -960,9 +964,11 @@
     try { if (root.localStorage.getItem("h3.g.chasedock") === "1" && !d.dataset.pcSeen) d.classList.add("dockgone"); } catch (e) { /* fine */ }
     d.dataset.pcSeen = "1";
     st.addEventListener("keydown", onKey);
-    st.addEventListener("blur", function () { setTimeout(function () { if (doc.activeElement !== st && G.s && !G.demo && !G.paused && G.s.phase !== "over") pause("the game lost the focus"); }, 0); });
+    st.addEventListener("blur", function () { setTimeout(function () {
+      var inMix = doc.activeElement && doc.activeElement.closest && doc.activeElement.closest("#pcMixBox");   // 2.943.0: the mixer is a deliberate pause
+      if (doc.activeElement !== st && G.s && !G.demo && !G.paused && G.s.phase !== "over") pause(inMix ? "paused" : "the game lost the focus"); }, 0); });
     st.addEventListener("pointerdown", function (e) {
-      if (e.target && (e.target.closest("#pcScores"))) return;
+      if (e.target && (e.target.closest("#pcScores") || e.target.closest("#pcMixBox"))) return;
       G.swipe = { x: e.clientX, y: e.clientY };
       focus();
       if (G.s && !G.demo && G.paused && G.s.phase !== "over") resume();
@@ -981,7 +987,15 @@
     $("pcCam").addEventListener("click", function () { setCamera(nextCam()); focus(); });
     if ($("pcTheme")) { $("pcTheme").value = G.theme; $("pcTheme").addEventListener("change", function () { setTheme($("pcTheme").value); focus(); }); }
     $("pcSound").addEventListener("click", function () { setSound(!G.sound); focus(); });
-    $("pcHi").addEventListener("click", function () { var b = $("pcScores"); b.classList.toggle("on"); if (b.classList.contains("on")) loadScores(); focus(); });
+    // 2.943.0: ⚙ the mixer
+    if ($("pcMix")) {
+      $("pcMix").addEventListener("click", function () { mixer(); });
+      $("pcVolMusic").addEventListener("input", function () { mixSet("music", this.value); });
+      $("pcVolSfx").addEventListener("input", function () { mixSet("sfx", this.value); });
+      $("pcStartSound").addEventListener("change", function () { PR.start = !!this.checked; LS.set("startsound", PR.start ? "1" : "0"); });
+      $("pcMixClose").addEventListener("click", function () { mixer(false); focus(); });
+    }
+    $("pcHi").addEventListener("click", function () { mixer(false); var b = $("pcScores"); b.classList.toggle("on"); if (b.classList.contains("on")) loadScores(); focus(); });
     $("pcRender").value = G.render;
     $("pcRender").addEventListener("change", function () { G.render = $("pcRender").value === "pause" ? "pause" : "light"; LS.set("render", G.render); focus(); kick(); });
     $("pcCloseBtn").addEventListener("click", function (e) { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("chasedock", "tX_chasedock"); });
@@ -1011,7 +1025,7 @@
       wasGone = gone;
       if (shown()) { start(); kick(); } else if (G.s && !G.demo && !G.paused) pause("the docker is hidden");
     }).observe(d, { attributes: true, attributeFilter: ["class"] });
-    setInterval(function () { siren(); if (G.V && shown() && !G.raf && G.s && !G.demo && !G.paused && G.s.phase !== "over") kick(); if (G.V && shown() && G.paused && G.auto && !rendering()) { resume(); } }, 250);
+    setInterval(function () { soundTick(); if (G.V && shown() && !G.raf && G.s && !G.demo && !G.paused && G.s.phase !== "over") kick(); if (G.V && shown() && G.paused && G.auto && !rendering()) { resume(); } }, 250);
     if (shown()) start();
     hud();
   }
@@ -1027,6 +1041,7 @@
   root.H3Chase = {
     newGame: function (seed) { return start().then(function () { return newGame(seed); }); },
     pause: pause, resume: resume, camera: setCamera, theme: setTheme, sound: setSound, scores: loadScores, save: saveScore,
+    audio: function () { return AU ? AU.info() : null; }, mixer: mixer, mix: function (music, sfx) { if (music != null) mixSet("music", music); if (sfx != null) mixSet("sfx", sfx); return { music: PR.music, sfx: PR.sfx, start: PR.start }; },   // 2.943.0
     state: function () { return G.demo ? null : G.s; },
     full: function (on) { if (on == null) return isFull(); if (typeof root.toggleMax === "function") root.toggleMax("chasedock", !!on); return isFull(); },   // 2.942.0
     _view: function () { return G.V; },                                     // 2.942.0: for the browser tests (the effects drawn)
