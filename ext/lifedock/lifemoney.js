@@ -14,6 +14,9 @@
  *            groceries / eating out (your choice), fun (your choice - a picnic costs less than the cinema, the cinema less
  *            than concerts, a holiday most) and insurance premiums
  *   WELLBEING  fun keeps it up (0-100, start 50); it counts at the end (+/- $2,000 a point from 50)
+ *   HOUSING  2.948.0 (Tim: "people can choose to get shared housing, but the roll of the dice can also affect their luck with the
+ *            housemates"): rent on your own, or share a house (about half the rent and the utilities) - and each roll also brings
+ *            housemate luck (HOUSEMATE: a housemate leaving owing rent ... one who becomes a best friend), money and ❤ wellbeing
  *   COVER    🏥 health (hospital bills -> the excess; no Medicare levy surcharge), 🚗 car (a written-off car -> the
  *            excess), 🏠 home (storm and water damage -> the excess; contents only while renting)
  */
@@ -46,6 +49,13 @@
   var FOOD = { home: ["🥕 Cook at home", 1500], mix: ["🍝 A mix of home and takeaway", 2400], out: ["🍽 Eat out a lot", 3900] };
   // [label, a quarter's cost, wellbeing a quarter]
   var FUN = { picnic: ["🧺 Picnics, parks and the beach", 150, 1], cinema: ["🎬 Cinema and cafés", 450, 1.5], gigs: ["🎤 Concerts, dinners out and sport", 1300, 2], travel: ["✈ A holiday every year", 2800, 3] };
+  // 2.948.0: [label, rent a quarter, utilities a quarter]
+  var HOUSING = { alone: ["🏠 Rent a place on my own", 4200, 900], share: ["🏘 Share a house", 2300, 450] };
+  // housemate luck on the same roll while sharing: [what happened, cash, wellbeing]
+  var HOUSEMATE = { 2: ["A housemate moves out owing rent - you cover their share", -1500, -3], 3: ["A housemate's party wrecks the lounge", -600, -3],
+                    4: ["Dishes, noise and arguments at home", 0, -2], 5: ["A housemate keeps eating your food", -80, -1],
+                    9: ["A housemate cooks for everyone", 100, 1], 10: ["The house splits a bulk shop", 300, 1],
+                    11: ["Movie nights with great housemates", 0, 3], 12: ["A housemate becomes a best friend", 500, 5] };
   var BILL = { rent: 4200, utilities: 900, phone: 250, transport: 650, jobseeker: 2400 };
   var COVER = { health: { name: "🏥 Health (hospital + extras)", premium: 650, excess: 500 }, car: { name: "🚗 Car (comprehensive)", premium: 320, excess: 800 },
                 home: { name: "🏠 Home (building + contents)", premium: 150, rate: 0.001, excess: 1000 } };
@@ -55,7 +65,8 @@
   /** a quarter's bills for an adult: {rent, utilities, phone, transport, food, fun, insurance, total} */
   function bills(b, ins, ownsHome, propValue) {
     b = b || {}; ins = ins || {};
-    var o = { rent: ownsHome ? 0 : BILL.rent, utilities: BILL.utilities, phone: BILL.phone, transport: BILL.transport,
+    var hs = HOUSING[b.housing] || HOUSING.alone;
+    var o = { rent: ownsHome ? 0 : hs[1], utilities: ownsHome ? BILL.utilities : hs[2], phone: BILL.phone, transport: BILL.transport,
               food: (FOOD[b.food] || FOOD.mix)[1], fun: (FUN[b.fun] || FUN.cinema)[1], insurance: 0 };
     Object.keys(COVER).forEach(function (k) { if (ins[k]) o.insurance += premium(k, propValue); });
     o.total = o.rent + o.utilities + o.phone + o.transport + o.food + o.fun + o.insurance;
@@ -64,7 +75,9 @@
   /** a luck event's cost with cover: the excess (never more than the bill) */
   function covered(kind, ins, cost) { return ins && ins[kind] && COVER[kind] ? Math.min(cost, COVER[kind].excess) : cost; }
 
-  var API = { SCALE: SCALE, MEDICARE: MEDICARE, MLS: MLS, STD_DEDUCTION: STD_DEDUCTION, YEAR: YEAR, FOOD: FOOD, FUN: FUN, BILL: BILL, COVER: COVER, WB: WB,
+  /** sharing a house now? (renting - an owner lives in their own place) */
+  function sharing(b, ownsHome) { return !ownsHome && !!b && b.housing === "share"; }
+  var API = { HOUSING: HOUSING, HOUSEMATE: HOUSEMATE, sharing: sharing, SCALE: SCALE, MEDICARE: MEDICARE, MLS: MLS, STD_DEDUCTION: STD_DEDUCTION, YEAR: YEAR, FOOD: FOOD, FUN: FUN, BILL: BILL, COVER: COVER, WB: WB,
               incomeTax: incomeTax, lito: lito, mlsRate: mlsRate, taxOn: taxOn, withholding: withholding, premium: premium, bills: bills, covered: covered };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.H3LifeMoney = API;

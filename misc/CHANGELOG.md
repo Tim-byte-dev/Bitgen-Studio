@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.948.0** — 🏘 Life Choices: Share a House for About Half the Rent - the Same Dice Bring Housemate Luck, From a Housemate Who Leaves Owing Rent to One Who Becomes a Best Friend
 - **2.947.0** — 💸 Life Choices: Bills, Insurance and Australian Tax - Itemised Quarterly Bills (Rent, Utilities, Phone, Getting Around, Food and Fun - a Picnic Costs Less Than the Cinema), ❤ Wellbeing, Health / Car / Home Cover With an Excess, Pay Taxed on the 2026-27 Australian Scale With the Medicare Levy and Surcharge, a Tax Return Every Birthday With Deductions
 - **2.946.0** — 🎲 Life Choices: Luck With a Pair of Dice - the Total Is Your Luck (Double 1 Terrible, 6-8 Ordinary, Double 6 Brilliant and a Roll Again), Fitted to Your Stage of Life; on the Investment Rings the Pair Moves You
 - **2.945.0** — 🎓 Life Choices: the Land & Houses Ring Outside - Blocks of Land to Build On, Houses in Good Condition and Houses That Need Renovating; Builders, Council Rates and an Auction; the Bots Use It Too

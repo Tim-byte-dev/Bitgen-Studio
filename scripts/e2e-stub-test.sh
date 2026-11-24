@@ -15096,6 +15096,13 @@ node scripts/test-947.js > /tmp/t947.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui947-ui.js > /tmp/ui947.log 2>&1 \
   && ok "2.947.0 browser test: budget picked, cover ticked, the quarter's bills itemised, a birthday's tax return, ❤ in the table" \
   || { bad "2.947.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui947.log | head -12; }
+# ---- 2.948.0 (🎓 Life Choices: shared housing and housemate luck)
+node scripts/test-948.js > /tmp/t948.log 2>&1 \
+  && ok "2.948.0 units: housing choices and bills, housemate luck on the same roll, owners and school excluded" \
+  || { bad "2.948.0 units"; grep -a "^FAIL" -A1 /tmp/t948.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui948-ui.js > /tmp/ui948.log 2>&1 \
+  && ok "2.948.0 browser test: share a house, housemate luck under the dice, the halved rent" \
+  || { bad "2.948.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui948.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

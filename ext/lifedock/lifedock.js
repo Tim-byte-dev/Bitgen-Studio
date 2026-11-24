@@ -168,7 +168,8 @@
   var FACE = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
   var LUCKCOL = { 2: "#c0392b", 3: "#d35400", 4: "#e67e22", 5: "#e6a23c", 6: "#8a8f98", 7: "#8a8f98", 8: "#8a8f98", 9: "#8bc34a", 10: "#5cb85c", 11: "#2ecc71", 12: "#f1c40f" };
   function meter(lv) { var h = ""; for (var i = 2; i <= 12; i++) h += "<i style=\"background:" + LUCKCOL[i] + "\"" + (i === lv ? " class=\"on\"" : "") + " title=\"" + i + "\"></i>"; return "<div class=\"meter\" aria-label=\"Luck " + lv + " of 12\">" + h + "</div>"; }
-  function luckLine(L) { return "<b>" + L.dice[0] + " + " + L.dice[1] + " = " + L.level + "</b> · " + esc(L.word) + (L.text ? ": " + esc(L.text) + (L.amount ? " <b>" + (L.amount > 0 ? "+" : "") + M(L.amount) + "</b>" : "") : "") + (L.level === 12 ? " · 🎲 roll again!" : ""); }
+  function luckLine(L) { return "<b>" + L.dice[0] + " + " + L.dice[1] + " = " + L.level + "</b> · " + esc(L.word) + (L.text ? ": " + esc(L.text) + (L.amount ? " <b>" + (L.amount > 0 ? "+" : "") + M(L.amount) + "</b>" : "") : "") + (L.level === 12 ? " · 🎲 roll again!" : "") +
+    (L.house ? "<br>🏘 " + esc(L.house.text) + (L.house.amount ? " <b>" + (L.house.amount > 0 ? "+" : "") + M(L.house.amount) + "</b>" : "") + " · ❤ " + (L.house.wb > 0 ? "+" : "") + L.house.wb : ""); }
   function diceView(spin) {
     var b = $("lcDice"), s = G.s; if (!b) return;
     if (spin) { b.innerHTML = "<div class=\"row\"><span class=\"faces\">" + FACE[1 + Math.floor(Math.random() * 6)] + FACE[1 + Math.floor(Math.random() * 6)] + "</span><span>rolling…</span></div>"; return; }
@@ -253,7 +254,10 @@
     var html = "<summary>💸 Budget, 🛡 insurance and tax · ❤ wellbeing " + Math.round(p.wellbeing) + "</summary>";
     if (!adult) html += "<div class=\"hint\">Your bills, budget and insurance start when you start work (high school, college and the apprenticeship are covered).</div>";
     else {
-      html += "<label>Food <select id=\"lcFood\">" + opt(MN.FOOD, p.budget.food) + "</select></label><label>Fun <select id=\"lcFun\">" + opt(MN.FUN, p.budget.fun) + "</select></label>" +
+      var owner = C.ownsHome(s, p);
+      html += "<label>Housing <select id=\"lcHousing\"" + (owner ? " disabled title=\"You live in a place you own\"" : "") + ">" + Object.keys(MN.HOUSING).map(function (k) { var h = MN.HOUSING[k]; return "<option value=\"" + k + "\"" + (k === p.budget.housing ? " selected" : "") + ">" + esc(h[0]) + " - rent " + M(h[1]) + " + bills " + M(h[2]) + " a quarter</option>"; }).join("") + "</select></label>" +
+        (owner ? "<div class=\"hint\">You live in a place you own - no rent.</div>" : p.budget.housing === "share" ? "<div class=\"hint\">🏘 Sharing: cheaper, but the dice also bring housemate luck - good or bad.</div>" : "") +
+        "<label>Food <select id=\"lcFood\">" + opt(MN.FOOD, p.budget.food) + "</select></label><label>Fun <select id=\"lcFun\">" + opt(MN.FUN, p.budget.fun) + "</select></label>" +
         "<div class=\"hint\">Fun keeps your ❤ wellbeing up (it drops 1 a quarter); it counts at the end: $2,000 a point above or below 50.</div><div class=\"ins\">" +
         Object.keys(MN.COVER).map(function (k) { var c = MN.COVER[k]; return "<label><input type=\"checkbox\" data-cover=\"" + k + "\"" + (p.ins[k] ? " checked" : "") + "> " + esc(c.name) + " - " + M(MN.premium(k, pv)) + " a quarter, " + M(c.excess) + " excess</label>"; }).join("") +
         "</div><div class=\"hint\">🏥 also saves the Medicare levy surcharge (over $105,000 a year without hospital cover). 🏠 is contents only while you rent.</div>";
@@ -267,6 +271,7 @@
     d.innerHTML = html; b.appendChild(d);
     if (!adult) return;
     $("lcFood").onchange = function () { C.setBudget(s, p, { food: this.value }); save(); };
+    if ($("lcHousing")) $("lcHousing").onchange = function () { C.setBudget(s, p, { housing: this.value }); save(); logView(); act(); };
     $("lcFun").onchange = function () { C.setBudget(s, p, { fun: this.value }); save(); };
     Array.prototype.forEach.call(d.querySelectorAll("[data-cover]"), function (el) { el.onchange = function () { C.setCover(s, p, el.getAttribute("data-cover"), el.checked); save(); logView(); }; });
   }

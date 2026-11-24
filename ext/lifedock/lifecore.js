@@ -118,6 +118,7 @@
   /** a player's 2.947.0 money fields (older saves too) */
   function money0(p) {
     if (!p.budget) p.budget = p.bot === "saver" ? { food: "home", fun: "picnic" } : p.bot === "risk" ? { food: "out", fun: "gigs" } : { food: "mix", fun: "cinema" };
+    if (!p.budget.housing) p.budget.housing = p.bot === "saver" || p.bot === "tycoon" ? "share" : "alone";   // 2.948.0
     if (!p.ins) p.ins = { health: false, car: false, home: false };
     if (p.wellbeing == null) p.wellbeing = MN.WB.start;
     if (!p.fy) p.fy = { salary: 0, rent: 0, div: 0, ded: 0, withheld: 0 };
@@ -173,6 +174,8 @@
     money: { 2: ["Your car is written off", -12000, "car"], 3: ["A burst pipe floods your place", -6000, "home"], 4: ["A stay in hospital", -6000, "health"], 5: ["Car repairs", -1500],
              9: ["Interest on your savings", 1000], 10: ["A tip on a deal pays off", 8000], 11: ["An inheritance from a great-aunt", 25000], 12: ["A lottery win", 75000] },
   };
+  function isAdult(p) { return !!p.job || p.ring === "jobs" || p.ring === "invest" || p.ring === "estate"; }
+  function ownsHome(s, p) { return lotsOf(s, p).some(function (k) { return lotType(s, k) !== "land"; }); }
   function stageOf(p) { return p.ring === "invest" || p.ring === "estate" ? "money" : p.ring === "jobs" ? "work" : "school"; }
   /** the luck of a roll: the stage's event for the total (property owners' bad luck hits their property); school losses never
    *  take more than you have */
@@ -195,8 +198,15 @@
       }
       p.cash += amt;
     }
-    s.luck = { who: p.id, dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt, again: lv === 12 };
-    p.lastLuck = { dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt };
+    // 2.948.0: sharing a house - the same roll brings housemate luck (money and wellbeing)
+    var house = null;
+    if (p.budget && isAdult(p) && MN.sharing(p.budget, ownsHome(s, p)) && MN.HOUSEMATE[lv]) {
+      var hm = MN.HOUSEMATE[lv]; house = { text: hm[0], amount: hm[1], wb: hm[2] };
+      p.cash += hm[1]; p.wellbeing = Math.max(0, Math.min(100, (p.wellbeing == null ? MN.WB.start : p.wellbeing) + hm[2]));
+      log(s, "🏘 " + p.name + ": " + hm[0] + (hm[1] ? " (" + (hm[1] > 0 ? "+" : "") + money(hm[1]) + ")" : "") + " · ❤ " + (hm[2] > 0 ? "+" : "") + hm[2] + ".");
+    }
+    s.luck = { who: p.id, dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt, again: lv === 12, house: house };
+    p.lastLuck = { dice: [d1, d2], level: lv, word: LUCKWORD[lv], text: text, amount: amt, house: house };
     log(s, "🎲 " + p.name + " rolls " + d1 + " + " + d2 + " = " + lv + " - " + LUCKWORD[lv] + (text ? ": " + text + (amt ? " (" + (amt > 0 ? "+" : "") + money(amt) + ")" : "") : "") + (lv === 12 ? " - and rolls again!" : "") + ".");
     if (lv === 12) p.again = true;
     return lv;
@@ -527,7 +537,9 @@
     p.fy = { salary: 0, rent: 0, div: 0, ded: 0, withheld: 0 };
   }
   /** 2.947.0: your budget and cover - setBudget(s, p, {food, fun}) / setCover(s, p, kind, on) (any time on your own turn) */
-  function setBudget(s, p, o) { money0(p); if (o && MN.FOOD[o.food]) p.budget.food = o.food; if (o && MN.FUN[o.fun]) p.budget.fun = o.fun; return p.budget; }
+  function setBudget(s, p, o) { money0(p); if (o && MN.FOOD[o.food]) p.budget.food = o.food; if (o && MN.FUN[o.fun]) p.budget.fun = o.fun;
+    if (o && MN.HOUSING[o.housing] && o.housing !== p.budget.housing) { p.budget.housing = o.housing; log(s, p.name + (o.housing === "share" ? " moves into a share house." : " moves into a place of their own.")); }
+    return p.budget; }
   function setCover(s, p, kind, on) { money0(p); if (MN.COVER[kind]) { p.ins[kind] = !!on; log(s, (on ? "🛡 " + p.name + " takes out " : p.name + " drops ") + MN.COVER[kind].name.replace(/^\S+ /, "").toLowerCase() + " insurance."); } return p.ins; }
   /** short of cash: shares sold, then the cheapest property, then the bank; nothing left = bankrupt (out, retired) */
   function raise(s, p) {
@@ -613,7 +625,7 @@
               newGame: newGame, current: cur, square: square, canRoll: canRoll, roll: roll, answer: answer, choose: choose, botStep: botStep,
               offers: offers, loanLimit: loanLimit, netWorth: netWorth, score: score, standings: standings, propsOf: propsOf, sharesValue: sharesValue,
               money: money, coName: coName, rng: rng,
-              MN: MN, money0: money0, taxReturn: taxReturn, setBudget: setBudget, setCover: setCover,
+              MN: MN, money0: money0, isAdult: isAdult, ownsHome: ownsHome, taxReturn: taxReturn, setBudget: setBudget, setCover: setCover,
               LUCK: LUCK, LUCKWORD: LUCKWORD, luck: luck, stageOf: stageOf,
               ESTATE: ESTATE, WORKS: WORKS, YIELD: YIELD, LANDRENT: LANDRENT, upgrade: upgrade, lot: lot, lotType: lotType, lotName: lotName, lotsOf: lotsOf, works: works };
   if (typeof module !== "undefined" && module.exports) module.exports = API;

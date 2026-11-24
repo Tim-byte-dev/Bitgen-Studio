@@ -10997,6 +10997,12 @@ meter show above your turn; your own last roll stays in view while the bots play
 house or a unit), utilities, phone and internet, getting around, food and fun - and the premiums of any cover you hold.
 Open **💸 Budget, 🛡 insurance and tax** under 🎲 Roll the dice on your turn:
 
+- **Housing** (2.948.0, while you rent): a place on your own ($4,200 rent + $900 bills a quarter) or 🏘 **share a house**
+  ($2,300 + $450). Sharing saves money, but the same dice that bring your luck also bring **housemate luck**: double 1 a
+  housemate moves out owing rent (you cover their share), 3 a party wrecks the lounge, 4 dishes, noise and arguments, 5 a
+  housemate eating your food - or 9 a housemate cooking for everyone, 10 a shared bulk shop, 11 movie nights with great
+  housemates and double 6 a housemate who becomes a best friend. Each changes your cash and ❤ wellbeing and shows under the
+  dice. Once you own a house or a unit you live there - no rent and no housemates.
 - **Food**: cook at home ($1,500 a quarter), a mix of home and takeaway ($2,400) or eat out a lot ($3,900).
 - **Fun**: picnics, parks and the beach ($150), cinema and cafés ($450), concerts, dinners out and sport ($1,300) or a
   holiday every year ($2,800). Fun keeps your **❤ wellbeing** up (it drops 1 a quarter, a picnic holds it, a holiday lifts it
