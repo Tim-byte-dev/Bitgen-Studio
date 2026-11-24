@@ -12,6 +12,9 @@
  *   Settings ▸ General  "Hide the splash screen" = ui.no_splash (POST /api/config; the desktop shell reads it -
  *                       electron/startPrefs.js)
  *   H3Security.name()   the preferred name (else the username, else "") - Police Chase's high scores use it
+ *   2.941.0 (Tim: "maybe add email (optional) to security and a join community button?"): Email (optional, kept here) and
+ *   💬 Join the community - saves, closes Settings, opens 💬 Community with its join form filled from here
+ *   (H3Community.prefill - nothing goes online until Join is pressed there); already a member = it just opens.
  * Pure (Node: scripts/test-940.js): shown(cfg), passProblem(p1, p2, had, ask), who(cfg).
  */
 (function (root) {
@@ -25,7 +28,13 @@
     return ask && !had ? "Type a password (twice) to ask for it at start-up." : "";
   }
   function who(cfg) { cfg = cfg || {}; return String(cfg.name || cfg.user || ""); }
-  if (typeof module !== "undefined" && module.exports && typeof document === "undefined") { module.exports = { shown: shown, passProblem: passProblem, who: who }; return; }
+  /** what 💬 Community's join form gets: a user ID it accepts (3-24 of letters, numbers, _ . -), the name, the email */
+  function joinFill(cfg) {
+    cfg = cfg || {};
+    var h = String(cfg.user || "").replace(/\s+/g, "_").replace(/[^A-Za-z0-9_.-]/g, "").slice(0, 24);
+    return { handle: h.length >= 3 ? h : "", display: String(cfg.name || ""), email: String(cfg.email || "") };
+  }
+  if (typeof module !== "undefined" && module.exports && typeof document === "undefined") { module.exports = { shown: shown, passProblem: passProblem, who: who, joinFill: joinFill }; return; }
 
   var doc = root.document, SK = "h3.sec.ok", LK = "h3.sec.ask";
   var $ = function (id) { return doc.getElementById(id); };
@@ -33,7 +42,7 @@
     get: function (st, k) { try { return root[st].getItem(k); } catch (e) { return null; } },
     set: function (st, k, v) { try { root[st].setItem(k, v); } catch (e) { /* private mode */ } }
   };
-  var cur = { ask: false, user: "", name: "", hasPassword: false }, cover = null;
+  var cur = { ask: false, user: "", name: "", email: "", hasPassword: false }, cover = null;
   function signedIn() { return S.get("sessionStorage", SK) === "1"; }
   function post(url, b) {
     return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
@@ -107,7 +116,7 @@
   }
   function paint() {
     if (!$("sec_name")) return;
-    $("sec_name").value = cur.name || ""; $("sec_user").value = cur.user || ""; $("sec_ask").checked = !!cur.ask;
+    $("sec_name").value = cur.name || ""; if ($("sec_email")) $("sec_email").value = cur.email || ""; $("sec_user").value = cur.user || ""; $("sec_ask").checked = !!cur.ask;
     $("sec_pass").value = ""; $("sec_pass2").value = "";
     $("sec_pass").placeholder = cur.hasPassword ? "•••••• (kept - type a new one to change it)" : "at least 4 characters";
   }
@@ -116,7 +125,7 @@
     var ask = $("sec_ask").checked, user = $("sec_user").value.trim(), p1 = $("sec_pass").value, p2 = $("sec_pass2").value;
     if (ask && !user) { msg("Type a username to ask for it at start-up.", true); return Promise.resolve(null); }
     var bad = passProblem(p1, p2, cur.hasPassword, ask); if (bad) { msg(bad, true); return Promise.resolve(null); }
-    var b = { ask: ask, user: user, name: $("sec_name").value };
+    var b = { ask: ask, user: user, name: $("sec_name").value, email: $("sec_email") ? $("sec_email").value : "" };
     if (p1) b.password = p1;
     return post("/api/security", b).then(function (j) {
       if (!j || j.error) { msg((j && j.error) || "Not saved.", true); return null; }
@@ -126,6 +135,21 @@
       return j;
     }).catch(function () { msg("Not saved - the server isn't answering.", true); return null; });
   }
+  /** 💬 Join the community: saved first (so the form gets what's typed), then the panel opens with its join form filled */
+  function join() {
+    var C = root.H3Community;
+    if (!C) { msg("The 💬 Community panel isn't loaded.", true); return Promise.resolve(false); }
+    var p1 = $("sec_pass").value, p2 = $("sec_pass2").value;
+    var saved = (p1 || p2 || $("sec_ask").checked !== !!cur.ask || $("sec_name").value !== (cur.name || "") || ($("sec_email") && $("sec_email").value !== (cur.email || "")) || $("sec_user").value.trim() !== (cur.user || "")) ? save() : Promise.resolve(cur);
+    return saved.then(function (j) {
+      if (!j) return false;                                   // not saved - msg() says why
+      var dlg = $("settings"); if (dlg && dlg.open) { try { dlg.close(); } catch (e) { dlg.removeAttribute("open"); } }
+      var st = C.state ? C.state() : {};
+      C.toggle(true);
+      if (!st.joined && C.prefill) C.prefill(joinFill(cur));
+      return true;
+    });
+  }
   function wireSplash() {
     var c = $("s_nosplash"); if (!c) return;
     fetch("/api/config").then(function (r) { return r.json(); }).then(function (cfg) { c.checked = !!((cfg && cfg.ui) || {}).no_splash; }).catch(function () { /* stays */ });
@@ -133,8 +157,9 @@
   }
   function wire() {
     if ($("sec_save")) $("sec_save").addEventListener("click", save);
+    if ($("sec_join")) $("sec_join").addEventListener("click", join);
     doc.querySelectorAll('#settings .stabs button[data-stab="security"]').forEach(function (b) { b.addEventListener("click", function () { msg(""); load(); }); });
-    ["sec_pass", "sec_pass2", "sec_user", "sec_name"].forEach(function (id) { var e = $(id); if (e) e.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); save(); } }); });
+    ["sec_pass", "sec_pass2", "sec_user", "sec_name", "sec_email"].forEach(function (id) { var e = $(id); if (e) e.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); save(); } }); });
     wireSplash(); paint();
   }
 
@@ -142,5 +167,5 @@
   if (S.get("localStorage", LK) === "1" && !signedIn()) show("");
   load();
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Security = { name: function () { return who(cur); }, load: load, save: save, show: show, hide: hide, shown: shown, passProblem: passProblem, who: who };
+  root.H3Security = { name: function () { return who(cur); }, load: load, save: save, show: show, hide: hide, shown: shown, passProblem: passProblem, who: who, joinFill: joinFill, join: join };
 })(typeof window !== "undefined" ? window : globalThis);

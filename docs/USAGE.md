@@ -10928,6 +10928,11 @@ settings/security.json) and are never sent online - there is no account. The pas
 hash of it.
 - **Preferred name** - what bitGen calls you. The chat's LLM and the 📱 app's voice talk to you by this name in a friendly
   way (now and then, not in every sentence); Police Chase puts it on the high scores. Empty = your username.
+- **Email (optional)** (2.941.0) - kept on this PC with the rest; a wrong-looking address isn't saved.
+- **💬 Join the community** (2.941.0) - saves what you typed, closes Settings and opens 💬 Community with its join form
+  filled in from here: your username as the user ID (spaces become _), your preferred name as the display name, your
+  email. The community password is your own choice - it isn't filled in. Nothing goes online until you press **Join**
+  there (the community then confirms the email with a code). Already a member? It just opens the panel.
 - **Ask for my username and password when bitGen Studio starts** - tick it, type a username and the password twice, then
   **💾 Save security**. At the next start a sign-in screen covers the studio until the right pair is typed (the username
   ignores capitals); a reload during the same start doesn't ask again. Leave the password boxes empty to keep the one you

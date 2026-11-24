@@ -15,6 +15,7 @@
  *                  requests to you: ✓ Accept / ✕ Decline; yours waiting: cancel; your friends (● online) -> 💬 chat,
  *                  remove, block
  *   a friend's tab  your private chat with them
+ *   2.941.0: Settings ▸ Security ▸ 💬 Join the community opens this with the join form filled (prefill()).
  *   ⋯              your details (name, email), the Discussions on the website, sign out, leave the community (deletes
  *                  your ID), the server's address
  * 2.713.0 (Tim: "let users enter first name, last name and email - and verify email so if we ban a user they can't just
@@ -143,11 +144,15 @@
       el("div", { class: "hint", id: "cmWhyCode", text: "New members confirm their email address with a 6-digit code we send to it. We do this to prevent spam sign-ups and to make sure a real person is joining." }),
       el("div", { class: "hint", text: "Only the community's admins see your name and email address. Nobody else does." })]);
     pad.appendChild(fresh);
+    // 2.941.0: Settings ▸ Security ▸ 💬 Join the community fills these in (the password never - it is the community's own)
+    if (S.prefill) { const P = S.prefill; [["cmHandle", P.handle], ["cmDisplay", P.display], ["cmEmail", P.email]].forEach(([id, v]) => { const e = fresh.querySelector("#" + id) || pad.querySelector("#" + id); if (e && v) e.value = v; });
+      setTimeout(() => { const e = $(P.handle ? "cmPass" : "cmHandle"); if (e) try { e.focus(); } catch (x) { /* fine */ } }, 60); }
     const go = (mode) => async () => {
       say(mode === "register" ? "joining…" : "signing in…");
       const j = await api("/api/community/join", { mode, handle: $("cmHandle").value, password: $("cmPass").value, display: $("cmDisplay").value, url: $("cmUrl").value,
         first_name: $("cmFirst").value, last_name: $("cmLast").value, email: $("cmEmail").value });
       if (!j.ok) return say(j.error || "could not join", true);
+      S.prefill = null;
       $("cmPass").value = ""; say(mode === "register" ? (j.mail_sent ? "a code is on its way to your email" : "joined - but the email did not go; ask for a new code") : ""); await start(true);
     };
     pad.appendChild(el("div", { class: "rowbtns", style: "margin-top:10px;gap:6px" }, [el("button", { type: "button", id: "cmJoin", text: "Join", title: "Make this user ID and join", onclick: go("register") }),
@@ -387,6 +392,8 @@
     const go = () => { panel(); if (!docked()) b.onclick = () => toggle(); start(false); };
     if (window.SecFloat && window.DockFloat) go(); else { let n = 0; const wait = () => (window.SecFloat && window.DockFloat) || n++ > 60 ? go() : setTimeout(wait, 100); wait(); }
   }
-  window.H3Community = { toggle, show, isOpen, state: () => S, refresh: () => start(false) };
+  /** 2.941.0: the join form filled in from Settings ▸ Security - {handle, display, email}; shown at the next render */
+  function prefill(p) { S.prefill = p || null; if (!S.joined) { try { render(); } catch (e) { /* the panel comes later */ } } }
+  window.H3Community = { toggle, show, isOpen, state: () => S, refresh: () => start(false), prefill };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

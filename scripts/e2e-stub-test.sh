@@ -15047,6 +15047,13 @@ node scripts/test-940.js > /tmp/t940.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui940-ui.js > /tmp/ui940.log 2>&1 \
   && ok "2.940.0 browser test: Security tab saves, the sign-in cover at the next start (wrong / right password), hide splash, 🚓 ⛶ = the whole screen" \
   || { bad "2.940.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui940.log | head -12; }
+# ---- 2.941.0 (🔒 Security: optional email + 💬 Join the community)
+node scripts/test-941.js > /tmp/t941.log 2>&1 \
+  && ok "2.941.0 units: optional email (kept here, a wrong one refused), the join form filled from Security (never the password)" \
+  || { bad "2.941.0 units"; grep -a "^FAIL" -A1 /tmp/t941.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui941-ui.js > /tmp/ui941.log 2>&1 \
+  && ok "2.941.0 browser test: a wrong email refused, 💬 Join saves, closes Settings, opens Community filled in, sends nothing" \
+  || { bad "2.941.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui941.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

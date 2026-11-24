@@ -15,7 +15,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 const S = require("../lib/security.js");
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-sec940-"));
 S.useDir(tmp);
-check("nothing set: no sign-in, no name, the chat gets no name line", JSON.stringify(S.pub()) === JSON.stringify({ ask: false, user: "", name: "", hasPassword: false }) && S.login("x", "y") === true && S.nameNote() === "");
+check("nothing set: no sign-in, no name, the chat gets no name line", JSON.stringify(S.pub()) === JSON.stringify({ ask: false, user: "", name: "", email: "", hasPassword: false }) && S.login("x", "y") === true && S.nameNote() === "");
 let err = ""; try { S.save({ ask: true }); } catch (e) { err = e.message; }
 check("asking needs a username and a password first", /username/.test(err));
 err = ""; try { S.save({ user: "tim", password: "abc" }); } catch (e) { err = e.message; }

@@ -156,7 +156,7 @@
               color: var(--dim); font-family: var(--mono); white-space: nowrap;
               overflow: hidden; text-overflow: ellipsis; }
   .planline.warn { color: var(--bad); }
-  textarea, input[type=text], input[type=number], input[type=password], select {   /* 2.940.0: + password (Settings ▸ Security) */
+  textarea, input[type=text], input[type=number], input[type=password], input[type=email], select {   /* 2.940.0: + password, 2.941.0: + email (Settings ▸ Security) */
     width: 100%; background: var(--panel-2); color: var(--text);
     border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: .84rem/1.5 var(--body);
   }
@@ -3213,13 +3213,21 @@
        static/securitytab.js, routes/security.js, lib/security.js - settings/security.json on this PC -->
   <div class="stab" id="stab-security">
     <p class="hint" id="sec_local" style="margin:0 0 10px;padding:8px 10px;border:1px solid var(--line,#444);border-radius:8px">🔒 <b>This is local security.</b>
-      Your username, password and name stay on this computer (in bitGen Studio&#39;s <span class="mono">settings</span> folder) and are
+      Your username, password, name and email stay on this computer (in bitGen Studio&#39;s <span class="mono">settings</span> folder) and are
       never sent online - there is no account and nothing to sign up for. The password itself is never stored: only a
       scrambled check of it (a salted hash).</p>
     <label class="f">Preferred name</label>
     <input type="text" id="sec_name" maxlength="40" spellcheck="false" placeholder="What should bitGen call you?" autocomplete="off">
     <p class="hint help" style="margin-top:4px">The chat&#39;s LLM (and the 📱 app&#39;s voice) talks to you by this name, in a friendly way.
       Police Chase puts it on its high scores. Empty = your username.</p>
+    <!-- 2.941.0 (Tim: "maybe add email (optional) to security and a join community button?") -->
+    <label class="f" style="margin-top:10px">Email <span class="hint">(optional)</span></label>
+    <input type="email" id="sec_email" maxlength="120" spellcheck="false" placeholder="you@example.com" autocomplete="off">
+    <div class="rowbtns" style="margin-top:8px"><button class="ghost" id="sec_join" type="button"
+      title="Opens 💬 Community with its join form filled in from here (your username, name and email) - nothing is sent until you press Join there">💬 Join the community</button></div>
+    <p class="hint" id="sec_joinnote" style="margin-top:4px">The email is kept on this PC too. 💬 Join the community opens the
+      Community panel with its form filled in from here - your username, name and email go online only if you press
+      <b>Join</b> there (the community confirms the email with a code). You don&#39;t need to join to use bitGen Studio.</p>
     <label class="chk" style="margin-top:12px"><input type="checkbox" id="sec_ask">
       Ask for my username and password when bitGen Studio starts</label>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;max-width:460px;margin-top:8px">
