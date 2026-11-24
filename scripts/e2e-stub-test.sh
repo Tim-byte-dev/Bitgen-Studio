@@ -15115,10 +15115,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui949-ui.js > /tmp/ui949.log 2>&
   || { bad "2.949.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui949.log | head -12; }
 # ---- 2.950.0 (🚓 / 🎓 Esc back to the docker; 🚓 lit roofs)
 node scripts/test-950.js > /tmp/t950.log 2>&1 \
-  && ok "2.950.0 units: Esc / leaving full screen -> exitFull in both games, the shared lit roof on every top" \
+  && ok "2.950.0 units: Esc / leaving full screen -> exitFull in both games, the shared roof on every top, darker than the roads (2.950.1)" \
   || { bad "2.950.0 units"; grep -a "^FAIL" -A1 /tmp/t950.log | head -12; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui950-ui.js > /tmp/ui950.log 2>&1 \
-  && ok "2.950.0 browser test: 🚓 Esc / the window leaving full screen / 🗗 Exit back to the docker (paused), every roof lit; 🎓 Esc (even typing) back to the docker" \
+  && ok "2.950.0 browser test: 🚓 Esc / the window leaving full screen / 🗗 Exit back to the docker (paused), every roof made (a touch darker than the roads); 🎓 Esc (even typing) back to the docker" \
   || { bad "2.950.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui950.log | head -12; }
 
 say "======================="

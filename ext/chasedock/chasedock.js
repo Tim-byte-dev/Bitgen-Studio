@@ -607,7 +607,7 @@
       return Promise.all(names.map(function (n) {
         return new Promise(function (ok) { var im = new Image(); im.onload = function () { imgs[n] = im; ok(); }; im.onerror = function () { ok(); }; im.src = "/ext/chasedock/assets/" + roads[n]; });
       })).then(function () {
-        G.pack = { json: j, roadImgs: Object.keys(imgs).length ? imgs : null, cars: {} };
+        G.pack = { json: j, roadImgs: Object.keys(imgs).length ? imgs : null, cars: {}, roadRGB: avgRGB(imgs.plain || imgs.straight) };
         var cars = j.cars || {}, GL = T.GLTFLoader ? new T.GLTFLoader() : null;
         return Promise.all(Object.keys(cars).map(function (role) {        // 2.937.0: the 3D cars (a car that fails stays a box)
           return GL ? new Promise(function (ok) { GL.load("/ext/chasedock/assets/" + cars[role], function (gl) { G.pack.cars[role] = gl.scene; ok(); }, null, function () { ok(); }); }) : null;
@@ -638,26 +638,51 @@
     WIN = { map: mk(false), em: mk(true) };
     return WIN;
   }
-  /** 2.950.0 (Tim: "also light the roofs of the buildings, i can't tell where they are"): a lit roof made in code - light
-   *  concrete with a bright parapet round the edge, a rooftop unit and a skylight; its emissive map glows the rim most, so
-   *  every block's outline reads from above at night. One material, shared by the painted city and the art pack's tops. */
-  var ROOF = null;
+  /** 2.950.0 (Tim: "also light the roofs of the buildings, i can't tell where they are"): a roof made in code - a parapet
+   *  round the edge, a rooftop unit and a skylight; its emissive map lifts the rim a little more than the rest, so every block's
+   *  outline reads from above at night. 2.950.1 (Tim: "don't make the roofs too bright. it distracts from the game, the roof
+   *  should be only slightly darker than the roads and cars"): dark tar, just under the road's brightness - the faint rim
+   *  shows the outline, the game stays the brightest thing. One material, shared by the painted city and the art pack's tops. */
+  var ROOFS = {};
+  /** the painted city's roads are near black: its roofs a dark tar just lifted off them, the rim a touch lighter */
+  var ROOF_TONE = { base: "#1a1c22", grit: [24, 10], rim: "#2a2d35", unit: "#22252c", vent: "#101216", sky: "#3a352a",
+                    emBase: "#08090b", emRim: "#26292f", emUnit: "#0e0f12", emSky: "#3a3020", emissive: 0x8a96b4, intensity: 0.3 };
+  /** the average colour of a picture (the art pack's asphalt) -> [r, g, b] or null */
+  function avgRGB(img) {
+    try {
+      var c = doc.createElement("canvas"); c.width = c.height = 16; var g = c.getContext("2d"); g.drawImage(img, 0, 0, 16, 16);
+      var d = g.getImageData(0, 0, 16, 16).data, t = [0, 0, 0];
+      for (var i = 0; i < d.length; i += 4) { t[0] += d[i]; t[1] += d[i + 1]; t[2] += d[i + 2]; }
+      return t.map(function (v) { return Math.round(v / 256); });
+    } catch (e) { return null; }
+  }
+  /** the roof's tones: with the art pack, a little darker than its asphalt (Tim: "only slightly darker than the roads") */
+  function roofTone(rgb) {
+    var a = rgb || (G.pack && G.pack.roadRGB); if (!a) return ROOF_TONE;
+    var hex = function (k) { return "#" + a.map(function (v) { return ("0" + Math.max(0, Math.min(255, Math.round(v * k))).toString(16)).slice(-2); }).join(""); };
+    // measured in the browser on a stand-in pack (asphalt 80 grey): the roofs come out at about 0.85 of the road's brightness -
+    // they sit higher, nearer the street lights, so the picture is darker still (0.76), the rim just above the asphalt's tone
+    var lum = (a[0] + a[1] + a[2]) / 3, gk = 0.76;
+    return { base: hex(gk), grit: [Math.round(lum * 0.66), Math.max(4, Math.round(lum * 0.14))], rim: hex(0.92), unit: hex(0.82), vent: hex(0.45), sky: hex(0.92),
+             emBase: "#000000", emRim: "#16181c", emUnit: "#000000", emSky: "#221d14", emissive: 0x8a96b4, intensity: 0.2 };
+  }
   function roofMaterial() {
-    if (ROOF) return ROOF;
+    var Z = roofTone(), key = JSON.stringify(Z);
+    if (ROOFS[key]) return ROOFS[key];
     var mk = function (em) {
       var c = doc.createElement("canvas"); c.width = 128; c.height = 128; var g = c.getContext("2d");
       var R = C.rng(311);
-      g.fillStyle = em ? "#3a3f4a" : "#9aa1ae"; g.fillRect(0, 0, 128, 128);
-      if (!em) for (var i = 0; i < 900; i++) { var v = 140 + Math.floor(R() * 40); g.fillStyle = "rgb(" + v + "," + (v + 4) + "," + (v + 12) + ")"; g.fillRect(Math.floor(R() * 128), Math.floor(R() * 128), 2, 2); }
-      g.fillStyle = em ? "#ffffff" : "#eef1f6"; [[0, 0, 128, 9], [0, 119, 128, 9], [0, 0, 9, 128], [119, 0, 9, 128]].forEach(function (r) { g.fillRect(r[0], r[1], r[2], r[3]); });
-      g.fillStyle = em ? "#6a7080" : "#c4cad4"; g.fillRect(28, 30, 30, 22);                // the rooftop unit
-      g.fillStyle = em ? "#20242c" : "#5a606c"; g.fillRect(34, 36, 18, 3); g.fillRect(34, 42, 18, 3);
-      g.fillStyle = em ? "#ffe9a8" : "#ffe7a0"; g.fillRect(72, 74, 26, 18);               // a lit skylight
+      g.fillStyle = em ? Z.emBase : Z.base; g.fillRect(0, 0, 128, 128);
+      if (!em) for (var i = 0; i < 900; i++) { var v = Z.grit[0] + Math.floor(R() * Z.grit[1]); g.fillStyle = "rgb(" + v + "," + (v + 1) + "," + (v + 4) + ")"; g.fillRect(Math.floor(R() * 128), Math.floor(R() * 128), 2, 2); }
+      g.fillStyle = em ? Z.emRim : Z.rim; [[0, 0, 128, 8], [0, 120, 128, 8], [0, 0, 8, 128], [120, 0, 8, 128]].forEach(function (r) { g.fillRect(r[0], r[1], r[2], r[3]); });
+      g.fillStyle = em ? Z.emUnit : Z.unit; g.fillRect(28, 30, 30, 22);                    // the rooftop unit
+      g.fillStyle = Z.vent; g.fillRect(34, 36, 18, 3); g.fillRect(34, 42, 18, 3);
+      g.fillStyle = em ? Z.emSky : Z.sky; g.fillRect(72, 74, 26, 18);                     // a skylight, dimly lit
       var t = new T.CanvasTexture(c); if (!em && T.SRGBColorSpace) t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4; return t;
     };
-    ROOF = new T.MeshStandardMaterial({ map: mk(false), color: 0xffffff, roughness: 0.85, emissive: 0xb8c4e8, emissiveMap: mk(true), emissiveIntensity: 0.45 });
-    ROOF.userData.shared = true;
-    return ROOF;
+    var M = new T.MeshStandardMaterial({ map: mk(false), color: 0xffffff, roughness: 0.9, emissive: Z.emissive, emissiveMap: mk(true), emissiveIntensity: Z.intensity });
+    M.userData.shared = true;
+    return (ROOFS[key] = M);
   }
 
   /* ---------------- drawing ---------------- */
@@ -1076,7 +1101,8 @@
     audio: function () { return AU ? AU.info() : null; }, mixer: mixer, mix: function (music, sfx) { if (music != null) mixSet("music", music); if (sfx != null) mixSet("sfx", sfx); return { music: PR.music, sfx: PR.sfx, start: PR.start }; },   // 2.943.0
     state: function () { return G.demo ? null : G.s; },
     full: function (on) { if (on == null) return isFull(); if (typeof root.toggleMax === "function") root.toggleMax("chasedock", !!on); return isFull(); },   // 2.942.0
-    _view: function () { return G.V; },                                     // 2.942.0: for the browser tests (the effects drawn)
+    _view: function () { return G.V; },
+    _roofTone: roofTone,                                                    // 2.950.1: for the tests (the roof's tones for a road colour)                                     // 2.942.0: for the browser tests (the effects drawn)
     info: function () { return { ready: !!G.V, playing: !!(G.s && !G.demo), paused: G.paused, why: G.why, cam: G.cam, sound: G.sound, render: G.render, light: G.light,
                                  setting: G.themeNow || "", pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs, cars: Object.keys(G.pack.cars || {}).sort() } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
   };

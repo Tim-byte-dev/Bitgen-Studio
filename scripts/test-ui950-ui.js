@@ -49,10 +49,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const roofs = await ev(() => {
       const V = window.H3Chase._view(); let tops = 0, lit = 0, dark = 0;
       V.scene.traverse((o) => { if (!o.isInstancedMesh || !Array.isArray(o.material) || o.material.length !== 6) return; tops++;
-        const m = o.material[2]; if (m.emissiveMap && m.emissiveIntensity >= 0.4 && m.map) lit++; else dark++; });
+        const m = o.material[2]; if (m.emissiveMap && m.emissiveIntensity > 0 && m.emissiveIntensity <= 0.35 && m.map) lit++; else dark++; });
       return { tops, lit, dark };
     });
-    check("🚓 every building's roof is the lit roof (map + glowing rim), none dark", roofs.tops > 0 && roofs.lit === roofs.tops && !roofs.dark, roofs);
+    check("🚓 every building's roof is the made roof (map + a faint rim glow, never bright), none missing", roofs.tops > 0 && roofs.lit === roofs.tops && !roofs.dark, roofs);
+    const tone = await ev(() => { const t = window.H3Chase._roofTone([80, 82, 88]); const L = (h) => { const n = parseInt(h.slice(1), 16); return ((n >> 16) + ((n >> 8) & 255) + (n & 255)) / 3; }; return { base: L(t.base), rim: L(t.rim), road: 83.3, glow: t.intensity }; });
+    check("🚓 with the art pack: the roof a little darker than its asphalt (the rim too), a faint glow", tone.base < tone.road * 0.85 && tone.base > tone.road * 0.6 && tone.rim < tone.road && tone.glow <= 0.25, tone);
     await ev(() => window.H3Chase.newGame(6)); await p.waitForTimeout(400);
     check("🚓 a new city builds again with the shared roof (not thrown away with the old city)", await ev(() => { let ok = 0; window.H3Chase._view().scene.traverse((o) => { if (o.isInstancedMesh && Array.isArray(o.material) && o.material[2].emissiveMap && o.material[2].emissiveMap.image) ok++; }); return ok > 0; }));
     await ev(() => { window.H3Chase.pause("t"); toggleDockGone("chasedock", "tX_chasedock"); });
