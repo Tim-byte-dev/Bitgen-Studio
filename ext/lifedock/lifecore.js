@@ -18,6 +18,12 @@
  * JOBS: offers gated by IQ (a game score, never a real IQ test) + qualification; promotions by a work puzzle; restructures.
  * INVESTMENT RING: opens with a STABLE INCOME = employed for two paydays in a row (sticky once open). Property (rent from
  *   tenants each turn + rent from players who land), shares in made-up companies, the bank (loans up to 5x the salary).
+ * 2.945.0 (Tim: "add another ring on the outside with blocks of land and houses in good condition and houses that need
+ *   renovation"): the LAND & HOUSES ring (estate, 20) outside the investment ring, through the Land office squares (a gate on
+ *   each ring). Blocks of land (no rent; build a house on one at a Builder square or when you land on your own block), houses
+ *   in good condition (full rent) and renovators (cheap, a little rent; renovate for 25% of the value -> a good house worth
+ *   half as much again). Council rates, an auction (a lot at 85%). s.estate[k] = {type: land | good | reno, value, owner};
+ *   lot keys "1".."15" = the investment ring's property, "e1".."e19" = the estate ring's lots.
  * WINNER at the end: net worth + (IQ - 100) x $1,000 + a qualification bonus (diploma $10k, trade $30k, degree $50k).
  *
  * newGame({seed, retire, players: [{name, bot: null | "saver" | "tycoon" | "risk", skill 0-1}]}) -> state (plain JSON -
@@ -36,8 +42,19 @@
            ["restructure", "Restructure"], ["night", "Night school"], ["bonus", "Bonus"], ["promo", "Promotion"], ["expense", "Moving house"], ["offers", "Job offers"]],
     invest: [["bank", "Bank"], ["prop", "Studio flat"], ["prop", "Townhouse"], ["news", "Market news"], ["prop", "Corner shop"], ["exchange", "Exchange"],
              ["prop", "Brick house"], ["rates", "Rates & taxes"], ["prop", "Duplex"], ["prop", "Beach unit"], ["night", "Night school"], ["prop", "Warehouse"],
-             ["exchange", "Exchange"], ["prop", "Apartment block"], ["news", "Market news"], ["prop", "Office tower"]],
+             ["exchange", "Exchange"], ["prop", "Apartment block"], ["landoff", "Land office"], ["prop", "Office tower"]],
   };
+  // 2.945.0: the land & houses ring - [type, name, price]; the other squares are the gate, builders, council rates and an auction
+  var ESTATE = { 1: ["land", "Hilltop block", 180000], 2: ["good", "Family home", 560000], 3: ["reno", "Weatherboard renovator", 310000],
+                 5: ["land", "Riverside block", 240000], 6: ["good", "Brick villa", 690000], 7: ["reno", "Fixer-upper cottage", 280000],
+                 9: ["land", "Corner block", 200000], 10: ["good", "Lakeside home", 820000], 11: ["reno", "Old farmhouse", 420000],
+                 13: ["land", "Acreage", 380000], 14: ["good", "Modern home", 760000], 15: ["reno", "Run-down terrace", 350000],
+                 17: ["land", "Bushland block", 150000], 18: ["good", "Beach house", 980000], 19: ["reno", "Deceased estate", 460000] };
+  var EXTRA = { 0: ["office", "Land office"], 4: ["builder", "Builder"], 8: ["council", "Council rates"], 12: ["auction", "Auction"], 16: ["builder", "Builder"] };
+  RINGS.estate = [];
+  for (var ei = 0; ei < 20; ei++) RINGS.estate.push(ESTATE[ei] ? ["lot", ESTATE[ei][1]] : EXTRA[ei]);
+  var WORKS = { build: 320000, buildUp: 1.12, reno: 0.25, renoUp: 1.5, landGrowth: 0.02, auction: 0.85 };
+  var YIELD = { prop: 0.045 / 4, good: 0.045 / 4, reno: 0.02 / 4, land: 0 }, LANDRENT = { prop: 0.02, good: 0.02, reno: 0.01, land: 0 };
   var PROPS = { 1: 220000, 2: 380000, 4: 450000, 6: 620000, 8: 700000, 9: 840000, 11: 950000, 13: 1600000, 15: 2400000 };
   var COMPANIES = [["sun", "Sunreach Power"], ["tide", "Tidewater Freight"], ["leaf", "Greenleaf Health"], ["grain", "Goldgrain Foods"]];
   // [id, title, salary a year, qualification needed, IQ needed, promotion levels]
@@ -76,15 +93,30 @@
                job: null, paydays: 0, open: false, studentDebt: 0, loan: 0, shares: {}, retired: false, bankrupt: false, night: false, dropped: [] };
     });
     Object.keys(PROPS).forEach(function (k) { s.props[k] = { value: PROPS[k], owner: -1 }; });
+    upgrade(s);
     COMPANIES.forEach(function (c) { s.price[c[0]] = 10 + Math.round(rng(s) * 40); });
     log(s, "A new game: " + s.players.map(function (p) { return p.name + (p.bot ? " (" + PERSONAS[p.bot] + ")" : ""); }).join(", ") + " - retire at " + s.retire + ".");
     return s;
+  }
+  /** a game saved before 2.945.0 gets the land & houses ring */
+  function upgrade(s) {
+    if (s && !s.estate) { s.estate = {}; Object.keys(ESTATE).forEach(function (k) { s.estate[k] = { type: ESTATE[k][0], value: ESTATE[k][2], owner: -1 }; }); }
+    return s;
+  }
+  /** a lot by its key: "7" = the investment ring's property 7, "e7" = the estate ring's lot 7 */
+  function lot(s, key) { key = String(key); return key.charAt(0) === "e" ? s.estate[key.slice(1)] : s.props[key]; }
+  function lotType(s, key) { var l = lot(s, key); return String(key).charAt(0) === "e" ? l.type : "prop"; }
+  function lotName(key) { key = String(key); return key.charAt(0) === "e" ? ESTATE[key.slice(1)][1] : RINGS.invest[key][1]; }
+  /** every lot a player owns, both rings (keys) */
+  function lotsOf(s, p) {
+    return Object.keys(s.props).filter(function (k) { return s.props[k].owner === p.id; })
+      .concat(Object.keys(s.estate || {}).filter(function (k) { return s.estate[k].owner === p.id; }).map(function (k) { return "e" + k; }));
   }
   var cur = function (s) { return s.players[s.turn]; };
   var square = function (p) { var r = RINGS[p.ring]; return r ? r[p.pos % r.length] : ["fork", "The fork"]; };
   function propsOf(s, p) { return Object.keys(s.props).filter(function (k) { return s.props[k].owner === p.id; }); }
   function sharesValue(s, p) { return Object.keys(p.shares).reduce(function (t, k) { return t + p.shares[k] * s.price[k]; }, 0); }
-  function netWorth(s, p) { return Math.round(p.cash + propsOf(s, p).reduce(function (t, k) { return t + s.props[k].value; }, 0) + sharesValue(s, p) - p.loan - p.studentDebt); }
+  function netWorth(s, p) { return Math.round(p.cash + lotsOf(s, p).reduce(function (t, k) { return t + lot(s, k).value; }, 0) + sharesValue(s, p) - p.loan - p.studentDebt); }
   function score(s, p) { return netWorth(s, p) + (p.iq - 100) * 1000 + QBONUS[p.qual]; }
   function loanLimit(p) { return p.job ? MONEY.loanX * p.job.salary : 0; }
   function jobOf(id) { var j = JOBS.filter(function (x) { return x[0] === id; })[0]; return j ? { id: j[0], title: j[1], salary: j[2], need: j[3], iq: j[4], levels: j[5] } : null; }
@@ -141,6 +173,7 @@
     }
     if (p.ring === "jobs") { landJobs(s, p, k); return; }
     if (p.ring === "invest") landInvest(s, p, k);
+    if (p.ring === "estate") landEstate(s, p, k);
   }
   function toJobs(s, p) { p.ring = "jobs"; p.pos = 1; p.night = false; land(s, p); }
   function forkChoice(s, p) {
@@ -190,34 +223,40 @@
       var pr = s.props[p.pos];
       if (pr.owner === -1) {
         if (!p.open) { log(s, p.name + " looks at the " + name + " (" + money(pr.value) + ") - the investment ring opens after two paydays in a row."); return; }
-        buyChoice(s, p, p.pos);
+        buyChoice(s, p, String(p.pos));
       } else if (pr.owner !== p.id) {
         var o = s.players[pr.owner], rent = Math.round(pr.value * MONEY.rentFrac);
         p.cash -= rent; o.cash += rent; log(s, p.name + " pays " + o.name + " " + money(rent) + " rent for the " + name + ".");
       } else log(s, p.name + " checks on their " + name + ".");
     } else if (k === "news") news(s, p);
+    else if (k === "landoff") {
+      if (p.open) choice(s, "gate", "The land office", "Out past the city: blocks of land, houses in good condition and houses that need renovating.", [
+        { id: "estate", label: "➜ Move out to the land & houses ring" }, { id: "stay", label: "Stay on the investment ring" }]);
+      else log(s, p.name + " at the land office: no stable income yet.");
+    }
     else if (k === "exchange") { if (p.open) sharesChoice(s, p); else log(s, p.name + " watches the exchange - not open to them yet."); }
     else if (k === "rates") {
       var v = propsOf(s, p).reduce(function (t, x) { return t + s.props[x].value; }, 0), c = Math.round(v * MONEY.rates);
       if (c) { p.cash -= c; log(s, p.name + " pays " + money(c) + " rates and land tax."); } else log(s, p.name + ": no property, no rates.");
     } else if (k === "night") nightChoice(s, p);
   }
-  function buyChoice(s, p, at) {
-    var pr = s.props[at], v = pr.value, dep = Math.round(v * MONEY.deposit), need = v - dep, room = loanLimit(p) - p.loan;
+  var TYPEWORD = { prop: "", land: "A block of land - no rent until you build on it (at a Builder, or when you land here). ", good: "A house in good condition. ", reno: "A house that needs renovating - little rent until it is done. " };
+  function buyChoice(s, p, at, pct) {
+    var pr = lot(s, at), ty = lotType(s, at), v = Math.round(pr.value * (pct || 100) / 100), dep = Math.round(v * MONEY.deposit), need = v - dep, room = loanLimit(p) - p.loan;
     var cashAll = p.cash >= v, mort = p.cash >= dep && need <= room;
-    choice(s, "buy", "For sale: " + RINGS.invest[at][1], money(v) + " - tenants pay about " + money(v * MONEY.tenant) + " a quarter; players who land here pay you " + money(v * MONEY.rentFrac) + ".", [
-      { id: "buy:" + at, label: cashAll ? "Buy it with cash" : "Buy it (" + money(dep) + " deposit, " + money(need) + " loan)", off: !(cashAll || mort),
+    choice(s, "buy", (pct ? "Auction: " : "For sale: ") + lotName(at), TYPEWORD[ty] + money(v) + (pct ? " (" + pct + "% of its value)" : "") + (YIELD[ty] ? " - tenants pay about " + money(pr.value * YIELD[ty]) + " a quarter; players who land here pay you " + money(pr.value * LANDRENT[ty]) + "." : "."), [
+      { id: "buy:" + at + (pct ? ":" + pct : ""), label: cashAll ? "Buy it with cash" : "Buy it (" + money(dep) + " deposit, " + money(need) + " loan)", off: !(cashAll || mort),
         why: p.cash < dep ? "the deposit is " + money(dep) : "the bank lends up to " + money(loanLimit(p)) + " on your income (" + money(p.loan) + " owed)" },
       { id: "pass", label: "Pass" }]);
   }
   function bankChoice(s, p) {
-    var room = Math.max(0, loanLimit(p) - p.loan), mine = propsOf(s, p);
+    var room = Math.max(0, loanLimit(p) - p.loan);
     choice(s, "bank", "The bank", "Loan " + money(p.loan) + " of " + money(loanLimit(p)) + " (5x your salary), interest 6% a year. Cash " + money(p.cash) + ".",
       [{ id: "borrow:25000", label: "Borrow $25,000", off: room < 25000, why: "over your limit" },
        { id: "borrow:100000", label: "Borrow $100,000", off: room < 100000, why: "over your limit" },
        { id: "repay:25000", label: "Repay $25,000", off: p.loan < 1 || p.cash < Math.min(25000, p.loan), why: p.loan < 1 ? "nothing owed" : "not enough cash" },
        { id: "repay:all", label: "Repay it all (" + money(p.loan) + ")", off: p.loan < 1 || p.cash < p.loan, why: p.loan < 1 ? "nothing owed" : "not enough cash" }]
-      .concat(mine.map(function (k) { return { id: "sell:" + k, label: "Sell the " + RINGS.invest[k][1] + " (" + money(s.props[k].value * 0.95) + ")" }; }))
+      .concat(lotsOf(s, p).map(function (k) { return { id: "sell:" + k, label: "Sell the " + lotName(k) + " (" + money(lot(s, k).value * 0.95) + ")" }; }))
       .concat([{ id: "done", label: "Done" }]));
   }
   function sharesChoice(s, p) {
@@ -239,9 +278,58 @@
     } else {
       var up2 = rng(s) < 0.6, pc = 0.03 + rng(s) * 0.05;
       Object.keys(s.props).forEach(function (k) { s.props[k].value = Math.round(s.props[k].value * (up2 ? 1 + pc : 1 - pc) / 1000) * 1000; });
+      Object.keys(s.estate || {}).forEach(function (k) { s.estate[k].value = Math.round(s.estate[k].value * (up2 ? 1 + pc : 1 - pc) / 1000) * 1000; });
       s.news = "Property market " + (up2 ? "up " : "down ") + Math.round(pc * 100) + "%.";
     }
     log(s, "📰 " + s.news);
+  }
+  /* ---- 2.945.0: the land & houses ring ---- */
+  function landEstate(s, p, k) {
+    var name = square(p)[1];
+    if (k === "office") choice(s, "gate", "The land office", "Back to the investment ring (the bank, the exchange, the city's property)?", [
+      { id: "in", label: "➜ Move in to the investment ring" }, { id: "stay", label: "Stay out here" }]);
+    else if (k === "lot") {
+      var key = "e" + p.pos, l = lot(s, key);
+      if (l.owner === -1) buyChoice(s, p, key);
+      else if (l.owner !== p.id) {
+        var o = s.players[l.owner], rent = Math.round(l.value * LANDRENT[l.type]);
+        if (rent) { p.cash -= rent; o.cash += rent; log(s, p.name + " pays " + o.name + " " + money(rent) + " rent for the " + name + "."); }
+        else log(s, p.name + " walks across " + o.name + "'s " + name + ".");
+      } else if (l.type === "good") log(s, p.name + " checks on their " + name + " - the tenants are happy.");
+      else worksChoice(s, p, [key]);
+    } else if (k === "builder") {
+      var mine = lotsOf(s, p).filter(function (x) { return x.charAt(0) === "e" && lot(s, x).type !== "good"; });
+      if (mine.length) worksChoice(s, p, mine); else log(s, p.name + " chats with the builder - nothing of theirs to build on or renovate.");
+    } else if (k === "council") {
+      var v = lotsOf(s, p).filter(function (x) { return x.charAt(0) === "e"; }).reduce(function (t, x) { return t + lot(s, x).value; }, 0), c = Math.round(v * MONEY.rates);
+      if (c) { p.cash -= c; log(s, p.name + " pays " + money(c) + " council rates."); } else log(s, p.name + ": no land, no council rates.");
+    } else if (k === "auction") {
+      var free = Object.keys(s.estate).filter(function (x) { return s.estate[x].owner === -1; });
+      if (!free.length) { log(s, "The auction has nothing for sale - every lot is owned."); return; }
+      buyChoice(s, p, "e" + free[Math.floor(rng(s) * free.length)], Math.round(WORKS.auction * 100));
+    }
+  }
+  /** what the works cost and what the lot is worth after: build a house on land, renovate a renovator */
+  function works(s, key) {
+    var l = lot(s, key);
+    return l.type === "land" ? { what: "build", cost: WORKS.build, after: Math.round((l.value + WORKS.build) * WORKS.buildUp / 1000) * 1000 }
+      : { what: "reno", cost: Math.round(l.value * WORKS.reno / 1000) * 1000, after: Math.round(l.value * WORKS.renoUp / 1000) * 1000 };
+  }
+  function canPay(p, cost) { return p.cash >= cost || (p.cash >= cost * MONEY.deposit && cost - Math.round(cost * MONEY.deposit) <= loanLimit(p) - p.loan); }
+  function worksChoice(s, p, keys) {
+    var o = keys.filter(function (k) { return lot(s, k).owner === p.id && lot(s, k).type !== "good"; }).map(function (k) {
+      var w = works(s, k);
+      return { id: w.what + ":" + k, label: (w.what === "build" ? "🏗 Build a house on the " : "🔨 Renovate the ") + lotName(k) + " - " + money(w.cost) + " (then worth about " + money(w.after) + ")",
+               off: !canPay(p, w.cost), why: "not enough cash or loan room" };
+    });
+    if (!o.length) return;
+    choice(s, "works", "The builder", "Cash " + money(p.cash) + ". Works not covered by cash go on a loan (20% from cash).", o.concat([{ id: "done", label: "Not now" }]));
+  }
+  function doWorks(s, p, key) {
+    var l = lot(s, key), w = works(s, key), fromCash = p.cash >= w.cost ? w.cost : Math.round(w.cost * MONEY.deposit);
+    p.cash -= fromCash; p.loan += w.cost - fromCash;
+    l.type = "good"; l.value = w.after;
+    log(s, (w.what === "build" ? "🏗 " + p.name + " builds a house on the " : "🔨 " + p.name + " renovates the ") + lotName(key) + " for " + money(w.cost) + " - now worth " + money(w.after) + ".");
   }
   function pick(s, a) { return a[Math.floor(rng(s) * a.length)]; }
 
@@ -284,19 +372,29 @@
       else if (id === "trade") { p.ring = "trade"; p.pos = 0; log(s, p.name + " starts an apprenticeship."); }
       else { p.ring = "invest"; p.pos = 0; hire(s, p, "factory"); }
     } else if (k === "job") { if (a[0] === "job") hire(s, p, a[1]); }
-    else if (k === "gate") { if (id === "out") { p.ring = "invest"; p.pos = 0; log(s, p.name + " moves out to the investment ring."); } }
+    else if (k === "gate") {
+      if (id === "out") { p.ring = "invest"; p.pos = 0; log(s, p.name + " moves out to the investment ring."); }
+      else if (id === "estate") { p.ring = "estate"; p.pos = 0; log(s, p.name + " heads out to the land & houses ring."); }
+      else if (id === "in") { p.ring = "invest"; p.pos = 14; log(s, p.name + " moves back in to the investment ring."); }
+    }
     else if (k === "night") { if (id === "enrol") { p.cash -= MONEY.night; p.ring = "college"; p.pos = 0; p.night = true; p.colRight = 0; p.colWrong = 0; log(s, p.name + " enrols in night school."); } }
     else if (k === "buy") {
       if (a[0] === "buy") {
-        var at = a[1], v = s.props[at].value, fromCash = p.cash >= v ? v : Math.round(v * MONEY.deposit);   // cash if there is enough, else the deposit + a loan
-        p.cash -= fromCash; p.loan += v - fromCash; s.props[at].owner = p.id;
-        log(s, "🏠 " + p.name + " buys the " + RINGS.invest[at][1] + " for " + money(v) + (v - fromCash > 0 ? " (" + money(v - fromCash) + " loan)" : "") + ".");
+        var at = a[1], v = Math.round(lot(s, at).value * (+a[2] || 100) / 100), fromCash = p.cash >= v ? v : Math.round(v * MONEY.deposit);   // cash if there is enough, else the deposit + a loan
+        p.cash -= fromCash; p.loan += v - fromCash; lot(s, at).owner = p.id;
+        log(s, ({ land: "🌳 ", reno: "🏚 ", good: "🏡 ", prop: "🏠 " })[lotType(s, at)] + p.name + " buys the " + lotName(at) + " for " + money(v) + (a[2] ? " at auction" : "") + (v - fromCash > 0 ? " (" + money(v - fromCash) + " loan)" : "") + ".");
       }
+    } else if (k === "works") {
+      if (id === "done") { finishTurn(s); return true; }
+      doWorks(s, p, a[1]);
+      worksChoice(s, p, lotsOf(s, p).filter(function (x) { return x.charAt(0) === "e" && lot(s, x).type !== "good"; }).filter(function (x) { return pd.options.some(function (o) { return o.id.split(":")[1] === x; }); }));
+      if (!s.pending) finishTurn(s);
+      return true;
     } else if (k === "bank" || k === "shares") {
       if (id === "done") { finishTurn(s); return true; }
       if (a[0] === "borrow") { p.loan += +a[1]; p.cash += +a[1]; log(s, p.name + " borrows " + money(+a[1]) + "."); }
       else if (a[0] === "repay") { var r = a[1] === "all" ? p.loan : Math.min(+a[1], p.loan); p.loan -= r; p.cash -= r; log(s, p.name + " repays " + money(r) + "."); }
-      else if (a[0] === "sell" && s.props[a[1]]) { var got = Math.round(s.props[a[1]].value * 0.95); s.props[a[1]].owner = -1; p.cash += got; log(s, p.name + " sells the " + RINGS.invest[a[1]][1] + " for " + money(got) + "."); }
+      else if (a[0] === "sell" && (s.props[a[1]] || /^e\d+$/.test(a[1]))) { var got = Math.round(lot(s, a[1]).value * 0.95); lot(s, a[1]).owner = -1; p.cash += got; log(s, p.name + " sells the " + lotName(a[1]) + " for " + money(got) + "."); }
       else if (a[0] === "sell") { var q = p.shares[a[1]] || 0, g = Math.round(q * s.price[a[1]]); p.cash += g; delete p.shares[a[1]]; log(s, p.name + " sells " + q + " shares for " + money(g) + "."); }
       else if (a[0] === "sh") { var n = Math.floor(+a[2] / s.price[a[1]]); p.shares[a[1]] = (p.shares[a[1]] || 0) + n; p.cash -= Math.round(n * s.price[a[1]]); log(s, p.name + " buys " + n + " shares of " + coName(a[1]) + "."); }
       if (k === "bank") bankChoice(s, p); else sharesChoice(s, p);
@@ -319,9 +417,9 @@
       p.cash += pay - MONEY.living; p.paydays++;
       if (p.studentDebt > 0 && p.job.salary >= 50000) { var r = Math.min(p.studentDebt, Math.round(p.job.salary / 4 * MONEY.repay)); p.studentDebt -= r; p.cash -= r; }
       if (p.paydays >= 2 && !p.open) { p.open = true; log(s, "🔓 " + p.name + " has a stable income - the investment ring is open."); }
-    } else if (p.ring === "jobs" || p.ring === "invest") { p.cash -= MONEY.jobless; p.paydays = 0; }
+    } else if (p.ring === "jobs" || p.ring === "invest" || p.ring === "estate") { p.cash -= MONEY.jobless; p.paydays = 0; }
     if (p.loan > 0) p.cash -= Math.round(p.loan * MONEY.interest);
-    propsOf(s, p).forEach(function (k) { p.cash += Math.round(s.props[k].value * MONEY.tenant); });
+    lotsOf(s, p).forEach(function (k) { p.cash += Math.round(lot(s, k).value * YIELD[lotType(s, k)]); });   // tenants (none on bare land)
     p.cash += Math.round(sharesValue(s, p) * MONEY.dividend);
     if (p.cash < 0) raise(s, p);
     if (p.age >= s.retire && !p.retired) { p.retired = true; log(s, "🏖 " + p.name + " retires at " + Math.floor(p.age) + " - net worth " + money(netWorth(s, p)) + "."); }
@@ -330,11 +428,11 @@
   /** short of cash: shares sold, then the cheapest property, then the bank; nothing left = bankrupt (out, retired) */
   function raise(s, p) {
     Object.keys(p.shares).forEach(function (k) { if (p.cash < 0) { p.cash += Math.round(p.shares[k] * s.price[k]); delete p.shares[k]; log(s, p.name + " has to sell shares in " + coName(k) + "."); } });
-    propsOf(s, p).sort(function (a, b) { return s.props[a].value - s.props[b].value; }).forEach(function (k) {
-      if (p.cash >= 0) return; p.cash += Math.round(s.props[k].value * 0.9); s.props[k].owner = -1; log(s, p.name + " has to sell the " + RINGS.invest[k][1] + ".");
+    lotsOf(s, p).sort(function (a, b) { return lot(s, a).value - lot(s, b).value; }).forEach(function (k) {
+      if (p.cash >= 0) return; p.cash += Math.round(lot(s, k).value * 0.9); lot(s, k).owner = -1; log(s, p.name + " has to sell the " + lotName(k) + ".");
     });
     if (p.cash < 0 && loanLimit(p) - p.loan >= -p.cash) { var b = Math.ceil(-p.cash / 1000) * 1000; p.loan += b; p.cash += b; log(s, p.name + " borrows " + money(b) + " to cover bills."); }
-    if (p.cash < -20000 && !propsOf(s, p).length && !Object.keys(p.shares).length) { p.bankrupt = true; p.retired = true; log(s, "💥 " + p.name + " is bankrupt - out of the game."); }
+    if (p.cash < -20000 && !lotsOf(s, p).length && !Object.keys(p.shares).length) { p.bankrupt = true; p.retired = true; log(s, "💥 " + p.name + " is bankrupt - out of the game."); }
   }
   function next(s) {
     s.pending = null; s.phase = "roll";
@@ -352,6 +450,7 @@
       s.year++;
       var m = 0.05 + (rng(s) - 0.5) * 0.12;
       Object.keys(s.props).forEach(function (k) { s.props[k].value = Math.round(s.props[k].value * (1 + m + (rng(s) - 0.5) * 0.04) / 1000) * 1000; });
+      Object.keys(s.estate || {}).forEach(function (k) { var e = s.estate[k]; e.value = Math.round(e.value * (1 + m + (e.type === "land" ? WORKS.landGrowth : 0) + (rng(s) - 0.5) * 0.04) / 1000) * 1000; });
       log(s, "📅 A year passes - property " + (m >= 0 ? "up " : "down ") + Math.abs(Math.round(m * 100)) + "%.");
     }
   }
@@ -367,11 +466,19 @@
       return "trade";
     }
     if (pd.kind === "job") { var js = byPrefix("job:"); return js.length && (!p.job || jobOf(js[0].id.slice(4)).salary > p.job.salary) ? js[0].id : "keep"; }
-    if (pd.kind === "gate") return "out";
+    if (pd.kind === "gate") {
+      if (has("out")) return "out";
+      if (has("estate")) return (p.bot === "saver" ? p.cash > 120000 : p.cash > 50000) && rng(s) < 0.6 ? "estate" : "stay";
+      return p.cash < 40000 || rng(s) < 0.3 ? "in" : "stay";
+    }
+    if (pd.kind === "works") {
+      var wk = o.filter(function (x) { return x.id !== "done"; })[0], need = p.bot === "saver" ? 60000 : p.bot === "tycoon" ? 10000 : 30000;
+      return wk && (s._botBuys || 0) < 2 && p.cash >= need + works(s, wk.id.split(":")[1]).cost * MONEY.deposit ? (s._botBuys = (s._botBuys || 0) + 1, wk.id) : "done";
+    }
     if (pd.kind === "night") return has("enrol") && p.bot === "risk" && p.cash > 15000 ? "enrol" : "no";
     if (pd.kind === "buy") {
       var b = byPrefix("buy:")[0]; if (!b) return "pass";
-      var at = b.id.slice(4), v = s.props[at].value, buffer = p.bot === "saver" ? 30000 : p.bot === "tycoon" ? 5000 : 15000;
+      var at = b.id.split(":")[1], v = lot(s, at).value * (+b.id.split(":")[2] || 100) / 100, buffer = p.bot === "saver" ? 30000 : p.bot === "tycoon" ? 5000 : 15000;
       return p.cash - Math.min(p.cash, v * MONEY.deposit) >= buffer || p.cash >= v + buffer ? b.id : "pass";
     }
     if (pd.kind === "shares") {
@@ -401,7 +508,8 @@
   var API = { RINGS: RINGS, PROPS: PROPS, COMPANIES: COMPANIES, JOBS: JOBS, MONEY: MONEY, NEED: NEED, QBONUS: QBONUS, COLORS: COLORS, PERSONAS: PERSONAS,
               newGame: newGame, current: cur, square: square, canRoll: canRoll, roll: roll, answer: answer, choose: choose, botStep: botStep,
               offers: offers, loanLimit: loanLimit, netWorth: netWorth, score: score, standings: standings, propsOf: propsOf, sharesValue: sharesValue,
-              money: money, coName: coName, rng: rng };
+              money: money, coName: coName, rng: rng,
+              ESTATE: ESTATE, WORKS: WORKS, YIELD: YIELD, LANDRENT: LANDRENT, upgrade: upgrade, lot: lot, lotType: lotType, lotName: lotName, lotsOf: lotsOf, works: works };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.H3LifeCore = API;
 })(typeof window !== "undefined" ? window : this);

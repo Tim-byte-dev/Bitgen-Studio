@@ -15075,6 +15075,13 @@ node scripts/test-944.js > /tmp/t944.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui944-ui.js > /tmp/ui944.log 2>&1 \
   && ok "2.944.0 browser test: 🎓 opens to the window, set-up, the board, puzzles right and wrong, bots, the fork, the factory, reload, a finished game's score" \
   || { bad "2.944.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui944.log | head -12; }
+# ---- 2.945.0 (🎓 Life Choices: the land & houses ring)
+node scripts/test-945.js > /tmp/t945.log 2>&1 \
+  && ok "2.945.0 units: the ring's lots, gates, buying, rent by condition, build / renovate, council rates, auction, selling, old saves, bot games" \
+  || { bad "2.945.0 units"; grep -a "^FAIL" -A1 /tmp/t945.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui945-ui.js > /tmp/ui945.log 2>&1 \
+  && ok "2.945.0 browser test: the ring drawn outside, a renovator bought and renovated, the tip, an old save upgraded" \
+  || { bad "2.945.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui945.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

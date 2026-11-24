@@ -28,20 +28,23 @@
 
   /* ---------------- saving ---------------- */
   function save() { if (!G.s) return; try { root.localStorage.setItem("h3.life.save", JSON.stringify(G.s)); } catch (e) { /* full / private */ } }
-  function load() { try { var j = JSON.parse(root.localStorage.getItem("h3.life.save") || "null"); return j && j.v === 1 && j.players ? j : null; } catch (e) { return null; } }
+  function load() { try { var j = JSON.parse(root.localStorage.getItem("h3.life.save") || "null"); return j && j.v === 1 && j.players ? C.upgrade(j) : null; } catch (e) { return null; } }   // 2.945.0: older saves get the new ring
 
   /* ---------------- the board's shape ---------------- */
   var D = Math.PI / 180;
   // [ring, inner, outer (x R), first angle, last angle]: college the top 240°, the apprenticeship the bottom 90°
-  var LAY = { invest: [0.80, 0.97, -90, 270], jobs: [0.62, 0.78, -90, 270], college: [0.44, 0.60, -210, 30], trade: [0.44, 0.60, 45, 135], hs: [0.25, 0.41, -90, 270] };
+  // 2.945.0: + the land & houses ring outside (estate) - the others drawn a little narrower
+  var LAY = { estate: [0.835, 0.985, -90, 270], invest: [0.675, 0.82, -90, 270], jobs: [0.525, 0.66, -90, 270], college: [0.385, 0.51, -210, 30], trade: [0.385, 0.51, 45, 135], hs: [0.225, 0.37, -90, 270] };
   var FACTORY_A = 142;
   var COL = { quiz: "#3f6fd8", math: "#25897c", word: "#9354c4", exam: "#c98227", finals: "#d0622a", allowance: "#3a9a4a", parttime: "#3a9a4a", overtime: "#3a9a4a",
               bonus: "#3a9a4a", expense: "#a84545", rates: "#a84545", tools: "#a84545", prop: "#5d4f36", exchange: "#2a72b0", bank: "#b8921d", news: "#6d6d78",
               night: "#7b62c6", offers: "#3f82c2", promo: "#c49530", restructure: "#943b3b", library: "#3f7f8f", seminar: "#3f7f8f", study: "#3f7f8f",
-              enrol: "#546274", induct: "#546274", workshop: "#546274", licence: "#c98227", skill: "#25897c" };
+              enrol: "#546274", induct: "#546274", workshop: "#546274", licence: "#c98227", skill: "#25897c",
+              landoff: "#4f7a3a", office: "#4f7a3a", builder: "#8a6a3a", council: "#a84545", auction: "#6a4a8a", land: "#4d6b2c", good: "#2f6280", reno: "#7a4a2a" };
   var ICON = { quiz: "❓", math: "➗", word: "🔤", exam: "📝", finals: "🎓", allowance: "💵", parttime: "💵", overtime: "⏱", bonus: "🎁", expense: "🧾", rates: "🧾",
                tools: "🧰", prop: "🏠", exchange: "📈", bank: "🏦", news: "📰", night: "🌙", offers: "💼", promo: "⬆", restructure: "✂", library: "📚", seminar: "🗣",
-               study: "📐", enrol: "🏫", induct: "🦺", workshop: "🔩", licence: "📜", skill: "📏" };
+               study: "📐", enrol: "🏫", induct: "🦺", workshop: "🔩", licence: "📜", skill: "📏",
+               landoff: "🗺", office: "🗺", builder: "🏗", council: "🧾", auction: "🔨", land: "🌳", good: "🏡", reno: "🏚" };
   function geometry(w, h) {
     var R = Math.min(w, h) / 2 - 6, cx = w / 2, cy = h / 2, sq = [];
     Object.keys(LAY).forEach(function (ring) {
@@ -77,33 +80,39 @@
     bg.addColorStop(0, "#1a2340"); bg.addColorStop(1, "#0b1020"); x.fillStyle = bg; x.fillRect(0, 0, w, h);
     // the factory's spoke: straight out from the centre to the investment ring
     var fa = FACTORY_A * D; x.save(); x.strokeStyle = "rgba(255,190,90,.55)"; x.setLineDash([5, 5]); x.lineWidth = 2;
-    x.beginPath(); x.moveTo(g.cx + Math.cos(fa) * 0.2 * g.R, g.cy + Math.sin(fa) * 0.2 * g.R); x.lineTo(g.cx + Math.cos(fa) * 0.8 * g.R, g.cy + Math.sin(fa) * 0.8 * g.R); x.stroke(); x.restore();
+    x.beginPath(); x.moveTo(g.cx + Math.cos(fa) * 0.2 * g.R, g.cy + Math.sin(fa) * 0.2 * g.R); x.lineTo(g.cx + Math.cos(fa) * 0.675 * g.R, g.cy + Math.sin(fa) * 0.675 * g.R); x.stroke(); x.restore();
     var cur = s && !s.over ? C.current(s) : null;
     g.sq.forEach(function (q) {
       x.beginPath(); x.arc(g.cx, g.cy, q.r1, q.a0, q.a1); x.arc(g.cx, g.cy, q.r0, q.a1, q.a0, true); x.closePath();
-      x.fillStyle = COL[q.kind] || "#444"; x.globalAlpha = 0.9; x.fill(); x.globalAlpha = 1;
+      var kind = q.kind === "lot" && s && s.estate ? s.estate[q.i].type : q.kind;          // a block built on turns blue
+      x.fillStyle = COL[kind] || "#444"; x.globalAlpha = 0.9; x.fill(); x.globalAlpha = 1;
       var here = cur && cur.ring === q.ring && cur.pos === q.i;
       x.lineWidth = here ? 2.5 : 1; x.strokeStyle = here ? "#fff" : "rgba(0,0,0,.45)"; x.stroke();
-      if (q.ring === "invest" && q.kind === "prop" && s) {                       // the owner's colour on the outer edge
-        var pr = s.props[q.i]; if (pr && pr.owner >= 0) { x.beginPath(); x.arc(g.cx, g.cy, q.r1 - 3, q.a0, q.a1); x.strokeStyle = s.players[pr.owner].color; x.lineWidth = 5; x.stroke(); }
+      if (s && ((q.ring === "invest" && q.kind === "prop") || q.kind === "lot")) {   // the owner's colour on the outer edge
+        var pr = q.kind === "lot" ? s.estate && s.estate[q.i] : s.props[q.i]; if (pr && pr.owner >= 0) { x.beginPath(); x.arc(g.cx, g.cy, q.r1 - 3, q.a0, q.a1); x.strokeStyle = s.players[pr.owner].color; x.lineWidth = 5; x.stroke(); }
       }
       if (G.hover === q) { x.beginPath(); x.arc(g.cx, g.cy, q.r1, q.a0, q.a1); x.arc(g.cx, g.cy, q.r0, q.a1, q.a0, true); x.closePath(); x.fillStyle = "rgba(255,255,255,.14)"; x.fill(); }
       // the words: an icon, a short name, the price on property
       var band = q.r1 - q.r0, arcLen = (q.a1 - q.a0) * (q.r0 + q.r1) / 2, fs = Math.max(7, Math.min(12, band * 0.24, arcLen * 0.2));
       x.fillStyle = "#fff"; x.textAlign = "center"; x.textBaseline = "middle";
-      x.font = Math.round(fs * 1.25) + "px system-ui, sans-serif"; x.fillText(ICON[q.kind] || "", q.cx, q.cy - fs * 0.75);
-      x.font = "600 " + Math.round(fs) + "px system-ui, sans-serif";
-      var label = q.name.length > 11 && arcLen < 80 ? q.name.split(" ")[0] : q.name;
-      if (arcLen > 26) x.fillText(label.length * fs * 0.55 > arcLen ? label.slice(0, Math.max(3, Math.floor(arcLen / (fs * 0.55)))) : label, q.cx, q.cy + fs * 0.45);
-      if (q.ring === "invest" && q.kind === "prop" && s && s.props[q.i]) { x.font = Math.round(fs * 0.9) + "px system-ui, sans-serif"; x.fillStyle = "#ffe9a8"; x.fillText(k$(s.props[q.i].value), q.cx, q.cy + fs * 1.45); }
+      x.font = Math.round(fs * 1.25) + "px system-ui, sans-serif"; x.fillText(ICON[kind] || "", q.cx, q.cy - fs * 0.75);
+      // the name fits its square: the whole name, else smaller, else its first word, else cut short
+      var mid = (q.a0 + q.a1) / 2, room = (arcLen * Math.abs(Math.sin(mid)) + band * Math.abs(Math.cos(mid))) * 0.8, label = q.name, f2 = fs;   // the square's width across the screen
+      x.font = "600 " + Math.round(f2) + "px system-ui, sans-serif";
+      while (x.measureText(label).width > room && f2 > fs * 0.8) { f2 -= 0.5; x.font = "600 " + Math.round(f2 * 2) / 2 + "px system-ui, sans-serif"; }
+      if (x.measureText(label).width > room) label = q.name.split(" ")[0];
+      while (label.length > 3 && x.measureText(label).width > room) label = label.slice(0, -1);
+      if (arcLen > 26) x.fillText(label, q.cx, q.cy + fs * 0.45);
+      var lv = s && (q.kind === "lot" ? s.estate && s.estate[q.i] : q.ring === "invest" && q.kind === "prop" ? s.props[q.i] : null);
+      if (lv) { x.font = Math.round(fs * 0.9) + "px system-ui, sans-serif"; x.fillStyle = "#ffe9a8"; x.fillText(k$(lv.value), q.cx, q.cy + fs * 1.45); }
     });
     // ring names
     x.font = "600 10px system-ui, sans-serif"; x.fillStyle = "rgba(255,255,255,.55)"; x.textAlign = "center";
     var pill = function (t, px, py, col) { var tw = x.measureText(t).width + 10; x.fillStyle = "rgba(11,16,32,.85)"; x.fillRect(px - tw / 2, py - 7, tw, 14); x.fillStyle = col || "rgba(255,255,255,.7)"; x.fillText(t, px, py + 0.5); };
     x.textBaseline = "middle";
-    [["INVESTMENT", 0.985], ["JOBS", 0.79], ["COLLEGE", 0.61]].forEach(function (t) { pill(t[0], g.cx, g.cy - t[1] * g.R); });
-    pill("APPRENTICESHIP", g.cx, g.cy + 0.61 * g.R);
-    pill("🏭 FACTORY ➜", g.cx + Math.cos(fa) * 0.52 * g.R, g.cy + Math.sin(fa) * 0.52 * g.R, "rgba(255,200,120,.95)");
+    [["LAND & HOUSES", 0.99], ["INVESTMENT", 0.827], ["JOBS", 0.667], ["COLLEGE", 0.518]].forEach(function (t) { pill(t[0], g.cx, g.cy - t[1] * g.R); });
+    pill("APPRENTICESHIP", g.cx, g.cy + 0.518 * g.R);
+    pill("🏭 FACTORY ➜", g.cx + Math.cos(fa) * 0.45 * g.R, g.cy + Math.sin(fa) * 0.45 * g.R, "rgba(255,200,120,.95)");
     // the centre: high school's heart + the fork
     x.beginPath(); x.arc(g.cx, g.cy, LAY.hs[0] * g.R - 3, 0, Math.PI * 2); x.fillStyle = "#121a33"; x.fill();
     x.fillStyle = "#fff"; x.font = "800 " + Math.round(Math.max(10, g.R * 0.055)) + "px system-ui, sans-serif"; x.fillText("LIFE", g.cx, g.cy - g.R * 0.05);
@@ -127,14 +136,19 @@
               rates: "Rates and land tax: 1% of your property.", tools: "Buy your tools.", exchange: "Buy and sell shares.", bank: q.ring === "jobs" ? "With a steady income: move out to the investment ring." : "Loans (up to 5x your salary), repay, sell property.",
               news: "Market news moves a company or the property market.", night: "Night school: study for a degree while you work.", offers: "Job offers for your IQ and qualification.",
               promo: "A work puzzle - right = a promotion.", restructure: "A chance of losing your job (less with a high IQ).", library: "IQ +1.", seminar: "IQ +1.", study: "A maths exam.",
-              enrol: "The start of the college year.", induct: "Your first day.", workshop: "Learning on the job.", licence: "Your trade licence - then the jobs ring.", skill: "A trade puzzle." };
+              enrol: "The start of the college year.", induct: "Your first day.", workshop: "Learning on the job.", licence: "Your trade licence - then the jobs ring.", skill: "A trade puzzle.",
+              landoff: "With a steady income: out to the land & houses ring.", office: "Back in to the investment ring.", builder: "Build a house on your land or renovate your renovators.",
+              council: "Council rates: 1% of your land and houses out here.", auction: "A lot out here at 85% of its value." };
+    var TY = { land: "A block of land - no rent until a house is built on it.", good: "A house in good condition - full rent.", reno: "A house that needs renovating - little rent until it is done." };
+    if (q.kind === "lot" && s && s.estate) { var e = s.estate[q.i], w = C.works(s, "e" + q.i); t += TY[e.type] + "<br>Worth: " + M(e.value) + (e.owner >= 0 ? "<br>Owner: " + esc(s.players[e.owner].name) : "<br>For sale") +
+      (e.type !== "good" ? "<br>" + (e.type === "land" ? "Build" : "Renovate") + ": " + M(w.cost) + " -> about " + M(w.after) : "<br>Rent if you land here: " + M(e.value * C.LANDRENT.good)); return t; }
     t += T[q.kind] || "";
     if (q.kind === "prop" && s) { var pr = s.props[q.i]; t += "Property: " + M(pr.value) + (pr.owner >= 0 ? "<br>Owner: " + esc(s.players[pr.owner].name) : "<br>For sale") + "<br>Rent if you land here: " + M(pr.value * C.MONEY.rentFrac); }
     return t;
   }
 
   /* ---------------- the side panel ---------------- */
-  var RINGNAME = { hs: "High school", fork: "The fork", college: "College", trade: "Apprentice", jobs: "Jobs ring", invest: "Investment ring" };
+  var RINGNAME = { hs: "High school", fork: "The fork", college: "College", trade: "Apprentice", jobs: "Jobs ring", invest: "Investment ring", estate: "Land & houses" };
   function players() {
     var s = G.s, b = $("lcPlayers"); if (!b) return;
     if (!s) { b.innerHTML = ""; return; }

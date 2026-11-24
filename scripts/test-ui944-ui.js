@@ -40,7 +40,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const g1 = await ev(() => { const s = window.H3Life.state(); return { n: s.players.length, me: s.players[0].name, bots: s.players.slice(1).map((q) => q.bot), retire: s.retire }; });
     check("a game: you + 3 bots (a saver, a tycoon, a risk-taker), retire at 30", g1.n === 4 && g1.me === "Tester 944" && g1.bots.join() === "saver,tycoon,risk" && g1.retire === 30, g1);
     const px = await ev(() => { const c = document.getElementById("lcBoard"), x = c.getContext("2d"), d = x.getImageData(0, 0, c.width, c.height).data; let n = 0, k = 0; for (let i = 0; i < d.length; i += 4 * 97) { n++; if (d[i] + d[i + 1] + d[i + 2] > 120) k++; } return { lit: k / n, sq: window.H3Life.info().squares }; });
-    check("the 2D board is drawn: 54 squares in rings (high school, college, apprenticeship, jobs, investment)", px.sq === 54 && px.lit > 0.2, px);
+    check("the 2D board is drawn: 74 squares in rings (high school, college, apprenticeship, jobs, investment, land & houses since 2.945.0)", px.sq === 74 && px.lit > 0.2, px);
     // hover a square: its tip
     const at = await ev(() => { const g = window.H3Life._geo(), q = g.sq.find((z) => z.ring === "invest" && z.i === 15), r = document.getElementById("lcBoard").getBoundingClientRect(); return [r.left + q.cx, r.top + q.cy]; });
     await p.mouse.move(at[0], at[1]); await p.waitForTimeout(200);
