@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "chasecore.js",
+    "chasetheme.js",
     "chasedock.js"
   ],
   "server": "chaseserver.js"

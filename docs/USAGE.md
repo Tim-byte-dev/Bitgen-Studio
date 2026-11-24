@@ -10855,8 +10855,9 @@ A **📡 jammer** (the four blue gems in the corners) jams their radios for a fe
 scatter (the blue bar shows how long is left) - bump one and it drives back to the station, 200, 400, 800 then 1,600 points.
 A cake (a gold diamond before 2.937.0) shows up now and then below the station for a bonus.
 
-**🎥 City / Chase** (C) - the whole city from above (turned a quarter in a tall, narrow docker), or behind your car, where ↑
-drives straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
+**🎥** (V, or C) cycles the view (2.939.0): the overview of the whole maze (turned a quarter in a tall, narrow docker), a
+drone following your car from high up, and the driving view just behind your roof - in both following views ↑ drives
+straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
 and is off to start with. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten asks
 for your name (kept in police_chase.json in the install folder).
 
@@ -10904,4 +10905,17 @@ Each police car has its own trick:
 Every car has headlights on the road ahead, and explosions light the street. With the art pack (v3), the buildings have brick
 walls, glass with a sheen and windows lit warm or cool (`python3 scripts/chase_assets.py --dress` makes them from the pack's
 pictures).
+
+### Settings and modern lighting (2.939.0)
+
+**🗺** picks the setting: **Auto** (a new one each level - city, suburbs, forest, countryside, round and round) or always the
+same one. The game is the same maze; the setting changes what stands on the blocks and what the roads are made of:
+- **🏙 City** - the buildings (the art pack's, or the painted ones) and street lamps; night.
+- **🏡 Suburbs** - houses with pitched roofs and lit windows facing the road, lawns, garden trees, hedges round the edge,
+  street lamps; asphalt with kerbs and a dashed middle line; dusk.
+- **🌲 Forest** - pines and round trees, rocks, bushes and fireflies; dirt tracks with wheel ruts; moonlight and mist.
+- **🌾 Countryside** - fields in rows, hay bales, red barns, silos, fences along the edge; gravel lanes; a warm sunset.
+
+The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
+render runs and the game plays lighter, the shadows are left out.
 

@@ -17,7 +17,7 @@ check("chase_assets.py: roads cut from the kit's atlas (straight, plain, pavemen
 check("the pack is never committed nor zipped (.gitignore = misc/_gitignore, make_zips.sh)", /^ext\/chasedock\/assets\/$/m.test(src(".gitignore")) && src(".gitignore") === src("misc/_gitignore") && /! -path "\.\/ext\/chasedock\/assets\/\*"/.test(src("scripts/make_zips.sh")));
 check("chasedock.js: pack.json read before the first city (no pack = the painted city, as before)", /started = three\(\)\.then\(loadPack\)/.test(JS) && /r\.ok \? r\.json\(\) : null/.test(JS) && /j\.version !== 1\) return null/.test(JS));
 check("...the ground from the road pictures (64 px a tile; straights turned to the road; no painted lane marks over them)",
-  /P = RP \? 64 : 32/.test(JS) && /if \(RP\) paintRoads\(g, m, P, home, RP\)/.test(JS) && /g\.rotate\(Math\.PI \/ 2\)/.test(JS) && /y3 < m\.H && !RP/.test(JS) && /y < m\.H && !RP/.test(JS));
+  /P = RP \? 64 : CITY \? 32 : 48/.test(JS) /* 2.939.0: 48 for the other settings */ && /if \(RP\) paintRoads\(g, m, P, home, RP\)/.test(JS) && /g\.rotate\(Math\.PI \/ 2\)/.test(JS) && /y3 < m\.H && !RP && CITY/.test(JS) && /y < m\.H && !RP && CITY/.test(JS));
 check("...each block a building of the pack: a box wearing its five pictures in three.js's face order, a random one, a random quarter turn, the footprint 0.94 of a tile",
   /var mats = \[mat\("px"\), mat\("nx"\), mat\("py"\), new T\.MeshStandardMaterial\(\{ color: 0x161b26 \}\), mat\("pz"\), mat\("nz"\)\]/.test(JS)
   && /Math\.floor\(R\(\) \* PB\.length\)/.test(JS) && /Math\.floor\(R\(\) \* 4\)/.test(JS) && /0\.94 \/ Math\.max\(sz\[0\], sz\[1\]/.test(JS) && /new T\.InstancedMesh\(new T\.BoxGeometry\(1, 1, 1\), mats, list\.length\)/.test(JS));

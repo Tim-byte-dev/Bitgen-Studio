@@ -71,12 +71,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await clickCity();
     await p.waitForTimeout(300);
     check("...a click on the city carries on", !(await info()).paused);
-    // the camera
-    await p.keyboard.press("KeyC");
-    await p.waitForTimeout(300);
-    const c1 = await ev(() => ({ cam: window.H3Chase.info().cam, btn: document.getElementById("pcCam").textContent }));
-    await p.keyboard.press("KeyC");
-    check("C: the chase camera behind the car, C again: the city", c1.cam === "chase" && /Chase/.test(c1.btn) && (await info()).cam === "city", c1);
+    // the views (2.939.0: V - overview, drone, driving)
+    const views = [];
+    for (let i = 0; i < 3; i++) { await p.keyboard.press("KeyV"); await p.waitForTimeout(250); views.push(await ev(() => window.H3Chase.info().cam + ":" + document.getElementById("pcCam").textContent)); }
+    check("V: the drone, V: the driving view, V: the overview again (the button says which)", views.join() === "drone:🎥 Drone,drive:🎥 Driving,city:🎥 Overview", views);
     // 2.938.0: 🚀 armed, Space fires a rocket (and never pauses any more)
     await ev(() => { window.H3Chase.state().jamT = 5; });
     await p.keyboard.press("Space");

@@ -17,6 +17,9 @@
  *   2.938.0     the 📡 jammer is a 🚀 rocket launcher: Space / F (a gamepad's A, X or right trigger; a tap) fires straight
  *               ahead - a car two burgers away is hit; the police's tricks drawn (🚧 roadblock, ⚡ nitro, spike strip, 🛡
  *               shield); headlight beams on every car; explosions light the street. P / Esc pause (Space fires now).
+ *   2.939.0     settings (chasetheme.js): city, suburbs, forest, countryside - 🗺 Auto changes it each level; modern
+ *               lighting: filmic tone mapping, soft moon / sun shadows, glowing headlights, light bars and lamps, the
+ *               setting's sky; V cycles the views: overview, drone (high, following), driving (behind the roof)
  *   Sound       made on the spot with Web Audio (a siren that grows as the police close in, pick-ups, the jammer, a bust)
  *               - off to start with, M / 🔇 turns it on (kept)
  *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten asks for a name
@@ -54,7 +57,7 @@
     return loading;
   }
 
-  var G = { s: null, paused: true, why: "", auto: false, cam: LS.get("cam", "city") === "chase" ? "chase" : "city", sound: LS.get("sound", "0") === "1",
+  var G = { s: null, paused: true, why: "", auto: false, cam: ({ chase: "drone", drone: "drone", drive: "drive" })[LS.get("cam", "city")] || "city", theme: LS.get("theme", "auto"), sound: LS.get("sound", "0") === "1",
             render: LS.get("render", "light") === "pause" ? "pause" : "light", input: -1, raf: 0, last: 0, drawn: 0, frames: 0, V: null,
             scores: [], hiFile: 0, msgKey: "", padPrev: {}, swipe: null, light: false, mazeOf: null, err: "" };
 
@@ -66,14 +69,18 @@
     var r = new T.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
     r.setPixelRatio(Math.min(2, root.devicePixelRatio || 1));
     r.setClearColor(0x070a14);
+    // 2.939.0 modern lighting: filmic tone mapping, soft shadows from the moon / the low sun
+    if (T.ACESFilmicToneMapping) { r.toneMapping = T.ACESFilmicToneMapping; r.toneMappingExposure = 1.15; }
+    r.shadowMap.enabled = true; if (T.PCFSoftShadowMap) r.shadowMap.type = T.PCFSoftShadowMap;
     if ("outputColorSpace" in r && T.SRGBColorSpace) r.outputColorSpace = T.SRGBColorSpace;
     stage.insertBefore(r.domElement, stage.firstChild);
     var scene = new T.Scene();
     scene.fog = new T.Fog(0x070a14, 30, 70);
     var cam = new T.PerspectiveCamera(40, 1, 0.1, 200);
-    scene.add(new T.HemisphereLight(0x9fb4ff, 0x1a1410, 1.25));
-    var sun = new T.DirectionalLight(0xffe6c8, 1.6); sun.position.set(-8, 18, 10); scene.add(sun);
-    var V = { r: r, scene: scene, cam: cam, city: null, camPos: new T.Vector3(0, 30, 20), camLook: new T.Vector3(), player: null, police: [], lights: [] };
+    var hemi = new T.HemisphereLight(0x9fb4ff, 0x1a1410, 1.25); scene.add(hemi);
+    var sun = new T.DirectionalLight(0xffe6c8, 1.6); sun.position.set(-8, 18, 10); scene.add(sun); scene.add(sun.target);
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.02; sun.shadow.radius = 3;
+    var V = { r: r, scene: scene, cam: cam, city: null, hemi: hemi, sun: sun, glowTex: glowTexture(), camPos: new T.Vector3(0, 30, 20), camLook: new T.Vector3(), player: null, police: [], lights: [] };
     var CM = G.pack && G.pack.cars || {};                          // 2.937.0: the pack's 3D cars, when there
     V.player = makeCar({ body: 0xff8a1c, roof: 0xffa94d, model: CM.getaway });
     scene.add(V.player.g);
@@ -183,6 +190,35 @@
     add(new T.SphereGeometry(0.014, 8, 6), S(0xffd060, { emissive: 0xffa000, emissiveIntensity: 2 }), 0.27).position.x = 0.05;
     return g;
   }
+  /* ---- 2.939.0: modern lighting - glows, the setting's sky and light ---- */
+  function glowTexture() {
+    var c = doc.createElement("canvas"); c.width = c.height = 64; var g = c.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.25, "rgba(255,255,255,.55)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return new T.CanvasTexture(c);
+  }
+  function skyTexture(cols) {
+    var c = doc.createElement("canvas"); c.width = 4; c.height = 256; var g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, cols[0]); gr.addColorStop(1, cols[1]); g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+    var t = new T.CanvasTexture(c); if (T.SRGBColorSpace) t.colorSpace = T.SRGBColorSpace; return t;
+  }
+  function lightTheme(theme, m) {
+    var V = G.V, th = (root.H3ChaseTheme && root.H3ChaseTheme.THEMES[theme]) || null; if (!th) return;
+    if (V.scene.background && V.scene.background.dispose) V.scene.background.dispose();
+    V.scene.background = skyTexture(th.sky); V.scene.fog.color.setHex(th.fog);
+    V.hemi.color.setHex(th.hemi[0]); V.hemi.groundColor.setHex(th.hemi[1]); V.hemi.intensity = th.hemi[2];
+    V.sun.color.setHex(th.moon[0]); V.sun.intensity = th.moon[1];
+    V.sun.position.set(-m.W * 0.45, 16, m.H * 0.55); V.sun.target.position.set(0, 0, 0);
+    var sc = V.sun.shadow.camera, half = Math.max(m.W, m.H) * 0.62;
+    sc.left = -half; sc.right = half; sc.top = half; sc.bottom = -half; sc.near = 1; sc.far = 60; sc.updateProjectionMatrix();
+  }
+  /** glows on a car: two headlight halos, and on a police car a red and a blue halo over its light bar */
+  var GLOWTEX = null;
+  function addGlows(c, police) {
+    var mk = function (col, sc, x, y, z) { var sp = new T.Sprite(new T.SpriteMaterial({ map: GLOWTEX, color: col, transparent: true, depthWrite: false, blending: T.AdditiveBlending })); sp.scale.setScalar(sc); sp.position.set(x, y, z); c.g.add(sp); return sp; };
+    c.headGlow = [mk(0xfff0c8, 0.22, -0.13, 0.16, -0.42), mk(0xfff0c8, 0.22, 0.13, 0.16, -0.42)];
+    if (police) { c.redGlow = mk(0xff2030, 0.5, -0.07, 0.4, 0.03); c.blueGlow = mk(0x3060ff, 0.5, 0.07, 0.4, 0.03); }
+    c.g.traverse(function (o) { if (o.isMesh) { o.castShadow = true; } });
+  }
   /* ---- 2.938.0: rocket launchers, rockets, explosions, the police's tricks, headlights ---- */
   function SM(c, p) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.5 }, p || {})); }
   function part(g, geo, mat, x, y, z) { var o = new T.Mesh(geo, mat); o.position.set(x || 0, y || 0, z || 0); g.add(o); return o; }
@@ -234,6 +270,7 @@
     c.g.add(beam); c.beam = beam;
   }
   function fxSetup(V, scene) {
+    GLOWTEX = V.glowTex;
     var pool = function (n, make) { var a = []; for (var i = 0; i < n; i++) { var o = make(); o.visible = false; scene.add(o); a.push(o); } return a; };
     V.rocketPool = pool(8, makeRocket);
     V.boomPool = pool(8, function () { return new T.Mesh(new T.SphereGeometry(0.3, 16, 10), new T.MeshBasicMaterial({ color: 0xffa040, transparent: true, depthWrite: false, blending: T.AdditiveBlending })); });
@@ -241,9 +278,9 @@
     V.spikePool = pool(6, makeSpikes);
     V.boomLight = new T.PointLight(0xff8830, 0, 4, 2); scene.add(V.boomLight);
     var bt = beamTexture();
-    addBeams(V.player, bt);
+    addBeams(V.player, bt); addGlows(V.player, false);
     V.police.forEach(function (c) {
-      addBeams(c, bt);
+      addBeams(c, bt); addGlows(c, true);
       var sh = new T.Mesh(new T.SphereGeometry(0.55, 20, 14), new T.MeshBasicMaterial({ color: 0x60c8ff, transparent: true, opacity: 0.22, depthWrite: false, blending: T.AdditiveBlending }));
       sh.position.y = 0.2; sh.visible = false; c.g.add(sh); c.shieldMesh = sh;
       var fl = new T.Mesh(new T.ConeGeometry(0.07, 0.4, 10), new T.MeshBasicMaterial({ color: 0x60b0ff, transparent: true, opacity: 0.85, depthWrite: false, blending: T.AdditiveBlending }));
@@ -283,7 +320,11 @@
       if (v.shieldMesh.visible) v.shieldMesh.material.opacity = 0.16 + Math.sin(t * 5) * 0.06;
       v.nitro.visible = c.boost > 0; if (c.boost > 0) v.nitro.scale.y = 0.8 + Math.random() * 0.6;
       v.beam.visible = c.mode !== "back";
+      var on = c.mode !== "jammed" && c.mode !== "back", fl = Math.floor(t * 6) % 2;     // 2.939.0: the light bar's halos
+      v.redGlow.visible = on && fl === 1; v.blueGlow.visible = on && fl === 0;
+      v.headGlow.forEach(function (h) { h.visible = c.mode !== "back"; });
     });
+    (V.fireflies || []).forEach(function (f, i) { f.position.y = 0.25 + f.userData.firefly * 0.08 + Math.sin(t * 2 + i) * 0.05; f.material.opacity = 0.5 + 0.5 * Math.sin(t * 3 + i * 1.7); });
     V.player.launcher.visible = s.jamT > 0;
     V.player.beam.material.opacity = s.slowT > 0 && Math.floor(t * 10) % 2 ? 0.2 : 0.55;
   }
@@ -294,18 +335,23 @@
     var V = G.V, m = s.maze;
     if (V.city) { V.scene.remove(V.city); V.city.traverse(function (o) { if (o.geometry) o.geometry.dispose(); [].concat(o.material || []).forEach(function (mt) { if (mt.map) mt.map.dispose(); if (mt.emissiveMap) mt.emissiveMap.dispose(); mt.dispose(); }); }); }
     var city = new T.Group(); V.city = city; V.scene.add(city);
+    // 2.939.0: the setting (city / suburbs / forest / countryside) - what stands on the blocks, the roads, the sky, the light
+    var TH = root.H3ChaseTheme, theme = TH ? TH.pick(G.theme, s.level) : "city", CITY = theme === "city";
+    var items = TH ? TH.plan(theme, m, s.seed + s.level * 31) : [];
+    G.themeNow = theme; lightTheme(theme, m);
     // the ground: one canvas - 32 px a tile painted, or (2.936.0) 64 px a tile from the art pack's road pictures
-    var RP = G.pack && G.pack.roadImgs, P = RP ? 64 : 32, cv = doc.createElement("canvas"); cv.width = m.W * P; cv.height = m.H * P;
+    var RP = CITY && G.pack && G.pack.roadImgs, P = RP ? 64 : CITY ? 32 : 48, cv = doc.createElement("canvas"); cv.width = m.W * P; cv.height = m.H * P;
     var g = cv.getContext("2d");
     g.fillStyle = "#2b2e38"; g.fillRect(0, 0, cv.width, cv.height);                       // pavement under the blocks
     var home = {}; m.station.tiles.forEach(function (t) { home[t[0] + "," + t[1]] = 1; });
     if (RP) paintRoads(g, m, P, home, RP);
-    for (var y = 0; y < m.H && !RP; y++) for (var x = 0; x < m.W; x++) {
+    if (!CITY) TH.paintGround(theme, g, m, P, home, items, s.seed + s.level);
+    for (var y = 0; y < m.H && !RP && CITY; y++) for (var x = 0; x < m.W; x++) {
       if (!C.open(m, x, y)) continue;
       g.fillStyle = home[x + "," + y] ? "#1b2846" : "#17191f"; g.fillRect(x * P, y * P, P, P);
     }
     g.strokeStyle = RP ? "#a7abb3" : "#5b6070"; g.lineWidth = RP ? 3 : 2;               // kerbs
-    for (var y2 = 0; y2 < m.H; y2++) for (var x2 = 0; x2 < m.W; x2++) {
+    for (var y2 = 0; y2 < m.H && CITY; y2++) for (var x2 = 0; x2 < m.W; x2++) {
       if (!C.open(m, x2, y2)) continue;
       C.DIRS.forEach(function (d) {
         if (C.open(m, x2 + d[0], y2 + d[1])) return;
@@ -319,7 +365,7 @@
       });
     }
     g.strokeStyle = "rgba(255, 214, 90, .55)"; g.lineWidth = 1.5; g.setLineDash([6, 6]);  // lane marks on the straights
-    for (var y3 = 0; y3 < m.H && !RP; y3++) for (var x3 = 0; x3 < m.W; x3++) {             // (the pack's roads have their own)
+    for (var y3 = 0; y3 < m.H && !RP && CITY; y3++) for (var x3 = 0; x3 < m.W; x3++) {             // (the pack's roads have their own)
       if (!C.open(m, x3, y3) || home[x3 + "," + y3]) continue;
       var lr = C.open(m, x3 - 1, y3) && C.open(m, x3 + 1, y3) && !C.open(m, x3, y3 - 1) && !C.open(m, x3, y3 + 1);
       var ud = C.open(m, x3, y3 - 1) && C.open(m, x3, y3 + 1) && !C.open(m, x3 - 1, y3) && !C.open(m, x3 + 1, y3);
@@ -334,19 +380,21 @@
     g.fillText("POLICE", (m.station.x + 0.5) * P, (m.station.y + 0.5) * P);
     var gt = new T.CanvasTexture(cv); if (T.SRGBColorSpace) gt.colorSpace = T.SRGBColorSpace; gt.anisotropy = 4;
     var ground = new T.Mesh(new T.PlaneGeometry(m.W, m.H), new T.MeshStandardMaterial({ map: gt, roughness: 0.95 }));
-    ground.rotation.x = -Math.PI / 2; city.add(ground);
+    ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; city.add(ground);
     var under = new T.Mesh(new T.PlaneGeometry(m.W + 60, m.H + 60), new T.MeshStandardMaterial({ color: 0x0c0f18, roughness: 1 }));
     under.rotation.x = -Math.PI / 2; under.position.y = -0.01; city.add(under);
     // the buildings: lit windows, three heights (low enough to see the streets behind them)
     var win = windowTextures(), R = C.rng(s.seed * 31 + s.level), byH = [[], [], [], []];
     var PB = G.pack && G.pack.json.buildings && G.pack.json.buildings.length ? G.pack.json.buildings : null, packed = [];   // 2.936.0
-    for (var y4 = 0; y4 < m.H; y4++) for (var x4 = 0; x4 < m.W; x4++) {
+    for (var y4 = 0; y4 < m.H && CITY; y4++) for (var x4 = 0; x4 < m.W; x4++) {
       if (C.open(m, x4, y4)) continue;
       var edge = x4 === 0 || y4 === 0 || x4 === m.W - 1 || y4 === m.H - 1;
       if (!edge && PB) { var vi = Math.floor(R() * PB.length); (packed[vi] = packed[vi] || []).push([x4, y4, Math.floor(R() * 4)]); continue; }
       byH[edge ? 0 : 1 + Math.floor(R() * 3)].push([x4, y4, R()]);
     }
     packed.forEach(function (list, vi) { if (list) packBuildings(city, m, PB[vi], list); });
+    if (TH) TH.build(T, theme, m, items, city, world, V.glowTex);                       // houses, trees, barns, lamps, fireflies
+    V.fireflies = []; city.children.forEach(function (o) { if (o.userData && o.userData.firefly != null) V.fireflies.push(o); });
     var tints = [0x8a93a8, 0x9c8f86, 0x7f8fa0, 0xa59a8a, 0x8796b0, 0x9aa3a8];
     byH.forEach(function (list, floors) {
       if (!list.length) return;
@@ -363,7 +411,7 @@
         var w = world(m, b[0], b[1]); M4.makeTranslation(w[0], h / 2, w[1]); im.setMatrixAt(i, M4);
         if (floors) { col.setHex(tints[Math.floor(b[2] * tints.length)]); im.setColorAt(i, col); }
       });
-      city.add(im);
+      im.castShadow = floors > 0; im.receiveShadow = true; city.add(im);
     });
     // the pick-ups (2.937.0: burgers): one instanced mesh a layer, a burger a tile
     var cashIdx = [], k = 0;
@@ -415,7 +463,7 @@
       var w = world(m, t[0], t[1]); Q.setFromAxisAngle(Y, ROT[t[2]]);
       M.compose(new T.Vector3(w[0], h / 2, w[1]), Q, new T.Vector3(sx, h, sd)); im.setMatrixAt(i, M);
     });
-    im.userData.pack = b.id;
+    im.userData.pack = b.id; im.castShadow = true; im.receiveShadow = true;
     city.add(im);
   }
   /** pack.json + its road pictures, if the pack is installed (null when not - the painted city then) */
@@ -515,10 +563,16 @@
   function cityRot(m) { var V = G.V; return V && m && V.cam.aspect < 0.9 && m.W > m.H ? 1 : 0; }
   function camera(dt, m, pw, face) {
     var V = G.V, cam = V.cam, k = Math.min(1, dt * 4.5), wantP = new T.Vector3(), wantL = new T.Vector3(), fog = V.scene.fog;
-    if (G.cam === "chase" && G.s && !G.demo) {
+    var fov = G.cam === "drive" && G.s && !G.demo ? 64 : 40;
+    if (cam.fov !== fov) { cam.fov = fov; cam.near = fov > 50 ? 0.03 : 0.1; cam.updateProjectionMatrix(); }
+    if (G.cam === "drone" && G.s && !G.demo) {                        // 2.939.0: the drone - high up behind the car, gliding
       var d = C.DIRS[face];
-      wantP.set(pw[0] - d[0] * 3.2, 3.1, pw[1] - d[1] * 3.2); wantL.set(pw[0] + d[0] * 1.6, 0, pw[1] + d[1] * 1.6);
-      fog.near = 9; fog.far = 30;
+      wantP.set(pw[0] - d[0] * 2.6, 4.4, pw[1] - d[1] * 2.6); wantL.set(pw[0] + d[0] * 1.4, 0, pw[1] + d[1] * 1.4);
+      k = Math.min(1, dt * 3.2); fog.near = 10; fog.far = 34;
+    } else if (G.cam === "drive" && G.s && !G.demo) {                 // the driving view - just behind and above the roof
+      var e = C.DIRS[face];
+      wantP.set(pw[0] - e[0] * 0.95, 0.46, pw[1] - e[1] * 0.95); wantL.set(pw[0] + e[0] * 2.6, 0.16, pw[1] + e[1] * 2.6);
+      k = Math.min(1, dt * 7); fog.near = 4; fog.far = 18;
     } else {
       var rot = cityRot(m), BW = rot ? m.H : m.W, BH = rot ? m.W : m.H, az = rot * Math.PI / 2;
       var vf = cam.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * cam.aspect), phi = 64 * Math.PI / 180;
@@ -536,7 +590,7 @@
    *  the city view with its quarter turn */
   function toWorld(d) {
     var s = G.s; if (!s || d < 0) return d;
-    var rot = G.cam === "chase" ? s.player.face : cityRot(s.maze);
+    var rot = G.cam !== "city" ? s.player.face : cityRot(s.maze);
     return (d + rot) % 4;
   }
 
@@ -556,7 +610,7 @@
     if (busy && G.render === "pause" && !G.paused && G.s && !G.demo) { pause("a render is running - it gets the graphics card", true); }
     if (!busy && G.auto && G.paused) { resume(); }
     var light = busy && G.render === "light";
-    if (light !== G.light) { G.light = light; G.V.r.setPixelRatio(light ? 1 : Math.min(2, root.devicePixelRatio || 1)); resize(); }
+    if (light !== G.light) { G.light = light; G.V.r.setPixelRatio(light ? 1 : Math.min(2, root.devicePixelRatio || 1)); G.V.sun.castShadow = !light; resize(); }
     if (light && G.last && now - G.last < 32) { G.raf = root.requestAnimationFrame(loop); return; }
     var dt = G.last ? Math.min(0.1, (now - G.last) / 1000) : 1 / 60; G.last = now;
     pad();
@@ -635,7 +689,7 @@
     var jb = $("pcJam"); jb.style.display = live && s.jamT > 0 ? "block" : "none";
     if (live && s.jamT > 0) jb.firstChild.style.width = Math.round(100 * s.jamT / C.speeds(s.level).jam) + "%";
     $("pcPause").textContent = live && G.paused && s.phase !== "over" ? "▶ Carry on" : "⏸ Pause";
-    $("pcCam").textContent = G.cam === "chase" ? "🎥 Chase" : "🎥 City";
+    $("pcCam").textContent = ({ city: "🎥 Overview", drone: "🎥 Drone", drive: "🎥 Driving" })[G.cam];
     $("pcSound").textContent = G.sound ? "🔊" : "🔇";
     var key = !live ? "title" : G.paused ? "pause:" + G.why : s.phase + (s.phase === "ready" ? s.level : "");
     if (key === G.msgKey) return;
@@ -666,7 +720,7 @@
     }
     else if (e.code === "Space" || e.code === "KeyF" || e.code === "ControlRight") { if (live && !G.paused && G.s.phase === "play") G.fire = true; }   // 2.938.0: 🚀 fire
     else if (e.code === "KeyP" || e.code === "Escape") togglePause();
-    else if (e.code === "KeyC") setCamera(G.cam === "chase" ? "city" : "chase");
+    else if (e.code === "KeyV" || e.code === "KeyC") setCamera(nextCam());
     else if (e.code === "KeyM") setSound(!G.sound);
     else if (e.code === "Enter") { if (!live || G.s.phase === "over") newGame(); else if (G.paused) resume(); }
     else done = false;
@@ -685,7 +739,11 @@
     if (st && !G.padPrev.start) { if (!G.s || G.demo || G.s.phase === "over") newGame(); else togglePause(); }
     G.padPrev.start = st;
   }
-  function setCamera(c) { G.cam = c === "chase" ? "chase" : "city"; LS.set("cam", G.cam); G.camSettling = 40; hud(); kick(); }
+  var CAMS = ["city", "drone", "drive"];
+  function nextCam() { return CAMS[(CAMS.indexOf(G.cam) + 1) % CAMS.length]; }
+  /** 2.939.0: V - the overview, the drone following the car, the driving view (C still works; "chase" = the drone) */
+  function setCamera(c) { G.cam = c === "chase" ? "drone" : CAMS.indexOf(c) >= 0 ? c : "city"; LS.set("cam", G.cam); G.camSettling = 40; hud(); kick(); }
+  function setTheme(id) { G.theme = id; LS.set("theme", id); G.mazeOf = null; G.camSettling = 4; kick(); }
   function setSound(on) { G.sound = !!on; LS.set("sound", G.sound ? "1" : "0"); if (!G.sound) sirenOff(); else snd("unlock"); hud(); }
 
   /* ---------------- sound: made on the spot ---------------- */
@@ -775,7 +833,8 @@
     Array.prototype.forEach.call(d.querySelectorAll(".pcbar button"), function (b) { b.addEventListener("pointerdown", function (e) { e.preventDefault(); }); });
     $("pcNew").addEventListener("click", function () { start().then(function () { newGame(); }); });
     $("pcPause").addEventListener("click", togglePause);
-    $("pcCam").addEventListener("click", function () { setCamera(G.cam === "chase" ? "city" : "chase"); focus(); });
+    $("pcCam").addEventListener("click", function () { setCamera(nextCam()); focus(); });
+    if ($("pcTheme")) { $("pcTheme").value = G.theme; $("pcTheme").addEventListener("change", function () { setTheme($("pcTheme").value); focus(); }); }
     $("pcSound").addEventListener("click", function () { setSound(!G.sound); focus(); });
     $("pcHi").addEventListener("click", function () { var b = $("pcScores"); b.classList.toggle("on"); if (b.classList.contains("on")) loadScores(); focus(); });
     $("pcRender").value = G.render;
@@ -810,9 +869,9 @@
 
   root.H3Chase = {
     newGame: function (seed) { return start().then(function () { return newGame(seed); }); },
-    pause: pause, resume: resume, camera: setCamera, sound: setSound, scores: loadScores, save: saveScore,
+    pause: pause, resume: resume, camera: setCamera, theme: setTheme, sound: setSound, scores: loadScores, save: saveScore,
     state: function () { return G.demo ? null : G.s; },
     info: function () { return { ready: !!G.V, playing: !!(G.s && !G.demo), paused: G.paused, why: G.why, cam: G.cam, sound: G.sound, render: G.render, light: G.light,
-                                 pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs, cars: Object.keys(G.pack.cars || {}).sort() } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
+                                 setting: G.themeNow || "", pack: G.pack ? { buildings: (G.pack.json.buildings || []).length, roads: !!G.pack.roadImgs, cars: Object.keys(G.pack.cars || {}).sort() } : null, drawn: G.drawn, frames: G.frames, looping: !!G.raf, shown: shown(), err: G.err, phase: G.s && !G.demo ? G.s.phase : "title" }; },
   };
 })(window);

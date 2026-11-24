@@ -15036,6 +15036,11 @@ node scripts/test-938.js > /tmp/t938.log 2>&1 \
   && ok "2.938.0 units: rockets (two burgers' range, reload), Rookie's shield, Sarge's roadblock, Flanker's spikes, Cutter's nitro, the view, --dress" \
   || { bad "2.938.0 units"; grep -a "^FAIL" -A1 /tmp/t938.log | head -12; }
 
+# ---- 2.939.0 (🚓 Police Chase: settings, modern lighting, three views)
+node scripts/test-939.js > /tmp/t939.log 2>&1 \
+  && ok "2.939.0 units: city / suburbs / forest / countryside plans, Auto, nothing on the roads, shadows + glows, V overview / drone / driving" \
+  || { bad "2.939.0 units"; grep -a "^FAIL" -A1 /tmp/t939.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
