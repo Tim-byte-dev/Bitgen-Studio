@@ -1,0 +1,12 @@
+{
+  "id": "lifedock",
+  "name": "Life Choices",
+  "order": 101,
+  "html": "dock.html",
+  "scripts": [
+    "lifecore.js",
+    "lifepuzzles.js",
+    "lifedock.js"
+  ],
+  "server": "lifeserver.js"
+}

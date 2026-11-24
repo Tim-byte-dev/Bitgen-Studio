@@ -104,6 +104,8 @@ docker_status.json.tmp
 # 2.935.0: 🚓 Police Chase's high scores on this PC
 police_chase.json
 police_chase.json.tmp
+life_choices.json
+life_choices.json.tmp
 
 # 2.520.0: the LoRA trainer's ai-toolkit checkout + the usage log
 /ai-toolkit/

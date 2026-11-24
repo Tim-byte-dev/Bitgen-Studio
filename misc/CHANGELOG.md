@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.944.0** — 🎓 Life Choices: a New Board Game of a Whole Life - You and 1-5 Bots From High School (Grade 12+ Quizzes, Maths and Word Puzzles) Through College, a Trade or the Factory, Jobs and Promotions, to Property, Shares and Bank Loans on the Investment Ring; Retire at 30, 45 or 65; a 2D Board of Rings, Saved as You Play
 - **2.943.0** — 🚓 Police Chase: Music and Sound Made in Code - Our Own Chase Music (Faster as the Police Close In, a 🚀 Power Version, Muffled When Paused), the Engine, Tyre Squeals, Layered Explosions Panned to Where They Happen, ⚙ Music / Effects Volumes and Start With Sound On
 - **2.942.0** — 🚓 Police Chase: ⛶ Is Full Screen Like the Image Editor's, 🚀 the Launcher Fires by Itself Two Car Lengths Away, Hit Police Cars and Your Caught Car Explode (Fire, Smoke, Flying Bits), the Police Try to Dodge, ⚡ Speed Boosts for Whoever Gets There First
 - **2.941.0** — 🔒 Settings ▸ Security: an Optional Email (Kept on This PC) and 💬 Join the Community - Opens the Community Panel With Its Join Form Filled In (User ID, Name, Email; Nothing Sent Until You Press Join)

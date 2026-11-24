@@ -10952,6 +10952,39 @@ same one. The game is the same maze; the setting changes what stands on the bloc
 The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
 render runs and the game plays lighter, the shadows are left out.
 
+## 🎓 Life Choices - a board game of a whole life (2.944.0)
+
+Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker** (or ⛶) puts it back.
+It is hidden until you open it the first time, and it is saved as you play - close it and carry on later.
+
+**▶ New game**: your name (bitGen's name for you from Settings ▸ Security), 1 to 5 bots, how often the bots answer right
+(sometimes, often, nearly always) and when everyone retires - **30** (a quick game), **45** or **65** (a full life). Every
+turn is three months of your life. The bots are a careful saver, a property tycoon and a risk-taker; **Bots** on the bar sets
+how fast they play (normal, fast, instant). They only play while the game is on screen.
+
+**The board** is rings, from the centre out:
+
+- **High school** - every square is a quiz, a maths puzzle or a word puzzle at grade 12 level or harder. A right answer pays
+  $250 and adds 2 to your IQ (a game score, not a real IQ test). Five right = the diploma; three wrong = you drop out.
+- **The fork** - 🎓 **college** (needs the diploma: university-level exams, six passes = a degree, three fails = out; the
+  tuition goes on a student debt you repay from your salary later), 🔧 **trades** (an apprenticeship, one square a turn,
+  a small wage, a licence at the end) or 🏭 the **factory** (paid from day one and straight out to the investment ring, but
+  with little room to grow).
+- **The jobs ring** - job offers depend on your IQ and your qualification (a doctor needs a degree and a high IQ);
+  promotions are a work puzzle; a restructure can cost you your job; night school takes you to college while you keep
+  working. With a steady income (two paydays in a row) the **Bank** square lets you move out.
+- **The investment ring** - buy property with a 20% deposit and a bank loan (the bank lends up to five times your salary):
+  tenants pay rent every turn and other players who land there pay you. Buy and sell shares at the **Exchange**; **Market
+  news** moves prices; values change every year. Short of cash, your shares and then your property are sold for you.
+
+**Puzzles**: click an answer (or press **1**-**4**), or type it and press **Enter** - numbers, fractions such as 5/36, or the
+word. The bar under the question is your time. A wrong answer shows the right one. **Enter** also rolls and carries on.
+The maths is made fresh each time; the words and the quiz questions are bitGen's own.
+
+**Winning**: when everyone has retired, the highest score wins - net worth (cash, property and shares, less loans and the
+student debt) plus $1,000 for every IQ point over 100 plus a bonus for your qualification. **🏆** shows the best ten on
+this PC. Hover over any square to see what it does.
+
 ## 🔒 Settings ▸ Security, your name for the LLM, hiding the splash (2.940.0)
 
 **Settings ▸ Security** is local security: the username, password and name stay on this computer (in the settings folder,

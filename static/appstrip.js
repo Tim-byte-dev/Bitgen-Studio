@@ -15,7 +15,7 @@
   "use strict";
   // [button id, icon, name] in order; group 1 = the office-style apps, group 2 = the 3D apps
   const APPS = [["tIE", "🖼", "Image editor"], ["tX_maildock", "✉", "Mail"], ["tX_sheetdock", "▦", "Spreadsheet"], ["tX_slidesdock", "🎞", "Slides"], ["tX_dbdock", "🗄", "Database"], ["tX_webdock", "🌐", "Web editor"], ["tX_acctdock", "📒", "Accounts"]];
-  const MINI = [["tX_solidcraftdock", "📐", "SolidCraft"], ["tX_pushpulldock", "📏", "Sketcher"], ["tX_chasedock", "🚓", "Police Chase"]];   // 2.935.0: the game
+  const MINI = [["tX_solidcraftdock", "📐", "SolidCraft"], ["tX_pushpulldock", "📏", "Sketcher"], ["tX_chasedock", "🚓", "Police Chase"], ["tX_lifedock", "🎓", "Life Choices"]];   // 2.935.0: the game; 2.944.0: + 🎓 Life Choices
   let strip = null;
   function build() {
     const mb = document.getElementById("menubar"); if (!mb) return null;

@@ -1,0 +1,105 @@
+    <div class="bdock" id="lifedock" data-own-space="1">
+      <div class="bhead" data-collapse="lifedock">▾ 🎓 Life Choices<button id="lcMaxBtn" class="maxbtn" data-max="lifedock" type="button" title="Maximize" aria-label="Maximize" style="margin-left:auto">⛶</button><button id="lcCloseBtn" class="ghost" type="button" title="Close the docker (the 🎓 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="lcBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.944.0 (Tim: "can we add 1 more game ... a game of life ... start from highschool, with quizes, math puzzles, word
+             puzzles" + "lets call it life choices"): our own board game - rings from high school out to the investment ring.
+             Rules: lifecore.js (window.H3LifeCore); puzzles: lifepuzzles.js (window.H3LifePuzzles); the board, the turns,
+             the bots and the saves: lifedock.js (window.H3Life); the high scores: lifeserver.js. -->
+        <style>
+          #lifedock .bbody { padding: 4px; }
+          /* maximized = the whole window (the board needs the room); ⛶ or 🗗 brings it back to the docker */
+          #lcExitFull { display: none; }
+          body.lc-full #lcExitFull { display: inline-block; }
+          body.lc-full #lifedock { position: fixed !important; left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important;
+                                   min-height: 0 !important; max-height: none !important; margin: 0 !important; border-radius: 0 !important; z-index: 2147482000 !important;
+                                   display: flex !important; flex-direction: column; background: var(--bg, #0d0f16); transform: none !important; }
+          body.lc-full #lifedock .bbody { flex: 1 1 auto !important; min-height: 0 !important; max-height: none !important; height: auto !important; display: flex !important; }
+          .lcbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
+          .lcbar button { padding: 2px 8px; }
+          .lcbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
+          .lcbar select { width: auto; font-size: 12px; }
+          #lcMain { position: relative; flex: 1; display: flex; gap: 6px; min-height: 440px; }
+          #lcBoardWrap { position: relative; flex: 1 1 60%; min-width: 260px; background: #0b1020; border-radius: 6px; overflow: hidden; }
+          #lcBoard { display: block; width: 100%; height: 100%; }
+          #lcTip { position: absolute; pointer-events: none; display: none; background: rgba(10, 14, 28, .94); color: #fff; border: 1px solid var(--line);
+                   border-radius: 5px; padding: 4px 7px; font-size: 11px; max-width: 220px; z-index: 2; }
+          #lcSide { flex: 0 1 360px; min-width: 250px; display: flex; flex-direction: column; gap: 6px; min-height: 0; font-size: 12px; }
+          #lcPlayers table { width: 100%; border-collapse: collapse; }
+          #lcPlayers td, #lcPlayers th { padding: 2px 4px; text-align: left; white-space: nowrap; }
+          #lcPlayers th { font-weight: 600; color: var(--dim); font-size: 11px; }
+          #lcPlayers td.n { text-align: right; font-variant-numeric: tabular-nums; }
+          #lcPlayers tr.now td { background: rgba(255, 255, 255, .06); }
+          #lcPlayers tr.out td { opacity: .5; }
+          #lcPlayers .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+          #lcAct { border: 1px solid var(--line); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+          #lcAct h4 { margin: 0; font-size: 13px; }
+          #lcAct .q { font-size: 14px; line-height: 1.35; user-select: text; }
+          #lcAct .opts { display: flex; flex-direction: column; gap: 4px; }
+          #lcAct .opts button { text-align: left; white-space: normal; }
+          #lcAct .opts button[disabled] { opacity: .45; }
+          #lcAct .row { display: flex; gap: 5px; align-items: center; }
+          #lcAct input[type=text] { flex: 1; }
+          #lcAct .timer { height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .12); overflow: hidden; }
+          #lcAct .timer i { display: block; height: 100%; background: var(--tiger); }
+          #lcAct .ok { color: #5ccf6c; font-weight: 600; }
+          #lcAct .no { color: #ff6b6b; font-weight: 600; }
+          #lcAct .big { font-size: 14px; padding: 6px 12px; }
+          #lcLog { flex: 1; min-height: 80px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-size: 11px; line-height: 1.4; }
+          #lcLog div { border-bottom: 1px dotted rgba(255, 255, 255, .06); }
+          .lcpanel { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(5, 8, 18, .72); z-index: 3; }
+          .lcpanel.on { display: flex; }
+          .lcpanel > div { background: var(--panel, #161b2b); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; max-width: 560px; width: 92%; max-height: 92%; overflow: auto; font-size: 12px; }
+          .lcpanel h3 { margin: 0 0 8px; }
+          .lcpanel label { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+          .lcpanel label > span { width: 130px; color: var(--dim); }
+          .lcpanel table { width: 100%; border-collapse: collapse; }
+          .lcpanel td { padding: 2px 4px; }
+          .lcpanel td.n { text-align: right; font-variant-numeric: tabular-nums; }
+        </style>
+        <div class="lcbar">
+          <button class="ghost" id="lcNew" type="button" title="Set up a new game">▶ New game</button>
+          <button class="ghost" id="lcHelpBtn" type="button" title="How to play">❔ How to play</button>
+          <button class="ghost" id="lcHi" type="button" title="High scores on this PC">🏆</button>
+          <button class="ghost" id="lcExitFull" type="button" title="Back to the docker">🗗 Back to the docker</button>
+          <span class="sep"></span>
+          <label class="hint" for="lcSpeed">Bots</label>
+          <select id="lcSpeed" aria-label="How fast the bots play"><option value="normal">normal</option><option value="fast">fast</option><option value="instant">instant</option></select>
+          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · the game is saved as you play</span>
+        </div>
+        <div id="lcMain">
+          <div id="lcBoardWrap"><canvas id="lcBoard" aria-label="The Life Choices board"></canvas><div id="lcTip"></div></div>
+          <div id="lcSide">
+            <div id="lcPlayers"></div>
+            <div id="lcAct" aria-live="polite"></div>
+            <div id="lcLog" aria-label="What happened"></div>
+          </div>
+          <div class="lcpanel" id="lcSetup"><div>
+            <h3>🎓 Life Choices - a new game</h3>
+            <p class="hint" style="margin:0 0 6px">You start at 16 in high school. Answer quizzes, maths and word puzzles (grade 12 and up), choose college, a trade
+              or the factory, find work, then buy property and shares once you have a steady income. Every turn is three months of your life.</p>
+            <label><span>Your name</span><input type="text" id="lcName" maxlength="18" placeholder="Your name"></label>
+            <label><span>Bots</span><select id="lcBots"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
+            <label><span>Bots answer right</span><select id="lcSkill"><option value="0.45">sometimes (easy)</option><option value="0.65" selected>often (fair)</option><option value="0.85">nearly always (sharp)</option></select></label>
+            <label><span>Retire at</span><select id="lcRetire"><option value="30">30 - a quick game</option><option value="45">45 - a standard game</option><option value="65" selected>65 - a full life</option></select></label>
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:10px"><button class="ghost" id="lcSetupCancel" type="button">Cancel</button><button id="lcStart" type="button">▶ Start</button></div>
+          </div></div>
+          <div class="lcpanel" id="lcHelp"><div>
+            <h3>❔ How to play Life Choices</h3>
+            <p><b>High school</b> (the centre): every square is a quiz, maths or word puzzle - right = money and IQ. Five right and you
+              graduate; three wrong and you drop out (trades or the factory are still open).</p>
+            <p><b>The fork</b>: 🎓 <b>college</b> (needs the diploma; exams at university level, six passes = a degree, three fails = out;
+              tuition goes on a student debt), 🔧 <b>trades</b> (an apprenticeship, one square a turn, a small wage, ends with a licence)
+              or 🏭 the <b>factory</b> (paid from day one, straight to the investment ring, but a low ceiling).</p>
+            <p><b>The jobs ring</b>: job offers depend on your IQ and qualification; promotions are a puzzle; restructures can cost you
+              your job. Night school takes you to college while you keep working.</p>
+            <p><b>The investment ring</b> opens once you have a steady income (two paydays in a row). Buy property (tenants pay rent each
+              turn; other players who land there pay you), buy and sell shares at the exchange, borrow from the bank (up to five times
+              your salary). Short of cash? Shares and property are sold for you.</p>
+            <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification.
+              "IQ" here is a game score, not a real IQ test.</p>
+            <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>
+          </div></div>
+          <div class="lcpanel" id="lcScores"><div><div id="lcScoresBody"></div><div style="text-align:right;margin-top:8px"><button id="lcScoresClose" type="button">Close</button></div></div></div>
+        </div>
+      </div>
+    </div>

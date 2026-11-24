@@ -15068,6 +15068,13 @@ node scripts/test-943.js > /tmp/t943.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui943-ui.js > /tmp/ui943.log 2>&1 \
   && ok "2.943.0 browser test: nothing made while off; M starts music + engine; closer = faster; power; squeal; P muffles; hidden rests; ⚙ kept" \
   || { bad "2.943.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui943.log | head -12; }
+# ---- 2.944.0 (🎓 Life Choices stage 1: the rules, the puzzles, the 2D board, you vs 1-5 bots)
+node scripts/test-944.js > /tmp/t944.log 2>&1 \
+  && ok "2.944.0 units: puzzles checked (10,000 + independent maths), the rings and forks, jobs, the investment ring, loans, rent, whole bot games, saves" \
+  || { bad "2.944.0 units"; grep -a "^FAIL" -A1 /tmp/t944.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui944-ui.js > /tmp/ui944.log 2>&1 \
+  && ok "2.944.0 browser test: 🎓 opens to the window, set-up, the board, puzzles right and wrong, bots, the fork, the factory, reload, a finished game's score" \
+  || { bad "2.944.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui944.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

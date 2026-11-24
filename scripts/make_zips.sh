@@ -50,7 +50,7 @@ FILES=$(find . -type f \
   ! -name "config.json" ! -name "config.json.migrated" ! -name "custom.settings" \
   ! -name "images.tmp" \
   ! -name "custom.settings.bak" ! -name "default.settings.broken" \
-  ! -name "dockers.json" ! -name "dockers.json.tmp" ! -name "docker_status.json" ! -name "docker_status.json.tmp" ! -name "police_chase.json" ! -name "police_chase.json.tmp" \
+  ! -name "dockers.json" ! -name "dockers.json.tmp" ! -name "docker_status.json" ! -name "docker_status.json.tmp" ! -name "police_chase.json" ! -name "police_chase.json.tmp" ! -name "life_choices.json" ! -name "life_choices.json.tmp" \
   ! -name "workspaces.json" ! -name "workspaces.json.tmp" \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "basic_settings.tmp" ! -name "basic_settings.tmp.part" \
