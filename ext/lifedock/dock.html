@@ -72,7 +72,10 @@
           /* 2.951.0 (Tim: "use a dialog to show questions, add a calculator to the dialog"): the puzzle dialog over the board */
           /* low over the board, no dimming: the centre circle (the dice) and the squares stay in view and hoverable */
           #lcPz { background: none; pointer-events: none; align-items: flex-end; padding-bottom: 10px; }
-          #lcPz > .lcpzBox { pointer-events: auto; box-shadow: 0 8px 28px rgba(0, 0, 0, .55); }
+          #lcPz > .lcpzBox { pointer-events: auto; box-shadow: 0 8px 28px rgba(0, 0, 0, .55); cursor: move; touch-action: none; }
+          #lcPz > .lcpzBox.dragging { opacity: .92; box-shadow: 0 12px 36px rgba(0, 0, 0, .7); user-select: none; }
+          #lcPz > .lcpzBox button, #lcPz > .lcpzBox input, #lcPz > .lcpzBox .q { cursor: auto; }
+          #lcPz > .lcpzBox button { cursor: pointer; }
           #lcSetup, #lcHelp, #lcScores { z-index: 4; }   /* above the puzzle dialog */
           #lcPz > .lcpzBox { display: flex; flex-wrap: wrap; gap: 14px; max-width: 780px; width: 94%; padding: 12px 14px; max-height: 62%; overflow: auto; box-sizing: border-box; }
           #lcPzQ { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -106,7 +109,7 @@
           <span class="sep"></span>
           <label class="hint" for="lcSpeed">Bots</label>
           <select id="lcSpeed" aria-label="How fast the bots play"><option value="normal">normal</option><option value="fast">fast</option><option value="instant">instant</option></select>
-          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · 🧮 in the puzzle box · the game is saved as you play</span>
+          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · 🧮 in the puzzle box (drag it anywhere) · the game is saved as you play</span>
         </div>
         <div id="lcMain">
           <div id="lcBoardWrap"><canvas id="lcBoard" aria-label="The Life Choices board"></canvas><div id="lcTip"></div></div>
@@ -159,7 +162,7 @@
             <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>
           </div></div>
           <!-- 2.951.0: the puzzle dialog - the question (lifedock.js fills #lcPzQ) and the 🧮 calculator (lifecalc.js) -->
-          <div class="lcpanel" id="lcPz" role="dialog" aria-modal="true" aria-labelledby="lcPzHead"><div class="lcpzBox">
+          <div class="lcpanel" id="lcPz" role="dialog" aria-modal="true" aria-labelledby="lcPzHead"><div class="lcpzBox" title="Drag to move it (double-click: back to its place)">
             <div id="lcPzQ" aria-live="polite"></div>
             <div id="lcCalc" aria-label="Calculator">
               <div class="cHead">🧮 Calculator</div>

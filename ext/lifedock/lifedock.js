@@ -17,6 +17,9 @@
  *               circle"): the puzzle opens in a dialog over the board (#lcPz) with a 🧮 calculator (lifecalc.js) beside it -
  *               ➜ puts its result in the answer box; the pair of dice is drawn in the board's centre circle (tumbling while
  *               you roll), who rolled and the luck under it
+ *   2.952.0     (Tim: "make the dialog draggable. when user presses enter while waiting for dice roll then roll the dice"):
+ *               drag the puzzle box anywhere over the game (kept in view, remembered; double-click puts it back); Enter
+ *               rolls whenever it is your roll - wherever the focus is (not while typing, never with a panel open)
  * window.H3Life: newGame(opts), state(), act(), info() (tests)
  */
 (function (root) {
@@ -238,7 +241,65 @@
   function human(s) { var p = s && !s.over ? C.current(s) : null; return p && !p.bot ? p : null; }
   var TOPIC = { math: "Maths", word: "Words", quiz: "Quiz" }, LEVEL = { hs: "high school", college: "university", trade: "trade", work: "work" };
   /** 2.951.0: the puzzle dialog over the board - on while YOUR puzzle is pending */
-  function pzShow(on) { var d = $("lcPz"); if (d) d.classList.toggle("on", !!on); }
+  function pzShow(on) {
+    var d = $("lcPz"); if (!d) return;
+    var was = d.classList.contains("on");
+    d.classList.toggle("on", !!on);
+    if (on && !was) pzPlace();
+    // 2.952.0: closed with the focus inside (Carry on, the calculator) -> the focus leaves, so Enter rolls next
+    if (!on && d.contains(doc.activeElement)) try { doc.activeElement.blur(); } catch (e) { /* fine */ }
+  }
+  /* ---------------- 2.952.0: the puzzle box can be dragged (lcPzBox) ---------------- */
+  function pzBox() { return doc.querySelector("#lcPz > .lcpzBox"); }
+  /** the box's offset from its place, kept inside the game's area */
+  function pzMove(dx, dy) {
+    var b = pzBox(), main = $("lcMain"); if (!b || !main) return;
+    var o = G.pzOff || { x: 0, y: 0 };
+    var r = b.getBoundingClientRect(), m = main.getBoundingClientRect();
+    var bx = r.left - o.x, by = r.top - o.y;                     // where the box sits with no offset
+    var x = Math.max(m.left - bx, Math.min(m.right - r.width - bx, dx)), y = Math.max(m.top - by, Math.min(m.bottom - r.height - by, dy));
+    if (!isFinite(x)) x = 0; if (!isFinite(y)) y = 0;
+    G.pzOff = { x: Math.round(x), y: Math.round(y) };
+    b.style.transform = G.pzOff.x || G.pzOff.y ? "translate(" + G.pzOff.x + "px," + G.pzOff.y + "px)" : "";
+  }
+  /** opening: the remembered spot (still kept in view - the window may have changed) */
+  function pzPlace() {
+    var v = String(LS.get("pzpos", "0,0")).split(","), x = +v[0] || 0, y = +v[1] || 0;
+    setTimeout(function () { pzMove(x, y); }, 0);
+  }
+  function pzDrag() {
+    var b = pzBox(); if (!b) return;
+    var drag = null;
+    b.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || (e.target.closest && e.target.closest("button, input, select, textarea, a, label"))) return;
+      var o = G.pzOff || { x: 0, y: 0 };
+      drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: o.x, oy: o.y };
+      try { b.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
+      b.classList.add("dragging"); e.preventDefault();
+    });
+    b.addEventListener("pointermove", function (e) { if (drag && e.pointerId === drag.id) pzMove(drag.ox + e.clientX - drag.sx, drag.oy + e.clientY - drag.sy); });
+    var end = function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      drag = null; b.classList.remove("dragging");
+      var o = G.pzOff || { x: 0, y: 0 }; LS.set("pzpos", o.x + "," + o.y);
+    };
+    b.addEventListener("pointerup", end); b.addEventListener("pointercancel", end);
+    b.addEventListener("dblclick", function (e) {
+      if (e.target.closest && e.target.closest("button, input, select, textarea, a, label")) return;
+      pzMove(0, 0); LS.set("pzpos", "0,0");
+    });
+  }
+  /** 2.952.0: Enter = roll when it is your roll (true when it rolled / carried on) */
+  function enterKey(t) {
+    var s = G.s; if (!s || s.over || !human(s) || G.rolling) return false;
+    var typing = t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+    if (typing) return false;
+    if (doc.querySelector("#lcSetup.on, #lcHelp.on, #lcScores.on")) return false;
+    var z = s.puz;
+    if (z && z.done) { carryOn(); return true; }
+    if (!s.pending && C.canRoll(s)) { doRoll(); return true; }
+    return false;
+  }
   function act() {
     var b = $("lcAct"), s = G.s; if (!b) return;
     var pdz = s && !s.over && human(s) && s.pending && s.pending.type !== "choice";
@@ -467,10 +528,23 @@
       else if (/^[1-9]$/.test(e.key) && s.pending && s.pending.type === "choice") {
         var on = s.pending.options[+e.key - 1]; if (on && !on.off) { C.choose(s, on.id); after(); e.preventDefault(); e.stopPropagation(); }
       } else if (e.key === "Enter") {
-        if (z && z.done) carryOn(); else if (!s.pending && t && t.tagName !== "BUTTON") doRoll(); else return;
+        // 2.952.0: any focus in the game (a button too - its own click would do something else) -> roll / carry on
+        if (!enterKey(t)) return;
         e.preventDefault(); e.stopPropagation();
       }
     });
+    // 2.952.0: Enter with the focus nowhere in particular (the page, after a box closed) - or anywhere while the game fills
+    // the window - rolls too; a key meant for another part of the app (a button, a box) is left to it
+    root.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || !shown()) return;
+      var t = e.target;
+      if (t && d.contains(t)) return;                                       // the docker's own listener has it
+      var loose = !t || t === doc.body || t === doc.documentElement;
+      if (!loose && !doc.body.classList.contains("lc-full")) return;
+      if (!loose && t && t.tagName === "BUTTON") return;
+      if (enterKey(t)) { e.preventDefault(); e.stopPropagation(); }
+    });
+    pzDrag();
     // the puzzle's clock: runs only while the docker is on screen
     G.timer = setInterval(function () {
       var s = G.s, z = s && s.puz; if (!z || z.done || !human(s) || !shown()) return;
@@ -505,7 +579,7 @@
   root.H3Life = {
     newGame: newGame, state: function () { return G.s; }, act: act, draw: draw, setup: setup, scores: showScores,
     speed: function (v) { if (v) { G.speed = v; LS.set("speed", v); pump(); } return G.speed; },
-    _geo: function () { return G.geo; }, _hit: function (x, y) { return G.geo ? hit(G.geo, x, y) : null; },
+    _geo: function () { return G.geo; }, _pzOff: function () { return G.pzOff || { x: 0, y: 0 }; }, _hit: function (x, y) { return G.geo ? hit(G.geo, x, y) : null; },
     info: function () { var s = G.s; return { centre: G.centre || null, dialog: !!($("lcPz") && $("lcPz").classList.contains("on")), game: !!s, over: !!(s && s.over), round: s ? s.round : 0, turn: s ? s.turn : -1, human: !!human(s), pending: s && s.pending ? s.pending.type : null,
                                              puzzle: s && s.puz ? { kind: s.puz.p.kind, done: !!s.puz.done } : null, shown: shown(), squares: G.geo ? G.geo.sq.length : 0, speed: G.speed }; },
   };

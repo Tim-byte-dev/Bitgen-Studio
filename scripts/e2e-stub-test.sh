@@ -15127,6 +15127,13 @@ node scripts/test-951.js > /tmp/t951.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui951-ui.js > /tmp/ui951.log 2>&1 \
   && ok "2.951.0 browser test: 🎲 the dice drawn in the centre circle, the puzzle in the dialog, 12 × 7 = 84 on the keys, ➜ into the answer, Enter never answers, ÷ 0 in words, Carry on closes it" \
   || { bad "2.951.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui951.log | head -12; }
+# ---- 2.952.0 (🎓 drag the puzzle box; Enter rolls)
+node scripts/test-952.js > /tmp/t952.log 2>&1 \
+  && ok "2.952.0 units: the box drags (never from a control, kept inside, remembered, double-click resets), one Enter rule" \
+  || { bad "2.952.0 units"; grep -a "^FAIL" -A1 /tmp/t952.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui952-ui.js > /tmp/ui952.log 2>&1 \
+  && ok "2.952.0 browser test: Enter rolls (the page, a game button, after Carry on), not with a panel open or typing elsewhere; the box drags, stops at the edge, double-click puts it back" \
+  || { bad "2.952.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui952.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

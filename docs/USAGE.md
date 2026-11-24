@@ -11063,6 +11063,9 @@ stay in view). Answer there - 1-4 or click a choice, or type the answer and pres
 screen. Beside it is a **calculator**: click its keys or type a sum (× ÷ − or * / -, brackets, decimals, 50% = 0.5); the result
 so far shows under it, **=** or **Enter** works it out (Enter there never answers or rolls), **C** clears, **⌫** deletes the last,
 and **➜ Use as the answer** puts the result in the answer box. **Carry on ➜** closes the box.
+Since 2.952.0 you can **drag the box** anywhere over the game (grab it anywhere but a button or a text box); it stays inside
+the game, opens where you left it next time, and a double-click puts it back. **Enter** rolls the dice whenever it is your
+roll, wherever the focus is - not while you are typing in a box, and not with a panel (New game, How to play, 🏆) open.
 
 **💸 Bills, 🛡 insurance and 🧾 tax (2.947.0)**: once you work, every quarter brings itemised bills - rent (until you own a
 house or a unit), utilities, phone and internet, getting around, food and fun - and the premiums of any cover you hold.
