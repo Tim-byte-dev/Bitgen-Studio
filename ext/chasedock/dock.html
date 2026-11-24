@@ -6,6 +6,10 @@
              sound and the high scores: chasedock.js (window.H3Chase); the scores file: chaseserver.js. -->
         <style>
           #chasedock .bbody { padding: 4px; }
+          /* 2.940.0: ⛶ = the whole screen */
+          #chasedock:fullscreen { display: flex; flex-direction: column; width: 100vw; height: 100vh; background: var(--panel, #14110e); }
+          #chasedock:fullscreen .bbody { flex: 1 1 auto; min-height: 0; display: flex !important; }
+          #chasedock:fullscreen #pcStage { min-height: 0; border-radius: 0; }
           .pcbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
           .pcbar button { padding: 2px 8px; }
           .pcbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
@@ -30,9 +34,6 @@
           #pcScores td { padding: 2px 4px; }
           #pcScores td.n { text-align: right; font-variant-numeric: tabular-nums; }
           #pcScores tr.me td { color: var(--tiger); }
-          #pcName { display: none; position: absolute; left: 50%; top: 62%; transform: translateX(-50%); gap: 4px; align-items: center; }
-          #pcName.on { display: flex; }
-          #pcName input { width: 150px; }
           #pcHint { font-size: 11px; color: var(--dim); }
         </style>
         <div class="pcbar">
@@ -52,7 +53,6 @@
           <div class="pchud"><div><small>SCORE</small><span id="pcScore">0</span></div><div style="text-align:center"><small>HIGH SCORE</small><span id="pcBest">0</span></div><div style="text-align:right"><small>LEVEL <span id="pcLevel">1</span></small><span id="pcLives"></span></div></div>
           <div id="pcJam"><i></i></div>
           <div id="pcMsg" class="dim"><b>🚓 POLICE CHASE</b><span>Pick up every burger and keep away from the police. A 🚀 rocket launcher turns the tables for a few seconds - the police run, and Space fires a rocket that sends a car two burgers ahead back to the station (or bump it).<br>Click here, then press Enter or an arrow key.</span></div>
-          <div id="pcName"><input id="pcNameIn" type="text" maxlength="16" placeholder="Your name" aria-label="Your name for the high scores"><button id="pcNameOk" type="button">Save</button></div>
           <div id="pcScores" aria-live="polite"></div>
         </div>
       </div>

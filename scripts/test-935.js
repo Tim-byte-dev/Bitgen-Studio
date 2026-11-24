@@ -153,7 +153,7 @@ const call = (k, body) => new Promise((ok) => { routes[k]({ body }, { json: (j) 
   check("ext/chasedock: ext.json (Police Chase, chasecore.js then chasedock.js, its own server part chaseserver.js)",
     EJ.id === "chasedock" && EJ.name === "Police Chase" && EJ.scripts.join() === "chasecore.js,chasetheme.js,chasedock.js" /* 2.939.0: + the settings */ && EJ.server === "chaseserver.js");
   check("dock.html: 🚓 Police Chase, ▶ New game, ⏸ Pause, 🎥, 🔇, 🏆, While rendering, the stage (focusable), the HUD, the name box",
-    /▾ 🚓 Police Chase/.test(DH) && ["pcNew", "pcPause", "pcCam", "pcSound", "pcHi", "pcRender", "pcStage", "pcScore", "pcBest", "pcLives", "pcJam", "pcMsg", "pcNameIn", "pcScores"].every((id) => DH.includes('id="' + id + '"'))
+    /▾ 🚓 Police Chase/.test(DH) && ["pcNew", "pcPause", "pcCam", "pcSound", "pcHi", "pcRender", "pcStage", "pcScore", "pcBest", "pcLives", "pcJam", "pcMsg", "pcScores"].every((id) => DH.includes('id="' + id + '"'))
     && /id="pcStage" tabindex="0"/.test(DH) && /data-own-space="1"/.test(DH));
   check("chasedock.js: three.js loaded on first open; the keys only while the game has the focus and never passed on to the app",
     /\/static\/vendor\/three-m3d\.min\.js/.test(JS) && /st\.addEventListener\("keydown", onKey\)/.test(JS) && /e\.preventDefault\(\); e\.stopPropagation\(\);/.test(JS) && !/document\.addEventListener\("keydown"|doc\.addEventListener\("keydown"/.test(JS));

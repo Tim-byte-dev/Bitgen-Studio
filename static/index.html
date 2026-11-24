@@ -156,7 +156,7 @@
               color: var(--dim); font-family: var(--mono); white-space: nowrap;
               overflow: hidden; text-overflow: ellipsis; }
   .planline.warn { color: var(--bad); }
-  textarea, input[type=text], input[type=number], select {
+  textarea, input[type=text], input[type=number], input[type=password], select {   /* 2.940.0: + password (Settings ▸ Security) */
     width: 100%; background: var(--panel-2); color: var(--text);
     border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: .84rem/1.5 var(--body);
   }
@@ -1212,6 +1212,7 @@
 </head>
 <body>
 <script src="/static/locklayer.js"></script>  <!-- 2.599.0: the lock screen (H3Lock) - first, so a reset's reload is covered before anything paints -->
+<script src="/static/securitytab.js"></script>  <!-- 2.940.0: 🔒 the startup sign-in (H3Security) - early, so the studio is covered before it paints -->
 <!-- Frameless-shell title bar. Hidden in a normal browser (the browser already
      has one); shown only when the Electron preload is present. -->
 <div id="titlebar" class="hidden">
@@ -1967,6 +1968,7 @@
     <button data-stab="models">Models</button>
     <button data-stab="skills">Skills</button>
     <button data-stab="extensions">Extensions</button>
+    <button data-stab="security">Security</button>   <!-- 2.940.0: 🔒 static/securitytab.js -->
   </div>
 
   <!-- 2.432.0 (Tim: "create a themes tab in the settings dialog - have a ui size slider to adjust the size of fonts and
@@ -2049,6 +2051,12 @@
     <div id="s_remote_alts" style="margin-top:6px"></div>
 
     <p class="hint help" style="margin:8px 0 0">The UI size and the colours: Settings ▸ <b>Themes</b>.</p>
+    <!-- 2.940.0 (Tim: "in the general tab add a checkbox to hide splash screen"): ui.no_splash - electron/startPrefs.js -->
+    <label class="f" style="margin-top:14px">Start-up</label>
+    <label class="chk" style="margin-top:4px"><input type="checkbox" id="s_nosplash">
+      Hide the splash screen</label>
+    <p class="hint help" style="margin-top:4px">The desktop app opens straight to the studio, without the start-up film. Saved
+      immediately; it counts from the next start.</p>
     <!-- 2.223.15 (by instruction): confirm delete / recycle bin -->
     <label class="f" style="margin-top:14px">Deleting gallery files</label>
     <label class="chk" style="margin-top:4px"><input type="checkbox" id="s_confirmdel">
@@ -3200,6 +3208,35 @@
        GET /api/extensions says is installed RIGHT NOW; installing extracts
        every qualifying bitgen-ext-*.zip in the picked folder into ext/ and
        the page picks it up on the next reload (assembly is per request). -->
+  <!-- 2.940.0 (Tim: "add a security tab to settings. explain that it is local security,not saved online. add a checkbox to
+       ask for username and password on startup. add inputs for username and password and preferred name"):
+       static/securitytab.js, routes/security.js, lib/security.js - settings/security.json on this PC -->
+  <div class="stab" id="stab-security">
+    <p class="hint" id="sec_local" style="margin:0 0 10px;padding:8px 10px;border:1px solid var(--line,#444);border-radius:8px">🔒 <b>This is local security.</b>
+      Your username, password and name stay on this computer (in bitGen Studio&#39;s <span class="mono">settings</span> folder) and are
+      never sent online - there is no account and nothing to sign up for. The password itself is never stored: only a
+      scrambled check of it (a salted hash).</p>
+    <label class="f">Preferred name</label>
+    <input type="text" id="sec_name" maxlength="40" spellcheck="false" placeholder="What should bitGen call you?" autocomplete="off">
+    <p class="hint help" style="margin-top:4px">The chat&#39;s LLM (and the 📱 app&#39;s voice) talks to you by this name, in a friendly way.
+      Police Chase puts it on its high scores. Empty = your username.</p>
+    <label class="chk" style="margin-top:12px"><input type="checkbox" id="sec_ask">
+      Ask for my username and password when bitGen Studio starts</label>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;max-width:460px;margin-top:8px">
+      <label for="sec_user">Username</label>
+      <input type="text" id="sec_user" maxlength="40" spellcheck="false" autocomplete="off">
+      <label for="sec_pass">Password</label>
+      <input type="password" id="sec_pass" autocomplete="new-password" placeholder="">
+      <label for="sec_pass2">Again</label>
+      <input type="password" id="sec_pass2" autocomplete="new-password" placeholder="type it again">
+    </div>
+    <div class="rowbtns" style="margin-top:10px"><button class="ghost" id="sec_save" type="button">💾 Save security</button>
+      <span id="sec_msg" class="hint" style="margin-left:8px"></span></div>
+    <p class="hint help" style="margin-top:10px">What it does: a sign-in screen covers the studio window until the right username
+      and password are typed (once per start - a project reload doesn&#39;t ask again). What it doesn&#39;t do: it doesn&#39;t
+      encrypt your projects or files, and it doesn&#39;t lock the 📱 phone app (that has its own pairing). Forgot the password?
+      Close bitGen Studio and delete <span class="mono">settings\security.json</span>.</p>
+  </div>
   <!-- 2.914.1: 🎛 Skills for the chat's LLM - the built-in ones and yours (static/skillsset.js, lib/skills.js); was in General -->
   <div class="stab" id="stab-skills">
     <div id="s_skills"></div>

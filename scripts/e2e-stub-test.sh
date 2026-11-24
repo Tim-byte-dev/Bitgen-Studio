@@ -15018,7 +15018,7 @@ node scripts/test-935.js > /tmp/t935.log 2>&1 \
   && ok "2.935.0 units: 360 cities (one piece, no dead ends, mirrored), driving, the four police, the jammer, busted / cleared / extra car, a bot plays, the high scores, the docker's parts" \
   || { bad "2.935.0 units"; grep -a "^FAIL" -A1 /tmp/t935.log | head -12; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui935-ui.js > /tmp/ui935.log 2>&1 \
-  && ok "2.935.0 browser test: 🚓 hidden first then shown, the city drawn, keys drive and stay in the game, pauses (P / focus / hidden / a render), GAME OVER -> name -> 🏆" \
+  && ok "2.935.0 browser test: 🚓 hidden first then shown, the city drawn, keys drive and stay in the game, pauses (P / focus / hidden / a render), GAME OVER -> saved under your name -> 🏆" \
   || { bad "2.935.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui935.log | head -12; }
 
 # ---- 2.936.0 (🚓 Police Chase's art pack - scripts/chase_assets.py, the loader)
@@ -15040,6 +15040,13 @@ node scripts/test-938.js > /tmp/t938.log 2>&1 \
 node scripts/test-939.js > /tmp/t939.log 2>&1 \
   && ok "2.939.0 units: city / suburbs / forest / countryside plans, Auto, nothing on the roads, shadows + glows, V overview / drone / driving" \
   || { bad "2.939.0 units"; grep -a "^FAIL" -A1 /tmp/t939.log | head -12; }
+# ---- 2.940.0 (🔒 Settings ▸ Security, the preferred name for the LLM, hide the splash, 🚓 fullscreen + no name asked)
+node scripts/test-940.js > /tmp/t940.log 2>&1 \
+  && ok "2.940.0 units: local sign-in (salted hash, never online), preferred name to the chat LLM, hide splash, 🚓 ⛶ fullscreen, scores under bitGen's name" \
+  || { bad "2.940.0 units"; grep -a "^FAIL" -A1 /tmp/t940.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui940-ui.js > /tmp/ui940.log 2>&1 \
+  && ok "2.940.0 browser test: Security tab saves, the sign-in cover at the next start (wrong / right password), hide splash, 🚓 ⛶ = the whole screen" \
+  || { bad "2.940.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui940.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

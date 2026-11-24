@@ -10843,7 +10843,8 @@ views side by side into one reference sheet.
 ## 🚓 Police Chase - a game for a break (2.935.0)
 
 Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Police Chase docker opens, taking the column's height
-when it would not fit (⛶ / 🗗 as usual; ✕ or 🚓 again hides it). It is hidden until you open it the first time.
+when it would not fit (✕ or 🚓 again hides it). **⛶** puts the game on the whole screen (2.940.0); **🗗** or **Esc** brings it
+back to the docker. It is hidden until you open it the first time.
 
 **Click the city**, then press **Enter** or an arrow key. You drive the orange getaway car: **arrows** or **W A S D** (a
 gamepad's d-pad or stick, or a swipe on a touch screen). Pick up every burger to clear the city (green bags of cash before 2.937.0) - the next level is
@@ -10858,8 +10859,9 @@ A cake (a gold diamond before 2.937.0) shows up now and then below the station f
 **🎥** (V, or C) cycles the view (2.939.0): the overview of the whole maze (turned a quarter in a tall, narrow docker), a
 drone following your car from high up, and the driving view just behind your roof - in both following views ↑ drives
 straight on and ← / → turn. **🔇 / 🔊** (M) - the sound is made on the spot (a siren that grows as the police close in)
-and is off to start with. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten asks
-for your name (kept in police_chase.json in the install folder).
+and is off to start with. **P** or **Esc** pauses (Space fires since 2.938.0). **🏆** - the best ten on this PC; a score that makes the ten is saved
+under your name from Settings ▸ Security ▸ Preferred name (else your username, else "Driver") - nothing is asked (2.940.0);
+the scores are kept in police_chase.json in the install folder.
 
 It keeps out of the way of your work: the keys only reach the game while it has the focus (they never reach the timeline or
 the image editor); it pauses when the docker is hidden or folded, the window goes to the background or you click elsewhere,
@@ -10919,3 +10921,20 @@ same one. The game is the same maze; the setting changes what stands on the bloc
 The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
 render runs and the game plays lighter, the shadows are left out.
 
+## 🔒 Settings ▸ Security, your name for the LLM, hiding the splash (2.940.0)
+
+**Settings ▸ Security** is local security: the username, password and name stay on this computer (in the settings folder,
+settings/security.json) and are never sent online - there is no account. The password itself is never stored, only a salted
+hash of it.
+- **Preferred name** - what bitGen calls you. The chat's LLM and the 📱 app's voice talk to you by this name in a friendly
+  way (now and then, not in every sentence); Police Chase puts it on the high scores. Empty = your username.
+- **Ask for my username and password when bitGen Studio starts** - tick it, type a username and the password twice, then
+  **💾 Save security**. At the next start a sign-in screen covers the studio until the right pair is typed (the username
+  ignores capitals); a reload during the same start doesn't ask again. Leave the password boxes empty to keep the one you
+  have.
+
+What it doesn't do: it doesn't encrypt your projects or files, and the 📱 phone app has its own pairing. Forgot the
+password? Close bitGen Studio and delete settings\security.json.
+
+**Settings ▸ General ▸ Start-up ▸ Hide the splash screen** - the desktop app opens straight to the studio without the
+start-up film. Saved at once; it counts from the next start.

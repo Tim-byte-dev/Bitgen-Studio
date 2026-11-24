@@ -163,6 +163,7 @@ function mount(app) {
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./appApi").mount(app);      // 2.909.0: 📱 the bitGen app - its info + one video form for every model (lib/appApi.js)
+  require("./security").mount(app);    // 2.940.0: 🔒 Settings ▸ Security - the startup sign-in + the preferred name (lib/security.js)
   require("./appVoice").mount(app);    // 2.914.0: 🎙 the app's voice - find / create / fix / chat by what you say (lib/appVoice.js)
   require("./lanPair").mount(app);     // 2.913.0: 📶 the app connects over the Wi-Fi with no QR + ☁ the relay for 6 hours away (lib/lanPair.js, lib/relayLink.js)
   require("./apkBuild").mount(app);    // 2.911.0: 📱 build the bitGen app here + install it on the phone over Wi-Fi (lib/apkBuild.js)
@@ -3492,7 +3493,8 @@ const trap = require("../lib/trap");
         + refBlock
         + (songAsk ? songwriter.FORMAT_NOTE : "")
         + loraWords.systemNote(loraWords.forPaths(loraWords.pathsFor(b.context || {}, core.STYLES_DIR)))   // 2.581.0 / 2.585.0: the LoRAs in use - override -> temporary, else the style's
-        + visionNote }];
+        + visionNote
+        + require("../lib/security").nameNote() }];   // 2.940.0: the user's preferred name (Settings ▸ Security), used warmly
     for (const m of recalled) messages.push({ role: m.role, content: m.text });
     if (arena) { try { await llmArena.setPrompt(core, arena.id, llmChat.alternate(messages)); } catch { /* the reply still joins */ } }   // 2.585.0: the full prompt - the training set's input
     const t0 = Date.now();

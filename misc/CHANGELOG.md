@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.940.0** — 🔒 Settings ▸ Security (Local Only: a Sign-in at Start-up, Username and Password - a Salted Hash, Never Online - and a Preferred Name the Chat's LLM Uses in a Friendly Way), Settings ▸ General ▸ Hide the Splash Screen, 🚓 Police Chase ⛶ Goes Fullscreen and Saves High Scores Under Your Name Without Asking
 - **2.939.0** — 🚓 Police Chase: Settings - City, Suburbs, Forest and Countryside (🗺 Auto Changes Each Level; Houses, Trees, Barns, Fields, Lamps and Fireflies Made in Code), Modern Lighting (Filmic Tone Mapping, Soft Shadows, Glowing Lights, the Setting's Sky) and V for the Overview, a Drone View and a Driving View
 - **2.938.0** — 🚓 Police Chase: 🚀 Rocket Launchers (Space Fires - a Police Car Two Burgers Ahead Goes Back to the Station) and Each Police Car's Own Trick - Sarge's 🚧 Roadblocks, Cutter's ⚡ Nitro, Flanker's Spike Strips, Rookie's 🛡 Shield; Headlights on Every Car, Explosions Light the Street; Brick, Glass and Lit Windows on the Art Pack's Buildings (chase_assets.py --dress)
 - **2.937.0** — 🚓 Police Chase: 3D Cars, Burgers and a Cake - the Art Pack's Getaway Car and Police Cars Are 3D Models (Police Paint in Each Car's Colour, Our Light Bar on the Roof; scripts/chase_car.py Cuts a Car Down to Game Size); the Pick-Ups Are Burgers and the Bonus a Cake

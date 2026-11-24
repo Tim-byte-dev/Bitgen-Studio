@@ -27,7 +27,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => document.getElementById("pcStage").scrollIntoView({ block: "nearest" }));
     const xy = await ev(() => { const st = document.getElementById("pcStage"), r = st.getBoundingClientRect();
       for (let fy = 0.1; fy < 1; fy += 0.1) for (let fx = 0.9; fx > 0; fx -= 0.1) { const x = r.left + r.width * fx, y = r.top + r.height * fy, e = document.elementFromPoint(x, y);
-        if (e && st.contains(e) && !e.closest("#pcScores") && !e.closest("#pcName")) return [x, y]; }
+        if (e && st.contains(e) && !e.closest("#pcScores")) return [x, y]; }
       return null; });
     if (!xy) throw new Error("nothing of the city can be clicked - it is all covered");
     await p.mouse.click(xy[0], xy[1]); };
@@ -106,23 +106,22 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(600);
     await clickCity();
     await p.waitForTimeout(300);
-    // busted to game over -> the name -> 🏆
+    // busted to game over -> saved under bitGen's name (2.940.0: Settings ▸ Security ▸ Preferred name - no name asked) -> 🏆
     // a score bigger than every earlier run's (the scores file on a test server keeps them)
     const SC = 1000000 + Math.floor(Date.now() / 1000) % 1000000;
+    await ev(() => fetch("/api/security", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Tester 935" }) }).then((r) => r.json()));
+    const saved = p.waitForResponse((r) => /\/api\/police-chase\/scores$/.test(r.url()) && r.request().method() === "POST", { timeout: 30000 });
     await ev((sc) => { const s = window.H3Chase.state(); s.score = sc; s.lives = 1; const c = s.police[0]; c.mode = "run"; c.x = s.player.x; c.y = s.player.y; }, SC);
     await p.waitForFunction(() => window.H3Chase.info().phase === "over", null, { timeout: 30000 });
     await p.waitForTimeout(300);
-    const o1 = await ev(() => ({ msg: document.getElementById("pcMsg").textContent, name: document.getElementById("pcName").classList.contains("on") }));
-    check("the last car caught: GAME OVER with the score; a score for the ten asks for a name", /GAME OVER/.test(o1.msg) && new RegExp(String(SC)).test(o1.msg) && o1.name, o1);
-    const go1 = (await info()).drawn; await p.waitForTimeout(600);
-    check("...GAME OVER is one still picture (nothing keeps drawing)", (await info()).drawn === go1 && !(await info()).looping);
-    await p.fill("#pcNameIn", "Tester 935");
-    const saved = p.waitForResponse((r) => /\/api\/police-chase\/scores$/.test(r.url()) && r.request().method() === "POST", { timeout: 15000 });
-    await p.press("#pcNameIn", "Enter");
+    const o1 = await ev(() => ({ msg: document.getElementById("pcMsg").textContent, box: !!document.getElementById("pcNameIn") }));
+    check("the last car caught: GAME OVER with the score; no name box (2.940.0)", /GAME OVER/.test(o1.msg) && new RegExp(String(SC)).test(o1.msg) && !o1.box, o1);
     const sj = await (await saved).json();
     await p.waitForTimeout(300);
+    const go1 = (await info()).drawn; await p.waitForTimeout(600);
+    check("...GAME OVER is one still picture (nothing keeps drawing)", (await info()).drawn === go1 && !(await info()).looping);
     const o2 = await ev(() => ({ on: document.getElementById("pcScores").classList.contains("on"), me: (document.querySelector("#pcScores tr.me") || {}).textContent || "", best: document.getElementById("pcBest").textContent }));
-    check("...Enter saves it (POST /api/police-chase/scores) and 🏆 shows the ten with yours lit", sj.rank >= 1 && o2.on && /Tester 935/.test(o2.me) && new RegExp(String(SC)).test(o2.me) && +o2.best >= SC, { sj, o2 });
+    check("...saved by itself under the preferred name (POST /api/police-chase/scores) and 🏆 shows the ten with yours lit", sj.rank >= 1 && o2.on && /Tester 935/.test(o2.me) && new RegExp(String(SC)).test(o2.me) && +o2.best >= SC, { sj, o2 });
     const g = await ev(async (sc) => (await (await fetch("/api/police-chase/scores")).json()).scores.some((x) => x.name === "Tester 935" && x.score === sc), SC);
     check("...kept on this PC (read back)", g);
     await p.keyboard.press("Enter");

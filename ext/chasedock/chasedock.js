@@ -22,7 +22,8 @@
  *               setting's sky; V cycles the views: overview, drone (high, following), driving (behind the roof)
  *   Sound       made on the spot with Web Audio (a siren that grows as the police close in, pick-ups, the jammer, a bust)
  *               - off to start with, M / 🔇 turns it on (kept)
- *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten asks for a name
+ *   🏆          the best ten on this PC (GET / POST /api/police-chase/scores); a score that makes the ten is saved under
+ *               bitGen's name for the player (2.940.0: Settings ▸ Security ▸ Preferred name, else the username - never asked)
  * window.H3Chase: newGame(seed), pause(why), resume(), camera(mode), sound(on), scores(), info() (tests)
  * 2.936.0 (Tim: "can i upload a blender file of the cars and the city maze? to make it a little more pleasing to the eye"):
  * an ART PACK, when installed - ext/chasedock/assets/pack.json (scripts/chase_assets.py makes it from a city .blend and a
@@ -100,6 +101,12 @@
     if (root.ResizeObserver) new root.ResizeObserver(function () { resize(); kick(); }).observe(stage);
     return V;
   }
+  /** 2.940.0: the docker on the whole screen / back (false when the browser says no - it stays maximized in the window) */
+  function fullOn() {
+    var d = $("chasedock"); if (!d || doc.fullscreenElement === d || !d.requestFullscreen) return false;
+    try { var p = d.requestFullscreen({ navigationUI: "hide" }); if (p && p.catch) p.catch(function () { /* stays maximized */ }); return true; } catch (e) { return false; }
+  }
+  function fullOff() { var d = $("chasedock"); if (d && doc.fullscreenElement === d && doc.exitFullscreen) { try { var p = doc.exitFullscreen(); if (p && p.catch) p.catch(function () {}); } catch (e) { /* fine */ } } }
   function resize() {
     var V = G.V, st = $("pcStage"); if (!V || !st) return;
     var w = Math.max(50, st.clientWidth), h = Math.max(50, st.clientHeight);
@@ -626,7 +633,6 @@
 
   /* ---------------- the game ---------------- */
   function newGame(seed) {
-    hideName();
     G.s = C.newGame(seed == null ? (Date.now() % 1000000) : seed, Math.max(G.hiFile, G.s && !G.demo ? G.s.hi : 0));
     G.demo = false; G.paused = false; G.why = ""; G.auto = false; G.camJump = true; G.msgKey = "";
     snd("start");
@@ -649,18 +655,22 @@
   function gameOver() {
     sirenOff();
     var s = G.s, top = G.scores, qual = s.score > 0 && (top.length < 10 || s.score > top[top.length - 1].score);
-    if (qual) {
-      var n = $("pcName"), inp = $("pcNameIn");
-      n.classList.add("on"); inp.value = LS.get("name", ""); setTimeout(function () { try { inp.focus(); inp.select(); } catch (e) { /* fine */ } }, 50);
-    }
+    if (qual) saveScore();       // 2.940.0: no name asked - bitGen's own (Settings ▸ Security ▸ Preferred name)
   }
-  function hideName() { var n = $("pcName"); if (n) n.classList.remove("on"); }
+  /** 2.940.0 (Tim: "no need to ask for name, it should use name provided in bitgen"): the preferred name, else the
+   *  username (static/securitytab.js), else "Driver" */
+  function playerName() {
+    var S = root.H3Security;
+    if (!S) return Promise.resolve("Driver");
+    return Promise.resolve(S.load ? S.load() : null).then(function () { return (S.name() || "").trim().slice(0, 16) || "Driver"; }, function () { return (S.name() || "").trim().slice(0, 16) || "Driver"; });
+  }
   function saveScore() {
     var s = G.s; if (!s) return Promise.resolve(null);
-    var name = ($("pcNameIn").value || "").trim() || "Driver";
-    LS.set("name", name); hideName();
-    return fetch("/api/police-chase/scores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, score: s.score, level: s.level }) })
-      .then(function (r) { return r.json(); }).then(function (j) {
+    if (s.saved) return Promise.resolve(null);
+    s.saved = true;
+    return playerName().then(function (name) {
+      return fetch("/api/police-chase/scores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, score: s.score, level: s.level }) });
+    }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.scores) { G.scores = j.scores; G.hiFile = j.scores.length ? j.scores[0].score : 0; paintScores(j.rank); $("pcScores").classList.add("on"); hud(); }
         focus(); return j;
       }).catch(function () { return null; });
@@ -709,7 +719,6 @@
   var KEYS = { ArrowUp: 0, KeyW: 0, ArrowLeft: 1, KeyA: 1, ArrowDown: 2, KeyS: 2, ArrowRight: 3, KeyD: 3 };
   function focus() { var st = $("pcStage"); if (st && doc.activeElement !== st) { try { st.focus({ preventScroll: true }); } catch (e) { st.focus(); } } }
   function onKey(e) {
-    if (e.target && e.target.id === "pcNameIn") { if (e.key === "Enter") { e.preventDefault(); saveScore(); } e.stopPropagation(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var done = true, live = G.s && !G.demo;
     if (e.code in KEYS) {
@@ -815,9 +824,9 @@
     try { if (root.localStorage.getItem("h3.g.chasedock") === "1" && !d.dataset.pcSeen) d.classList.add("dockgone"); } catch (e) { /* fine */ }
     d.dataset.pcSeen = "1";
     st.addEventListener("keydown", onKey);
-    st.addEventListener("blur", function () { setTimeout(function () { if (doc.activeElement !== st && !(doc.activeElement && doc.activeElement.id === "pcNameIn") && G.s && !G.demo && !G.paused && G.s.phase !== "over") pause("the game lost the focus"); }, 0); });
+    st.addEventListener("blur", function () { setTimeout(function () { if (doc.activeElement !== st && G.s && !G.demo && !G.paused && G.s.phase !== "over") pause("the game lost the focus"); }, 0); });
     st.addEventListener("pointerdown", function (e) {
-      if (e.target && (e.target.closest("#pcName") || e.target.closest("#pcScores"))) return;
+      if (e.target && (e.target.closest("#pcScores"))) return;
       G.swipe = { x: e.clientX, y: e.clientY };
       focus();
       if (G.s && !G.demo && G.paused && G.s.phase !== "over") resume();
@@ -839,13 +848,26 @@
     $("pcHi").addEventListener("click", function () { var b = $("pcScores"); b.classList.toggle("on"); if (b.classList.contains("on")) loadScores(); focus(); });
     $("pcRender").value = G.render;
     $("pcRender").addEventListener("change", function () { G.render = $("pcRender").value === "pause" ? "pause" : "light"; LS.set("render", G.render); focus(); kick(); });
-    $("pcNameOk").addEventListener("click", saveScore);
     $("pcCloseBtn").addEventListener("click", function (e) { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("chasedock", "tX_chasedock"); });
     doc.addEventListener("visibilitychange", function () { if (doc.hidden) { if (G.s && !G.demo && !G.paused) pause("the window went to the background"); } else kick(); });
+    // 2.940.0 (Tim: "can we make if fullscreen on mamimize"): ⛶ = the whole screen (the Fullscreen API on the docker);
+    // 🗗 or Esc = back to the docker as it was. A maximize that isn't a click (shown from the top bar) stays in the window.
+    d.addEventListener("click", function (e) {
+      if (!(e.target && e.target.closest && e.target.closest("#pcMaxBtn"))) return;
+      setTimeout(function () { if (d.classList.contains("maxed")) fullOn(); else fullOff(); }, 0);
+    }, true);
+    doc.addEventListener("fullscreenchange", function () {
+      var on = doc.fullscreenElement === d;
+      d.classList.toggle("pcfull", on);
+      if (!on && G.full) { G.full = false; if (d.classList.contains("maxed") && typeof root.toggleMax === "function") root.toggleMax("chasedock", false); }
+      else if (on) G.full = true;
+      setTimeout(function () { resize(); kick(); focus(); }, 60);
+    });
     // the docker shown / unfolded -> draw again
     var wasGone = d.classList.contains("dockgone");
     if (root.MutationObserver) new root.MutationObserver(function () {
       var gone = d.classList.contains("dockgone");
+      if (!d.classList.contains("maxed") && doc.fullscreenElement === d) fullOff();   // 2.940.0: un-maximized any other way
       // shown from its button and not all in view in the column: ⛶ - it takes the column's whole height (static/dockmax.js push)
       if (wasGone && !gone && typeof root.toggleMax === "function" && !d.classList.contains("maxed")) setTimeout(function () {
         var col = $("maincol"), r = d.getBoundingClientRect(), c = col ? col.getBoundingClientRect() : r;
