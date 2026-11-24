@@ -10906,7 +10906,8 @@ views side by side into one reference sheet.
 
 Press **🚓** on the top bar (after 📐 SolidCraft and 📏 Sketcher) - the Police Chase docker opens (full screen when it
 would not fit in the column; ✕ or 🚓 again hides it). **⛶** puts the game on the whole screen like the image editor's 🎨 Full Screen (2.942.0): the
-game alone, no bars and no frame. **Esc** pauses and stays; **🗗 Exit full screen**, **Ctrl+Esc** or **Shift+right-click** brings it back.
+game alone, no bars and no frame. **Esc**, **🗗 Exit full screen**, **Ctrl+Esc** or **Shift+right-click** brings it back to the
+docker, paused (2.950.0 - so does leaving the window's full screen any other way, e.g. F11). In the docker, **Esc** or **P** pauses.
 It is hidden until you open it the first time.
 
 **Click the city**, then press **Enter** or an arrow key. You drive the orange getaway car: **arrows** or **W A S D** (a
@@ -11016,7 +11017,7 @@ render runs and the game plays lighter, the shadows are left out.
 
 ## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0, bills, insurance and tax 2.947.0)
 
-Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker** (or ⛶) puts it back.
+Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker**, **Esc** (2.950.0 - even while typing an answer) or ⛶ puts it back.
 It is hidden until you open it the first time, and it is saved as you play - close it and carry on later.
 
 **▶ New game**: your name (bitGen's name for you from Settings ▸ Security), 1 to 5 bots, how often the bots answer right

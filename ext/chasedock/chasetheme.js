@@ -131,7 +131,8 @@
     var std = function (c, p) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.8, flatShading: true }, p || {})); };
     var PART = {
       house_body: [new T.BoxGeometry(0.6, 0.34, 0.48), std(0xffffff), 0.17],
-      house_roof: [(function () { var g = new T.CylinderGeometry(0.37, 0.37, 0.66, 3, 1); g.rotateZ(Math.PI / 2); g.rotateX(Math.PI / 6); g.scale(1, 0.62, 0.9); return g; })(), std(0xffffff), 0.45],
+      // 2.950.0: roofs catch some light at night so each house reads from above
+      house_roof: [(function () { var g = new T.CylinderGeometry(0.37, 0.37, 0.66, 3, 1); g.rotateZ(Math.PI / 2); g.rotateX(Math.PI / 6); g.scale(1, 0.62, 0.9); return g; })(), std(0xffffff, { emissive: 0x3a3440, emissiveIntensity: 1 }), 0.45],
       house_win: [new T.BoxGeometry(0.62, 0.08, 0.5), std(0x222222, { emissive: 0xffc070, emissiveIntensity: 1.3 }), 0.2],
       house_door: [new T.BoxGeometry(0.1, 0.16, 0.02), std(0x4a2a18), 0.08],
       trunk: [new T.CylinderGeometry(0.035, 0.05, 0.3, 6), std(0x5a3a22), 0.15],
@@ -145,7 +146,7 @@
       fence_post: [new T.BoxGeometry(0.04, 0.22, 0.04), std(0x7a5a38), 0.11],
       hay: [(function () { var g = new T.CylinderGeometry(0.09, 0.09, 0.12, 12); g.rotateZ(Math.PI / 2); return g; })(), std(0xd8b850), 0.09],
       barn_body: [new T.BoxGeometry(0.7, 0.4, 0.55), std(0xa8322a), 0.2],
-      barn_roof: [(function () { var g = new T.CylinderGeometry(0.42, 0.42, 0.74, 3, 1); g.rotateZ(Math.PI / 2); g.rotateX(Math.PI / 6); g.scale(1, 0.55, 0.85); return g; })(), std(0x3a3a3e), 0.52],
+      barn_roof: [(function () { var g = new T.CylinderGeometry(0.42, 0.42, 0.74, 3, 1); g.rotateZ(Math.PI / 2); g.rotateX(Math.PI / 6); g.scale(1, 0.55, 0.85); return g; })(), std(0x3a3a3e, { emissive: 0x2e3038, emissiveIntensity: 1 }), 0.52],
       barn_door: [new T.BoxGeometry(0.22, 0.26, 0.02), std(0xf0f0e8), 0.13],
       silo: [new T.CylinderGeometry(0.16, 0.16, 0.8, 14), std(0xb8bcc0, { metalness: 0.5, roughness: 0.4 }), 0.4],
       silo_top: [new T.SphereGeometry(0.16, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x9aa0a6, { metalness: 0.5 }), 0.8],

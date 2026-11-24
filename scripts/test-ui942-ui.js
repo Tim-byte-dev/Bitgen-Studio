@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.942.0 in a REAL browser: 🚓 POLICE CHASE - ⛶ = full screen like the image editor's (Tim's "artist mode") (the game alone, no bars or
- * title bar, the window full screen; Esc pauses and stays; 🗗 Exit / Ctrl+Esc / Shift+right-click leave), the getaway car
+ * title bar, the window full screen; Esc (2.950.0), 🗗 Exit, Ctrl+Esc, Shift+right-click leave), the getaway car
  * explodes when caught, the launcher fires by itself and a police car hit explodes (fire, smoke, bits drawn), ⚡ boosts drawn
  * and taken. Against the running app (H3_URL). WebGL here is SwiftShader (slow). */
 "use strict";
@@ -40,8 +40,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       f1.d[0] <= 1 && f1.d[1] <= 1 && f1.d[2] >= f1.W - 2 && f1.d[3] >= f1.H - 2 && f1.head === "none" && f1.topIn && f1.midIn && f1.stH > f1.H * 0.85 && f1.exitBtn !== "none" && f1.fs, f1);
     await p.click("#pcStage"); await p.keyboard.press("Enter"); await p.waitForTimeout(800);
     await p.keyboard.press("Escape"); await p.waitForTimeout(500);
-    const f2 = await ev(() => ({ full: document.body.classList.contains("pc-full"), paused: window.H3Chase.info().paused }));
-    check("...Esc pauses the game and it stays full screen (frameless)", f2.full && f2.paused, f2);
+    const f2 = await ev(() => ({ full: document.body.classList.contains("pc-full"), max: document.getElementById("chasedock").classList.contains("maxed"), paused: window.H3Chase.info().paused }));
+    check("...Esc (2.950.0): back to the docker, the game paused", !f2.full && !f2.max && f2.paused, f2);
+    await p.click("#pcMaxBtn"); await p.waitForFunction(() => document.body.classList.contains("pc-full"), null, { timeout: 8000 }); await p.waitForTimeout(400);
     await p.keyboard.press("Control+Escape"); await p.waitForTimeout(600);
     const f3 = await ev(() => ({ full: document.body.classList.contains("pc-full"), max: document.getElementById("chasedock").classList.contains("maxed"), fs: !!document.fullscreenElement }));
     check("...Ctrl+Esc: back to the docker (not maximized, the window's full screen left)", !f3.full && !f3.max && !f3.fs, f3);

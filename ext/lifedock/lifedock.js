@@ -290,7 +290,16 @@
     }
     G.botT = setTimeout(function () { G.botT = 0; if (G.s !== s) return; C.botStep(s); after(); }, G.speed === "fast" ? 90 : 420);
   }
-  function setFull(on) { on = !!on; if (on === doc.body.classList.contains("lc-full")) return; doc.body.classList.toggle("lc-full", on); setTimeout(draw, 80); }
+  function setFull(on) {
+    on = !!on; if (on === doc.body.classList.contains("lc-full")) return;
+    doc.body.classList.toggle("lc-full", on);
+    // 2.950.0: back to the docker also leaves the window's full screen (the browser's / another docker's)
+    if (!on && doc.fullscreenElement && doc.exitFullscreen) { try { var q = doc.exitFullscreen(); if (q && q.catch) q.catch(function () {}); } catch (e) { /* fine */ } }
+    setTimeout(draw, 80);
+  }
+  /** 2.950.0 (Tim: "... esc should go back to docker view, same with life choices"): 🗗 Back to the docker, Esc and the window
+   *  leaving full screen all un-maximize the docker */
+  function exitFull() { if (typeof root.toggleMax === "function" && $("lifedock").classList.contains("maxed")) root.toggleMax("lifedock", false); setFull(false); }
   function shown() { var d = $("lifedock"); return !!(d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed") && !doc.hidden && d.offsetWidth > 0); }
 
   /* ---------------- set-up, scores ---------------- */
@@ -382,7 +391,13 @@
     if (root.ResizeObserver) new root.ResizeObserver(function () { draw(); }).observe($("lcBoardWrap"));
     // maximized = the whole window; shown from its button = maximized (a board game needs the room)
     var wasGone = d.classList.contains("dockgone");
-    $("lcExitFull").onclick = function () { if (typeof root.toggleMax === "function") root.toggleMax("lifedock", false); setFull(false); };
+    $("lcExitFull").onclick = function () { exitFull(); };
+    // Esc while it fills the window: back to the docker - even with focus in an answer box (capture: before the page's own)
+    root.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || e.ctrlKey || e.metaKey || e.altKey || !doc.body.classList.contains("lc-full")) return;
+      e.preventDefault(); e.stopImmediatePropagation(); exitFull();
+    }, true);
+    doc.addEventListener("fullscreenchange", function () { if (!doc.fullscreenElement && doc.body.classList.contains("lc-full")) exitFull(); });
     if (root.MutationObserver) new root.MutationObserver(function () {
       var gone = d.classList.contains("dockgone");
       setFull(d.classList.contains("maxed") && !gone);

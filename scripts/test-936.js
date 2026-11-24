@@ -19,7 +19,7 @@ check("chasedock.js: pack.json read before the first city (no pack = the painted
 check("...the ground from the road pictures (64 px a tile; straights turned to the road; no painted lane marks over them)",
   /P = RP \? 64 : CITY \? 32 : 48/.test(JS) /* 2.939.0: 48 for the other settings */ && /if \(RP\) paintRoads\(g, m, P, home, RP\)/.test(JS) && /g\.rotate\(Math\.PI \/ 2\)/.test(JS) && /y3 < m\.H && !RP && CITY/.test(JS) && /y < m\.H && !RP && CITY/.test(JS));
 check("...each block a building of the pack: a box wearing its five pictures in three.js's face order, a random one, a random quarter turn, the footprint 0.94 of a tile",
-  /var mats = \[mat\("px"\), mat\("nx"\), mat\("py"\), new T\.MeshStandardMaterial\(\{ color: 0x161b26 \}\), mat\("pz"\), mat\("nz"\)\]/.test(JS)
+  /var mats = \[mat\("px"\), mat\("nx"\), roofMaterial\(\), new T\.MeshStandardMaterial\(\{ color: 0x161b26 \}\), mat\("pz"\), mat\("nz"\)\]/.test(JS)   /* 2.950.0: the top = our lit roof */
   && /Math\.floor\(R\(\) \* PB\.length\)/.test(JS) && /Math\.floor\(R\(\) \* 4\)/.test(JS) && /0\.94 \/ Math\.max\(sz\[0\], sz\[1\]/.test(JS) && /new T\.InstancedMesh\(new T\.BoxGeometry\(1, 1, 1\), mats, list\.length\)/.test(JS));
 check("...the edge of the city keeps its low wall; the pictures' loading draws once more; the credits on the title", /if \(!edge && PB\)/.test(JS) && /G\.camSettling = Math\.max\(G\.camSettling \|\| 0, 2\); kick\(\)/.test(JS) && /G\.pack\.json\.credits\.map\(esc\)/.test(JS));
 // roadKind (pure) - pulled out of the page script

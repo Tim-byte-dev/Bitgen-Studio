@@ -15113,6 +15113,13 @@ python3 scripts/test-openjutsu949.py > /tmp/to949.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui949-ui.js > /tmp/ui949.log 2>&1 \
   && ok "2.949.0 browser test: Engine ▸ OpenJutsu opens its bar, modes / characters / size saved, 30 s segments; END TO END a take, 🎨 Fix colours, 👁 Check mask (never kept), 🙂 only after I accept" \
   || { bad "2.949.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui949.log | head -12; }
+# ---- 2.950.0 (🚓 / 🎓 Esc back to the docker; 🚓 lit roofs)
+node scripts/test-950.js > /tmp/t950.log 2>&1 \
+  && ok "2.950.0 units: Esc / leaving full screen -> exitFull in both games, the shared lit roof on every top" \
+  || { bad "2.950.0 units"; grep -a "^FAIL" -A1 /tmp/t950.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui950-ui.js > /tmp/ui950.log 2>&1 \
+  && ok "2.950.0 browser test: 🚓 Esc / the window leaving full screen / 🗗 Exit back to the docker (paused), every roof lit; 🎓 Esc (even typing) back to the docker" \
+  || { bad "2.950.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui950.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

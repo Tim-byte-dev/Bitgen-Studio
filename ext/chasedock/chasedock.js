@@ -108,8 +108,10 @@
   /** 2.940.0: the docker on the whole screen / back (false when the browser says no - it stays maximized in the window) */
   /** 2.942.0 (Tim: "make full screen like (artist mode) when maximized"): maximized = the game alone on the whole screen, no
    *  frame - bitGen's bars, menus, dockers and the docker's own title bar hidden (body.pc-full), and the window goes full screen
-   *  too, like the image editor's 🎨 Full Screen (Tim called it artist mode, its name before 2.836.0). The browser's own Esc only leaves the window's full screen (Esc pauses the game); the game
-   *  stays frameless until 🗗 Exit, Ctrl+Esc, Ctrl+Shift+F or Shift+right-click. */
+   *  too, like the image editor's 🎨 Full Screen (Tim called it artist mode, its name before 2.836.0).
+   *  2.950.0 (Tim: "in police chase exit full screen or esc should go back to docker view"): Esc, 🗗 Exit, Ctrl+Esc,
+   *  Ctrl+Shift+F, Shift+right-click AND the window leaving full screen any other way (the browser's own Esc / F11) all go
+   *  back to the docker - the game paused; nothing leaves it frameless in a window any more. */
   function isFull() { return doc.body.classList.contains("pc-full"); }
   function setFull(on) {
     on = !!on; if (on === isFull()) return;
@@ -119,7 +121,11 @@
     if (!on && doc.fullscreenElement === de && doc.exitFullscreen) { try { var q = doc.exitFullscreen(); if (q && q.catch) q.catch(function () {}); } catch (e) { /* fine */ } }
     setTimeout(function () { resize(); kick(); if (on) focus(); }, 80);
   }
-  function exitFull() { if (typeof root.toggleMax === "function" && $("chasedock").classList.contains("maxed")) root.toggleMax("chasedock", false); else setFull(false); }
+  function exitFull() {
+    if (G.s && !G.demo && !G.paused && G.s.phase !== "over") pause("back to the docker");
+    if (typeof root.toggleMax === "function" && $("chasedock").classList.contains("maxed")) root.toggleMax("chasedock", false);
+    setFull(false);
+  }
   function resize() {
     var V = G.V, st = $("pcStage"); if (!V || !st) return;
     var w = Math.max(50, st.clientWidth), h = Math.max(50, st.clientHeight);
@@ -459,7 +465,7 @@
   /** the city for this level's maze: the painted ground, the buildings, the cash, the jammers */
   function buildCity(s) {
     var V = G.V, m = s.maze;
-    if (V.city) { V.scene.remove(V.city); V.city.traverse(function (o) { if (o.geometry) o.geometry.dispose(); [].concat(o.material || []).forEach(function (mt) { if (mt.map) mt.map.dispose(); if (mt.emissiveMap) mt.emissiveMap.dispose(); mt.dispose(); }); }); }
+    if (V.city) { V.scene.remove(V.city); V.city.traverse(function (o) { if (o.geometry) o.geometry.dispose(); [].concat(o.material || []).forEach(function (mt) { if (mt.userData && mt.userData.shared) return; if (mt.map) mt.map.dispose(); if (mt.emissiveMap) mt.emissiveMap.dispose(); mt.dispose(); }); }); }
     var city = new T.Group(); V.city = city; V.scene.add(city);
     // 2.939.0: the setting (city / suburbs / forest / countryside) - what stands on the blocks, the roads, the sky, the light
     var TH = root.H3ChaseTheme, theme = TH ? TH.pick(G.theme, s.level) : "city", CITY = theme === "city";
@@ -525,12 +531,12 @@
     byH.forEach(function (list, floors) {
       if (!list.length) return;
       var h = floors === 0 ? 0.2 : 0.34 * floors + 0.14, geo = new T.BoxGeometry(0.98, h, 0.98), mats;
-      if (floors === 0) mats = new T.MeshStandardMaterial({ color: 0x232838, roughness: 0.9 });
+      if (floors === 0) { var wall = new T.MeshStandardMaterial({ color: 0x232838, roughness: 0.9 }); mats = [wall, wall, roofMaterial(), wall, wall, wall]; }   // 2.950.0: lit tops
       else {
         var map = win.map.clone(), em = win.em.clone(); [map, em].forEach(function (t) { t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(1, floors); t.needsUpdate = true; });
         var side = new T.MeshStandardMaterial({ map: map, emissive: 0xffd27a, emissiveMap: em, emissiveIntensity: 0.9, roughness: 0.75 });
-        var top = new T.MeshStandardMaterial({ color: 0x3a3f4c, roughness: 0.9 });
-        mats = [side, side, top, top, side, side];
+        var under = new T.MeshStandardMaterial({ color: 0x3a3f4c, roughness: 0.9 });
+        mats = [side, side, roofMaterial(), under, side, side];                       // 2.950.0: the roof lit
       }
       var im = new T.InstancedMesh(geo, mats, list.length), M4 = new T.Matrix4(), col = new T.Color();
       list.forEach(function (b, i) {
@@ -582,7 +588,8 @@
       return LT[f] ? new T.MeshStandardMaterial({ map: pic, color: 0xe2e6f0, roughness: 0.6, metalness: 0.1, emissive: 0xffffff, emissiveMap: packTexture(LT[f]), emissiveIntensity: 0.95 })
         : new T.MeshStandardMaterial({ map: pic, color: 0xe2e6f0, roughness: 0.85, emissive: 0x2a2f3a, emissiveMap: pic, emissiveIntensity: 0.35 });
     };
-    var mats = [mat("px"), mat("nx"), mat("py"), new T.MeshStandardMaterial({ color: 0x161b26 }), mat("pz"), mat("nz")];
+    // 2.950.0: the roof is our lit one (a pack's top picture is often a dark render - the blocks could not be told apart)
+    var mats = [mat("px"), mat("nx"), roofMaterial(), new T.MeshStandardMaterial({ color: 0x161b26 }), mat("pz"), mat("nz")];
     var k = 0.94 / Math.max(sz[0], sz[1], 0.01), sx = sz[0] * k, sd = sz[1] * k, h = Math.min(1.8, sz[2] * k);
     var im = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), mats, list.length), M = new T.Matrix4(), Q = new T.Quaternion(), Y = new T.Vector3(0, 1, 0);
     list.forEach(function (t, i) {
@@ -630,6 +637,27 @@
     };
     WIN = { map: mk(false), em: mk(true) };
     return WIN;
+  }
+  /** 2.950.0 (Tim: "also light the roofs of the buildings, i can't tell where they are"): a lit roof made in code - light
+   *  concrete with a bright parapet round the edge, a rooftop unit and a skylight; its emissive map glows the rim most, so
+   *  every block's outline reads from above at night. One material, shared by the painted city and the art pack's tops. */
+  var ROOF = null;
+  function roofMaterial() {
+    if (ROOF) return ROOF;
+    var mk = function (em) {
+      var c = doc.createElement("canvas"); c.width = 128; c.height = 128; var g = c.getContext("2d");
+      var R = C.rng(311);
+      g.fillStyle = em ? "#3a3f4a" : "#9aa1ae"; g.fillRect(0, 0, 128, 128);
+      if (!em) for (var i = 0; i < 900; i++) { var v = 140 + Math.floor(R() * 40); g.fillStyle = "rgb(" + v + "," + (v + 4) + "," + (v + 12) + ")"; g.fillRect(Math.floor(R() * 128), Math.floor(R() * 128), 2, 2); }
+      g.fillStyle = em ? "#ffffff" : "#eef1f6"; [[0, 0, 128, 9], [0, 119, 128, 9], [0, 0, 9, 128], [119, 0, 9, 128]].forEach(function (r) { g.fillRect(r[0], r[1], r[2], r[3]); });
+      g.fillStyle = em ? "#6a7080" : "#c4cad4"; g.fillRect(28, 30, 30, 22);                // the rooftop unit
+      g.fillStyle = em ? "#20242c" : "#5a606c"; g.fillRect(34, 36, 18, 3); g.fillRect(34, 42, 18, 3);
+      g.fillStyle = em ? "#ffe9a8" : "#ffe7a0"; g.fillRect(72, 74, 26, 18);               // a lit skylight
+      var t = new T.CanvasTexture(c); if (!em && T.SRGBColorSpace) t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4; return t;
+    };
+    ROOF = new T.MeshStandardMaterial({ map: mk(false), color: 0xffffff, roughness: 0.85, emissive: 0xb8c4e8, emissiveMap: mk(true), emissiveIntensity: 0.45 });
+    ROOF.userData.shared = true;
+    return ROOF;
   }
 
   /* ---------------- drawing ---------------- */
@@ -1006,12 +1034,16 @@
       if (!isFull()) return;
       var k = String(e.key || ""), ctl = e.ctrlKey || e.metaKey;
       if ((ctl && k === "Escape") || (ctl && e.shiftKey && (e.code === "KeyF"))) { e.preventDefault(); e.stopImmediatePropagation(); exitFull(); return; }
-      // a plain Esc outside the game: pause, never "un-maximize" (the page's own Esc)
-      if (k === "Escape" && !ctl && !(e.target && e.target.closest && e.target.closest("#pcStage"))) { e.stopImmediatePropagation(); if (G.s && !G.demo && !G.paused) pause("paused"); }
+      // 2.950.0: a plain Esc = back to the docker too (the ⚙ Sound box open: Esc closes it first)
+      if (k === "Escape" && !ctl) {
+        if ($("pcMixBox") && $("pcMixBox").classList.contains("on")) return;
+        e.preventDefault(); e.stopImmediatePropagation(); exitFull();
+      }
     }, true);
     root.addEventListener("mousedown", function (e) { if (isFull() && e.button === 2 && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); exitFull(); } }, true);
     root.addEventListener("contextmenu", function (e) { if (isFull() && e.shiftKey) e.preventDefault(); }, true);
-    doc.addEventListener("fullscreenchange", function () { setTimeout(function () { resize(); kick(); }, 80); });
+    // 2.950.0: the window left full screen by the browser (its Esc / F11) while the game is frameless -> back to the docker
+    doc.addEventListener("fullscreenchange", function () { if (!doc.fullscreenElement && isFull()) exitFull(); setTimeout(function () { resize(); kick(); }, 80); });
     // the docker shown / unfolded -> draw again
     var wasGone = d.classList.contains("dockgone");
     if (root.MutationObserver) new root.MutationObserver(function () {
