@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.962.1** — The 🎹 Synth Tab's Features Listed under Music, Voices and Sound
 - **2.962.0** — 🎹 Synth Tab: ▦ a Step Sequencer (Step Clips on Any Layer: Rows of Sounds, Accents, Swing, Triplets) That Follows the Tempo Track
 - **2.961.0** — 🎹 Synth Tab: ♩ a Tempo Track (Tempo Changes and Ramps) that the Beat Grid, Snap, Metronome, Loop Bars and Bar.Beat Follow
 - **2.960.0** — 🎹 Synth Tab: ● Rec onto the Timeline (Keys, Looper + Pads, Mic), ⟳ Loop Recording with a Take per Pass, Punch, Comping Across Takes, ▤ Flatten
