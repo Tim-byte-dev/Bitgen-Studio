@@ -80,7 +80,8 @@
       h.innerHTML = '<div class="sytlh1"><input maxlength="32" title="The layer\'s name"><button class="ghost sym m" type="button" title="Mute">M</button><button class="ghost sym s" type="button" title="Solo">S</button>'
         + '<button class="ghost sym" data-k type="button" title="◆ A keyframe at the playhead (start = end volume - drag them, or click it for its knobs)">◆</button><button class="ghost sym" data-x type="button" title="Delete this layer">🗑</button></div><div class="sytlh2"></div>';
       var inp = h.querySelector("input"); inp.value = l.name;
-      inp.onchange = function () { l.name = inp.value.replace(/[<>]/g, "").trim().slice(0, 32) || "Layer " + (i + 1); changed(); draw(); };
+      inp.title = "This layer's name - click it and type a new one"; inp.setAttribute("aria-label", "Layer " + (i + 1) + " name");
+      inp.onchange = function () { l.name = inp.value.replace(/[<>]/g, "").trim().slice(0, 32) || "Layer " + (i + 1); inp.value = l.name; changed(); keyEd(); draw(); };
       inp.addEventListener("keydown", function (e) { e.stopPropagation(); });
       var bs = h.querySelectorAll("button");
       bs[0].classList.toggle("on", l.mute); bs[1].classList.toggle("on", l.solo);
@@ -110,7 +111,9 @@
       var kp = KN.knob({ label: "Pan", size: 30, color: hue(i), def: 0.5, bipolar: true, get: function () { return (l.pan + 1) / 2; }, set: function (n) { l.pan = Math.round((n * 2 - 1) * 100) / 100; liveMix(); changed(); }, text: function () { return Math.abs(l.pan) < 0.02 ? "C" : (l.pan < 0 ? "L" : "R") + Math.round(Math.abs(l.pan) * 100); } });
       kv.el.setAttribute("aria-label", l.name + " volume"); kp.el.setAttribute("aria-label", l.name + " pan"); kv.el.dataset.vol = i;
       k2.appendChild(kv.el); k2.appendChild(kp.el); k2.appendChild(lane);
-      h.addEventListener("pointerdown", function (e) { if (e.target.closest("button, input, .sykn")) return; S.sel = i; heads(); draw(); });
+      h.addEventListener("pointerdown", function (e) { if (e.target.closest("button, select, .sykn")) return; var was = S.sel; S.sel = i; S.clip = null; S.key = null; S.tpt = null; S.apt = null; keyEd();
+        if (was !== i) { if (e.target.closest("input")) box.querySelectorAll(".sytlhead").forEach(function (x) { x.classList.toggle("sel", x === h); }); else heads(); }   // typing a name: keep its box
+        draw(); });   // 2.963.0: the panel edits this layer
       box.appendChild(h);
     });
     var add = doc.createElement("button"); add.type = "button"; add.className = "ghost sytladd"; add.textContent = "＋ Layer"; add.title = "Add a layer";
@@ -749,6 +752,19 @@
     if (c.kind === "notes") btn("🎹 Piano roll", "Edit its notes (or double-click the clip)", function () { openRoll(S.clip.l, S.clip.c); }, "syTRollBtn");
     btn("🗑", "Remove it (Delete)", del);
   }
+  /** 2.963.0: nothing picked on it = the picked layer: its name (rename it here) and Vol / Pan / Filter */
+  function layerEd(box) {
+    var li = S.sel, l = L(li); if (!l) return;
+    var col = hue(li), inp = doc.createElement("input"); inp.className = "sytlname"; inp.id = "syTLName"; inp.maxLength = 32; inp.value = l.name; inp.style.color = col;
+    inp.title = "This layer's name - type a new one"; inp.setAttribute("aria-label", "Layer name");
+    inp.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") inp.blur(); });
+    inp.onchange = function () { l.name = inp.value.replace(/[<>]/g, "").trim().slice(0, 32) || "Layer " + (li + 1); inp.value = l.name; changed(); heads(); draw(); };
+    box.appendChild(inp);
+    var kn = function (label, key, k) { k.el.dataset.lay = key; k.el.setAttribute("aria-label", l.name + " " + label); box.appendChild(k.el); };
+    kn("volume", "vol", KN.knob({ label: "Vol", size: 30, color: col, def: 1 / 1.5, get: function () { return l.vol / 1.5; }, set: function (n) { l.vol = Math.round(n * 150) / 100; liveMix(); changed(); heads(); }, text: function () { return Math.round(l.vol * 100) + "%"; } }));
+    kn("pan", "pan", KN.knob({ label: "Pan", size: 30, color: col, def: 0.5, bipolar: true, get: function () { return (l.pan + 1) / 2; }, set: function (n) { l.pan = Math.round((n * 2 - 1) * 100) / 100; liveMix(); changed(); heads(); }, text: function () { return Math.abs(l.pan) < 0.02 ? "C" : (l.pan < 0 ? "L" : "R") + Math.round(Math.abs(l.pan) * 100); } }));
+    kn("filter", "cut", KN.knob({ label: "Filter", size: 30, color: col, def: 1, get: function () { return T.autoNorm("cut", (l.fx || T.FX0).cut || 20000); }, set: function (n) { l.fx.cut = Math.round(T.autoVal("cut", n)); liveMix(); changed(); }, text: function () { var c = l.fx.cut || 20000; return c >= 19900 ? "Open" : c >= 1000 ? (c / 1000).toFixed(1) + "k" : c + ""; } }));
+  }
   function tempoEd(box) {   // 2.961.0
     var q = TLD.tempo[S.tpt]; if (!q) { box.classList.remove("on"); return; }
     var bb = T.barBeat(TLD.tempo, q.t), b = doc.createElement("b"); b.style.color = "#ffae3a"; b.textContent = "♩ Tempo · " + T.fmt(q.t) + " · bar " + bb.bar + "." + bb.beat; box.appendChild(b);
@@ -763,9 +779,9 @@
   }
   function keyEd() {
     var box = $("syTKeyEd"); if (!box) return;
-    box.innerHTML = ""; box.classList.toggle("on", !!S.key || !!S.clip || S.tpt != null);
+    box.innerHTML = ""; box.classList.add("on");
     if (S.tpt != null) { tempoEd(box); return; }
-    if (!S.key) { if (S.clip) clipEd(box); return; }
+    if (!S.key) { if (S.clip) clipEd(box); else layerEd(box); return; }
     var l = L(S.key.l), K = l && l.keys[S.key.k]; if (!K) { box.classList.remove("on"); return; }
     var col = hue(S.key.l), b = doc.createElement("b"); b.style.color = col; b.textContent = "◆ " + l.name + " · " + T.fmt(K.t); box.appendChild(b);
     [["Start vol", "a"], ["End vol", "b"]].forEach(function (q) {

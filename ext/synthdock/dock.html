@@ -188,8 +188,14 @@
           .sytlpg span { font-size: 10.5px; background: #161a22; border: 1px solid #2a2f3a; border-radius: 4px; padding: 2px 6px; cursor: pointer; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .sytlpg span:hover { border-color: #38e1ff; color: #fff; }
           .sytlpg i { font-size: 10px; color: #5d6575; }
-          .sytlkey { display: none; gap: 8px; align-items: center; background: #0d1015ee; border: 1px solid #2d323d; border-radius: 8px; padding: 4px 8px;
-                     position: absolute; right: 10px; top: 38px; z-index: 4; box-shadow: 0 6px 16px #000a; }   /* over the layers - opening it never moves them */
+          /* 2.963.0 (Tim: "put the panel with the filename and 3 knobs top left of the layers"): always there, top left above the
+             layers, one height whatever it shows - the lanes never move. Clip picked = the clip; else the picked layer */
+          .sytlkey { display: flex; flex-wrap: nowrap; gap: 8px; align-items: center; align-self: flex-start; height: 62px; overflow-x: auto; overflow-y: hidden; box-sizing: border-box;
+                     background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 3px 8px; margin: 0 0 4px 0; max-width: 100%; }
+          .sytlkey input.sytlname { font-size: 12px; font-weight: 600; width: 150px; background: #0b0d11; color: #e6ebf5; border: 1px solid #2d323d; border-radius: 4px; padding: 3px 6px; }
+          .sytlh1 input:hover { border-color: #2d323d; }
+          .sytlkey > * { flex: 0 0 auto; }
+          .sytlkey .sytlhint { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           .sytlkey.on { display: flex; }
           .sytlkey b { font-size: 11px; }
           .sytlbody { display: flex; border: 1px solid #1f232c; border-radius: 6px; overflow: hidden; }

@@ -75,7 +75,7 @@ check("no branding on screen: no maker's or product name in the docker (comments
   && !/Synth station/.test(src("static/audiodock.js")));
 check("the timeline (dock.html): its bar (▶ ⏮ the time, ＋ Sound, ⌗ Snap, zoom, ⬇ WAV, → SFX, → 🔊), the sources, the keyframe knobs (over the layers), the heads, the canvas - ids of its own (syT…)",
   ["syTL", "syTPlay", "syTStart", "syTPos", "syTAddBtn", "syTSnap", "syTZoomIn", "syTZoomOut", "syTWav", "syTToSfx", "syTToSound", "syTPick", "syTKeyEd", "syTHeads", "syTScroll", "syTCanvas", "syTFile"].every((id) => DH.includes('id="' + id + '"'))
-  && /\.sytlkey \{[^}]*position: absolute;/.test(DH) && !/id="tl[A-Z]/.test(DH));
+  && /\.sytlkey \{[^}]*(?:position: absolute;|height: 62px)/.test(DH) && !/id="tl[A-Z]/.test(DH));
 check("synthdock.js: notes go to the score (● Rec / 🎓 Learn); MIDI channel 10 = the pads (36-51); the guide keys drawn green; every source to the pads + the timeline; all three kept (h3.synth.pads / sheet / tl)",
   /if \(SC\) SC\.noteOn\(m, vel\);/.test(JS) /* 2.957.0: + the velocity */ && /if \(!G\.down\[m\] && SC\) SC\.noteOff\(m\);/.test(JS) && /\(d\[0\] & 0x0f\) === 9/.test(JS) && /PD\.hit\(a - 36, b \/ 127\)/.test(JS)
   && /G\.guide\[k\.m\]/.test(JS) && /"\/api\/synth\/sources"/.test(JS) && /LS\.set\("pads"/.test(JS) && /LS\.set\("sheet", a\)/.test(JS) && /LS\.set\("tl", JSON\.stringify\(t\)\)/.test(JS)

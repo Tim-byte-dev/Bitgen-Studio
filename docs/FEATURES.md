@@ -638,6 +638,7 @@ Songs, stems, voices and the words in them.
 - **🎹 Synth tab: takes and comping** — ● Rec records the keyboard, the looper and pads, or a microphone onto the armed layer while the timeline plays, placed to the sample; ⟳ Loop (Shift+drag the ruler for the range) plays the range round and makes a take of every pass; Punch keeps only the range; takes stack in the layer: drag across one to comp it in, click for all of it, right-click to remove, ▤ Flatten to plain clips. *Where:* Audio ▸ 🎹 Synth. *Since:* 2.960.0
 - **🎹 Synth tab: a tempo track** — ♩ Tempo adds tempo changes over the song (a step, or a ramp to the next): the beat grid, snap, the metronome, the loop's bars, the piano roll's grid and the bar.beat readout follow it; double-click the strip to add a change, drag it for its BPM or its place. *Where:* Audio ▸ 🎹 Synth. *Since:* 2.961.0
 - **🎹 Synth tab: a step sequencer** — ＋ ▦ Steps puts a step clip on any layer: a grid of rows (kit sounds, your samples, SFX) and steps with accents, swing, 8-32 steps of 8ths to 32nds or triplets; the pattern repeats over the clip on the tempo track's beats. *Where:* Audio ▸ 🎹 Synth. *Since:* 2.962.0
+- **🎹 Synth tab: the panel above the layers** — top left, always there: the picked clip (its file name, gain, fades) or else the picked layer (its name to rename, volume, pan, filter); layers renamed in the panel or their head. *Where:* Audio ▸ 🎹 Synth. *Since:* 2.963.0
 
 ## The timeline
 

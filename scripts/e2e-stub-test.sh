@@ -15209,6 +15209,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui962-ui.js > /tmp/ui962.log 2>&
   && ok "2.962.0 browser test: ＋ ▦ Steps + the sequencer, click on / accent / right-click off, drag paints, heard on the beats (and the tempo track), Steps 8 / 16, a row's sound, ＋ Row / 🗑, swing heard, Esc, repeats, ✂ refused, double-click, kept" \
   || { bad "2.962.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui962.log | head -12; }
 
+# ---- 2.963.0 (🎹 the panel above the layers)
+node scripts/test-963.js > /tmp/t963.log 2>&1 && ok "2.963.0 units: the panel top left, the layer editor, renaming" || { bad "2.963.0 units"; grep -a "^FAIL" /tmp/t963.log | head -6; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui963-ui.js > /tmp/ui963.log 2>&1 && ok "2.963.0 browser test: the panel top left, the layer's name + knobs, click a layer, rename (panel / head), a clip's panel, the lanes never move" || { bad "2.963.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui963.log | head -6; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

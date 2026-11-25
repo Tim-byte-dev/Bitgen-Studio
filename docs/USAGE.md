@@ -1774,6 +1774,12 @@ clip shows its hits; drag its right edge to repeat the pattern for longer (it is
 and press ▦ Steps, to edit it again. The steps follow the tempo track, and the clip goes through the layer's mixer,
 lanes and keyframes like any other.
 
+**The panel above the layers (2.963.0).** Top left, above the layers, a panel always shows what is picked: a clip = its
+file name with **Gain**, **Fade in** and **Fade out** (and its buttons); a keyframe, a tempo change or a take = theirs;
+nothing = the **picked layer**: its **name** (type a new one) with **Vol**, **Pan** and **Filter**. Click a layer's head (or
+an empty spot on the layer) and the panel edits that layer. A layer can also be renamed right in its head: click the name
+and type. The panel keeps one height, so the layers never move.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name
