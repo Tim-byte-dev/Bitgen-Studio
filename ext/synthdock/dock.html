@@ -157,6 +157,20 @@
           @keyframes syRecPulse { 50% { box-shadow: 0 0 10px #ff5a5a; } }
           #syTLoop.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
           #syTPunch.on { color: #fff; background: #a8343c; border-color: #ff5a5a; }
+          /* 2.962.0: the step sequencer (in the piano roll's box) */
+          .systeps { height: auto; max-height: 92%; }
+          .systepgrid { overflow: auto; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+          .systeprow { display: flex; align-items: center; gap: 6px; }
+          .systeprow select { width: 150px; font-size: 11px; background: #0b0d11; color: #c9d1de; border: 1px solid #2d323d; border-radius: 3px; }
+          .systeprow input[type=range] { width: 70px; }
+          .systepcells { display: flex; gap: 2px; flex: 1; min-width: 0; }
+          .systep { flex: 1 1 0; min-width: 14px; max-width: 34px; height: 26px; padding: 0; border: 1px solid #2d323d; border-radius: 3px; background: #161a22; cursor: pointer; }
+          .systep.beat { margin-left: 5px; background: #1d222c; }
+          .systep.on { background: #38e1ffaa; border-color: #38e1ff; }
+          .systep.acc { background: #f4f1e8; border-color: #fff; }
+          .systepnone { color: #6c7688; font-size: 12px; }
+          .systeps .sydk { flex: 0 0 auto; width: auto; padding: 3px 10px; }
+          .systeprow .sydk { width: 32px; padding: 3px 0; }
           /* 2.961.0: the tempo track */
           #syTTempo.on { color: #07090c; background: #ffae3a; border-color: #ffae3a; }
           .sytlrul { position: relative; }
@@ -385,6 +399,7 @@
             <button class="ghost" id="syTMixBtn" type="button" title="🎚 The mixer: each layer's level, pan, EQ, compressor, reverb and a meter">🎚 Mixer</button>
             <button class="ghost" id="syTNotes" type="button" title="＋ Notes: an empty note clip (one bar) at the playhead on the picked layer - drawn in the 🎹 piano roll">＋ ♪ Notes</button>
             <button class="ghost" id="syTTempo" type="button" aria-pressed="false" title="♩ Tempo track: tempo changes over the song (a step, or a ramp to the next) - the beat grid, ⌗ snap, 🕒 click and the bar.beat follow it. Double-click its strip for a change, drag a change up / down for its BPM, sideways to move it, right-click to remove it">♩ Tempo</button>
+            <button class="ghost" id="syTSteps" type="button" title="＋ ▦ Steps: a step-sequencer clip (one bar, a kick / snare / hats beat) at the playhead on the picked layer - its pattern repeats over the clip; double-click it to edit">＋ ▦ Steps</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>

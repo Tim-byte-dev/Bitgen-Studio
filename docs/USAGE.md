@@ -1764,6 +1764,16 @@ Snap**, the **🕒 Click**, ⟳ Loop's two bars and the piano roll's grid follow
 shows **bar.beat** and the BPM there. Sounds and recorded notes are not stretched - they stay where they are in time.
 ♩ Tempo again turns the track off (it is kept, and the looper's BPM is used again).
 
+**The step sequencer (2.962.0).** **＋ ▦ Steps** puts a step clip on the picked layer at the playhead: one bar with a
+kick, snare and hi-hat beat, and opens the sequencer. Each **row** is a sound (the kit, your samples or the project's SFX)
+with its own volume; each **cell** is a step: click it for on, again for an accent, again for off; right-click turns it
+off; drag across cells to paint. **Steps** sets the pattern's length (8 - 32; a longer pattern repeats what is there),
+**Each** how long a step is (8ths, 8th triplets, 16ths, 16th triplets, 32nds), **Swing** plays every second step a little
+late. **＋ Row** adds a sound (8 at most), 🗑 removes one, ▶ plays the clip, ✕ Done or Esc closes. On the timeline the
+clip shows its hits; drag its right edge to repeat the pattern for longer (it is not split). Double-click it, or pick it
+and press ▦ Steps, to edit it again. The steps follow the tempo track, and the clip goes through the layer's mixer,
+lanes and keyframes like any other.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

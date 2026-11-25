@@ -41,7 +41,7 @@ check("buttons: ↶ ↷ (#syUndo / #syRedo), ＋ ♪ Notes, → 🎞 ♪ (#syScS
   ["syUndo", "syRedo", "syTNotes", "syScSendN"].every((id) => DH.includes('id="' + id + '"')) && /"syTSplit"/.test(TJ) && /"syTDup"/.test(TJ) && /"syTRollBtn"/.test(TJ));
 check("the timeline plays note clips with the synth (an engine per clip, the clip's patch) and every clip through its gain line", /new V\.Engine\(ctx, \{ dest: g \}\)/.test(TJ) && /T\.clipEnv\(c, Math\.max\(f\.fi, 0\.005\), Math\.max\(f\.fo, 0\.005\)\)/.test(TJ) && /T\.fades\(l\.clips\)/.test(TJ));
 check("keys: S = split, Ctrl+D = duplicate (the timeline); Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z = undo / redo (the tab); Esc closes the piano roll before the full window",
-  /k === "s" && !e\.ctrlKey/.test(TJ) && /k === "d" && \(e\.ctrlKey/.test(TJ) && /k === "z" && !e\.shiftKey/.test(JS) && /k === "y" \|\| \(k === "z" && e\.shiftKey\)/.test(JS) && /if \(\$\("syRollBack"\) \|\| \$\("syDlg"\)/.test(JS));
+  /k === "s" && !e\.ctrlKey/.test(TJ) && /k === "d" && \(e\.ctrlKey/.test(TJ) && /k === "z" && !e\.shiftKey/.test(JS) && /k === "y" \|\| \(k === "z" && e\.shiftKey\)/.test(JS) && /if \(\$\("syRollBack"\) \|\| (?:\$\("syStepBack"\) \|\| )?\$\("syDlg"\)/.test(JS));
 check("undo covers the timeline, the loop, the knobs, the pads; every change touches it", /get: function \(\) \{ return \{ tl: TL \? TL\.tl\(\) : null, loop: LP\.loop\(\), patch: G\.p, pads:/.test(JS) && (JS.match(/touch\(\);/g) || []).length >= 4);
 check("server.js untouched", !/synth/i.test(src("misc/server.js")));
 console.log(`\nRESULT: ${P} passed, ${F} failed`);

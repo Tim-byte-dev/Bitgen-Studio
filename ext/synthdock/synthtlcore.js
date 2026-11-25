@@ -20,6 +20,8 @@
  *   tl.loop {on, a, b, punch} (cleanLoop) - the loop / punch range; passRanges / punchCut slice a recording into takes.
  *   2.961.0 (Tim: "continue please"): the tempo track - tl.tempoOn + tl.tempo [{t, bpm, ramp}] (a step, or a straight ramp to
  *   the next point); beatAt / timeAt / bpmAt / beatTimes / snapBeat / barBeat: the grid, snap, the click and bar.beat follow it.
+ *   2.962.0 (Tim: "lets do the last cakewalk item"): step clips {kind "steps", n steps, div (steps a beat), swing, rows [{src, vol,
+ *   hits [0 off | 1 on | 2 accent]}]} - the pattern repeats over the clip on the tempo map's beats (stepEvents).
  */
 (function (root) {
   "use strict";
@@ -55,6 +57,38 @@
   }
   function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null), comps: {} }; }
   function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1, loop: cleanLoop(null), tempo: [], tempoOn: false }; }
+  /* ---------------- 2.962.0: step clips (a step sequencer on a layer) ---------------- */
+  var DIVS = [2, 3, 4, 6, 8], MAXROWS = 8;
+  function cleanStepRows(rows, n) {
+    return (Array.isArray(rows) ? rows : []).slice(0, 64).map(function (r) {
+      if (!r) return null; var src = okSrc(r.src); if (!src) return null;
+      var h = Array.isArray(r.hits) ? r.hits : [], hits = [];
+      for (var i = 0; i < n; i++) hits.push(h[i] === 2 ? 2 : h[i] ? 1 : 0);
+      return { src: src, vol: num(r.vol, 0.8, 0, 1), hits: hits };
+    }).filter(Boolean).slice(0, MAXROWS);
+  }
+  function cleanSteps(c, base) {
+    var n = Math.round(num(c.n, 16, 2, 64)), div = DIVS.indexOf(+c.div) >= 0 ? +c.div : 4;
+    base.kind = "steps"; base.n = n; base.div = div; base.swing = num(c.swing, 0, 0, 0.5); base.rows = cleanStepRows(c.rows, n);
+    return base;
+  }
+  /** a new step clip: one bar of 16ths, kick / snare / closed + open hats with a plain beat */
+  function newSteps(start, len) {
+    var z = function (on) { var a = []; for (var i = 0; i < 16; i++) a.push(on.indexOf(i) >= 0 ? (i % 4 === 0 ? 2 : 1) : 0); return a; };
+    return { kind: "steps", name: "Steps", start: start || 0, off: 0, len: len || 2, gain: 1, fi: 0, fo: 0, n: 16, div: 4, swing: 0,
+      rows: [{ src: "kit:kick", vol: 0.9, hits: z([0, 8]) }, { src: "kit:snare", vol: 0.8, hits: z([4, 12]) }, { src: "kit:chat", vol: 0.6, hits: z([0, 2, 4, 6, 8, 10, 12, 14]) }, { src: "kit:ohat", vol: 0.6, hits: z([]) }] };
+  }
+  /** the hits of a step clip over its length (clip-relative s), on the beats of the tempo map: the pattern repeats; odd steps
+   *  late by `swing` of a step; v = row volume x (accent 1, else 0.7) */
+  function stepEvents(c, map) {
+    var out = [], b0 = beatAt(map, c.start), sl = 1 / (c.div || 4);
+    for (var i = 0; i < 4096; i++) {
+      var t0 = timeAt(map, b0 + i * sl) - c.start; if (t0 >= c.len - 1e-9) break;
+      var t = i % 2 ? timeAt(map, b0 + (i + (c.swing || 0)) * sl) - c.start : t0, k = i % c.n;
+      (c.rows || []).forEach(function (r, ri) { var h = r.hits[k]; if (h && t < c.len) out.push({ t: Math.round(t * 1e6) / 1e6, src: r.src, v: r.vol * (h === 2 ? 1 : 0.7), row: ri, step: k }); });
+    }
+    return out;
+  }
   /* ---------------- 2.961.0: the tempo track ---------------- */
   /** [{t, bpm, ramp}] sorted, the first at 0, 20-300 BPM, 200 at most ([] = none) */
   function cleanTempo(a) {
@@ -206,7 +240,7 @@
     var over = function (c) { return c.start < b - 1e-6 && clipEnd(c) > a + 1e-6; }, grp = null, full = false;
     l.clips.forEach(function (c) { if (!grp && c.grp && over(c)) grp = c.grp; });
     if (!grp) {
-      var plain = -1; l.clips.forEach(function (c, i) { if (plain < 0 && !c.grp && c.kind !== "notes" && over(c)) plain = i; });
+      var plain = -1; l.clips.forEach(function (c, i) { if (plain < 0 && !c.grp && !c.kind && over(c)) plain = i; });
       if (plain < 0 && takes.length === 1) { var t1 = takes[0]; if (l.clips.length >= MAXC) return { grp: null, added: [], full: true }; l.clips.push({ src: t1.src, name: t1.name, start: t1.start, off: 0, len: t1.len, gain: 1, fi: 0, fo: 0 }); return { grp: null, added: [l.clips.length - 1] }; }
       grp = nextGrp(l);
       if (plain >= 0) { l.clips[plain].grp = grp; l.clips[plain].ti = 0; }
@@ -274,11 +308,12 @@
       (Array.isArray(L.clips) ? L.clips : []).slice(0, MAXC).forEach(function (c) {
         if (!c) return;
         var base;
-        if (c.kind === "notes") base = { kind: "notes", name: String(c.name || "Notes").slice(0, 120), start: num(c.start, 0, 0, MAXT), off: 0, len: num(c.len, 1, MIN, MAXT), notes: cleanNotes(c.notes),
+        if (c.kind === "steps") base = cleanSteps(c, { name: String(c.name || "Steps").slice(0, 120), start: num(c.start, 0, 0, MAXT), off: 0, len: num(c.len, 2, MIN, MAXT) });   // 2.962.0
+        else if (c.kind === "notes") base = { kind: "notes", name: String(c.name || "Notes").slice(0, 120), start: num(c.start, 0, 0, MAXT), off: 0, len: num(c.len, 1, MIN, MAXT), notes: cleanNotes(c.notes),
                                          patch: c.patch && typeof c.patch === "object" ? c.patch : null };
         else { var src = okSrc(c.src); if (!src) return; base = { src: src, name: String(c.name || src.replace(/^\w+:/, "")).slice(0, 120), start: num(c.start, 0, 0, MAXT), off: num(c.off, 0, 0, MAXT), len: num(c.len, 1, MIN, MAXT) }; }
         base.gain = num(c.gain, 1, 0, 2); base.fi = num(c.fi, 0, 0, base.len); base.fo = num(c.fo, 0, 0, base.len);
-        if (base.kind !== "notes" && typeof c.grp === "string" && GRP.test(c.grp) && Number.isInteger(+c.ti) && +c.ti >= 0 && +c.ti < MAXTK) { base.grp = c.grp; base.ti = +c.ti; }   // 2.960.0
+        if (!base.kind && typeof c.grp === "string" && GRP.test(c.grp) && Number.isInteger(+c.ti) && +c.ti >= 0 && +c.ti < MAXTK) { base.grp = c.grp; base.ti = +c.ti; }   // 2.960.0
         l.clips.push(base);
       });
       (Array.isArray(L.keys) ? L.keys : []).slice(0, MAXK).forEach(function (k) { if (k) l.keys.push({ t: num(k.t, 0, 0, MAXT), a: num(k.a, 1, 0, 1), b: num(k.b, 1, 0, 1) }); });
@@ -408,7 +443,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, newSteps: newSteps, stepEvents: stepEvents, cleanStepRows: cleanStepRows, DIVS: DIVS, MAXROWS: MAXROWS, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -17,6 +17,7 @@
     "synthtl.js",
     "synthroll.js",
     "synthmix.js",
+    "synthsteps.js",
     "synthundo.js",
     "synthfile.js",
     "synthdock.js"

@@ -707,7 +707,7 @@
     // Esc while it fills the window: back to the docker (capture: before the page's own) - not while naming a patch
     root.addEventListener("keydown", function (e) {
       if (e.key !== "Escape" || e.ctrlKey || e.metaKey || e.altKey || !doc.body.classList.contains("sy-full") || typing(e.target)) return;
-      if ($("syRollBack") || $("syDlg") || $("syTAsk")) return;   // 2.957.0: Esc closes the piano roll / a box first
+      if ($("syRollBack") || $("syStepBack") || $("syDlg") || $("syTAsk")) return;   // 2.957.0: Esc closes the piano roll / a box first
       e.preventDefault(); e.stopImmediatePropagation(); exitFull();
     }, true);
     doc.addEventListener("fullscreenchange", function () { if (!doc.fullscreenElement && doc.body.classList.contains("sy-full")) exitFull(); });

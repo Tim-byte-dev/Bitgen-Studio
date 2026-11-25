@@ -15201,6 +15201,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui961-ui.js > /tmp/ui961.log 2>&
   && ok "2.961.0 browser test: ♩ Tempo strip (the looper's BPM first), double-click / drag up / BPM typed / ramp / drag sideways, snap + readout + loop bars follow, the click's beats, right-click / Delete (the first stays), kept, off" \
   || { bad "2.961.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui961.log | head -12; }
 
+# ---- 2.962.0 (🎹 the step sequencer)
+node scripts/test-962.js > /tmp/t962.log 2>&1 \
+  && ok "2.962.0 units: a new step clip, stepEvents (16ths, accents, repeats, swing, the tempo track, triplets), cleanTL, schedule, the editor, the timeline" \
+  || { bad "2.962.0 units"; grep -a "^FAIL" -A1 /tmp/t962.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui962-ui.js > /tmp/ui962.log 2>&1 \
+  && ok "2.962.0 browser test: ＋ ▦ Steps + the sequencer, click on / accent / right-click off, drag paints, heard on the beats (and the tempo track), Steps 8 / 16, a row's sound, ＋ Row / 🗑, swing heard, Esc, repeats, ✂ refused, double-click, kept" \
+  || { bad "2.962.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui962.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
