@@ -19,7 +19,7 @@
   var TABS = { musicdock: { icon: "🎵", name: "Music", tip: "Songs - lyrics, a music style, cover, sheet music" },
                stemsdock: { icon: "🎚", name: "Stems", tip: "Split a song into its vocals and its music (demucs)" },
                sfxdock: { icon: "💥", name: "SFX", tip: "Sound effects - add audio or video, trim, keep a part" },
-               synthdock: { icon: "🎹", name: "Synth", tip: "Synth station - a synth with knobs, a MIDI keyboard and a step looper you can add your own samples to" } };
+               synthdock: { icon: "🎹", name: "Synth", tip: "Synth - a synth with knobs, a 49-key keyboard with drum pads and a sheet music screen, a step looper with your own samples, a timeline" } };
   /** which of the three stays on screen: `now` = the ids showing, `before` = those that showed last time. One showing -> it;
    *  several -> one that has just come up (the active tab when it is among them, else the first), else the active one,
    *  else the first. None -> null. */

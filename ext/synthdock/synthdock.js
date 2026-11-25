@@ -17,7 +17,7 @@
  */
 (function (root) {
   "use strict";
-  var doc = root.document, C = root.H3SynthCore, V = root.H3SynthVoice, KN = root.H3SynthKnob, LP = root.H3SynthLoop;
+  var doc = root.document, C = root.H3SynthCore, V = root.H3SynthVoice, KN = root.H3SynthKnob, LP = root.H3SynthLoop, PD = root.H3SynthPads, SC = root.H3SynthScore, TL = root.H3SynthTL;
   if (!doc || !C || !V || !KN || !LP) return;
   var $ = function (id) { return doc.getElementById(id); };
   var LS = {
@@ -26,8 +26,8 @@
   };
   try { if (root.localStorage.getItem("h3.g.synthdock") == null) root.localStorage.setItem("h3.g.synthdock", "1"); } catch (e) { /* fine */ }
   function jget(k, d) { try { var j = JSON.parse(LS.get(k, "null")); return j == null ? d : j; } catch (e) { return d; } }
-  var G = { ctx: null, E: null, p: null, preset: LS.get("preset", "o:Neon Lead"), dirty: LS.get("dirty", "0") === "1", knobs: {}, oct: Math.max(0, Math.min(7, parseInt(LS.get("oct", "3"), 10) || 3)),
-            down: {}, ptr: {}, keys: {}, midi: null, midiIn: LS.get("midi", "*"), raf: 0, rec: null, user: jget("user", []), last: null, busy: false, my: [], sfx: [] };
+  var G = { ctx: null, E: null, p: null, preset: LS.get("preset", "o:Neon Lead"), dirty: LS.get("dirty", "0") === "1", knobs: {}, oct: Math.max(0, Math.min(5, parseInt(LS.get("oct", "3"), 10) || 3)),
+            down: {}, guide: {}, ptr: {}, keys: {}, midi: null, midiIn: LS.get("midi", "*"), raf: 0, rec: null, user: jget("user", []), last: null, busy: false, my: [], sfx: [] };
   if (!Array.isArray(G.user)) G.user = [];
   var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   function msg(t, bad) { var m = $("syMsg"); if (!m) return; m.textContent = t || ""; m.classList.toggle("bad", !!bad); }
@@ -62,13 +62,14 @@
     if (G.E) G.E.set(id, G.p[id]);
     if (!quiet) { if (!G.dirty) { G.dirty = true; presetList(); } keep(); }
     var k = G.knobs[id]; if (k) k.draw();
+    if (id === "vol" && G.dkVol) G.dkVol.draw();
     if (/^[fa][ADSR]$/.test(id)) envDraw();
     if (!G.E || !G.E.sounding()) drawIdle();
   }
   function applyPatch(p, name) {
     G.p = C.cleanPatch(p); G.preset = name; G.dirty = false;
     if (G.E) G.E.setAll(G.p);
-    Object.keys(G.knobs).forEach(function (id) { G.knobs[id].draw(); });
+    Object.keys(G.knobs).forEach(function (id) { G.knobs[id].draw(); }); if (G.dkVol) G.dkVol.draw();
     envDraw(); presetList(); keep(); drawIdle();
   }
   function presetOf(v) {
@@ -218,22 +219,26 @@
     if (m < 0 || m > 127) return;
     try { engine().noteOn(m, vel); } catch (e) { msg(e.message, true); return; }
     G.down[m] = (G.down[m] || 0) + 1; G.last = m; piano(); screenText(); wake();
+    if (SC) SC.noteOn(m);   // 2.954.0: ● Rec writes it, 🎓 Learn checks it
   }
   function noteOff(m) {
     if (!G.down[m]) return;
     G.down[m]--; if (G.down[m] <= 0) delete G.down[m];
     if (!G.down[m] && G.E) G.E.noteOff(m);
+    if (!G.down[m] && SC) SC.noteOff(m);
     piano(); screenText();
   }
   function allOff() { G.down = {}; G.keys = {}; G.ptr = {}; if (G.E) G.E.allOff(); piano(); screenText(); }
   function base() { return 12 * (G.oct + 1); }
-  function setOct(o) { G.oct = Math.max(0, Math.min(7, o)); LS.set("oct", G.oct); var b = $("syOct"); if (b) b.textContent = "C" + G.oct; piano(); }
+  function setOct(o) { G.oct = Math.max(0, Math.min(5, o)); LS.set("oct", G.oct); var b = $("syOct"); if (b) b.textContent = "C" + G.oct; piano(); }
 
   /* ---------------- the keyboard on screen ---------------- */
+  // 2.954.0 (Tim: "make the keyboard narrower and taller so the keys look more natural"): 660 x 172 px - a white key about
+  // 30 x 165 (1 : 5.5, a real key's shape), the black keys 58% as wide and 62% as long; the case only as wide as the keys.
   // 2.953.1 (Tim: "can u make the keyboard look a little more like a keyboard"): drawn like a real one - a felt strip
   // under the case's lip, ivory keys with rounded fronts and a lip, black keys with a top face, a sloped front and a
   // shadow on the white keys; a pressed key goes down (shorter, its front lip hidden) with an amber glow
-  var KB = { n: 36, geo: null, felt: 7 };
+  var KB = { n: 48, geo: null, felt: 7 };   // 2.954.0: 49 keys (4 octaves + the top C), like the controller in Tim's photo
   function pianoGeo(w, h) {
     var lo = base(), whites = [], blacks = [], F = KB.felt;
     for (var m = lo; m < lo + KB.n + 1; m++) if (!C.isBlack(m)) whites.push(m);
@@ -250,7 +255,7 @@
   }
   function piano() {
     var cv = $("syPiano"); if (!cv) return;
-    var w = cv.clientWidth || 600, h = cv.clientHeight || 130, dpr = Math.min(2, root.devicePixelRatio || 1);
+    var w = cv.clientWidth || 660, h = cv.clientHeight || 172, dpr = Math.min(2, root.devicePixelRatio || 1);
     if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
     var x = cv.getContext("2d"); if (!x) return; x.setTransform(dpr, 0, 0, dpr, 0, 0);
     var g = KB.geo = pianoGeo(w, h), F = g.F;
@@ -279,6 +284,7 @@
         x.fillStyle = "rgba(255,174,58,0.28)"; keyPath(x, X, top, W, H, 4); x.fill();
         x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 12; x.fillStyle = "#ffb347"; x.fillRect(X + 4, top + H - 9, W - 8, 2.5); x.restore();
       }
+      if (G.guide[k.m] && !on) { x.fillStyle = "rgba(93,255,138,0.30)"; keyPath(x, X, top, W, H, 4); x.fill(); x.save(); x.shadowColor = "#5dff8a"; x.shadowBlur = 10; x.fillStyle = "#5dff8a"; x.fillRect(X + 4, top + H - 9, W - 8, 2.5); x.restore(); }
       if (k.m % 12 === 0) { x.fillStyle = on ? "#7a5a2a" : "#8d877a"; x.font = "600 9px system-ui, sans-serif"; x.textAlign = "center"; x.fillText(C.noteName(k.m), X + W / 2, top + H - lip - 5); }
     });
     // the shadow the case's lip throws on the keys
@@ -301,6 +307,7 @@
       keyPath(x, X + 1, top + H - front, W - 2, front, 2); x.fillStyle = ff; x.fill();
       x.fillStyle = "rgba(255,255,255,0.10)"; x.fillRect(X + 3, top + 2, 1.2, H - front - 4);
       if (on) { x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 10; x.fillStyle = "#ffcf8a"; x.fillRect(X + 3, top + H - front - 3, W - 6, 2); x.restore(); }
+      else if (G.guide[k.m]) { x.save(); x.shadowColor = "#5dff8a"; x.shadowBlur = 10; x.fillStyle = "#5dff8a"; x.fillRect(X + 3, top + H - front - 3, W - 6, 2); x.restore(); }
     });
   }
   function keyAt(px, py) {
@@ -385,6 +392,8 @@
   function midiMsg(d) {
     if (!d || d.length < 2 || !shown()) return;
     var st = d[0] & 0xf0, a = d[1], b = d.length > 2 ? d[2] : 0;
+    // 2.954.0: the drum channel (10) plays the pads - notes 36-51 = pads 1-16
+    if ((d[0] & 0x0f) === 9 && (st === 0x90 || st === 0x80)) { if (st === 0x90 && b > 0 && a >= 36 && a <= 51 && PD) { ctx(); PD.hit(a - 36, b / 127); } return; }
     var dot = $("syMidi"); if (dot) { dot.classList.add("hit"); root.setTimeout(function () { dot.classList.remove("hit"); }, 60); }
     if (st === 0x90 && b > 0) noteOn(a, b / 127);
     else if (st === 0x80 || (st === 0x90 && b === 0)) noteOff(a);
@@ -402,7 +411,10 @@
     return Promise.all([getJ("/api/synth/samples").catch(function () { return { samples: [] }; }), getJ("/api/sfx").catch(function () { return { files: [] }; })]).then(function (r) {
       G.my = (r[0].samples || []).map(function (x) { return x.name; }); G.sfx = (r[1].files || []).map(function (x) { return x.name; });
       LP.setLists(G.my, G.sfx); libList();
-      return { my: G.my, sfx: G.sfx };
+      return getJ("/api/synth/sources").catch(function () { return { groups: [] }; }).then(function (j) {   // 2.954.0: every source - the pads, the timeline
+        G.sources = j.groups || []; if (PD) PD.setLists(G.sources); if (TL) TL.setSources(G.sources);
+        return { my: G.my, sfx: G.sfx, sources: G.sources };
+      });
     });
   }
   function libList() {
@@ -510,7 +522,7 @@
   function exitFull() { if (typeof root.toggleMax === "function" && $("synthdock").classList.contains("maxed")) root.toggleMax("synthdock", false); setFull(false); }
 
   /* ---------------- start ---------------- */
-  function hideStop() { if (!shown()) { if (LP.playing()) LP.play(false); allOff(); if (G.rec) G.rec.r.stop(); } }
+  function hideStop() { if (!shown()) { if (LP.playing()) LP.play(false); allOff(); if (G.rec) G.rec.r.stop(); if (SC) SC.stop(); if (TL) TL.stop(); } }
   function boot() {
     var d = $("synthdock"); if (!d) return;
     try { if (root.localStorage.getItem("h3.g.synthdock") === "1") d.classList.add("dockgone"); } catch (e) { /* fine */ }
@@ -520,10 +532,20 @@
               upload: upload, pick: function (r) { G.pickRow = r; $("syFile").click(); } });
     var saved = jget("loop", null); if (saved) LP.setLoop(saved);
     wirePiano();
+    // 2.954.0: the deck - the drum pads, the score screen, the patch buttons, the volume knob, the timeline
+    if (PD) PD.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { LS.set("pads", JSON.stringify(p)); } });
+    if (SC) SC.init({ engine: engine, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
+                      guide: function (ms) { G.guide = {}; (ms || []).forEach(function (m) { G.guide[m] = true; }); piano(); } });
+    if (TL) TL.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, bpm: function () { return LP.loop().bpm; }, saved: jget("tl", null),
+                      save: function (t) { root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
+                      renderLoop: function () { return LP.render(+(($("syPasses") || {}).value || 2)); }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh });
+    var dv = $("syDkVol");
+    if (dv) { G.dkVol = KN.knob({ label: "VOLUME", size: 44, color: "#f4f1e8", def: C.toNorm("vol", C.BY.vol.def), get: function () { return C.toNorm("vol", G.p.vol); }, set: function (n) { setParam("vol", C.fromNorm("vol", n)); }, text: function () { return C.show("vol", G.p.vol); } }); dv.appendChild(G.dkVol.el); }
     W.bend = wheel("syBend", true, function (v) { engine().bend(v); });
     W.mod = wheel("syMod", false, function (v) { engine().mod(v); });
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
     on("syPrev", function () { stepPreset(-1); }); on("syNext", function () { stepPreset(1); });
+    on("syDkPrev", function () { stepPreset(-1); }); on("syDkNext", function () { stepPreset(1); });
     $("syPreset").onchange = function (e) { pickPreset(e.target.value); };
     on("sySave", savePreset); on("syDelPreset", delPreset);
     on("syPanic", function () { allOff(); if (LP.playing()) LP.play(false); msg("Every note off"); });
@@ -566,7 +588,8 @@
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),
-               loop: LP.info() };
+               loop: LP.info(), guide: Object.keys(G.guide).map(Number), keys: KB.n + 1,
+               pads: PD ? PD.info() : null, score: SC ? SC.info() : null, tl: TL ? TL.info() : null };
     },
   };
 })(window);

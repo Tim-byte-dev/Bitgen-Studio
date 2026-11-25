@@ -1,6 +1,6 @@
     <div class="bdock" id="synthdock" data-own-space="1">
       <div class="bhead" data-collapse="synthdock">▾ Synth<button class="maxbtn" data-max="synthdock" type="button" title="Maximize" aria-label="Maximize">⛶</button></div>
-      <div class="bbody" id="syBody" tabindex="0" aria-label="Synth station - play the keys Z to / and Q to ], Space starts / stops the loop">
+      <div class="bbody" id="syBody" tabindex="0" aria-label="Synth - play the keys Z to / and Q to ], Space starts / stops the loop">
         <!-- 2.953.0 (Tim: "can we add a synthstation that looks something like this in Audio docker with a midi keyboard and hammer
              head style looper that the user can add new samples to ?"): the Audio docker's 🎹 Synth tab - our own synth (two
              oscillators with unison, a sub, noise, a filter with its envelope, the amp envelope, an LFO, chorus / delay / space),
@@ -24,8 +24,6 @@
           .sytop, .sylbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
           .sytop select, .sylbar select { width: auto; font-size: 12px; background: #11141a; color: #e6ebf5; border: 1px solid #2a2f3a; border-radius: 5px; padding: 2px 4px; }
           .sytop .sep, .sylbar .sep { width: 1px; align-self: stretch; background: #2a2e38; margin: 0 4px; }
-          .sybrand { font: 800 13px/1 system-ui, sans-serif; letter-spacing: .22em; color: #9fb0c8; margin-right: 6px; }
-          .sybrand b { color: #38e1ff; text-shadow: 0 0 8px #38e1ff99; font-weight: 800; }
           .symidi { font-size: 11px; color: #8b95a7; }
           .symidi i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #444b57; margin-right: 4px; vertical-align: middle; }
           .symidi.on i { background: #5dff8a; box-shadow: 0 0 6px #5dff8a; }
@@ -52,29 +50,67 @@
           .syscreen { flex: 1 1 220px; min-width: 180px; padding: 4px; position: relative; background: #05070a; }
           #syScope { width: 100%; height: 100%; min-height: 110px; display: block; border-radius: 6px; }
           #syScreenTxt { position: absolute; left: 8px; top: 6px; padding: 1px 5px; border-radius: 4px; background: #05070acc; font: 600 10px/1.3 ui-monospace, Consolas, monospace; color: #38e1ffcc; pointer-events: none; text-shadow: 0 0 6px #38e1ff88; }
-          /* 2.953.1: the keyboard as an instrument - a case with a nameplate, the wheels in a well, an octave display */
-          .sykeys { background: linear-gradient(180deg, #2a2d35 0%, #1b1d22 40%, #131418 100%); border: 1px solid #30343e; border-radius: 12px;
-                    padding: 6px 10px 10px; box-shadow: inset 0 1px 0 #ffffff14, inset 0 -2px 0 #00000066, 0 6px 16px #00000088; display: flex; flex-direction: column; gap: 6px; }
-          .sykeyhead { display: flex; align-items: center; gap: 8px; font: 700 9px/1 system-ui, sans-serif; letter-spacing: .28em; color: #7f8899; padding: 0 2px; }
-          .sykeyhead i { width: 6px; height: 6px; border-radius: 50%; background: #5dff8a; box-shadow: 0 0 6px #5dff8a; }
-          .sykeyhead span { margin-left: auto; letter-spacing: .12em; font-weight: 600; color: #5d6575; }
-          .sykeyhead .grille { flex: 0 0 90px; height: 8px; border-radius: 3px; background: repeating-linear-gradient(90deg, #0b0c0f 0 2px, #2a2d35 2px 4px); }
-          .sykeyrow { display: flex; gap: 8px; align-items: stretch; }
-          .sywheels { display: flex; gap: 6px; padding: 6px 7px 18px; background: #0b0c0f; border-radius: 8px; box-shadow: inset 0 2px 6px #000, 0 1px 0 #ffffff10; }
-          .sywheel { width: 20px; min-height: 104px; border-radius: 5px; position: relative; cursor: ns-resize; touch-action: none; outline: none;
-                     background: linear-gradient(90deg, rgba(0,0,0,.75), rgba(0,0,0,0) 32%, rgba(255,255,255,.06) 50%, rgba(0,0,0,0) 68%, rgba(0,0,0,.75)),
+          /* 2.954.0: the keyboard deck - a dark case like a hardware controller (no maker's name), 49 keys of natural shape */
+          .sykeys { background: linear-gradient(180deg, #30333b 0%, #23262d 30%, #1a1c21 100%); border: 1px solid #3a3e48; border-radius: 16px 16px 12px 12px;
+                    padding: 12px 14px 12px; box-shadow: inset 0 1px 0 #ffffff1a, inset 0 -3px 0 #00000066, 0 8px 20px #00000099; display: flex; flex-direction: column; gap: 10px;
+                    align-self: center; max-width: 100%; box-sizing: border-box; }
+          .sydeck { display: flex; gap: 12px; align-items: stretch; height: 186px; }
+          .sywheels { display: flex; gap: 8px; padding: 10px 9px 20px; background: #0b0c0f; border-radius: 10px; box-shadow: inset 0 2px 6px #000, 0 1px 0 #ffffff10; align-self: center; }
+          .sywheel { width: 22px; min-height: 118px; border-radius: 6px; position: relative; cursor: ns-resize; touch-action: none; outline: none;
+                     background: linear-gradient(90deg, rgba(0,0,0,.8), rgba(0,0,0,0) 30%, rgba(255,255,255,.07) 50%, rgba(0,0,0,0) 70%, rgba(0,0,0,.8)),
                                  repeating-linear-gradient(0deg, #34373f 0 2px, #1a1c21 2px 5px); border: 1px solid #000; }
           .sywheel:focus-visible { box-shadow: 0 0 0 1px #ffae3a; }
           .sywheel b { position: absolute; left: 1px; right: 1px; height: 4px; border-radius: 2px; background: #38e1ff; box-shadow: 0 0 8px #38e1ff; }
           .sywheel#syMod b { background: #ff4fd8; box-shadow: 0 0 8px #ff4fd8; }
-          .sywheel span { position: absolute; bottom: -15px; left: -6px; right: -6px; text-align: center; font-size: 9px; color: #8b95a7; letter-spacing: .06em; }
-          .syoct { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 46px; }
-          .syoct b { font: 700 12px/1 ui-monospace, Consolas, monospace; color: #ffae3a; text-shadow: 0 0 6px #ffae3a88; background: #07080a; border: 1px solid #000;
-                     border-radius: 4px; padding: 4px 6px; box-shadow: inset 0 1px 3px #000; min-width: 30px; text-align: center; }
-          .syoct small { font-size: 8.5px; color: #6c7688; letter-spacing: .14em; }
-          .syoct button { padding: 0 8px !important; }
-          #syPiano { flex: 1; min-width: 300px; height: 130px; display: block; border-radius: 3px 3px 7px 7px; cursor: pointer; touch-action: none; outline: none; background: #0b0c0f;
-                     box-shadow: 0 0 0 1px #000, 0 2px 0 #ffffff0d; }
+          .sywheel span { position: absolute; bottom: -16px; left: -6px; right: -6px; text-align: center; font-size: 9px; color: #8b95a7; letter-spacing: .06em; }
+          .sypadbox { position: relative; display: flex; flex-direction: column; gap: 6px; background: #14161a; border-radius: 10px; padding: 8px; box-shadow: inset 0 1px 4px #000; outline: none; }
+          .sypadbox:focus-visible { box-shadow: inset 0 1px 4px #000, 0 0 0 1px #ffae3a; }
+          .sypadgrid { display: grid; grid-template-columns: repeat(4, 34px); grid-auto-rows: 31px; gap: 5px; }
+          .sypad { position: relative; padding: 0 !important; border-radius: 5px; border: 1px solid #000 !important; cursor: pointer; overflow: hidden; touch-action: none;
+                   background: linear-gradient(180deg, #2a2d34, #1d1f24) !important; box-shadow: inset 0 1px 0 #ffffff14, inset 0 -2px 0 #0008, 0 0 0 1px color-mix(in srgb, var(--pc) 35%, transparent); }
+          .sypad i { position: absolute; left: 3px; top: 2px; font: 600 7.5px/1 system-ui; font-style: normal; color: #8b95a7; }
+          .sypad span { position: absolute; left: 2px; right: 2px; bottom: 3px; font-size: 7px; line-height: 1; color: color-mix(in srgb, var(--pc) 80%, #fff); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          .sypad kbd { position: absolute; right: 3px; top: 2px; font: 600 7px/1 ui-monospace, monospace; color: #5d6575; }
+          .sypad.on { background: radial-gradient(circle, color-mix(in srgb, var(--pc) 85%, #fff), var(--pc)) !important; box-shadow: 0 0 12px var(--pc); }
+          .sypad.on span, .sypad.on i, .sypad.on kbd { color: #07090c; }
+          .sypad.sel { outline: 2px solid #f4f1e8; outline-offset: 1px; }
+          .sypadhead { display: flex; gap: 4px; }
+          .sypadhead .sydk { flex: 1; }
+          .sypadedit { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 5; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; width: 220px; box-shadow: 0 6px 16px #000a; }
+          .sypadedit.on { display: flex; flex-direction: column; gap: 5px; }
+          .sypadedit select { font-size: 11px; background: #11141a; color: #e6ebf5; border: 1px solid #2a2f3a; border-radius: 5px; }
+          .sypadks { display: flex; gap: 6px; }
+          .sydk { font: 600 10px/1 system-ui, sans-serif !important; padding: 5px 7px !important; border-radius: 4px; color: #cfd6e2; background: linear-gradient(180deg, #2c2f36, #191b20) !important;
+                  border: 1px solid #000 !important; box-shadow: inset 0 1px 0 #ffffff1a, 0 1px 0 #ffffff0a; cursor: pointer; min-width: 26px; }
+          .sydk:active { transform: translateY(1px); box-shadow: inset 0 1px 3px #000; }
+          .sydk.on { color: #07090c; background: #ffae3a !important; box-shadow: 0 0 8px #ffae3a; }
+          .sydk.rec { color: #ff5a5a; }
+          .sydk.rec.on { color: #fff; background: #d22c35 !important; box-shadow: 0 0 10px #ff4040; }
+          .syscore { position: relative; flex: 1 1 300px; min-width: 220px; background: #05070a; border-radius: 6px; border: 3px solid #0b0c0f;
+                     box-shadow: inset 0 0 0 1px #2a2e36, 0 0 0 1px #000, inset 0 0 24px #000; overflow: hidden; display: flex; flex-direction: column; }
+          .syscore[data-mode="rec"] { box-shadow: inset 0 0 0 1px #d22c35, 0 0 10px #d22c3566; }
+          .syscore[data-mode="learn"] { box-shadow: inset 0 0 0 1px #5dff8a, 0 0 10px #5dff8a44; }
+          .syscore.wrong { box-shadow: inset 0 0 0 2px #ff4040; }
+          .syscoreview { flex: 1; overflow: auto; padding: 0; }
+          .syscoreview svg { display: block; width: 100%; height: auto; }
+          .syscoreview path.lit { fill: #ffae3a !important; stroke: #ffae3a !important; filter: drop-shadow(0 0 3px #ffae3a); }
+          .syscorehint { color: #6c7a8e; font-size: 11px; line-height: 1.6; padding: 18px; text-align: center; }
+          .syscoremsg { font-size: 10px; color: #9fb0c8; padding: 3px 8px; background: #0a0d12; border-top: 1px solid #1a1e26; min-height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          .syscoremsg.bad { color: #ff7a7a; }
+          .syctl { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; padding: 4px 2px; min-width: 210px; }
+          .syctlrow { display: flex; gap: 10px; align-items: center; }
+          .sygrp { display: flex; flex-direction: column; gap: 3px; }
+          .sygrp small { font: 700 8px/1 system-ui; letter-spacing: .16em; color: #7f8899; border-top: 1px solid #4a4f5a; padding-top: 3px; text-align: center; }
+          .sygrp > div { display: flex; gap: 4px; align-items: center; }
+          .sygrp b#syOct { font: 700 11px/1 ui-monospace, Consolas, monospace; color: #ffae3a; text-shadow: 0 0 6px #ffae3a88; background: #07080a; border: 1px solid #000;
+                           border-radius: 3px; padding: 4px 4px; box-shadow: inset 0 1px 3px #000; min-width: 26px; text-align: center; }
+          .sydk.wide { padding: 5px 9px !important; }
+          .sydkvol { margin-left: auto; }
+          .sydkvol .sykn { width: 52px; }
+          .sytransport { display: flex; gap: 6px; }
+          .sytransport .sydk { flex: 1; font-size: 13px !important; padding: 7px 0 !important; }
+          #syPiano { flex: 0 0 auto; width: 870px; min-width: 300px; max-width: 100%; height: 172px;   /* 49 keys: 29 white keys of 30 x 165 px */
+                     display: block; border-radius: 3px 3px 7px 7px; cursor: pointer; touch-action: none; outline: none; background: #0b0c0f; box-shadow: 0 0 0 1px #000, 0 2px 0 #ffffff0d; }
           #syPiano:focus-visible { box-shadow: 0 0 0 1px #ffae3a; }
           .syloop { background: linear-gradient(180deg, #171a21, #101217); border: 1px solid #262b35; border-radius: 9px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
           .sylbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #ffd23a; text-shadow: 0 0 6px #ffd23a; }
@@ -105,6 +141,46 @@
           .systeps button.v2 { background: var(--rc) !important; border-color: #fff; box-shadow: 0 0 10px var(--rc), 0 0 0 1px #fff inset; }
           .systeps button.now { outline: 2px solid #f4f1e8; outline-offset: -1px; }
           .syr.hit select { box-shadow: 0 0 8px var(--rc); }
+          /* 2.954.0: the timeline */
+          .sytl { position: relative; background: linear-gradient(180deg, #171a21, #101217); border: 1px solid #262b35; border-radius: 9px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+          .sytlbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+          .sytlbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
+          .sytlbar .sep { width: 1px; align-self: stretch; background: #2a2e38; margin: 0 4px; }
+          #syTPlay.on, #syTSnap.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
+          #syTSnap.on { background: #38e1ff; border-color: #38e1ff; }
+          .sytlpos { font: 600 11px/1 ui-monospace, Consolas, monospace; color: #ffae3a; background: #07090c; border: 1px solid #2d323d; border-radius: 4px; padding: 3px 6px; min-width: 96px; text-align: center; }
+          .sytlhint { font-size: 10px; color: #6c7688; margin-left: auto; }
+          .sytlpick { display: none; max-height: 180px; overflow: auto; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
+          .sytlpick.on { display: block; }
+          .sytlpg { margin-bottom: 5px; }
+          .sytlpg b { display: block; font-size: 10.5px; color: #9aa4b6; margin-bottom: 3px; }
+          .sytlpg > div { display: flex; flex-wrap: wrap; gap: 3px; }
+          .sytlpg span { font-size: 10.5px; background: #161a22; border: 1px solid #2a2f3a; border-radius: 4px; padding: 2px 6px; cursor: pointer; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .sytlpg span:hover { border-color: #38e1ff; color: #fff; }
+          .sytlpg i { font-size: 10px; color: #5d6575; }
+          .sytlkey { display: none; gap: 8px; align-items: center; background: #0d1015ee; border: 1px solid #2d323d; border-radius: 8px; padding: 4px 8px;
+                     position: absolute; right: 10px; top: 38px; z-index: 4; box-shadow: 0 6px 16px #000a; }   /* over the layers - opening it never moves them */
+          .sytlkey.on { display: flex; }
+          .sytlkey b { font-size: 11px; }
+          .sytlbody { display: flex; border: 1px solid #1f232c; border-radius: 6px; overflow: hidden; }
+          .sytlheads { flex: 0 0 176px; background: #12151b; border-right: 1px solid #262b35; }
+          .sytlrul { background: #07090c; border-bottom: 1px solid #1c2028; }
+          .sytlhead { box-sizing: border-box; border-bottom: 1px solid #1c2028; border-left: 3px solid var(--lc); padding: 3px 4px; display: flex; flex-direction: column; gap: 1px; }
+          .sytlhead.sel { background: #1a1f28; }
+          .sytlh1 { display: flex; gap: 2px; align-items: center; }
+          .sytlh1 input { flex: 1; min-width: 0; font-size: 11px; background: transparent; color: #e6ebf5; border: 1px solid transparent; border-radius: 3px; padding: 1px 3px; }
+          .sytlh1 input:focus { border-color: #2d323d; background: #0b0d11; }
+          .sytlh1 .sym { width: 20px; padding: 1px 0 !important; font: 700 9.5px/1 system-ui !important; }
+          .sytlh1 .sym.on.m { background: #a8343c; color: #fff; }
+          .sytlh1 .sym.on.s { background: #c9a227; color: #07090c; }
+          .sytlh2 { display: flex; gap: 2px; }
+          .sytlh2 .sykn { width: 40px; }
+          .sytlh2 .sykl { display: none; }
+          .sytladd { width: 100%; font-size: 11px !important; border-radius: 0 !important; }
+          .sytlscroll { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; position: relative; }
+          #syTCanvas { position: sticky; left: 0; display: block; outline: none; }
+          #syTCanvas:focus-visible { box-shadow: inset 0 0 0 1px #38e1ff; }
+          .sytlspacer { height: 1px; }
           .sylib { display: none; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
           .sylib.on { display: block; }
           .sylib .sylist { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; margin-top: 4px; }
@@ -116,7 +192,6 @@
           .symsg.bad { color: #ff7a7a; }
         </style>
         <div class="sytop">
-          <span class="sybrand">SYNTH<b>STATION</b></span>
           <button class="ghost" id="syPrev" type="button" title="The patch before">◀</button>
           <select id="syPreset" title="Patches - ours and the ones you saved (💾)"></select>
           <button class="ghost" id="syNext" type="button" title="The next patch">▶</button>
@@ -134,21 +209,47 @@
         <div class="syrack" id="syRack">
           <div class="sypanel syscreen"><canvas id="syScope" aria-label="The sound's wave"></canvas><div id="syScreenTxt"></div></div>
         </div>
-        <div class="sykeys">
-          <div class="sykeyhead"><i></i>SYNTH<b style="color:#38e1ff">STATION</b><div class="grille"></div><span>37 KEYS · VELOCITY · MIDI</span></div>
-          <div class="sykeyrow">
-          <div class="sywheels">
-            <div class="sywheel" id="syBend" role="slider" tabindex="0" aria-label="Pitch bend" title="Pitch bend - drag up / down, it springs back"><b></b><span>Bend</span></div>
-            <div class="sywheel" id="syMod" role="slider" tabindex="0" aria-label="Mod wheel" title="Mod wheel - adds to the LFO's depth"><b></b><span>Mod</span></div>
+        <!-- 2.954.0 (Tim: "make the keyboard look like this" - a photo of a 49-key controller - + "remove all the branding"): one
+             deck like a hardware controller, no maker's name anywhere: the wheels, the 4 x 4 drum pads (synthpads.js), the score
+             screen in the middle (synthscore.js: ● record sheet music live, 📂 open a sheet, 🎓 learn to play it), the buttons
+             (patch, octave, the sheet's transport) and the volume knob; 49 keys of natural shape under it. -->
+        <div class="sykeys" id="syDeck">
+          <div class="sydeck">
+            <div class="sywheels">
+              <div class="sywheel" id="syBend" role="slider" tabindex="0" aria-label="Pitch bend" title="Pitch bend - drag up / down, it springs back"><b></b><span>Bend</span></div>
+              <div class="sywheel" id="syMod" role="slider" tabindex="0" aria-label="Mod wheel" title="Mod wheel - adds to the LFO's depth"><b></b><span>Mod</span></div>
+            </div>
+            <div class="sypadbox" id="syPadBox" tabindex="0" aria-label="Drum pads - click, or the keys Z X C V / A S D F / Q W E R / 1 2 3 4 while the pads have the focus">
+              <div class="sypadgrid" id="syPadGrid"></div>
+              <div class="sypadhead">
+                <button class="sydk" id="syPadRec" type="button" title="⏺ Into loop: while the loop plays, pads 1-8 are written on the nearest step (hit hard = an accent)">⏺ Loop</button>
+                <button class="sydk" id="syPadEdit" type="button" title="✎ Pick a pad's sound, volume and pitch (pads 1-8 are the looper's rows)">✎ Edit</button>
+              </div>
+              <div class="sypadedit" id="syPadEd"></div>
+            </div>
+            <div class="syscore" id="syScoreBox" data-mode="idle">
+              <div class="syscoreview" id="syScoreView" aria-label="Sheet music"></div>
+              <div class="syscoremsg" id="syScoreMsg" role="status" aria-live="polite"></div>
+            </div>
+            <div class="syctl">
+              <div class="syctlrow">
+                <div class="sygrp"><small>PATCH</small><div><button class="sydk" id="syDkPrev" type="button" title="The patch before">◀</button><button class="sydk" id="syDkNext" type="button" title="The next patch">▶</button></div></div>
+                <div class="sygrp"><small>OCTAVE</small><div><button class="sydk" id="syOctDn" type="button" title="An octave down (↓)">－</button><b id="syOct">C3</b><button class="sydk" id="syOctUp" type="button" title="An octave up (↑)">＋</button></div></div>
+                <div class="sydkvol" id="syDkVol"></div>
+              </div>
+              <div class="syctlrow">
+                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
+              </div>
+              <div class="sytransport">
+                <button class="sydk" id="syScStart" type="button" title="⏮ Back to the start of the sheet">⏮</button>
+                <button class="sydk" id="syScStop" type="button" title="■ Stop">■</button>
+                <button class="sydk" id="syScPlay" type="button" title="▶ Hear the sheet - its notes light up as they play">▶</button>
+                <button class="sydk rec" id="syScRec" type="button" title="● Record sheet music: play, and your notes are written as you go (the looper's BPM)">●</button>
+              </div>
+            </div>
           </div>
-          <div class="syoct">
-            <button class="ghost" id="syOctUp" type="button" title="An octave up (↑)">＋</button>
-            <b id="syOct">C3</b>
-            <button class="ghost" id="syOctDn" type="button" title="An octave down (↓)">－</button>
-            <small>OCTAVE</small>
-          </div>
-          <canvas id="syPiano" tabindex="0" aria-label="Keyboard - click or drag; the computer keys Z to / and Q to ] play it too"></canvas>
-          </div>
+          <canvas id="syPiano" tabindex="0" aria-label="Keyboard - 49 keys; click or drag; the computer keys Z to / and Q to ] play it too"></canvas>
+          <input type="file" id="syScoreFile" class="hidden" accept=".abc,.txt,text/plain">
         </div>
         <div class="syloop">
           <div class="sylbar">
@@ -178,6 +279,31 @@
             <div class="sydrop" id="syDrop">Drop sound files here - or on a row of the looper to put it straight in that row</div>
           </div>
           <div id="syRows"></div>
+        </div>
+        <!-- 2.954.0 (Tim: "add a timeline below that with waveforms that can be added from all sources, add knobs to each timeline layer
+             for volume. add keyframes to each layer, start volume end volume on each key frame"): synthtl.js + synthtlcore.js -->
+        <div class="sytl" id="syTL">
+          <div class="sytlbar">
+            <h4>TIMELINE</h4>
+            <button class="ghost" id="syTPlay" type="button" title="Play the timeline from the playhead (click the ruler to move it)">▶ Play</button>
+            <button class="ghost" id="syTStart" type="button" title="Back to the start">⏮</button>
+            <span class="sytlpos" id="syTPos">0:00.0</span>
+            <button class="ghost" id="syTAddBtn" type="button" title="＋ Sound: the loop, the kit, your samples, the project's SFX, the Sound assets (stems), songs and the gallery's audio, a file">＋ Sound</button>
+            <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
+            <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
+            <span class="sep"></span>
+            <button class="ghost" id="syTWav" type="button" title="⬇ The timeline mixed down to a WAV">⬇ WAV</button>
+            <button class="ghost" id="syTToSfx" type="button" title="The mix into this project's SFX">→ 💥 SFX</button>
+            <button class="ghost" id="syTToSound" type="button" title="The mix into this project's Sound assets (the timeline, the references)">→ 🔊</button>
+            <span class="sytlhint">double-click a layer = a ◆ keyframe · drag ◆ = when + start volume, ● = end volume · Delete removes</span>
+          </div>
+          <div class="sytlpick" id="syTPick"></div>
+          <div class="sytlkey" id="syTKeyEd"></div>
+          <div class="sytlbody">
+            <div class="sytlheads" id="syTHeads"></div>
+            <div class="sytlscroll" id="syTScroll"><canvas id="syTCanvas" tabindex="0" aria-label="Timeline - layers of sounds with their waveforms and volume keyframes"></canvas><div id="syTSpacer" class="sytlspacer"></div></div>
+          </div>
+          <input type="file" id="syTFile" class="hidden" multiple accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4">
         </div>
         <input type="file" id="syFile" class="hidden" multiple
           accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4, .m4v, .mkv, .avi">

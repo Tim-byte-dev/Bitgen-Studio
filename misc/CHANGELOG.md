@@ -8,8 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
-- **2.953.1** — 🎹 The Synth Station's Keyboard Looks Like an Instrument: a Case With a Nameplate, the Wheels in a Well, an Octave Display, a Felt Strip, Ivory Keys and Black Keys That Go Down When Played
-- **2.953.0** — 🎹 The Synth Station: the Audio Docker's 4th Tab - Our Own Synth With Glowing Knobs, a MIDI Keyboard (Mouse, Computer Keys, Any MIDI Keyboard) and a Step Looper (8 Rows x 16 Steps x 8 Patterns) With Your Own Samples; ⬇ WAV, → SFX, → Sound, ⏺ Rec
+- **2.954.0** — 🎹 The Synth Tab's Deck (49 Natural Keys, No Branding): 16 Drum Pads (⏺ Into the Loop, MIDI Channel 10), a Score Screen That Writes Sheet Music as You Play, Opens .abc Sheets and Teaches You to Play Them (🎓 Learn); a Timeline of Sounds From Every Source With Waveforms, Volume / Pan Knobs per Layer and Keyframes With a Start and an End Volume
+- **2.953.1** — 🎹 The Synth Tab's Keyboard Looks Like an Instrument: a Case, the Wheels in a Well, an Octave Display, a Felt Strip, Ivory Keys and Black Keys That Go Down When Played
+- **2.953.0** — 🎹 The Synth Tab: the Audio Docker's 4th Tab - Our Own Synth With Glowing Knobs, a MIDI Keyboard (Mouse, Computer Keys, Any MIDI Keyboard) and a Step Looper (8 Rows x 16 Steps x 8 Patterns) With Your Own Samples; ⬇ WAV, → SFX, → Sound, ⏺ Rec
 - **2.952.0** — 🎓 Life Choices: Drag the Puzzle Box Anywhere Over the Game (Kept in View, Remembered, Double-Click Puts It Back); Enter Rolls the Dice Whenever It Is Your Roll, Wherever the Focus Is
 - **2.951.0** — 🎓 Life Choices: Puzzles in a Dialog Box Over the Board With a 🧮 Calculator Beside It (Its Own Parser; ➜ Puts the Result in the Answer Box); the Pair of Dice Drawn in the Board's Centre Circle - Tumbling While You Roll, Then the Total and the Luck
 - **2.950.1** — 🚓 Quieter Roofs: a Touch Darker Than the Roads (the Art Pack's Roofs Follow Its Asphalt), Only a Faint Rim Shows Each Block - the Cars Stay the Brightest Thing

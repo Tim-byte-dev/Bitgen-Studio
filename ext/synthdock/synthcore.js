@@ -147,7 +147,7 @@
   /* ---------------- the loop ---------------- */
   var STEPS = 16, NPAT = 8, NROWS = 8, PAT_NAMES = "ABCDEFGH";
   // the built-in kit (synthkit.js makes the sounds); a row's sound is "kit:<id>", "my:<file>" (the samples library) or
-  // "sfx:<file>" (this project's sound effects)
+  // "sfx:<file>" (this project's sound effects); 2.954.0: "snd:<file>" (the Sound assets) and "out:<file>" (songs, the gallery)
   var KIT = [["kick", "Kick"], ["boom", "Boom (808)"], ["snare", "Snare"], ["clap", "Clap"], ["chat", "Hat closed"], ["ohat", "Hat open"],
              ["tom", "Tom"], ["rim", "Rim"], ["cowbell", "Cowbell"], ["shaker", "Shaker"], ["zap", "Zap"], ["crash", "Crash"]];
   var ROWS = ["kit:kick", "kit:snare", "kit:clap", "kit:chat", "kit:ohat", "kit:tom", "kit:rim", "kit:shaker"];
@@ -162,7 +162,7 @@
     return { v: 1, bpm: 120, swing: 0, pat: 0, chain: false,
              rows: ROWS.map(function (snd) { return { snd: snd, vol: 0.8, pitch: 0, pan: 0, mute: false, solo: false }; }), pats: pats };
   }
-  function okSnd(s) { return typeof s === "string" && /^(kit|my|sfx):[^\u0000-\u001f<>]{1,160}$/.test(s) && s.indexOf("..") < 0 ? s : null; }
+  function okSnd(s) { return typeof s === "string" && /^(kit|my|sfx|snd|out):[^\u0000-\u001f<>]{1,160}$/.test(s) && s.indexOf("..") < 0 ? s : null; }
   /** a loop from a save / a file: always 8 rows x 16 steps x 8 patterns, values 0 / 1 / 2, ranges kept */
   function cleanLoop(j) {
     var d = newLoop();

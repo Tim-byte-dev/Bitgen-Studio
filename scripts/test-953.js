@@ -106,7 +106,7 @@ const call = (k, req) => new Promise((ok) => routes[k](req, res(ok)));
   /* ---- the wiring */
   const EJ = JSON.parse(src("ext/synthdock/ext.json")), DH = src("ext/synthdock/dock.html"), JS = src("ext/synthdock/synthdock.js"), LJ = src("ext/synthdock/synthloop.js"), AU = src("static/audiodock.js"), IX = src("static/index.html");
   check("ext/synthdock: ext.json (Synth, column 67 - next to SFX, the rules first, the station last; no server part - the routes are core, like SFX's)",
-    EJ.id === "synthdock" && EJ.name === "Synth" && EJ.order === 67 && EJ.scripts.join() === "synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthloop.js,synthdock.js" && !EJ.server
+    EJ.id === "synthdock" && EJ.name === "Synth" && EJ.order === 67 && EJ.scripts.join() === "synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthloop.js,synthpads.js,synthscore.js,synthtlcore.js,synthtl.js,synthdock.js" /* 2.954.0: + pads, the score, the timeline */ && !EJ.server
     && EJ.scripts.every((s) => fs.existsSync(path.join(ROOT, "ext/synthdock", s))));
   check("the Audio docker: 🎹 Synth is its 4th tab; the shell has its marker after SFX; no statusbar button of its own (tSy in GONE_DOCKS); Audio's tip says so",
     require("../static/audiodock.js").IDS.join() === "musicdock,stemsdock,sfxdock,synthdock" && require("../static/audiodock.js").TABS.synthdock.icon === "🎹" && require("../static/audiodock.js").TABS.synthdock.name === "Synth"
@@ -127,7 +127,7 @@ const call = (k, req) => new Promise((ok) => routes[k](req, res(ok)));
   check("synthloop.js: a look-ahead clock on the AudioContext (the screen follows it), a row's sound from the kit / /api/synth/samples/file / /api/sfx/file, a file dropped on a row",
     /setInterval\(tick, 25\)/.test(LJ) && /ctx\.currentTime \+ 0\.14/.test(LJ) && /"\/api\/synth\/samples\/file\/"/.test(LJ) && /"\/api\/sfx\/file\/"/.test(LJ) && /addEventListener\("drop"/.test(LJ) && /new OAC\(2,/.test(LJ));
   check("2.953.1 (Tim: \"can u make the keyboard look a little more like a keyboard\"): a case with a nameplate, the wheels in a well, a felt strip, ivory keys with a front lip, black keys with a top face + sloped front + a shadow, a pressed key goes down",
-    /class="sykeyhead"/.test(DH) && /class="sykeyrow"/.test(DH) && /\.sywheels \{[^}]*inset 0 2px 6px #000/.test(DH) && /var KB = \{ n: 36, geo: null, felt: 7 \}/.test(JS) && /function keyPath\(x, X, Y, W, H, r\)/.test(JS)
+    /class="sydeck"/.test(DH) /* 2.954.0: the deck (no nameplate - no branding) */ && /\.sywheels \{[^}]*inset 0 2px 6px #000/.test(DH) && /var KB = \{ n: 48, geo: null, felt: 7 \}/.test(JS) && /function keyPath\(x, X, Y, W, H, r\)/.test(JS)
     && /\/\/ the front lip/.test(JS) && /x\.shadowOffsetY = on \? 1 : 3;/.test(JS) && /H = h - F - \(on \? 3 : 1\)/.test(JS) && /var y = Math\.max\(0, py - g\.F\);/.test(JS));
   check("routes/index.js mounts routes/synth.js; server.js untouched", /require\("\.\/synth"\)\.mount\(app\)/.test(src("routes/index.js")) && !/synth/i.test(src("misc/server.js")));
   check("synth_samples/ is this PC's: .gitignore, misc/_gitignore, make_zips.sh", /^synth_samples\/$/m.test(src(".gitignore")) && /^synth_samples\/$/m.test(src("misc/_gitignore")) && /! -path "\.\/synth_samples\/\*"/.test(src("scripts/make_zips.sh")));

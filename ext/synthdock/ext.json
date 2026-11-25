@@ -9,6 +9,10 @@
     "synthvoice.js",
     "synthknob.js",
     "synthloop.js",
+    "synthpads.js",
+    "synthscore.js",
+    "synthtlcore.js",
+    "synthtl.js",
     "synthdock.js"
   ]
 }

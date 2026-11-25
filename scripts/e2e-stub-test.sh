@@ -15141,6 +15141,13 @@ node scripts/test-953.js > /tmp/t953.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui953-ui.js > /tmp/ui953.log 2>&1 \
   && ok "2.953.0 browser test: 🎹 Synth tab, ⛶ whole window, knobs (drag, double-click, keys, switches), the sound on the scope, the keyboard (mouse glide, Z / Q rows, octave, never leaked), MIDI (notes, mod, bend, sustain), patches (mono, 💾 / 🗑), the looper (pads, accents, paint, play, ⛓, Space), 📂 samples (add, → row, drop on a row), 🎙 Sample it, ⬇ WAV, → SFX, → 🔊, ⏺ Rec, Esc, hidden = quiet, kept over a reload" \
   || { bad "2.953.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui953.log | head -12; }
+# ---- 2.954.0 (🎹 the deck: drum pads, the score screen, the timeline)
+node scripts/test-954.js > /tmp/t954.log 2>&1 \
+  && ok "2.954.0 units: pads (keys, layout, velocity, saves), sheet music from what you play (ABC the engraver reads back, ties, chords), the steps to learn, the timeline (keyframes start / end volume, automation, schedule, trim, clean), every source, the wiring, no branding" \
+  || { bad "2.954.0 units"; grep -a "^FAIL" -A1 /tmp/t954.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui954-ui.js > /tmp/ui954.log 2>&1 \
+  && ok "2.954.0 browser test: the deck (49 natural keys, no branding), pads (click, keys, MIDI ch 10, ⏺ into the loop, ✎), ● record sheet music, 💾 .abc, 📂 open, 🎓 learn to the end, ▶, the timeline (sources, the loop, move, trim, Vol knob, keyframes ◆ start / ● end, Delete, play, mixdown -> SFX), kept over a reload" \
+  || { bad "2.954.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui954.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

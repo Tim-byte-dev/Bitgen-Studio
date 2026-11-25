@@ -1599,7 +1599,7 @@ as `Anna.happy` (Anna recorded happy) is used for Anna's happy lines, and the so
 The file carries its own **metadata**: the title, the date and time it was made, the description, the whole text and
 the voices (WAV: the INFO list; MP3: ID3 - the text as its lyrics).
 
-## The Synth station (Audio ▸ 🎹 Synth)
+## The 🎹 Synth tab (Audio ▸ 🎹 Synth)
 
 Since 2.953.0 the Audio docker has a fourth tab, **🎹 Synth**: a synth you play from a keyboard, and a step looper under it
 for beats made of rows of sounds - your own samples too. Click **Audio** in the statusbar, then **🎹 Synth**; **⛶** gives it
@@ -1626,9 +1626,10 @@ as you left them come back next time.
 focused type on the computer: the **Z** row is the octave shown (Z = C, S = C#, X = D ...), the **Q** row the octave above,
 **↑ / ↓** change the octave (or **＋ / －** beside the keys). **Bend** springs back to the middle; **Mod** adds to the LFO's
 depth. A **MIDI keyboard** plugged in plays it too (pick the input, or All inputs): velocity, pitch bend, the mod wheel,
-the sustain pedal and the volume slider. **⏹ All off** silences every note. Since 2.953.1 the keyboard is drawn like an
-instrument: a case with the wheels in a well and an octave display, a felt strip, ivory keys and black keys that go down
-when played.
+the sustain pedal and the volume slider. **⏹ All off** silences every note. Since 2.954.0 the keyboard is a
+**deck** like a hardware controller (with no maker's name on it): the wheels, the drum pads, the score screen in the
+middle, the PATCH / OCTAVE / SHEET buttons, the transport and a VOLUME knob, over **49 keys** shaped like real ones
+(narrow and long; the black keys go down when played).
 
 **The looper.** 8 rows x 16 steps, 8 patterns **A-H** (A, B and C come with a beat to start from). Click a pad to put a
 step on or off; **Shift-click** or **right-click** gives it an **accent** (louder); drag across pads to paint. Each row: its
@@ -1647,6 +1648,34 @@ knob to play it higher or lower. Your samples are kept in `synth_samples/` of th
 **Out.** **⬇ WAV** downloads the loop (**×** how many times round), **→ 💥 SFX** puts it in this project's sound effects
 (trim it there), **→ 🔊** in the Sound assets too (the timeline, the references). **⏺ Rec** records what you play - the
 synth and the loop - and **⏹ Stop rec** puts the take in the SFX.
+
+**Drum pads (2.954.0).** 16 pads on the deck, numbered from the bottom left like a pad controller: pads **1-8 are the
+looper's 8 rows** (their sound, volume, pitch and pan) and pads **9-16 have sounds of their own**. Click a pad (nearer the
+middle = harder), or with the pads focused press **Z X C V** (1-4), **A S D F** (5-8), **Q W E R** (9-12), **1 2 3 4**
+(13-16); a MIDI drum pad on channel 10 plays them too (notes 36-51). **⏺ Loop**: while the loop plays, a hit on pads 1-8 is
+written on the nearest step (hit hard = an accent). **✎ Edit**: click a pad to pick its sound (the kit, your samples, the
+project's SFX, the Sound assets, songs), volume and pitch.
+
+**The score screen (2.954.0).** The black screen in the middle of the deck is for sheet music. **●** records: play, and
+your notes are written on the staff as you go (from your first note, to the 16th note at the looper's BPM, chords
+together, rests in the gaps, long notes tied over the bar); **■** stops. **📂** opens an .abc sheet (the 🎼 Sheet music
+tab's, or any ABC tune) and **💾** saves the sheet as .abc. **▶** lets the synth play the sheet - each note lights up on the
+staff and its key on the keyboard. **🎓 Learn**: the next note (or chord) lights up on the staff and its keys glow green -
+the keyboard moves to their octave; play them and it goes on, a wrong key flashes and is counted, and at the end it
+tells you how many you got right first time. **⏮** goes back to the start.
+
+**The timeline (2.954.0).** Under the looper: layers of sounds with their waveforms. **＋ Sound** lists every source - the
+loop as it is now (made into a sample), the built-in kit, 📂 My samples, this project's SFX, the Sound assets (stems too),
+songs and the gallery's audio, or a file: click one to put it at the playhead on the picked layer, or drag it onto a
+layer (sound files from your computer can be dropped on a layer too). Drag a clip to move it (to another layer too), drag
+its edge to trim it, **Delete** removes it; **⌗ Snap** keeps things on the looper's 16th notes (hold **Shift** to place
+freely); **－ ＋** zoom. Each layer has its name, **M**ute, **S**olo, a **Vol** knob (0-150%), a **Pan** knob, **◆** and
+🗑. **Keyframes**: double-click a layer (or ◆ for the playhead) to add one; each keyframe has a **start volume** and an
+**end volume** - from its time the layer's volume goes from the start volume to the end volume, reached at the next
+keyframe (the last one: at the end of the timeline); before the first keyframe the layer plays at 100%, and the Vol knob
+scales the whole line. Drag a keyframe's **◆** sideways for when and up / down for its start volume, drag the **●** at
+the end of its line for its end volume, or click it for **Start vol / End vol** knobs. **▶ Play** plays from the playhead
+(click the ruler to move it); **⬇ WAV**, **→ 💥 SFX** and **→ 🔊** mix the whole timeline down.
 
 ## Save and Save as (preview dialog and gallery)
 

@@ -21,13 +21,14 @@
   function changed() { if (O && O.changed) O.changed(); }
   function msg(t, bad) { if (O && O.msg) O.msg(t, bad); }
   function sndName(s) {
-    var m = /^(kit|my|sfx):(.*)$/.exec(s || ""); if (!m) return "?";
+    var m = /^(kit|my|sfx|snd|out):(.*)$/.exec(s || ""); if (!m) return "?";
     return m[1] === "kit" ? (kitName[m[2]] || m[2]) : m[2].replace(/\.[a-z0-9]+$/i, "");
   }
 
   /* ---------------- the sounds ---------------- */
   function urlOf(s) {
-    var m = /^(my|sfx):(.+)$/.exec(s); if (!m) return null;
+    var m = /^(my|sfx|snd|out):(.+)$/.exec(s); if (!m) return null;
+    if (m[1] === "snd" || m[1] === "out") return "/api/synth/source/" + m[1] + "/" + encodeURIComponent(m[2]);   // 2.954.0
     return (m[1] === "my" ? "/api/synth/samples/file/" : "/api/sfx/file/") + encodeURIComponent(m[2]);
   }
   /** the AudioBuffer of a sound (made / fetched once) - a promise */
@@ -64,6 +65,21 @@
   function audition(r) {
     if (!O) return;
     var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, O.dest(), r, 0.9, ctx.currentTime + 0.005, b); }).catch(function () { /* said */ });
+  }
+  /** 2.954.0: a drum pad played a row now (its velocity) */
+  function hit(r, vel) {
+    if (!O || !L.rows[r]) return;
+    var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, O.dest(), r, vel == null ? 0.9 : vel, ctx.currentTime + 0.003, b); }).catch(function () { /* said */ });
+    flash(r);
+  }
+  /** 2.954.0: ⏺ Into loop - a pad hit while the loop plays is written on the nearest step of the pattern playing -> the step */
+  function recordHit(r, vel) {
+    if (!S.playing || !O || !L.rows[r]) return -1;
+    var t = O.ctx().currentTime, bl = bar(), st = S.barStart;
+    while (st > t) st -= bl;
+    var k = Math.round((t - st) / C.stepDur(L.bpm)) % C.STEPS, p = S.nowPat >= 0 ? S.nowPat : L.pat;
+    L.pats[p][r][k] = vel >= 0.85 ? 2 : 1; paintPads(); changed();
+    return k;
   }
   function bar() { return 16 * C.stepDur(L.bpm); }
   function tick() {
@@ -138,6 +154,7 @@
     doc.querySelectorAll("#syPats button").forEach(function (b) { b.classList.toggle("play", S.playing && +b.dataset.p === S.nowPat); });
   }
   function flash(r) {
+    if (root.H3SynthPads) root.H3SynthPads.flash(r);   // 2.954.0: the pad of that row lights with it
     var el = doc.querySelector('#syRows .syr[data-r="' + r + '"]'); if (!el) return;
     el.classList.add("hit"); root.setTimeout(function () { el.classList.remove("hit"); }, 90);
   }
@@ -160,6 +177,7 @@
       (K.rows[r] || []).forEach(function (k) { k.draw(); });
     });
     paintNow();
+    if (root.H3SynthPads) root.H3SynthPads.paint();
   }
   function opt(sel, v, t) { var o = doc.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); return o; }
   function fillSelect(sel, cur) {
@@ -275,5 +293,5 @@
              on: L.pats[L.pat].map(function (row) { return row.join(""); }) };
   }
   root.H3SynthLoop = { init: init, play: play, playing: function () { return S.playing; }, render: render, buffer: buffer, forget: forget, setLists: setLists,
-                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
+                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
 })(typeof window !== "undefined" ? window : globalThis);
