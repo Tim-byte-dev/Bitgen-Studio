@@ -420,6 +420,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 - **Add sounds and videos** — audio files and the sound of video files, kept as 48 kHz WAV. *Where:* the SFX dock
 - **Cut sounds** — select on the waveform, set a fixed duration box, keep or delete the selection with click-free fades, undo. *Where:* the SFX dock
 - **To the gallery and assets** — every cut is copied to the gallery; send it to the Sound assets. *Where:* the SFX dock
+- **🎹 The Synth station: a synth, a MIDI keyboard and a step looper** — the Audio docker's 4th tab, 🎹 Synth: our own synth with panels of glowing knobs (two oscillators with unison, a sub and noise; a filter with its own envelope; the amp envelope; an LFO; chorus, delay and space; 14 patches of ours, 💾 your own) and a live picture of the sound; play it on the keyboard on screen, the computer keys (Z and Q rows) or any MIDI keyboard (velocity, pitch bend, mod wheel, sustain). The looper below: 8 rows of sounds x 16 steps x 8 patterns (A-H, ⛓ chained), accents, swing, mute / solo, each row's volume, pitch and pan; a row's sound is the built-in kit (made by bitGen - nobody's recordings), 📂 your own samples (add files, or drop one on a row) or this project's SFX; 🎙 Sample it turns a note of the patch into a new sample. ⬇ WAV, → 💥 SFX or → 🔊 Sound assets for the loop; ⏺ Rec puts what you play in the SFX. ⛶ fills the window, Esc comes back. *Where:* Audio ▸ 🎹 Synth. *Since:* 2.953.0
 
 ## Images
 

@@ -106,6 +106,8 @@ police_chase.json
 police_chase.json.tmp
 life_choices.json
 life_choices.json.tmp
+# 2.953.0: 🎹 the Synth station's samples library on this PC
+synth_samples/
 
 # 2.520.0: the LoRA trainer's ai-toolkit checkout + the usage log
 /ai-toolkit/

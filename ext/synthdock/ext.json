@@ -1,0 +1,14 @@
+{
+  "id": "synthdock",
+  "name": "Synth",
+  "order": 67,
+  "html": "dock.html",
+  "scripts": [
+    "synthcore.js",
+    "synthkit.js",
+    "synthvoice.js",
+    "synthknob.js",
+    "synthloop.js",
+    "synthdock.js"
+  ]
+}

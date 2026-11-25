@@ -23,6 +23,7 @@ const BASE = path.join(__dirname, "..");
 const DOCKS = ["previewdock", "timelinedock", "videodock", "imageeditdock",
                "comfydock", "musicdock", "stemsdock",   // 2.269.0: Stems at column 65
                "sfxdock",                               // 2.360.0: SFX at column 66
+               "synthdock",                             // 2.953.0: 🎹 Synth at column 67 (the Audio docker's 4th tab)
                "chatdock", "promptdock", "consoledock"];
 
 /* ---- the real install ---- */
@@ -36,7 +37,7 @@ check("emission order is column order",
 const page = ext.pageHtml(BASE);
 for (const d of DOCKS)
   check(d + " splices in exactly once",
-    page.split('<div class="bdock" id="' + d + '">').length === 2);
+    page.split('<div class="bdock" id="' + d + '"').length === 2);   // 2.953.0: the tag may carry more (data-own-space)
 check("no marker leaks into the page", !page.includes("<!-- ext:dock") && !page.includes("<!-- ext:scripts -->"));
 check("videodock's characters.js is tagged under /ext, version-stamped (2.242.0)",
   new RegExp('<script src="/ext/videodock/characters\\.js\\?v=[0-9.]+"></script>').test(page));
@@ -51,7 +52,7 @@ check("ext scripts come before the inline app script",
 
 const shell = fs.readFileSync(path.join(BASE, "static", "index.html"), "utf8");
 for (const d of DOCKS)
-  check(d + " is OUT of the shell", !shell.includes('<div class="bdock" id="' + d + '">'));
+  check(d + " is OUT of the shell", !shell.includes('<div class="bdock" id="' + d + '"'));
 check("the shell holds one marker per docker",
   DOCKS.every((d) => shell.split("<!-- ext:dock " + d + " -->").length === 2));
 check("the shell holds the catch-all slot for dockers installed later",

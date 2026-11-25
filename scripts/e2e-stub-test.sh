@@ -15134,6 +15134,13 @@ node scripts/test-952.js > /tmp/t952.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui952-ui.js > /tmp/ui952.log 2>&1 \
   && ok "2.952.0 browser test: Enter rolls (the page, a game button, after Carry on), not with a panel open or typing elsewhere; the box drags, stops at the edge, double-click puts it back" \
   || { bad "2.952.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui952.log | head -12; }
+# ---- 2.953.0 (🎹 the Synth station - the Audio docker's 4th tab)
+node scripts/test-953.js > /tmp/t953.log 2>&1 \
+  && ok "2.953.0 units: notes + the computer keys, 39 controls (ranges, exp knobs, choices, clean patches), 14 patches of ours, the loop (pads, accents, mute / solo, swing, ⛓, events), WAV, the built-in kit, the samples library + routes, the wiring" \
+  || { bad "2.953.0 units"; grep -a "^FAIL" -A1 /tmp/t953.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui953-ui.js > /tmp/ui953.log 2>&1 \
+  && ok "2.953.0 browser test: 🎹 Synth tab, ⛶ whole window, knobs (drag, double-click, keys, switches), the sound on the scope, the keyboard (mouse glide, Z / Q rows, octave, never leaked), MIDI (notes, mod, bend, sustain), patches (mono, 💾 / 🗑), the looper (pads, accents, paint, play, ⛓, Space), 📂 samples (add, → row, drop on a row), 🎙 Sample it, ⬇ WAV, → SFX, → 🔊, ⏺ Rec, Esc, hidden = quiet, kept over a reload" \
+  || { bad "2.953.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui953.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

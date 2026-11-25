@@ -10,6 +10,7 @@
 //   GET/POST/DELETE /api/pushpull[/:name]  the 📏 PushPull docker's models (routes/pushPull.js)
 //   GET/POST/DELETE /api/pushpull-profiles[/:id]  the Sketcher's own profiles (routes/ppProfiles.js)
 //   GET/POST/DELETE /api/pushpull-joinery[/:id]   the Sketcher's cupboard / shelving templates (routes/ppJoinery.js)
+//   GET/POST /api/synth/samples[/file/:name|/delete], POST /api/synth/to-project  the 🎹 Synth station (routes/synth.js)
 //   GET /api/about                  the version + the credits (routes/about.js, lib/credits.json)
 //   GET/POST /api/basic-settings/styles  Basic Settings per style - misc/basic_settings.tmp (routes/basicTmp.js)
 //   POST /api/timeline/join         a cut clip's parts joined into one file (routes/tlJoin.js, lib/tlJoin.js)
@@ -193,6 +194,7 @@ function mount(app) {
   require("./sceneBridge").mount(app);  // 2.358.0: bridge scenes between the song's segments (types + the card's picker)
   require("./saveAs").mount(app);       // 2.359.0: Save / Save as for a picture, clip or song (the last save-as folder)
   require("./sfx").mount(app);          // 2.360.0: the SFX dock - audio from video / audio files, keep / delete a selection
+  require("./synth").mount(app);        // 2.953.0: the 🎹 Synth station - its samples library, the loop / a take into the project
   require("./screenCap").mount(app);    // 2.367.0: the left dock's 📷 screenshot / ⏺ screen recording -> the gallery
   require("./vrWorld").mount(app);      // 2.368.0: 🥽 VR World - a performer inside a 360 / 180 picture (vr_world_worker.py)
   require("./karaoke").mount(app);      // 2.373.0: the video docker's 🎤 Karaoke overlays + a song's lyrics file (lib/karaoke.js)

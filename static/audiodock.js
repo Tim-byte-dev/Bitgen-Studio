@@ -7,16 +7,19 @@
  *   with its own height, ▾ fold, ⛶ maximize and ⇱ float, so everything that opens one of them (a workspace, a saved
  *   docker layout, voice chat, the 🎤 music video button) opens it as the Audio docker's tab: at most ONE of the three is
  *   on screen - the one shown last wins. A tab whose extension is turned off (Settings ▸ Extensions) is not offered.
+ *   2.953.0 (Tim: "can we add a synthstation ... in Audio docker with a midi keyboard and hammer head style looper"): + 🎹 Synth
+ *   (ext/synthdock) - a tab like the others; its extension turned off = no tab.
  *   2.761.0: the rule is for the main column - a docker floated (⇱) or dragged into a ▣ docker is on its own and shows
  *   beside the others (the gate's 2.545.0 docker-group test floats Music and Stems side by side).
  * Pure (Node: scripts/test-audiodock760.js): IDS, TABS, keep(before, now, active) -> the one to keep on screen.
  */
 (function (root) {
   "use strict";
-  var IDS = ["musicdock", "stemsdock", "sfxdock"], TITLE = "Audio";
+  var IDS = ["musicdock", "stemsdock", "sfxdock", "synthdock"], TITLE = "Audio";   // 2.953.0: + 🎹 Synth
   var TABS = { musicdock: { icon: "🎵", name: "Music", tip: "Songs - lyrics, a music style, cover, sheet music" },
                stemsdock: { icon: "🎚", name: "Stems", tip: "Split a song into its vocals and its music (demucs)" },
-               sfxdock: { icon: "💥", name: "SFX", tip: "Sound effects - add audio or video, trim, keep a part" } };
+               sfxdock: { icon: "💥", name: "SFX", tip: "Sound effects - add audio or video, trim, keep a part" },
+               synthdock: { icon: "🎹", name: "Synth", tip: "Synth station - a synth with knobs, a MIDI keyboard and a step looper you can add your own samples to" } };
   /** which of the three stays on screen: `now` = the ids showing, `before` = those that showed last time. One showing -> it;
    *  several -> one that has just come up (the active tab when it is among them, else the first), else the active one,
    *  else the first. None -> null. */

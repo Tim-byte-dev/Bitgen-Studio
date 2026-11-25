@@ -1830,6 +1830,7 @@
     <!-- ext:dock musicdock -->
     <!-- ext:dock stemsdock -->
     <!-- ext:dock sfxdock -->
+    <!-- ext:dock synthdock -->
     <!-- ext:dock chatdock -->
     <!-- ext:dock promptdock -->
     <!-- ext:dock consoledock -->
@@ -1896,7 +1897,7 @@
   <button id="tV" title="StoryBoard — the scenes with their storyboard pictures, the cast, 360° environments">StoryBoard</button>
   <!-- 2.760.0 (Tim: "put music stems and sfx as tabs in an new docker called audio, remove those buttons from the
        statusbar"): one button - static/audiodock.js -->
-  <button id="tAu" title="Audio docker - Music, Stems and SFX as its tabs">Audio</button>
+  <button id="tAu" title="Audio docker - Music, Stems, SFX and Synth as its tabs">Audio</button>
   <button id="tIE" title="Image editor dock">Editor</button>
   <button id="tCF" title="ComfyUI dock — ComfyUI’s own interface, in this window">ComfyUI</button>
   <button id="tCh" title="Prompt chat dock">Chat</button>
@@ -14667,7 +14668,8 @@ document.querySelectorAll("[data-collapse]").forEach(h => h.onclick = (e) => {
 const GONE_DOCKS = { tP: "promptdock", tT: "timelinedock", tV: "videodock",
                      tPv: "previewdock", tC: "consoledock", tMu: "musicdock",
                      tIE: "imageeditdock", tCF: "comfydock",
-                     tSt: "stemsdock", tSfx: "sfxdock", tCh: "chatdock" };   // 2.386.0: every docker has its button
+                     tSt: "stemsdock", tSfx: "sfxdock", tCh: "chatdock",
+                     tSy: "synthdock" };   // 2.386.0: every docker has its button; 2.953.0: 🎹 Synth - a tab of the Audio docker (no button of its own)
 window.H3GoneDocks = GONE_DOCKS;   // 2.392.0: static/dockcfg.js shows / hides a saved set's dockers
 /* 2.386.0 (Tim: "if a docker is visible, either open or closed, highlight the toggle button in the statusbar, the
    statusbar buttons toggle the dockers on and off - make buttons for all dockers (not floating dockers)"): a button is

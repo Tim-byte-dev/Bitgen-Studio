@@ -1599,6 +1599,53 @@ as `Anna.happy` (Anna recorded happy) is used for Anna's happy lines, and the so
 The file carries its own **metadata**: the title, the date and time it was made, the description, the whole text and
 the voices (WAV: the INFO list; MP3: ID3 - the text as its lyrics).
 
+## The Synth station (Audio ▸ 🎹 Synth)
+
+Since 2.953.0 the Audio docker has a fourth tab, **🎹 Synth**: a synth you play from a keyboard, and a step looper under it
+for beats made of rows of sounds - your own samples too. Click **Audio** in the statusbar, then **🎹 Synth**; **⛶** gives it
+the whole window (the rack needs the room) and **Esc** or **🗗** brings it back to the docker. The sound starts on your first
+click in it (the browser's rule - **🔈 Sound on** shows if it is still asleep). Switching to another tab, folding or hiding it
+stops the loop and every note.
+
+**The rack.** Panels of knobs, each lit in its panel's colour: **Oscillators** (wave A and B - saw, square, triangle, sine;
+octave, semitones, fine tuning, level; a **Sub** an octave down, **Noise**, **Unison** up to 7 copies spread in cents),
+**Filter** (low / high / band pass, cutoff, resonance, how far its envelope opens it, key tracking, drive), **Filter env**
+and **Amp env** (attack, decay, sustain, release - each drawn above its knobs), **LFO** (cutoff, pitch, amp or pan; its
+shape, rate and depth), **Effects** (delay time, feedback and mix, chorus, a made **Space** and its mix) and **Master**
+(poly or mono, glide in mono, volume). Drag a knob up or down (**Shift** = fine), use the mouse wheel or the arrow keys
+when it has the focus; a **double-click** puts it back to its default. A wave or a type is a lit switch: click for the
+next, right-click for the one before. The screen shows the sound's wave as it plays (a drawing of the patch while it is
+quiet), the patch, the last note and how many voices sound.
+
+**Patches.** ◀ ▶ or the list: 14 patches of ours (Neon Lead, Glass Pad, Deep Sub Bass, Silver Pluck, Acid Line, Warm
+Strings, Bell Keys, Wobble Bass, Brass Stab, Soft Organ, Dream Choir, Chip Lead, Noise Sweep, Init). A knob turned marks
+the patch with *; **💾** names it and keeps it under **My patches** (in this browser), **🗑** deletes one of yours. The knobs
+as you left them come back next time.
+
+**Playing.** Click the keyboard (lower on a key = louder; drag along it to glide over the keys), or with the station
+focused type on the computer: the **Z** row is the octave shown (Z = C, S = C#, X = D ...), the **Q** row the octave above,
+**↑ / ↓** change the octave (or **＋ / －** beside the keys). **Bend** springs back to the middle; **Mod** adds to the LFO's
+depth. A **MIDI keyboard** plugged in plays it too (pick the input, or All inputs): velocity, pitch bend, the mod wheel,
+the sustain pedal and the volume slider. **⏹ All off** silences every note.
+
+**The looper.** 8 rows x 16 steps, 8 patterns **A-H** (A, B and C come with a beat to start from). Click a pad to put a
+step on or off; **Shift-click** or **right-click** gives it an **accent** (louder); drag across pads to paint. Each row: its
+sound, **▸** to listen, **M**ute, **S**olo, and three small knobs - volume, pitch (± 24 semitones) and pan. **▶ Play** (or
+**Space** in the station), **BPM**, **Swing** (0.33 is close to triplets), **⛓** chains every pattern with a step on (A to
+H, one after another - a new pattern or ⛓ starts at the next bar), **⧉** copies the pattern to the next, **🧹** clears it.
+
+**Your own samples.** A row's sound is one of the built-in kit (kick, 808 boom, snare, clap, hats, tom, rim, cowbell,
+shaker, zap, crash - all made by bitGen from waves and noise, nobody's recordings), one of **📂 My samples**, or one of this
+project's sound effects (the 💥 SFX tab). **📂 Samples ▸ ＋ Add files** (or drop files on the panel) adds .wav .mp3 .flac
+.ogg .m4a .aac .opus .webm as they are; .aif, .wma and a video's sound are made 48 kHz WAV. **Drop a sound file on a row**
+to add it and put it in that row. **＋ Add a sample…** at the end of a row's list does the same. **🎙 Sample it** plays one
+note of the patch (C one octave above the keyboard's first C) into a new sample - pick it in a row and use the row's pitch
+knob to play it higher or lower. Your samples are kept in `synth_samples/` of the install (yours: never in a release zip).
+
+**Out.** **⬇ WAV** downloads the loop (**×** how many times round), **→ 💥 SFX** puts it in this project's sound effects
+(trim it there), **→ 🔊** in the Sound assets too (the timeline, the references). **⏺ Rec** records what you play - the
+synth and the loop - and **⏹ Stop rec** puts the take in the SFX.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name
