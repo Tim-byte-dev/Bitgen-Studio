@@ -247,17 +247,17 @@ try {
   // ---- 4. the wiring
   const IX = read("static", "index.html"), RI = read("routes", "index.js"), DH = read("ext", "sfxdock", "dock.html");
   const man = JSON.parse(read("ext", "sfxdock", "ext.json"));
-  check("ext/sfxdock is an extension (SFX, after Stems) with its own marker, height var and resize handle",
+  check("ext/sfxdock is an extension (SFX, after Music - Stems retired in 2.966.0) with its own marker, height var and resize handle",
     man.id === "sfxdock" && man.order === 66 && man.scripts.includes("sfxdock.js")
-    && IX.indexOf("<!-- ext:dock sfxdock -->") > IX.indexOf("<!-- ext:dock stemsdock -->")
-    && IX.includes("#sfxdock { height: var(--sfh); }") && IX.includes('stemsdock: "sth", sfxdock: "sfh",')
+    && IX.indexOf("<!-- ext:dock sfxdock -->") > IX.indexOf("<!-- ext:dock musicdock -->")
+    && IX.includes("#sfxdock { height: var(--sfh); }") && IX.includes('musicdock: "mh", sfxdock: "sfh",')
     && DH.includes('data-hresize="sfh"') && DH.includes('data-collapse="sfxdock"'));
   check("2.361.0: the Duration field sits before Start (blank = free)", DH.indexOf('id="sfxDur"') > 0 && DH.indexOf('id="sfxDur"') < DH.indexOf('id="sfxStart"')
     && DH.includes('placeholder="free"'));
   check("the 📂 picker takes .mov and the other video / audio types - explicit, no wildcards",
     /accept="[^"]*\.mov[^"]*\.wav[^"]*"/.test(DH) && !DH.includes("/*"));
   check("the layout remembers it (lib/dockers + lib/uiLayout); routes/sfx mounted from routes/index.js (never server.js)",
-    read("lib", "dockers.js").includes('"stemsdock", "sfxdock",') && read("lib", "uiLayout.js").includes("sfxdock: 220")
+    read("lib", "dockers.js").includes('"musicdock", "sfxdock",') && read("lib", "uiLayout.js").includes("sfxdock: 220")
     && RI.includes('require("./sfx").mount(app);') && !read("misc/server.js").includes("sfx"));
 } catch (e) {
   fail++; console.log("FAIL: the test crashed :: " + (e && e.stack || e));

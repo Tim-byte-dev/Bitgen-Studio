@@ -28,8 +28,8 @@ const S = require(path.join(ROOT, "static", "dockstatus.js"));
 // 1
 const def = D.defaults();
 const KEYS = ["state", "hidden", "height", "width", "max_height", "max_width", "maximized"];
-check("defaults: 16 docks, each with state / hidden / height / width / max_height / max_width / maximized",
-  Object.keys(def.docks).length === 16 && Object.values(def.docks).every((e) => KEYS.every((k) => k in e))
+check("defaults: 15 docks (2.966.0: Stems retired), each with state / hidden / height / width / max_height / max_width / maximized",
+  Object.keys(def.docks).length === 15 && Object.values(def.docks).every((e) => KEYS.every((k) => k in e))
   && def.docks.consoledock.state === "closed" && def.docks.timelinedock.state === "open" && def.docks.ldock.width === 300, def.docks.timelinedock);
 const n = D.normalize({ docks: { timelinedock: { height: 99999, max_height: -5, state: "max", maximized: true }, musicdock: { maximized: true, hidden: true },
   ldock: { width: 5, max_width: 9999, state: "closed", maximized: true }, nope: { height: 1 } } });
@@ -94,7 +94,7 @@ check("reflowOrder: the UNPINNED docks other than the one just opened; else ever
   });
   try {
     let r = await send("POST", "/api/docker-status", { docks: { sfxdock: { height: 222, max_height: 222, state: "open" } } });
-    check("POST /api/docker-status merges a dock and answers the whole record", r.status === 200 && r.j.docks.sfxdock.max_height === 222 && Object.keys(r.j.docks).length === 16, r);
+    check("POST /api/docker-status merges a dock and answers the whole record", r.status === 200 && r.j.docks.sfxdock.max_height === 222 && Object.keys(r.j.docks).length === 15, r);
     r = await send("GET", "/api/docker-status");
     check("GET /api/docker-status reads it back", r.status === 200 && r.j.docks.sfxdock.height === 222, r.j.docks && r.j.docks.sfxdock);
     r = await send("POST", "/api/docker-status", { nope: 1 });

@@ -8,7 +8,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 
 ### 窗口与菜单栏
 
-- **一个窗口容纳所有面板** — 左侧面板（系统状态与设置）、References、Assets、中央面板（Preview、Timeline、StoryBoard、Music、Stems、SFX、Image editor、ComfyUI、Prompt、Prompt chat、Console）、Queue 和 Gallery。 *Where:* 主窗口
+- **一个窗口容纳所有面板** — 左侧面板（系统状态与设置）、References、Assets、中央面板（Preview、Timeline、StoryBoard、Music、SFX、Image editor、ComfyUI、Prompt、Prompt chat、Console）、Queue 和 Gallery。 *Where:* 主窗口
 - **菜单栏** — 新建项目、打开、保存、截图、录制、回收站、重置项目、设置以及弹出所有已加载的模型，全部排在同一行中；无论显示哪些面板，位置都保持不变。 *Where:* 标题栏下方的一行。 *Since:* 2.382.1
 - **在下拉列表中搜索** — 每个包含 8 项或以上的列表打开时都带有搜索框：输入文字即可筛选（先匹配词首，再按顺序匹配字母），用方向键和 Enter 选择；直接按一个字母会打开列表并开始搜索。 *Where:* 所有下拉列表；Settings > General > Dropdown lists。 *Since:* 2.478.0
 - **状态栏面板按钮** — 每个面板都有一个按钮，面板在屏幕上（展开或折叠）时按钮亮起；点击一次隐藏面板，再点击一次重新显示。 *Where:* 状态栏。 *Since:* 2.386.0
@@ -510,7 +510,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🃏 每个 RunPod 模板都是一张卡片** — PODS 停靠窗一次列出 RunPod 的全部公开模板（全部 / 官方 / 已验证 / 社区，各带数量），每个模板一张卡片（带首字母的色块、NVIDIA / AMD / CPU 和 ComfyUI 标记；名称、镜像、分组、磁盘、/workspace 和 Web 端口；创建 Pod… 和 ↗ 其页面），边输入边搜索（每个词：名称、镜像、端口、种类、分组）和种类筛选；“仅 ComfyUI”一开始是关闭的。*Where:* Basic Settings ▸ GPU ▸ 🖥 PODS。 *注意：* 自 2.780.0 起不再有模板浏览器——Pod 都是 bitGen Pod，用 bitGen 选定的模板创建。 *Since:* 2.756.1
 - **🧩 P_ Pod 风格 + Pod 加载进度条** — 基本设置 ▸ GPU 为 RunPod ▸ Pods 时只显示 P_ 风格；在已加载的 Pod 上按 🎨 Styles 会读取它的 ComfyUI，从模型文件（bitGen 为 Qwen Image、Z-Image、Krea 2、FLUX、SDXL 准备的工作流，填入 Pod 的文件）和模板保存的工作流创建 P_ 风格；Override style 为 P_ 风格提供步数、种子、CFG、尺寸和宽高比（从不提供检查点或 LoRA）；启动中的 Pod 用进度条显示阶段，以及相对上次加载时间的已用时间；你的 Pod 和 Pod 快捷方式（模板卡片上的 ☆、★ Shortcuts - 链接自动填入）在 PODS 停靠窗中。 *注意：* 自 2.780.0 起不再有模板浏览器——Pod 都是 bitGen Pod，用 bitGen 选定的模板创建。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ My pods ▸ 🎨 Styles；风格的 Runs on ▸ RunPod pod。 *Since:* 2.758.0
 - **⬇ 把模型下载到 Pod + 为风格选 Pod** — PODS 停靠窗的 For … 把适合某个 bitGen 风格的模板排在前面（✓ fits），这样创建的 Pod 加载后会自动得到该风格的 P_ 风格；⬇ Models 把风格的文件（或 bitGen 下载列表中的单个文件）下载到 Pod 的 ComfyUI，每个文件一条进度条，通过 Pod 的 Jupyter（bitGen 创建的 Pod 使用 bitGen 自己的密码，或粘贴密码）或 ComfyUI-Manager（只限其列表）；也可以从链接（Civitai、Hugging Face、任何网址）或这台电脑的磁盘放入单个文件。 *注意：* 自 2.780.0 起不再有模板浏览器——Pod 都是 bitGen Pod，用 bitGen 选定的模板创建。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ For …；My pods ▸ ⬇ Models。 *Since:* 2.759.0
-- **🎵 Audio 停靠栏 + 以你的货币显示价格 + 🖥 My pods** — Music、Stems 和 SFX 是同一个 Audio 停靠栏的标签页（状态栏上一个按钮；屏幕上一次只有一个标签页，上次选的会回来）；设置 ▸ General ▸ Currency 把美元价格（RunPod 的 GPU 和 Pod、OpenRouter 的模型、远程 GPU）以 AUD、EUR、GBP、CNY、JPY 等显示，按当天的参考汇率（保存以便离线使用）或你输入的汇率，悬停可见美元；PODS 停靠栏的 🖥 My pods 只显示 Pod，Create pod… 只显示表单，新建的 Pod 出现在 My pods 中。 *Where:* 状态栏 ▸ Audio；设置 ▸ General ▸ Currency；Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
+- **🎵 Audio 停靠栏 + 以你的货币显示价格 + 🖥 My pods** — Music、SFX 和 Synth 是同一个 Audio 停靠栏的标签页（Stems 到 2.966.0 为止）（状态栏上一个按钮；屏幕上一次只有一个标签页，上次选的会回来）；设置 ▸ General ▸ Currency 把美元价格（RunPod 的 GPU 和 Pod、OpenRouter 的模型、远程 GPU）以 AUD、EUR、GBP、CNY、JPY 等显示，按当天的参考汇率（保存以便离线使用）或你输入的汇率，悬停可见美元；PODS 停靠栏的 🖥 My pods 只显示 Pod，Create pod… 只显示表单，新建的 Pod 出现在 My pods 中。 *Where:* 状态栏 ▸ Audio；设置 ▸ General ▸ Currency；Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
 - **🖥 作为条目的 Pod + 它们的费用 + 重新创建 Pod** — My pods 中的每个 Pod 都是一个条目（点名字展开）：Video、LLM、vLLM、Image、Image edit 勾选项，💾 Save（有更改才可用）为勾选的类型创建 Pod 的 P_ 风格，并让 LLM / 描述图片的 LLM 使用 Pod 自己的 OpenAI 兼容服务器；在其 checkpoints / loras 中 📁 New folder，从这台电脑 ➕ Checkpoint 和 ➕ LoRA；Basic Settings ▸ GPU 每分钟显示 Pod 的费用（当前运行、RunPod 今天和本月的账单），📊 Usage 按天记录；P_ 风格保存其 Pod 的配方（模板、GPU、大小、文件）——用它渲染时会启动已停止的 Pod 或创建新 Pod 并把文件放回（从这台电脑，否则从链接）。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods；Basic Settings ▸ GPU（💲）。 *Since:* 2.761.0
 - **🧩 每个 Pod 一个检查点——Pod 就成为这个风格** — Pod 的 Checkpoint 和 LoRAs 使用 Basic Settings 的 Override 下拉框（这台电脑的 ComfyUI 模型）；💾 Save 用 bitGen 为该模型系列准备的工作流（Krea 用 Krea 工作流）创建 P_<Pod>，Pod 上已有就直接选用，否则在后台发送一次到相同的子文件夹；Override style 开启且选中 P_ 风格时，Basic Settings 的检查点会在渲染前发送到 Pod 并在那里使用。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ 某个 Pod；Basic Settings ▸ Override style ▸ Checkpoint。 *Since:* 2.762.0
 - **🧩 你的风格在你的 Pod 上** — 不再生成 P_ 副本：在 RunPod Pods 上显示你自己的风格，每个都在一个 Pod 上渲染 - 先是风格自己的 Pod（Pod 的 Styles：Generate 模式风格的下拉列表，或 All），再是为该类型勾选的 Pod（Image、Image edit、Video - 每种类型一个 Pod，或全部放在一个 Pod 上），再是正在使用的 Pod；💾 Save 在 Pod 上把它们准备好（目录中的文件由 Pod 自己下载，其余从这台电脑发送，缺少的节点包通过它的 Jupyter 安装并重启 ComfyUI）；没有 Pod 的风格在渲染前询问：用 RunPod 的 ComfyUI CUDA 13 模板创建 Pod（Secure / Community、⭐ 显存足够的最便宜 GPU、每小时价格、磁盘），或使用你的某个 Pod - 然后建立关联；已停止的 Pod 会被启动，已不存在的会重新创建。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ Styles；按 Generate 时的询问框。 *Since:* 2.763.0
@@ -598,13 +598,13 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 
-### 分轨
+### 分离歌曲
 
-- **拆分歌曲** — 人声、鼓、贝斯和其他。 *Where:* Stems 面板
+- **拆分歌曲** — 人声、鼓、贝斯和其他。 *Where:* 🎹 Synth 标签的 ✂ 分离人声（两层——它取代的 Stems 标签已在 2.966.0 移除）；乐谱的 ✂ 拆分为层（四层）
 
 ### 人声与语音
 
-- **声音克隆** — 从一段短片段或波形选区克隆声音。 *Where:* Voice / Stems 面板
+- **声音克隆** — 从一段短片段或波形选区克隆声音。 *Where:* 设置 > 音频
 - **▶ 在声音克隆的波形中播放** — 播放选区，未选择时播放整个片段；■ 停止，波形上显示播放头，点击一下即可清除选区。 *Where:* Settings > Audio > voice clone. *Since:* 2.601.0
 - **文字转语音** — 用克隆的声音朗读一句话；可选 OpenAudio 或 OmniVoice（600 多种语言，支持声音设计）。 *Where:* Settings > Audio. *Since:* 2.102.0
 - **Ming-3.0 TTS** — 第二个语音引擎（inclusionAI，0.5B，44.1 kHz）：根据片段及其文字稿克隆声音，也可设计声音。从 Settings ▸ Add-ons 安装。 *Where:* Settings > Audio > Speech engine. *Since:* 2.594.0

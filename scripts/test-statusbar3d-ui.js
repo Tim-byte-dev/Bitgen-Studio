@@ -78,7 +78,7 @@ const api = async (u, body) => {
     const three = await p.evaluate(() => {
       const r = {};
       // 2.760.0: Stems and SFX - the Audio docker's tabs: a tab shows it and puts the one before away
-      for (const id of ["stemsdock", "sfxdock"]) {
+      for (const id of ["synthdock", "sfxdock"]) {   // 2.966.0: Stems retired - Synth is a tab
         const tab = document.querySelector("#musicdock [data-autab=\"" + id + "\"]"), d = document.getElementById(id), m = document.getElementById("musicdock");
         H3Audio.tab("musicdock");
         if (!tab || !d) { r[id] = "missing"; continue; }
@@ -99,10 +99,10 @@ const api = async (u, body) => {
       L.click(); r.tL = s1 && app.classList.contains("no-left") === w0 && L.classList.contains("on") === !w0;
       return r;
     });
-    check("Stems and SFX are the Audio docker's tabs (one on screen at a time); Chat's statusbar button hides / shows it; a side docker's (⟨) too",
-      three.stemsdock === true && three.sfxdock === true && three.tCh === true && three.tL === true, three);
+    check("Synth and SFX are the Audio docker's tabs (one on screen at a time); Chat's statusbar button hides / shows it; a side docker's (⟨) too",
+      three.synthdock === true && three.sfxdock === true && three.tCh === true && three.tL === true, three);
     const st = await api("/api/docker-status");
-    check("...hidden / shown is still written to docker_status.json", st.docks && typeof st.docks.stemsdock.hidden === "boolean", st.docks && st.docks.stemsdock);
+    check("...hidden / shown is still written to docker_status.json", st.docks && typeof st.docks.sfxdock.hidden === "boolean", st.docks && st.docks.sfxdock);
 
     // 4 ---- the 3D toolbar
     await p.evaluate(() => {

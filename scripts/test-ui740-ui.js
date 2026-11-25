@@ -132,20 +132,21 @@ function wav(sec, hz) {
     check("again: the separation is there now (no box for it); ⬇ Download speech -> installed, the words heard and under the notes",
       b4 && b4.which === "whisper" && S.installs.join() === "demucs,whisper" && S.whisper && S.asr === 1 && c3.lyrics === HEARD && c3.words > 0 && c3.steps === "split:done,lyrics:done,sheet:done", { b4, c3, S });
 
-    // 4 the Stems docker's Separate asks the same way
+    // 4 (2.966.0: the Stems tab is gone) the Synth tab's ✂ Separate vocals asks the same way
     S.demucs = false;
-    const st4 = await ev((n) => {
-      const sel = document.getElementById("stSong"), go = document.getElementById("stGo");
-      if (!sel || !go) return "no stems docker";
-      if (![...sel.options].some((o) => o.value === n)) sel.add(new Option(n, n));
-      sel.value = n; go.click(); return "ok";
-    }, SONG);
+    const st4 = await ev(async () => {
+      if (!window.H3SynthTL || !window.H3SynthSing || !document.getElementById("sySingSep")) return "no synth row";
+      window.H3Audio.tab("synthdock");
+      window.H3SynthTL.setTL({ layers: [{ name: "ui740 song", clips: [] }] }); await window.H3SynthTL.addClip("kit:crash", 0, 0); window.H3SynthTL.select(0, null);
+      document.getElementById("sySingSep").click(); return "ok";
+    });
     await p.waitForSelector("#niDlg[open]", { timeout: 8000 }).catch(() => {});
     const b5 = await box();
     if (b5) await p.click("#niCancel");
-    await sleep(300);
-    const m5 = await ev(() => (document.getElementById("stMsg") || {}).textContent || "");
-    check("the Stems docker's Separate: the same box; Cancel = it says Separate asks to download it, nothing split", st4 === "ok" && b5 && b5.which === "demucs" && /Separate splits/.test(b5.text) && /Separate asks to download it/.test(m5) && S.separate === 1, { st4, b5, m5 });
+    await p.waitForFunction(() => !window.H3SynthSing.info().busy, null, { timeout: 8000 }).catch(() => {});
+    const m5 = await ev(() => ({ msg: (document.getElementById("sySingMsg") || {}).textContent || "", n: window.H3SynthTL.tl().layers.length }));
+    check("the Synth tab's ✂ Separate vocals: the same box; Cancel = it says it asks to download it, nothing split", st4 === "ok" && b5 && b5.which === "demucs" && /splits the song on the picked layer/.test(b5.text) && /asks to download the song separation first/.test(m5.msg) && m5.n === 1 && S.separate === 1, { st4, b5, m5 });
+    await ev(() => { window.H3SynthTL.setTL(null); });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));

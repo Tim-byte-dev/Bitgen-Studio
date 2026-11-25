@@ -87,7 +87,7 @@ if (require.main === module) (async () => {
   for (const t of ["tX_pushpulldock", "tX_solidcraftdock"]) { await p.evaluate((t) => { const b = document.getElementById(t); if (b && !b.classList.contains("sc-absent")) b.click(); }, t).catch(() => {}); await p.waitForTimeout(1500); }
   merge(await p.evaluate(COLLECT).catch(() => ({})));
   const PICK = "[data-tab], [data-tool], .ietool, [data-menu], [data-mode], .cbtab, [data-t3view], [data-t3mode], [data-cstab], [data-ectab], [data-sbview], .chTab, .sc-tool, [role=tab], .pctabs button";
-  for (const dock of ["imageeditdock", "timelinedock", "pushpulldock", "solidcraftdock", "videodock", "promptdock", "musicdock", "sfxdock", "stemsdock", "previewdock", "chatdock", "comfydock", "consoledock"]) {
+  for (const dock of ["imageeditdock", "timelinedock", "pushpulldock", "solidcraftdock", "videodock", "promptdock", "musicdock", "sfxdock", "previewdock", "chatdock", "comfydock", "consoledock"]) {
     const n = await p.evaluate(([d, sel]) => { const el = document.getElementById(d); return el ? el.querySelectorAll(sel).length : 0; }, [dock, PICK]);
     for (let i = 0; i < Math.min(n, 160); i++) {
       await p.evaluate(async ([d, sel, i]) => { const el = [...document.getElementById(d).querySelectorAll(sel)][i]; if (!el || /✕|close|delete|remove|clear|reset/i.test(el.textContent + " " + (el.title || ""))) return;

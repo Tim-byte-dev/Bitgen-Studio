@@ -3,7 +3,8 @@
  * it is getting cluttered"
  *   The statusbar's Music / Stems / SFX buttons are one: Audio. It shows / hides the Audio docker - the tab picked last
  *   (kept in localStorage h3.autab). The docker's title bar reads "Audio" with the tabs 🎵 Music · 🎚 Stems · 💥 SFX; a tab
- *   shows that one, the others step aside. Under the tabs each is still its own docker (#musicdock, #stemsdock, #sfxdock)
+ *   shows that one, the others step aside. Under the tabs each is still its own docker (#musicdock, #sfxdock, #synthdock -
+ *   2.966.0: Stems retired)
  *   with its own height, ▾ fold, ⛶ maximize and ⇱ float, so everything that opens one of them (a workspace, a saved
  *   docker layout, voice chat, the 🎤 music video button) opens it as the Audio docker's tab: at most ONE of the three is
  *   on screen - the one shown last wins. A tab whose extension is turned off (Settings ▸ Extensions) is not offered.
@@ -15,9 +16,8 @@
  */
 (function (root) {
   "use strict";
-  var IDS = ["musicdock", "stemsdock", "sfxdock", "synthdock"], TITLE = "Audio";   // 2.953.0: + 🎹 Synth
+  var IDS = ["musicdock", "sfxdock", "synthdock"], TITLE = "Audio";   // 2.953.0: + 🎹 Synth; 2.966.0: - Stems (Tim: "remove the stems tab. i think the synth tab covers it now")
   var TABS = { musicdock: { icon: "🎵", name: "Music", tip: "Songs - lyrics, a music style, cover, sheet music" },
-               stemsdock: { icon: "🎚", name: "Stems", tip: "Split a song into its vocals and its music (demucs)" },
                sfxdock: { icon: "💥", name: "SFX", tip: "Sound effects - add audio or video, trim, keep a part" },
                synthdock: { icon: "🎹", name: "Synth", tip: "Synth - a synth with knobs, a 49-key keyboard with drum pads and a sheet music screen, a step looper with your own samples, a timeline" } };
   /** which of the three stays on screen: `now` = the ids showing, `before` = those that showed last time. One showing -> it;

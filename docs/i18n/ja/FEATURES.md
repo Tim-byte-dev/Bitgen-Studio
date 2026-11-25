@@ -8,7 +8,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 
 ### ウィンドウとメニューバー
 
-- **1 つのウィンドウに並ぶドッカー** — 左ドッカー（システム統計と設定）、References、Assets、中央のドッカー（Preview、Timeline、StoryBoard、Music、Stems、SFX、Image editor、ComfyUI、Prompt、Prompt chat、Console）、Queue、Gallery。 *Where:* メインウィンドウ
+- **1 つのウィンドウに並ぶドッカー** — 左ドッカー（システム統計と設定）、References、Assets、中央のドッカー（Preview、Timeline、StoryBoard、Music、SFX、Image editor、ComfyUI、Prompt、Prompt chat、Console）、Queue、Gallery。 *Where:* メインウィンドウ
 - **メニューバー** — 新規プロジェクト、開く、保存、スクリーンショット、録画、ごみ箱、プロジェクトのリセット、設定、読み込み済みの全モデルの取り出しを 1 行にまとめたもので、どのドッカーを表示していても位置は変わりません。 *Where:* タイトルバーの下の行。 *Since:* 2.382.1
 - **ドロップダウンリスト内の検索** — 項目が 8 個以上あるリストは、開くと検索ボックスが表示されます。入力すると絞り込まれ（まず単語の先頭一致、次に文字の並び順での一致）、矢印キーと Enter で選択でき、文字キーを押すと検索した状態で開きます。 *Where:* すべてのドロップダウンリスト、Settings > General > Dropdown lists。 *Since:* 2.478.0
 - **ステータスバーのドッカーボタン** — 各ドッカーには、画面上にある間（開いている、または折りたたまれている）点灯するボタンがあります。クリックすると非表示になり、もう一度クリックすると再表示されます。 *Where:* ステータスバー。 *Since:* 2.386.0
@@ -510,7 +510,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **🃏 RunPod のテンプレートをすべてカードで** — PODS ドッカーが RunPod の公開テンプレートを一度にすべて表示します（すべて / 公式 / 認証済み / コミュニティ、それぞれ件数付き）。テンプレートごとに 1 枚のカード（頭文字のタイル、NVIDIA / AMD / CPU、ComfyUI バッジ。名前、イメージ、グループ、ディスク、/workspace、Web ポート。Pod を作成… と ↗ そのページ）、入力しながらの検索（すべての単語：名前、イメージ、ポート、種類、グループ）と種類フィルター。「ComfyUI のみ」は最初はオフです。*Where:* Basic Settings ▸ GPU ▸ 🖥 PODS。 *注意:* 2.780.0 からテンプレートブラウザーはありません - ポッドは bitGen が選ぶテンプレートから作る bitGen ポッドです。 *Since:* 2.756.1
 - **🧩 P_ Pod スタイル + Pod の読み込みバー** — 基本設定 ▸ GPU が RunPod ▸ Pods のときは P_ スタイルだけを表示。読み込み済みの Pod で 🎨 Styles を押すと、その ComfyUI を読み取り、モデルファイル（Qwen Image、Z-Image、Krea 2、FLUX、SDXL 用の bitGen のワークフローに Pod のファイルを入れたもの）とテンプレートが保存したワークフローから P_ スタイルを作ります。Override style は P_ スタイルにステップ数・シード・CFG・サイズ・縦横比を与えます（チェックポイントや LoRA は与えません）。起動中の Pod は段階と、前回の読み込み時間に対する経過時間をバーで表示します。Pod と Pod のショートカット（テンプレートのカードの ☆、★ Shortcuts - リンクは自動入力）は PODS ドッカーにあります。 *注意:* 2.780.0 からテンプレートブラウザーはありません - ポッドは bitGen が選ぶテンプレートから作る bitGen ポッドです。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ My pods ▸ 🎨 Styles、スタイルの Runs on ▸ RunPod pod。 *Since:* 2.758.0
 - **⬇ Pod へのモデル + スタイル用の Pod** — PODS ドッカーの For … で bitGen のスタイルに合うテンプレートが先頭に並び（✓ fits）、そうして作った Pod は読み込み後にそのスタイルの P_ スタイルを得ます。⬇ Models はスタイルのファイル（または bitGen のダウンロード一覧の個別ファイル）を Pod の ComfyUI にファイルごとのバー付きでダウンロードします。経路は Pod の Jupyter（bitGen が作った Pod は bitGen 自身のパスワード、または貼り付け）か ComfyUI-Manager（その一覧のみ）です。リンク（Civitai、Hugging Face、任意のアドレス）やこのコンピューターのディスクから 1 ファイルずつ入れることもできます。 *注意:* 2.780.0 からテンプレートブラウザーはありません - ポッドは bitGen が選ぶテンプレートから作る bitGen ポッドです。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ For …、My pods ▸ ⬇ Models。 *Since:* 2.759.0
-- **🎵 Audio ドッカー + 自分の通貨での価格 + 🖥 My pods** — Music、Stems、SFX は 1 つの Audio ドッカーのタブです（ステータスバーのボタンは 1 つ、画面に出るタブは一度に 1 つ、最後に選んだタブが戻ります）。設定 ▸ General ▸ Currency で、米ドルの価格（RunPod の GPU と Pod、OpenRouter のモデル、リモート GPU）を AUD、EUR、GBP、CNY、JPY などで、その日の参照レート（オフライン用に保存）か入力したレートで表示し、マウスを乗せると米ドルが見えます。PODS ドッカーの 🖥 My pods は Pod だけを、Create pod… はフォームだけを表示し、作成した Pod は My pods に表示されます。 *Where:* ステータスバー ▸ Audio、設定 ▸ General ▸ Currency、Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
+- **🎵 Audio ドッカー + 自分の通貨での価格 + 🖥 My pods** — Music、SFX、Synth は 1 つの Audio ドッカーのタブです（Stems は 2.966.0 まで）（ステータスバーのボタンは 1 つ、画面に出るタブは一度に 1 つ、最後に選んだタブが戻ります）。設定 ▸ General ▸ Currency で、米ドルの価格（RunPod の GPU と Pod、OpenRouter のモデル、リモート GPU）を AUD、EUR、GBP、CNY、JPY などで、その日の参照レート（オフライン用に保存）か入力したレートで表示し、マウスを乗せると米ドルが見えます。PODS ドッカーの 🖥 My pods は Pod だけを、Create pod… はフォームだけを表示し、作成した Pod は My pods に表示されます。 *Where:* ステータスバー ▸ Audio、設定 ▸ General ▸ Currency、Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods。 *Since:* 2.760.0
 - **🖥 項目としての Pod + その費用 + Pod の作り直し** — My pods の各 Pod は項目です（名前で開きます）：Video、LLM、vLLM、Image、Image edit のチェック、💾 Save（何か変わるまでオフ）はチェックした種類の P_ スタイルを作り、LLM / 画像を説明する LLM を Pod 自身の OpenAI 互換サーバーに向けます。checkpoints / loras の中の 📁 New folder、このコンピューターからの ➕ Checkpoint と ➕ LoRA。Basic Settings ▸ GPU は Pod の費用（現在の稼働分、RunPod の今日と今月の請求）を 1 分ごとに表示し、📊 Usage が日ごとに記録します。P_ スタイルは Pod のレシピ（テンプレート、GPU、サイズ、ファイル）を持ち、それでレンダリングすると停止中の Pod を起動するか新しい Pod を作ってファイルを戻します（このコンピューターから、なければリンクから）。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods、Basic Settings ▸ GPU（💲）。 *Since:* 2.761.0
 - **🧩 Pod ごとにチェックポイント 1 つ - Pod がスタイルになる** — Pod の Checkpoint と LoRAs は Basic Settings の Override のドロップダウン（このコンピューターの ComfyUI モデル）です。💾 Save はモデルの系統に合った bitGen のワークフロー（Krea なら Krea のワークフロー）で P_<Pod> を作り、Pod にモデルがあればそれを選び、なければバックグラウンドで同じサブフォルダーに一度だけ送ります。Override style がオンで P_ スタイルを選んでいるとき、Basic Settings のチェックポイントはレンダリングの前に Pod へ送られ、そこで使われます。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ Pod、Basic Settings ▸ Override style ▸ Checkpoint。 *Since:* 2.762.0
 - **🧩 自分のスタイルを自分の Pod で** — P_ のコピーはもう作りません。RunPod Pods では自分のスタイルが表示され、それぞれ Pod でレンダリングされます。まずスタイル自身の Pod（Pod の Styles：Generate モードのスタイルのドロップダウン、または All）、次にその種類にチェックした Pod（Image、Image edit、Video - 種類ごとに 1 つの Pod、または全部を 1 つの Pod に）、次に使用中の Pod です。💾 Save で Pod 上の準備をします（カタログのファイルは Pod が自分でダウンロード、ほかはこのコンピューターから送信、足りないノードパックは Jupyter でインストールして ComfyUI を再起動）。Pod のないスタイルはレンダリングの前に確認します：RunPod の ComfyUI CUDA 13 テンプレートから Pod を作成（Secure / Community、⭐ 十分なメモリを持つ最安の GPU、1 時間あたりの料金、ディスク）、または自分の Pod を使う - そのあと紐付けられます。停止中の Pod は起動し、なくなった Pod は作り直します。 *Where:* Basic Settings ▸ GPU ▸ 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ Styles、Generate したときの確認ボックス。 *Since:* 2.763.0
@@ -598,13 +598,13 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
 
-### ステム
+### 曲の分離
 
-- **曲の分離** — ボーカル、ドラム、ベース、その他に分離します。 *Where:* Stems ドッカー
+- **曲の分離** — ボーカル、ドラム、ベース、その他に分離します。 *Where:* 🎹 Synth タブの ✂ ボーカル分離（2 レイヤー。置き換えた Stems タブは 2.966.0 で廃止）、楽譜の ✂ レイヤーに分割（4 つ）
 
 ### 音声と読み上げ
 
-- **ボイスクローン** — 短いクリップや波形の一部から声をクローンします。 *Where:* Voice / Stems ドッカー
+- **ボイスクローン** — 短いクリップや波形の一部から声をクローンします。 *Where:* 設定 > オーディオ
 - **▶ ボイスクローンの波形で再生** — 選択範囲を、何も選択していなければクリップ全体を再生します。■ Stop、波形上の再生ヘッド、クリックで選択を解除。 *Where:* Settings > Audio > voice clone。 *Since:* 2.601.0
 - **テキスト読み上げ** — クローンした声でセリフを読み上げます。OpenAudio または OmniVoice（600 以上の言語、ボイスデザイン）。 *Where:* Settings > Audio。 *Since:* 2.102.0
 - **Ming-3.0 TTS** — 2 つ目の音声合成エンジン（inclusionAI、0.5B、44.1 kHz）。クリップとその書き起こしからクローンした声や、デザインした声を使えます。Settings ▸ Add-ons からインストールします。 *Where:* Settings > Audio > Speech engine。 *Since:* 2.594.0

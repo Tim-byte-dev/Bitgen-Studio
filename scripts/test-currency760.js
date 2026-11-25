@@ -75,14 +75,14 @@ const C = require("../lib/currency"), M = require("../static/currency.js"), A = 
     && /H3Money\.usdHtml\(\+p\.cost_hr \|\| 0, "\/h"\)/.test(RG) && /usd\(m\.in\) \+ " \/ " \+ usd\(m\.out\)/.test(OR) && /addEventListener\("h3:currency"/.test(PD));
   /* ---- the Audio docker */
   check("audiodock keep(): one showing = it; one just shown wins over the one before; the active tab when two come up at once; none = null",
-    A.keep([], ["stemsdock"], "musicdock") === "stemsdock" && A.keep(["musicdock"], ["musicdock", "sfxdock"], "musicdock") === "sfxdock"
-    && A.keep([], ["musicdock", "stemsdock"], "stemsdock") === "stemsdock" && A.keep([], ["musicdock", "stemsdock"], "sfxdock") === "musicdock"
-    && A.keep(["musicdock", "stemsdock"], ["musicdock", "stemsdock"], "stemsdock") === "stemsdock" && A.keep([], [], "musicdock") === null);
+    A.keep([], ["synthdock"], "musicdock") === "synthdock" && A.keep(["musicdock"], ["musicdock", "sfxdock"], "musicdock") === "sfxdock"   /* 2.966.0: Stems -> Synth */
+    && A.keep([], ["musicdock", "synthdock"], "synthdock") === "synthdock" && A.keep([], ["musicdock", "synthdock"], "sfxdock") === "musicdock"
+    && A.keep(["musicdock", "synthdock"], ["musicdock", "synthdock"], "synthdock") === "synthdock" && A.keep([], [], "musicdock") === null && A.keep([], ["stemsdock"], "musicdock") === null);
   check("the statusbar: Music / Stems / SFX gone, one Audio button; static/audiodock.js loaded; no handler left for the old buttons",
     !/id="tMu"|id="tSt"|id="tSfx"/.test(H) && /<button id="tAu" title="Audio docker/.test(H) && /<script src="\/static\/audiodock\.js"><\/script>/.test(H) && !/\$\("tMu"\)|\$\("tSt"\)|\$\("tSfx"\)/.test(H));
   const W = require("../static/workspaces.js");
   check("workspaces: Basic / Image hide Audio; Music video opens the Audio docker on Music (one tab at a time - not stems too)",
-    W.hidden("basic").includes("tAu") && W.hidden("image").includes("tAu") && !W.hidden("musicvideo").includes("tAu") && W.plan("musicvideo").bottom.musicdock === "open" && W.plan("musicvideo").bottom.stemsdock === "gone");
+    W.hidden("basic").includes("tAu") && W.hidden("image").includes("tAu") && !W.hidden("musicvideo").includes("tAu") && W.plan("musicvideo").bottom.musicdock === "open" && W.plan("musicvideo").bottom.sfxdock === "gone" && !("stemsdock" in W.plan("musicvideo").bottom));
   check("voice chat: show music / stems / sfx = that tab of the Audio docker", /root\.H3Audio\.tab\(d\.el\)/.test(rd("static", "voicechat.js")));
   /* ---- the PODS docker */
   // 2.780.0: no template tabs any more - 🖥 My pods / 📦 Presets / ＋ Create pod, one view at a time

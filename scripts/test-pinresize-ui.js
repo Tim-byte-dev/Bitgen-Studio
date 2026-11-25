@@ -67,7 +67,7 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
   };
   try {
     const docks = { previewdock: E({ height: 220 }), timelinedock: E({ height: 200 }), videodock: E({ height: 280 }), promptdock: E({ height: 150, floating: false, dock_to: "" }) };   // 2.389.0: the prompt as a COLUMN dock here (it floats by default)
-    for (const id of ["imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "consoledock"]) docks[id] = E({ state: "closed", height: 170 });
+    for (const id of ["imageeditdock", "comfydock", "musicdock", "sfxdock", "chatdock", "consoledock"]) docks[id] = E({ state: "closed", height: 170 });
     for (const id of ["ldock", "refs", "assets", "qdock", "rdock"]) docks[id] = E({ width: 220 });
     await api("POST", "/api/docker-status", { docks });
     await p.goto(URL_, { waitUntil: "domcontentloaded" });

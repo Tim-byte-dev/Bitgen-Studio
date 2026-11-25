@@ -16,7 +16,7 @@
  */
 (function (root) {
   "use strict";
-  var BOTTOM = ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "stemsdock",
+  var BOTTOM = ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock",
                 "sfxdock", "chatdock", "promptdock", "consoledock"];
   var SIDE = ["ldock", "refs", "assets", "qdock", "rdock"];
   var SIDE_CLS = { ldock: "no-left", refs: "no-refs", assets: "no-assets", qdock: "no-queue", rdock: "no-right" };

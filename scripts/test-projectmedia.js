@@ -198,7 +198,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 // ---- 4. wiring ---------------------------------------------------------------------------
 {
   const RI = read("routes", "index.js"), RC = read("routes", "characters.js");
-  const IX = read("static", "index.html"), SD = read("ext", "stemsdock", "stemsdock.js");
+  const IX = read("static", "index.html");
   check("routes: GET /api/pmedia (the scan), GET /pmedia (serve by project path), POST /api/pmedia/adopt",
     RI.includes('app.get("/api/pmedia"') && RI.includes('app.get("/pmedia"') && RI.includes('app.post("/api/pmedia/adopt"'));
   check("routes: a scanned picture can be a scene's first/last frame (kind project) or one of its pictures (refs/project)",
@@ -207,10 +207,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     IX.includes('<script src="/static/pmedia.js"></script>')
     && IX.includes('window.bgMedia.fill($("mv_song"), list, { placeholder: "— no song (silent cut) —" });')
     && IX.includes('const name = await window.bgMedia.resolve(v);'));
-  check("the stems dock's song list is the scan (rescanned as the pointer arrives) and an outside pick is adopted before the waveform loads",
-    SD.includes('return window.bgMedia.load("sound").then(function (list) {')
-    && SD.includes('el("stSong").addEventListener("change", onSongChange);')
-    && SD.includes('window.bgMedia.resolve(v).then(function (name) {'));
+  // 2.966.0: the Stems tab is gone (its ✂ is the 🎹 Synth tab's) - its song-list pin went with it
 }
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

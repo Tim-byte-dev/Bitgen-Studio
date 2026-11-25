@@ -73,7 +73,7 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
   };
   try {
     // a known layout: preview, timeline, video and prompt open; the rest closed
-    const closed = ["imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "consoledock"];
+    const closed = ["imageeditdock", "comfydock", "musicdock", "sfxdock", "chatdock", "consoledock"];
     const docks = { previewdock: E({ height: 220 }), timelinedock: E({ height: 200 }), videodock: E({ height: 280 }), promptdock: E({ height: 150, floating: false, dock_to: "" }) };   // 2.389.0: the prompt as a COLUMN dock here (it floats by default)
     for (const id of closed) docks[id] = E({ state: "closed", height: 170 });
     for (const id of ["ldock", "refs", "assets", "qdock", "rdock"]) docks[id] = E({ width: 220 });
@@ -91,10 +91,10 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
 
     // 2
     check("📌 is the FIRST thing in every dock's header (11 bottom docks + 5 side docks)",
-      await p.evaluate(() => [...document.querySelectorAll("#maincol .bdock")].filter((d) => ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "promptdock", "consoledock"].includes(d.id)).every((d) => d.querySelector(".bhead").firstChild.classList.contains("pinbtn"))   // 2.579.0: the 11 built-in ones (an extension docker, e.g. 📐 SolidCraft, is not in docker_status.json)
+      await p.evaluate(() => [...document.querySelectorAll("#maincol .bdock")].filter((d) => ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "sfxdock", "chatdock", "promptdock", "consoledock"].includes(d.id)).every((d) => d.querySelector(".bhead").firstChild.classList.contains("pinbtn"))   // 2.579.0: the 11 built-in ones (an extension docker, e.g. 📐 SolidCraft, is not in docker_status.json)
         // (a side dock's fold caret, static/sidecollapse.js, sits before it - the pin is the first thing after it)
         && ["ldock", "refsdock", "assetsdock", "qdock", "rdock"].every((id) => { const h = document.getElementById(id).querySelector(".dockhead"), f = h.firstElementChild; return f.classList.contains("pinbtn") || (f.classList.contains("sccaret") && f.nextElementSibling && f.nextElementSibling.classList.contains("pinbtn")); })
-        && document.querySelectorAll(".pinbtn").length === 16 + (document.getElementById("pushpulldock") ? 1 : 0)));   // 2.658.0: + the Sketcher's (it has a height in the column now)
+        && document.querySelectorAll(".pinbtn").length === 15 + (document.getElementById("pushpulldock") ? 1 : 0)));   // 2.658.0: + the Sketcher's (it has a height in the column now)
     await p.click("#timelinedock .pinbtn");
     let st = await status((d) => d.timelinedock.max_height > 0);
     check("📌 pin: max_height = the dock's current height (200), the button lit, written to docker_status.json",

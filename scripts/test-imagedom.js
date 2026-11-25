@@ -1892,7 +1892,7 @@ function route(url, opts) {
       const p1 = posts().slice(n0).pop();
       check("collapsing a dock writes the WHOLE record to /api/docker-status (state closed), debounced",
         posts().length === n0 + 1 && JSON.parse(p1.body).docks.timelinedock.state === "closed"
-        && Object.keys(JSON.parse(p1.body).docks).length === 16, p1 && p1.body.slice(0, 300));
+        && Object.keys(JSON.parse(p1.body).docks).length === 15 /* 2.966.0: - Stems */, p1 && p1.body.slice(0, 300));
       w.toggleCollapse("timelinedock");
       await new Promise((r) => setTimeout(r, 600));
       check("...reopening writes state open at the height it had", JSON.parse(posts().pop().body).docks.timelinedock.state === "open"
@@ -1947,8 +1947,8 @@ function route(url, opts) {
       sent.timelinedock && sent.timelinedock.height === 300 && sent.musicdock.state === "open"
       && sent.chatdock.maximized === false && sent.ldock.hidden === true, sent);
     const st = w.layoutState();
-    check("layoutState() reports every dock (11 bottom + 5 side) in docker_status's shape",
-      Object.keys(st).length === 16 && !!st.stemsdock && !!st.sfxdock && !!st.videodock && !!st.previewdock
+    check("layoutState() reports every dock (10 bottom + 5 side - 2.966.0: Stems retired) in docker_status's shape",
+      Object.keys(st).length === 15 && !st.stemsdock && !!st.sfxdock && !!st.videodock && !!st.previewdock
       && Object.values(st).every((d) => (d.height || d.width) > 0 && ["open", "closed"].includes(d.state)
         && typeof d.hidden === "boolean" && typeof d.maximized === "boolean" && Number.isFinite(d.max_height) && Number.isFinite(d.max_width)), st);
   }

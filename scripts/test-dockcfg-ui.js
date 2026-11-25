@@ -28,7 +28,7 @@ const check = (n, cond, got) => {
   else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); }
 };
 const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
-const K3 = "chatdock+musicdock+timelinedock", K4 = "chatdock+musicdock+stemsdock+timelinedock";
+const K3 = "chatdock+musicdock+timelinedock", K4 = "chatdock+musicdock+sfxdock+timelinedock";
 
 (async () => {
   const b = await chromium.launch();
@@ -51,7 +51,7 @@ const K3 = "chatdock+musicdock+timelinedock", K4 = "chatdock+musicdock+stemsdock
         if (want && el.classList.contains("collapsed")) toggleCollapse(id);
       }
     }, ids);
-    const H = () => ev(() => { const g = (id) => Math.round(document.getElementById(id).getBoundingClientRect().height); return { tl: g("timelinedock"), mu: g("musicdock"), ch: g("chatdock"), st: g("stemsdock"), col: document.getElementById("maincol").clientHeight, key: window.DockCfg.openKey() }; });
+    const H = () => ev(() => { const g = (id) => Math.round(document.getElementById(id).getBoundingClientRect().height); return { tl: g("timelinedock"), mu: g("musicdock"), ch: g("chatdock"), st: g("sfxdock"), col: document.getElementById("maincol").clientHeight, key: window.DockCfg.openKey() }; });
     await setOnly(["timelinedock", "musicdock", "chatdock"]);
     await p.waitForTimeout(500);
 
@@ -81,18 +81,18 @@ const K3 = "chatdock+musicdock+timelinedock", K4 = "chatdock+musicdock+stemsdock
       s1.key === K3 && Math.abs(s1.tl - s0.tl) <= 3 && Math.abs(s1.mu - s0.mu) <= 3 && Math.abs(s1.ch - s0.ch) <= 3, { s0, s1 });
 
     // 3
-    await setOnly(["timelinedock", "musicdock", "chatdock", "stemsdock"]); await p.waitForTimeout(700);
+    await setOnly(["timelinedock", "musicdock", "chatdock", "sfxdock"]); await p.waitForTimeout(700);
     const s2 = await H();
-    check("a 4th docker (Stems) opened: no layout for those 4 yet - nothing loaded, the column still fits", s2.key === K4 && s2.st > 30 && s2.tl + s2.mu + s2.ch + s2.st <= s2.col + 4, s2);
+    check("a 4th docker (SFX) opened: no layout for those 4 yet - nothing loaded, the column still fits", s2.key === K4 && s2.st > 30 && s2.tl + s2.mu + s2.ch + s2.st <= s2.col + 4, s2);
     await ev(() => { setVar("th", 200); setVar("mh", 150); setVar("ch2", 150); setVar("sth", 180); reflowSoon(); });
     await p.waitForTimeout(400);
     const s3 = await H();
     await ev(() => window.DockCfg.save()); await p.waitForTimeout(500);
     await setOnly(["timelinedock", "musicdock", "chatdock"]); await p.waitForTimeout(700);
     const s4 = await H();
-    await setOnly(["timelinedock", "musicdock", "chatdock", "stemsdock"]); await p.waitForTimeout(700);
+    await setOnly(["timelinedock", "musicdock", "chatdock", "sfxdock"]); await p.waitForTimeout(700);
     const s5 = await H();
-    check("...saved for the 4: closing Stems loads the 3's layout, opening it again loads the 4's",
+    check("...saved for the 4: closing SFX loads the 3's layout, opening it again loads the 4's",
       Math.abs(s4.tl - s0.tl) <= 3 && Math.abs(s4.mu - s0.mu) <= 3 && Math.abs(s5.st - s3.st) <= 3 && Math.abs(s5.tl - s3.tl) <= 3 && Math.abs(s5.mu - s3.mu) <= 3, { s0, s3, s4, s5 });
 
     // 4

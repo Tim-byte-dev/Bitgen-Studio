@@ -363,8 +363,6 @@
      every start and could not be dragged, so the elastic video dock was
      squeezed to its floor. It now sizes like the others (--sth, its own
      handle, saved in dockers.json + the layout record) and scrolls inside. */
-  #stemsdock { height: var(--sth); }
-  #stemsdock .bbody { overflow-y: auto; }
   #sfxdock { height: var(--sfh); }                 /* 2.360.0: the SFX dock */
   #sfxdock .bbody { overflow-y: auto; }
   /* THE GENERATION QUEUE (2.122.0, by instruction). Rows for presses of
@@ -1828,7 +1826,6 @@
     <!-- ext:dock imageeditdock -->
     <!-- ext:dock comfydock -->
     <!-- ext:dock musicdock -->
-    <!-- ext:dock stemsdock -->
     <!-- ext:dock sfxdock -->
     <!-- ext:dock synthdock -->
     <!-- ext:dock chatdock -->
@@ -1897,7 +1894,7 @@
   <button id="tV" title="StoryBoard — the scenes with their storyboard pictures, the cast, 360° environments">StoryBoard</button>
   <!-- 2.760.0 (Tim: "put music stems and sfx as tabs in an new docker called audio, remove those buttons from the
        statusbar"): one button - static/audiodock.js -->
-  <button id="tAu" title="Audio docker - Music, Stems, SFX and Synth as its tabs">Audio</button>
+  <button id="tAu" title="Audio docker - Music, SFX and Synth as its tabs">Audio</button>
   <button id="tIE" title="Image editor dock">Editor</button>
   <button id="tCF" title="ComfyUI dock — ComfyUI’s own interface, in this window">ComfyUI</button>
   <button id="tCh" title="Prompt chat dock">Chat</button>
@@ -13313,7 +13310,7 @@ function projectState() {
    the prompt dock's enhanced prompt, the stems dock's song, the SFX dock's pick. (The scene board, its song, the
    chat, characters, environments, references, assets, gallery, render settings and timelines are kept on the
    server per project; the rest of the docks' fields are in the keys above.) */
-const DOCK_FIELDS = ["muTitle", "muFormat", "muVidScenes", "enhancedText", "stSong", "stSegFmt", "sfxSel", "sfxDur"];
+const DOCK_FIELDS = ["muTitle", "muFormat", "muVidScenes", "enhancedText", "sfxSel", "sfxDur"];   // 2.966.0: - the Stems tab fields
 function dockFieldsState() {
   const out = {};
   for (const id of DOCK_FIELDS) { const el = $(id); if (el && el.value !== undefined) out[id] = el.value; }
@@ -14183,7 +14180,7 @@ function setVar(name, px) { R.setProperty("--" + name, px + "px"); store.set("v.
    (window.H3_DOCK_STATUS) so it is applied before the rest of the boot; every drag, collapse, hide, 📌 pin and
    maximize writes the whole record back (debounced) to /api/docker-status. The rules (📌 max, the reflow order)
    are static/dockstatus.js (window.H3DockStatus). */
-const DOCK_VARS = { timelinedock: "th", imageeditdock: "eh", comfydock: "cfh", musicdock: "mh", stemsdock: "sth", sfxdock: "sfh", chatdock: "ch2", promptdock: "ph", consoledock: "ch", pushpulldock: "pph" };   // 2.658.0: + the Sketcher   // 2.299.1: + stemsdock
+const DOCK_VARS = { timelinedock: "th", imageeditdock: "eh", comfydock: "cfh", musicdock: "mh", sfxdock: "sfh", chatdock: "ch2", promptdock: "ph", consoledock: "ch", pushpulldock: "pph" };   // 2.658.0: + the Sketcher   // 2.299.1: + stemsdock   // 2.966.0: - stemsdock (the Stems tab is gone)
 /* The previewdock is fixed (--pvh); the VIDEO dock is the elastic one (2.255.0) - it takes what the fixed docks
    leave, and keeps --vh (its last height) only while ANOTHER dock is the maximized one (2.381.0). */
 const DOCKER_VARS = { ...DOCK_VARS, previewdock: "pvh" };   // 2.255.0: the VIDEO dock is the elastic one
@@ -14672,7 +14669,7 @@ document.querySelectorAll("[data-collapse]").forEach(h => h.onclick = (e) => {
 const GONE_DOCKS = { tP: "promptdock", tT: "timelinedock", tV: "videodock",
                      tPv: "previewdock", tC: "consoledock", tMu: "musicdock",
                      tIE: "imageeditdock", tCF: "comfydock",
-                     tSt: "stemsdock", tSfx: "sfxdock", tCh: "chatdock",
+                     tSfx: "sfxdock", tCh: "chatdock",
                      tSy: "synthdock" };   // 2.386.0: every docker has its button; 2.953.0: 🎹 Synth - a tab of the Audio docker (no button of its own)
 window.H3GoneDocks = GONE_DOCKS;   // 2.392.0: static/dockcfg.js shows / hides a saved set's dockers
 /* 2.386.0 (Tim: "if a docker is visible, either open or closed, highlight the toggle button in the statusbar, the

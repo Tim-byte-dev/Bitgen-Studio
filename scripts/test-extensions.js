@@ -21,14 +21,14 @@ function check(name, cond, extra) {
 
 const BASE = path.join(__dirname, "..");
 const DOCKS = ["previewdock", "timelinedock", "videodock", "imageeditdock",
-               "comfydock", "musicdock", "stemsdock",   // 2.269.0: Stems at column 65
+               "comfydock", "musicdock",                // 2.269.0 Stems at column 65 - retired in 2.966.0 (the 🎹 Synth tab's ✂)
                "sfxdock",                               // 2.360.0: SFX at column 66
                "synthdock",                             // 2.953.0: 🎹 Synth at column 67 (the Audio docker's 4th tab)
                "chatdock", "promptdock", "consoledock"];
 
 /* ---- the real install ---- */
 const exts = ext.list(BASE);
-check("all ELEVEN dockers are installed extensions (Stems joined at 2.269.0, SFX at 2.360.0)",
+check("all the dockers are installed extensions (SFX joined at 2.360.0, Synth at 2.953.0; Stems retired at 2.966.0)",
   DOCKS.every((d) => exts.some((e) => e.id === d)), exts.map((e) => e.id));
 check("emission order is column order",
   exts.map((e) => e.id).join(",").indexOf(DOCKS.join(",")) !== -1,
@@ -55,6 +55,15 @@ for (const d of DOCKS)
   check(d + " is OUT of the shell", !shell.includes('<div class="bdock" id="' + d + '"'));
 check("the shell holds one marker per docker",
   DOCKS.every((d) => shell.split("<!-- ext:dock " + d + " -->").length === 2));
+// 2.966.0 (Tim: "remove the stems tab. i think the synth tab covers it now"): a retired extension is never loaded, even when an
+// older install still has its folder, and its zip is not installed again
+{
+  const os = require("os"), tb = fs.mkdtempSync(path.join(os.tmpdir(), "ext966_"));
+  for (const id of ["stemsdock", "keepdock"]) { fs.mkdirSync(path.join(tb, "ext", id), { recursive: true }); fs.writeFileSync(path.join(tb, "ext", id, "ext.json"), JSON.stringify({ id, name: id, html: "dock.html" })); }
+  check("2.966.0: the Stems tab is retired - gone from ext/, never listed even when an old folder is still there",
+    ext.RETIRED.includes("stemsdock") && !fs.existsSync(path.join(BASE, "ext", "stemsdock")) && ext.list(tb).map((e) => e.id).join() === "keepdock" && !shell.includes("ext:dock stemsdock"));
+  fs.rmSync(tb, { recursive: true, force: true });
+}
 check("the shell holds the catch-all slot for dockers installed later",
   shell.includes("<!-- ext:dock * -->"));
 

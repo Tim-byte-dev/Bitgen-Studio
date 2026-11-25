@@ -34,7 +34,7 @@
   "use strict";
   const GROUP = "fd-dockers";
   // 2.558.0: + the side dockers (Settings, References, Assets, Queue, Gallery); the StoryBoard keeps its own ⇱ (OWN)
-  const CANDIDATES = ["previewdock", "timelinedock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "consoledock",
+  const CANDIDATES = ["previewdock", "timelinedock", "imageeditdock", "comfydock", "musicdock", "sfxdock", "chatdock", "consoledock",
                       "ldock", "refsdock", "assetsdock", "qdock", "rdock"];
   /** 2.558.0: a side docker's column class on #app (its column goes to 0 while the docker is out) */
   /** 2.558.0: dockers that float through H3Panels on their own (their record) - dragged in by their title bar too */

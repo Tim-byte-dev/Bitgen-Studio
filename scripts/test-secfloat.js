@@ -43,7 +43,7 @@ try {
   check("docker_status.json: floats.basic / floats.llmtok (+ 2.399.0 floats.camera, the timeline's 🎥 Camera panel; 2.419.0 floats.negprompt, the ⊖ negative prompt; 2.711.0 floats.community, 💬 Community), hidden and unplaced at first",
     JSON.stringify(d0.floats) === `{"basic":${F0},"llmtok":${F0},"camera":${F0},"negprompt":${F0},"community":${F0}}`, d0.floats);   // 2.398.0: + where it is docked
   const r1 = DS.save(base, { floats: { basic: { shown: true, x: 400, y: 120, w: 360, h: 99999 }, junk: { shown: true } } });
-  check("save: merged and clamped, unknown floats dropped, the dockers untouched", r1.floats.basic.shown && r1.floats.basic.x === 400 && r1.floats.basic.h === 4000 && !r1.floats.junk && Object.keys(r1.docks).length === 16, r1.floats);
+  check("save: merged and clamped, unknown floats dropped, the dockers untouched", r1.floats.basic.shown && r1.floats.basic.x === 400 && r1.floats.basic.h === 4000 && !r1.floats.junk && Object.keys(r1.docks).length === 15 /* 2.966.0: - stemsdock */, r1.floats);
   const r2 = DS.save(base, { floats: { llmtok: { shown: true } } });
   check("...one float at a time (the other kept)", r2.floats.basic.x === 400 && r2.floats.llmtok.shown === true && JSON.parse(fs.readFileSync(path.join(base, "docker_status.json"), "utf8")).floats.llmtok.shown === true);
   check("inject: the page head carries the floats", /"floats":\{"basic":\{"shown":true/.test(DS.inject("<head></head>", r2)));

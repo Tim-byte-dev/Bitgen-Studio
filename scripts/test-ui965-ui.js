@@ -42,6 +42,8 @@ function wav(f, secs) { const rate = 22050, n = Math.round(secs * rate), b = Buf
   const tl = () => ev(() => window.H3SynthTL.tl());
   const si = () => ev(() => window.H3SynthSing.info());
   const waitLast = (kind, n) => p.waitForFunction((a) => { const i = window.H3SynthSing.info(); return !i.busy && i.last && i.last.kind === a[0] && window.H3SynthTL.tl().layers.length === a[1]; }, [kind, n], { timeout: 30000 });
+  const STEMS = { installed: false };                              // 2.966.0: ✂ asks for the song separation first
+  await p.route("**/api/stems", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: STEMS.installed, model: "htdemucs", device: "auto" }) }));
   try {
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => window.H3Synth && window.H3SynthTL && window.H3SynthSing && typeof dsReady !== "undefined" && dsReady && document.querySelector("#synthdock .autabs"), null, { timeout: 60000 });
@@ -63,6 +65,16 @@ function wav(f, secs) { const rate = 22050, n = Math.round(secs * rate), b = Buf
     const clip = wav(path.join(require("os").tmpdir(), "ui965 my voice.wav"), 3);
     await p.setInputFiles("#sySingFile", clip); await p.waitForFunction(() => /ui965 my voice/.test(document.getElementById("sySingVoice").value), null, { timeout: 15000 });
     check("📂 a recording of your voice -> your clips, picked, its length shown", /ui965 my voice · 0:03/.test(await ev(() => document.getElementById("sySingVoice").selectedOptions[0].textContent)) && /is your voice now/.test((await si()).msg));
+    // 2.966.0: ✂ with the song separation not installed -> the Download / Cancel box BEFORE anything is rendered
+    await p.click("#sySingSep");
+    await p.waitForSelector("#niDlg[open]", { timeout: 8000 }).catch(() => {});
+    const nb = await ev(() => { const d = document.getElementById("niDlg"); return d ? { which: d.dataset.which, text: d.textContent } : null; });
+    if (nb) await p.click("#niCancel");
+    await p.waitForFunction(() => !window.H3SynthSing.info().busy, null, { timeout: 8000 }).catch(() => {});
+    const nm = await si();
+    check("✂ with the song separation not installed: the Download / Cancel box first; Cancel = nothing split, it says so",
+      nb && nb.which === "demucs" && /splits the song on the picked layer/.test(nb.text) && /asks to download the song separation first/.test(nm.msg) && (await tl()).layers.length === 1, { nb, nm });
+    STEMS.installed = true;
     // ✂ Separate vocals on the picked layer
     await p.click("#sySingSep"); await waitLast("separate", 3);
     const t1 = await tl(), l1 = (await si()).last;

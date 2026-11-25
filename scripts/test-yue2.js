@@ -1345,16 +1345,11 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
     return R.includes('app.get("/api/stems"') && R.includes('app.post("/api/stems/separate"')
       && R.includes('"whisper", "omnivoice", "demucs"');
   })());
-  const E = read("ext", "stemsdock", "ext.json");
-  check("the Stems dock is a real extension at column 65 with its own script", (() => {
-    const j = JSON.parse(E);
-    return j.id === "stemsdock" && j.order === 65 && j.scripts.includes("stemsdock.js")
-      && read("static", "index.html").includes("<!-- ext:dock stemsdock -->");
-  })());
-  const D = read("ext", "stemsdock", "stemsdock.js");
-  check("the dock wires: song select from passets, ✂🎤 separate, ⚙ install via the audio-install job", (() => {
-    return D.includes('fetch("/api/passets")') && D.includes('"/api/stems/separate"')
-      && D.includes('"/api/audio/install"') && D.includes('which: "demucs"');
+  // 2.966.0 (Tim: "remove the stems tab. i think the synth tab covers it now"): the Stems dock extension is retired - the
+  // routes above stay (the 🎹 Synth tab's ✂ Separate vocals, the Song tab, Sheet music use them)
+  check("the Stems dock is retired: no ext/stemsdock, no marker; lib/extensions.js never loads an old copy", (() => {
+    return !require("fs").existsSync(require("path").join(__dirname, "..", "ext", "stemsdock")) && !read("static", "index.html").includes("<!-- ext:dock stemsdock -->")
+      && require("../lib/extensions").RETIRED.includes("stemsdock");
   })());
   const C = read("lib", "core.js");
   check("stems config: DEFAULT_CONFIG + default.settings agree on the htdemucs shape", (() => {
@@ -1600,22 +1595,6 @@ setTimeout(() => {
 // after the song dropdown in stems, allow user to upload songs from
 // anywhere") --------------------------------------------------------------
 {
-  const D = read("ext", "stemsdock", "dock.html");
-  check("2.272.0: 📂 stBrowse sits AFTER the song dropdown and BEFORE ⟳, with a hidden multiple picker whose accept list is EXPLICIT audio types (opus included, no slash-star wildcard)",
-    D.indexOf('id="stSong"') < D.indexOf('id="stBrowse"')
-    && D.indexOf('id="stBrowse"') < D.indexOf('id="stRefresh"')
-    && D.includes('id="stFile"') && D.includes("multiple")
-    && D.includes("audio/wav, audio/x-wav, audio/mpeg, audio/flac, audio/ogg, audio/mp4, audio/x-m4a, audio/opus"));
-  const J = read("ext", "stemsdock", "stemsdock.js");
-  check("2.272.0: uploads run ONE AFTER ANOTHER to /api/stems/upload, the status line names the file in flight, and loadSongs(prefer) selects the newest upload race-free",
-    J.includes('fetch("/api/stems/upload", { method: "POST", body: fd })')
-    && J.includes("chain = chain.then(function () {")
-    && J.includes('say("uploading " + f.name')
-    && J.includes("function loadSongs(prefer)")
-    && J.includes("var keep = prefer || sel.value;")
-    && J.includes("loadSongs(done[done.length - 1]);"));
-  check("2.272.0: the dock's song filter knows opus (core's PKINDS sound list)",
-    J.includes("/\\.(wav|mp3|flac|ogg|m4a|opus)$/i"));
   const RI = read("routes", "index.js");
   check("2.272.0: ONE asset-save path — saveAssetFile is shared by /api/passets and the 512MB /api/stems/upload, and a non-audio upload is unlinked and refused in words",
     RI.includes("function saveAssetFile(file)")
@@ -1623,203 +1602,10 @@ setTimeout(() => {
     && RI.includes('app.post("/api/stems/upload", stemUpload.single("file")')
     && RI.includes('if (r.kind !== "sound") {')
     && RI.includes("not an audio file"));
-  check("2.272.0 LIVE jsdom: 📂 → picker, a picked file posts to /api/stems/upload and the dropdown re-reads AND selects the upload",
-    (() => {
-      const probe = `
-const { JSDOM } = require("jsdom");
-const fs = require("fs");
-const dom = new JSDOM('<div class="bdock" id="stemsdock"><div class="bbody">'
-  + '<select id="stSong"></select><button id="stBrowse"></button>'
-  + '<input type="file" id="stFile" multiple><button id="stRefresh"></button>'
-  + '<button id="stGo"></button><button id="stInstall"></button>'
-  + '<div id="stMsg"></div><div id="stOut"></div></div></div>', { url: "http://x/" });
-const w = dom.window;
-global.window = w; global.document = w.document;
-global.FormData = w.FormData; global.File = w.File;
-const hits = [];
-w.fetch = global.fetch = (u, o) => {
-  hits.push(String(u));
-  if (String(u) === "/api/stems/upload")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { ok: true, name: "Anywhere Song.wav", kind: "sound" }) });
-  if (String(u) === "/api/passets")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { sound: [{ name: "old.mp3" }, { name: "Anywhere Song.wav" }] }) });
-  return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-};
-eval(fs.readFileSync("ext/stemsdock/stemsdock.js", "utf8"));
-const inp = w.document.getElementById("stFile");
-const f = new w.File(["RIFF"], "Anywhere Song.wav", { type: "audio/wav" });
-Object.defineProperty(inp, "files", { value: [f] });
-inp.dispatchEvent(new w.Event("change"));
-setTimeout(() => {
-  const sel = w.document.getElementById("stSong");
-  console.log("@@UP " + (hits.includes("/api/stems/upload")
-    && sel.value === "Anywhere Song.wav"
-    && w.document.getElementById("stMsg").textContent.includes("1 song(s) added")));
-}, 80);`;
-      const out = execFileSync(process.execPath, ["-e", probe],
-        { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 60000 });
-      return out.split("\n").some((l) => l.trim() === "@@UP true");
-    })());
+  // 2.966.0: the Stems tab is retired (Tim: "remove the stems tab. i think the synth tab covers it now") - its dock checks went with it
 }
 
-// ---- 2.273.0: three waveforms + play (Tim: "add 3 waveforms, 1 for full
-// song, 1 for vocals and 1 for instruments, add a play button next to each
-// one, to the stems docker") ----------------------------------------------
-{
-  const D = read("ext", "stemsdock", "dock.html");
-  check("2.273.0: three rows in the dock — full song / vocals / instruments — each with its OWN ▶ and canvas, hidden until the file exists",
-    ["stRowSong", "stRowVoc", "stRowInst"].every((id) =>
-      D.includes('id="' + id + '"') && D.indexOf('class="strow hidden" id="' + id + '"') >= 0)
-    && ["stPlaySong", "stPlayVoc", "stPlayInst"].every((id) => D.includes('id="' + id + '"'))
-    && ["stWaveSong", "stWaveVoc", "stWaveInst"].every((id) => D.includes('id="' + id + '"')));
-  const J = read("ext", "stemsdock", "stemsdock.js");
-  check("2.273.0: peaks ride the app's ONE extractor (/api/waveform, src=sound), audio streams from /passets/sound/, each row maps to ITS OWN canvas, and playing one row pauses the others",
-    J.includes('fetch("/api/waveform?src=sound&name=" + encodeURIComponent(file)')
-    && J.includes('new Audio("/passets/sound/" + encodeURIComponent(w.file)')
-    && J.includes('(w.bust ? "&t=" + w.bust : "")')   // 2.276: post-edit cache-buster
-    && J.includes('cv: "stWaveSong"') && J.includes('cv: "stWaveVoc"')
-    && J.includes('cv: "stWaveInst"')
-    && J.includes("function stopOthers(me)")
-    && J.includes("if (w !== me && w.audio && !w.audio.paused) w.audio.pause();"));
-  check("2.273.0: the stem rows derive their names from the SELECTED song exactly as lib/stems names its outputs (<base>_vocals.wav / <base>_instrumental.wav), and the drawing re-measures on dock resize (the 2.253 ext-owns-its-size lesson)",
-    J.includes('voc: b + "_vocals.wav", inst: b + "_instrumental.wav"')
-    && J.includes("cv.clientWidth")
-    && J.includes("new ResizeObserver(")
-    // 2.298.0: the change goes through onSongChange (adopts a scanned pick
-    // from another project folder first), which still redraws the rows
-    && J.includes("addEventListener(\"change\", onSongChange)")
-    && /function onSongChange\(\) \{[\s\S]*?stWavesRefresh\(\);/.test(J));
-  check("2.273.0 LIVE jsdom: selecting a song shows its row, fetches ITS peaks, ▶ builds the row's audio from /passets/sound/, and a missing stem row stays hidden",
-    (() => {
-      const probe = `
-const { JSDOM } = require("jsdom");
-const fs = require("fs");
-const rows = ["Song","Voc","Inst"].map((k) =>
-  '<div class="strow hidden" id="stRow'+k+'"><button id="stPlay'+k+'"></button>'
-  + '<canvas id="stWave'+k+'"></canvas></div>').join("");
-const dom = new JSDOM('<div class="bdock" id="stemsdock"><div class="bbody">'
-  + '<select id="stSong"></select><button id="stBrowse"></button>'
-  + '<input type="file" id="stFile" multiple><button id="stRefresh"></button>'
-  + '<button id="stGo"></button><button id="stInstall"></button>'
-  + '<div id="stMsg"></div><div id="stOut"></div>' + rows
-  + '</div></div>', { url: "http://x/", pretendToBeVisual: true });
-const w = dom.window;
-global.window = w; global.document = w.document;
-const waveHits = [];
-w.Audio = global.Audio = function (src) {
-  this.src = src; this.paused = true;
-  this.play = () => { this.paused = false; return Promise.resolve(); };
-  this.pause = () => { this.paused = true; };
-  this.addEventListener = () => {};
-};
-w.fetch = global.fetch = (u) => {
-  const url = String(u);
-  if (url === "/api/passets")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { sound: [{ name: "tune.mp3" }, { name: "tune_vocals.wav" }] }) });
-  if (url.startsWith("/api/waveform")) {
-    waveHits.push(url);
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { peaks: [10, 200, 10], seconds: 3 }) });
-  }
-  return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-};
-eval(fs.readFileSync("ext/stemsdock/stemsdock.js", "utf8"));
-setTimeout(() => {
-  const sel = w.document.getElementById("stSong");
-  sel.value = "tune.mp3";
-  sel.dispatchEvent(new w.Event("change"));
-  setTimeout(() => {
-    const songShown = !w.document.getElementById("stRowSong").classList.contains("hidden");
-    const vocShown = !w.document.getElementById("stRowVoc").classList.contains("hidden");
-    const instHidden = w.document.getElementById("stRowInst").classList.contains("hidden");
-    w.document.getElementById("stPlaySong").onclick();
-    const audioOk = waveHits.some((u) => u.includes("tune.mp3"))
-      && waveHits.some((u) => u.includes("tune_vocals.wav"))
-      && !waveHits.some((u) => u.includes("instrumental"));
-    console.log("@@WV " + (songShown && vocShown && instHidden && audioOk));
-  }, 60);
-}, 60);`;
-      const out = execFileSync(process.execPath, ["-e", probe],
-        { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 60000 });
-      return out.split("\n").some((l) => l.trim() === "@@WV true");
-    })());
-}
-
-// ---- 2.274.0: install-button auto-hide + the animated Separate (Tim:
-// "check to see if demcus is installed, if it is installed then hide the
-// install button. when the separate button is pressed, change button text
-// to separating... (animate text until separation is complete) and change
-// back to separate on complete separation") -------------------------------
-{
-  const J = read("ext", "stemsdock", "stemsdock.js");
-  const D = read("ext", "stemsdock", "dock.html");
-  // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): no longer hidden - ⟳ Reinstall
-  check("2.274.0 → 2.601.0: status() turns ⚙ Install into ⟳ Reinstall exactly when /api/stems says installed (it was hidden) — and ⟳ re-checks",
-    J.includes('else ib.textContent = j.installed ? "⟳ Reinstall" : "⚙ Install";') && J.includes('window.H3Install.set(ib, !!j.installed, { install: "⚙ Install" });')
-    && J.includes('el("stRefresh").onclick = function () { loadSongs(); status(); };'));
-  check("2.274.0: the Separate button animates 'separating' with a walking dot (400ms interval), restores its EXACT dock label on BOTH the success and failure paths, and the interval is always cleared",
-    J.includes('var SEP_LABEL = "✂🎤 Separate";')
-    && D.includes(">✂🎤 Separate</button>")
-    && J.includes('b.textContent = "separating" + new Array(dots + 1).join(".");')
-    && J.includes("}, 400);")
-    && J.includes("if (sepTimer) { clearInterval(sepTimer); sepTimer = null; }")
-    && J.includes("sepAnimStop(b);\n        if (j.error)")
-    && J.includes('.catch(function (e) { b.disabled = false; sepAnimStop(b); say("separation failed: '));
-  check("2.274.0 LIVE jsdom: installed:true = ⟳ Reinstall (2.601.0, was hidden), pressing ✂🎤 walks the dots while the separate is in flight, and the label returns on completion",
-    (() => {
-      const probe = `
-const { JSDOM } = require("jsdom");
-const fs = require("fs");
-const dom = new JSDOM('<div class="bdock" id="stemsdock"><div class="bbody">'
-  + '<select id="stSong"><option value="tune.mp3">tune.mp3</option></select>'
-  + '<button id="stBrowse"></button><input type="file" id="stFile" multiple>'
-  + '<button id="stRefresh"></button>'
-  + '<button id="stGo">✂🎤 Separate</button>'
-  + '<button id="stInstall">⚙ Install</button>'
-  + '<div id="stMsg"></div><div id="stOut"></div></div></div>', { url: "http://x/" });
-const w = dom.window;
-global.window = w; global.document = w.document;
-let sepResolve = null;
-w.fetch = global.fetch = (u) => {
-  const url = String(u);
-  if (url === "/api/stems")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { installed: true, model: "htdemucs", device: "auto" }) });
-  if (url === "/api/stems/separate")
-    return new Promise((res) => { sepResolve = () => res({ ok: true,
-      json: () => Promise.resolve({ ok: true, vocals: "v.wav", instrumental: "i.wav" }) }); });
-  if (url === "/api/passets")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { sound: [{ name: "tune.mp3" }] }) });   // loadSongs repaints the select from THIS
-  return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-};
-eval(fs.readFileSync("ext/stemsdock/stemsdock.js", "utf8"));
-setTimeout(() => {
-  const inst = w.document.getElementById("stInstall");
-  const go = w.document.getElementById("stGo");
-  const hidden = !inst.classList.contains("hidden") && inst.textContent === "⟳ Reinstall";   // 2.601.0
-  go.onclick();
-  const atPress = go.textContent;
-  setTimeout(() => {
-    const midFlight = go.textContent;
-    sepResolve();
-    setTimeout(() => {
-      console.log("@@SEP " + (hidden
-        && atPress === "separating"
-        && midFlight.startsWith("separating") && midFlight !== atPress
-        && go.textContent === "✂🎤 Separate"
-        && !go.disabled));
-    }, 60);
-  }, 450);
-}, 60);`;
-      const out = execFileSync(process.execPath, ["-e", probe],
-        { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 60000 });
-      return out.split("\n").some((l) => l.trim() === "@@SEP true");
-    })());
-}
+// ---- 2.273.0 / 2.274.0: the Stems dock's waveforms, play and install button - retired with the dock in 2.966.0
 
 // ---- 2.275.0: the music-video ask wires the whole flow (Tim: "when i ask
 // to create the music video change the video dockers workflow to the music
@@ -1953,57 +1739,7 @@ setTimeout(() => {
         && ST.includes("is held open by another program")
         && ST.includes("volume=enable='between(t,");
     })());
-  const D = read("ext", "stemsdock", "dock.html");
-  const J = read("ext", "stemsdock", "stemsdock.js");
-  check("2.276.0/2.277.0: the number inputs are GONE, 💾 stays icon-only per row, DRAG selects (4px threshold), a click OUTSIDE the selection still clears-and-seeks, the overlay is translucent tiger, and every apply reloads with a cache-buster",
-    ["stSaveSong", "stSaveVoc", "stSaveInst"].every((id) => D.includes('id="' + id + '"'))
-    && !D.includes("stVolSong") && !D.includes("stVolVoc") && !D.includes("stVolInst")
-    && J.includes("if (Math.abs(ev.clientX - drag.x0) >= 4) drag.moved = true;")
-    && J.includes("w.sel = null;                       // a click clears the selection…")
-    && J.includes("ctx.globalAlpha = 0.25;")
-    && J.includes('fetch("/api/stems/volume", {')
-    && J.includes("w.bust = Date.now();"));
-  check("2.276.0 LIVE jsdom: 💾 with no selection refuses in words and posts NOTHING",
-    (() => {
-      const probe = `
-const { JSDOM } = require("jsdom");
-const fs = require("fs");
-const rows = ["Song","Voc","Inst"].map((k) =>
-  '<div class="strow hidden" id="stRow'+k+'"><button id="stPlay'+k+'"></button>'
-  + '<canvas id="stWave'+k+'"></canvas><input id="stVol'+k+'" value="0">'
-  + '<button id="stSave'+k+'"></button></div>').join("");
-const dom = new JSDOM('<div class="bdock" id="stemsdock"><div class="bbody">'
-  + '<select id="stSong"></select><button id="stBrowse"></button>'
-  + '<input type="file" id="stFile" multiple><button id="stRefresh"></button>'
-  + '<button id="stGo"></button><button id="stInstall"></button>'
-  + '<div id="stMsg"></div><div id="stOut"></div>' + rows
-  + '</div></div>', { url: "http://x/", pretendToBeVisual: true });
-const w = dom.window;
-global.window = w; global.document = w.document;
-const hits = [];
-w.fetch = global.fetch = (u) => {
-  hits.push(String(u));
-  if (String(u) === "/api/passets")
-    return Promise.resolve({ ok: true, json: () => Promise.resolve(
-      { sound: [{ name: "tune.mp3" }] }) });
-  return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-};
-eval(fs.readFileSync("ext/stemsdock/stemsdock.js", "utf8"));
-setTimeout(() => {
-  const sel = w.document.getElementById("stSong");
-  sel.value = "tune.mp3";
-  sel.dispatchEvent(new w.Event("change"));
-  setTimeout(() => {
-    w.document.getElementById("stSaveSong").onclick();
-    const msg = w.document.getElementById("stMsg").textContent;
-    console.log("@@VS " + (msg.includes("drag across the")
-      && !hits.some((u) => String(u).includes("/api/stems/volume"))));
-  }, 60);
-}, 60);`;
-      const out = execFileSync(process.execPath, ["-e", probe],
-        { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 60000 });
-      return out.split("\n").some((l) => l.trim() === "@@VS true");
-    })());
+  // 2.966.0: the Stems tab is retired (Tim: "remove the stems tab. i think the synth tab covers it now") - its dock checks went with it
 }
 
 // ---- 2.277.0: the inline volume slider + the Windows lock fix (Tim:
@@ -2042,22 +1778,7 @@ setTimeout(() => {
         try { fs.unlinkSync(p2 + ".volbase"); } catch {}
       }
     })());
-  const J = read("ext", "stemsdock", "stemsdock.js");
-  check("2.277.0: ONE popover — range 0–200 + live % label + ✕, a click INSIDE the selection opens it above the region, 💾 opens the same popover, ✕ and any outside pointerdown close it",
-    J.includes('POP.id = "stVolPop";')
-    && J.includes('rng.min = "0"; rng.max = "200";')
-    && J.includes('lab.textContent = rng.value + "%";')
-    && J.includes('x.textContent = "✕";')
-    && J.includes("if (w.sel && f != null && f >= w.sel.a && f <= w.sel.b) {")
-    && J.includes("popOpenFor(w);")
-    && J.includes("if (POP.contains(ev.target)) return;")
-    && J.includes("popClose();"));
-  check("2.277.0: INSTANT apply on slider change with rebase discipline — first apply of a selection sends rebase:true, later ones false, a NEW drag re-arms it, and the client RELEASES its Audio handle before posting (the EPERM fix's client half)",
-    J.includes('rng.addEventListener("change", function () { popApply(parseInt(rng.value, 10)); });')
-    && J.includes("popNeedsRebase = true;            // a new region = a new base session")
-    && J.includes("gain: pct / 100, rebase: rebase }) })")
-    && J.includes("popNeedsRebase = false;          // later changes edit from the base")
-    && J.includes('w.audio.pause(); w.audio.src = ""; w.audio.load();'));
+  // 2.966.0: the Stems tab is retired (Tim: "remove the stems tab. i think the synth tab covers it now") - its dock checks went with it
 }
 
 // ---- 2.278.0: errors with an ADDRESS + the MMH3 conversion pin (Tim:
@@ -2449,19 +2170,10 @@ print('@@SG ok')
     (() => {
       const ST = read("lib", "stems.js");
       const RI = read("routes", "index.js");
-      const DK = read("ext/stemsdock", "stemsdock.js");
-      const DH = read("ext/stemsdock", "dock.html");
       return ST.includes('? ["-segment_times", segMap.boundaries.map((t) => t.toFixed(3)).join(",")]')
         && ST.includes(': ["-segment_time", String(SEG_SECONDS)];')
         && RI.includes('app.get("/api/stems/segments"')
         && RI.includes('app.post("/api/stems/segments"')
-        && DK.includes("var SEGS = null;")
-        && DK.includes("for (var bi = 0; bi < SEGS.boundaries.length; bi++)")
-        && DK.includes('ctx.textAlign = "center";')
-        && DK.includes("segRecalc(); segSave(); redrawAll();")
-        && DK.includes("var lo = drag.seg > 0 ? SEGS.boundaries[drag.seg - 1] + 1 : 1;")
-        && DH.includes('id="stSegSong"') && DH.includes('id="stSegVoc"')
-        && DH.includes('id="stSegInst"');
     })());
   check("2.285.0: the iterative writer counts scenes FROM THE MAP (song from the request or the last split), pins each shot's length to its segment (seconds x 24, normalize snaps), and tells the model each round how long its segment lasts",
     (() => {
@@ -2504,35 +2216,7 @@ print('@@SM ok')
         { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 90000 });
       return out.split("\n").some((l) => l.trim() === "@@SM ok");
     })());
-  check("2.286.0: the dock has the shared VIEW - zoom in/out around the centre, reset, wheel pan when zoomed, every drawn thing (peaks, playhead, selection, lines, labels) mapped through vToF/fToView, and the three zoom buttons wired",
-    (() => {
-      const DK = read("ext/stemsdock", "stemsdock.js");
-      const DH = read("ext/stemsdock", "dock.html");
-      return DK.includes("var VIEW = { t0: 0, t1: 1 };")
-        && DK.includes("function viewZoom(factor)")
-        && DK.includes("function viewPan(df)")
-        && DK.includes("var sf = vToF(x / cv.width);")
-        && DK.includes("var sa = fToView(w.sel.a), sb = fToView(w.sel.b);")
-        && DK.includes("fToView(SEGS.boundaries[bi] / SEGS.total)")
-        && DK.includes('cv.addEventListener("wheel"')
-        && DK.includes("vToF(f) * w.audio.duration")
-        && DH.includes('id="stZoomIn"') && DH.includes('id="stZoomReset"');
-    })());
-  check("2.286.0: a label click opens the number input, a typed value LOCKS the segment ([manual], lock glyph, saved), later open segments absorb the change with 1s floors and locked neighbours refuse in words, and a locked segment's BODY drags whole (both cuts together) while its bordering lines refuse",
-    (() => {
-      const DK = read("ext/stemsdock", "stemsdock.js");
-      return DK.includes("function setManualDuration(i, v)")
-        && DK.includes("function segInputOpen(i, ev)")
-        && DK.includes("if (li >= 0) { segInputOpen(li, ev); return; }")
-        // 2.289.0: the typed-duration rule moved to core static/segmap.js
-        && DK.includes("window.SegMap.setManual(SEGS, i, v)")
-        && read("static", "segmap.js").includes("S.manual[i] = true;")
-        && DK.includes("that cut borders a locked segment")
-        && DK.includes("drag the entire segment maintaining the")
-        && DK.includes("SEGS.boundaries[i2 - 1] = st0 + dt;")
-        && DK.includes("SEGS.boundaries[i2] = en0 + dt;")
-        && DK.includes('manual: SEGS.manual || [] }) })');
-    })());
+  // 2.966.0: the Stems dock's zoom and typed durations went with the dock (the video docker has its own segment strip)
 }
 
 // ---- 2.287.0: SEGMENT EXPORT + SEND-TO-VIDEO (Tim: save files to
@@ -2581,8 +2265,6 @@ print('@@EX ok')
   check("2.287.0: the routes and the menubar ship - POST /api/stems/export and /send-to-video (blank scenes + segment binding + the note in words), the format picker, and the two icon-only buttons wired",
     (() => {
       const RI = read("routes", "index.js");
-      const DK = read("ext/stemsdock", "stemsdock.js");
-      const DH = read("ext/stemsdock", "dock.html");
       const ST = read("lib", "stems.js");
       // 2.289.0: the staging moved to lib/segBoard.js (ONE path shared
       // with the video docker's 💾) - the pins follow it there
@@ -2595,10 +2277,6 @@ print('@@EX ok')
         && SB.includes('fills them in')
         && ST.includes('"songs", base, "segments");')
         && ST.includes('args.push("-c:a", "pcm_s16le");')
-        && DH.includes('id="stSegFmt"') && DH.includes('id="stSegExport"')
-        && DH.includes('id="stSegSend"')
-        && DK.includes('fetch("/api/stems/export"')
-        && DK.includes('fetch("/api/stems/send-to-video"');
     })());
 }
 

@@ -1797,7 +1797,7 @@ vocal and its instrumental. Both buttons work on the **picked layer** (click its
   (so you get its vocals and instrumental layers too). The new layer (*"… · your voice (Seed-VC)"*) starts at 0:00 under the
   others and the vocal it came from is muted - unmute it to compare. ▶ on an instrumental layer is refused.
 - **✂ Separate vocals** - the picked layer gets two more layers: its **vocals** and its **instrumental** (demucs, the same
-  song separation as the Stems tab - the Download / Cancel box if it is not installed). The original stays as the first
+  song separation as Sheet music's ✂ Split into layers - the Download / Cancel box if it is not installed). The original stays as the first
   layer, muted (unmute it to hear the whole song).
 - The layer is rendered dry for both - its clips, fades and keyframes, without its volume, pan, EQ or reverb - and the
   results go into 📂 My samples, so they are in the timeline's sounds too. The row shows what the model is doing and for
@@ -3189,7 +3189,8 @@ internet.
 
 - **Music** docker — a song from lyrics and a style (MiniMax Music3 through
   ComfyUI, or YuE2), covers and sheet music.
-- **Stems** — split a song into vocals / drums / bass / other (demucs).
+- **Separating a song** — its vocals and instrumental with the 🎹 Synth tab's ✂ Separate vocals, or vocals / drums / bass /
+  other in Sheet music (demucs). (The Stems tab did this until 2.966.0.)
 - **Voices** — clone a voice from a short clip or a waveform region, then
   speak text with it (OmniVoice); transcribe speech with faster-whisper;
   **🎤 Speak** dictates into the prompt.
@@ -8121,7 +8122,7 @@ playing (2.725.1).
   - with **🎹 the notes**, a button for each staff - click one to mute or unmute it, **Shift+click** to hear that one alone
     (Shift+click it again for all of them);
   - with **🎵 the song**, **Vocals** and **Instruments**, once the song has been separated into its stems. A song that has
-    not been separated yet shows **✂ Separate vocals**: it runs the Stems docker's separation (demucs, on this computer)
+    not been separated yet shows **✂ Separate vocals**: it runs the song separation (demucs, on this computer)
     and the two buttons appear when it is done.
 - The song can only be split into the singing and everything else (that is what the separation makes), so the separate
   instruments can be turned on and off with the notes, not inside the recording.
@@ -8135,8 +8136,8 @@ playing (2.725.1).
   button to turn it on or off (**Shift+click** = that layer alone; Shift+click again for all of them). Click anywhere on a
   waveform to play from there.
 - A song that has not been split shows one **Song** lane and **✂ Split into layers**: it splits the song on this computer
-  (demucs) into **Vocals, Drums, Bass** and **Other** (everything else), which takes a minute or two. A song already split in
-  the Stems docker shows its **Vocals** and **Instruments** until you split it into four.
+  (demucs) into **Vocals, Drums, Bass** and **Other** (everything else), which takes a minute or two. A song already split into
+  its vocals and instrumental (the older Stems tab) shows its **Vocals** and **Instruments** until you split it into four.
 - **Sync (s)** still lines the song up with the notes when the song has an intro before bar 1.
 
 ## ✨ Create: a song's layers and its sheet music in one press (2.739.0)
@@ -8552,6 +8553,9 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   reads **Audio** with the tabs **🎵 Music · 🎚 Stems · 💥 SFX**: a tab shows that one and puts the others away. Each tab
   keeps its own height, ▾ fold, ⛶ maximize and ⇱ float. Anything that opens one of them - a workspace, a saved docker
   layout, voice chat - opens it as the Audio docker's tab. A tab whose extension is turned off is not offered.
+  **2.966.0:** the Stems tab is gone - the tabs are **🎵 Music · 💥 SFX · 🎹 Synth**. Splitting a song into its vocals and
+  instrumental is the 🎹 Synth tab's **✂ Separate vocals** (on the picked layer, two new layers); a music video's song
+  segments are on the StoryBoard's song strip (Load audio). An older install's Stems folder is left alone and never loaded.
 - **Currency** (Settings ▸ General): RunPod, OpenRouter and the other services list their prices in US dollars. Pick your
   currency (AUD, USD, EUR, GBP, CNY, JPY …) and bitGen shows them in it: the PODS docker's GPUs, the price an hour and
   your pods, Remote generation's pods, and OpenRouter's models. Hover a price to see the dollars and the rate. The rate is
@@ -9081,7 +9085,7 @@ RunPod pod, like pictures, video and songs.
 - **Tick them when you make the pod.** 🖥 PODS ▸ Create pod… has an **Audio** row:
   - **Text to speech** - OmniVoice: speech, your cloned and designed voices, 🗣 Speech & dialog;
   - **Speech to text** - faster-whisper: transcripts, lyric timing, a new clone's words, ✨ Create's lyrics;
-  - **Song separation** - demucs: ✂ Split into layers, the Stems docker, the sheet music's song layers.
+  - **Song separation** - demucs: ✂ Split into layers, the 🎹 Synth tab's ✂ Separate vocals, the sheet music's song layers.
   bitGen installs the ticked ones on the pod when it is set up, under /workspace/bitgen-audio. That folder is kept
   while the pod is stopped. They reuse the pod's PyTorch, so it is a few minutes the first time.
 - **Or tick them on a pod you have.** Open the pod in 🖥 PODS ▸ My pods. The **🔊 Audio** row is under "what it is
@@ -10685,8 +10689,8 @@ become a video of that person saying (or singing) it, lip-synced, **as long as t
    about 30 GB of RAM) - its two LoRAs (DMD + OPSD), Whisper large-v3, and Wan 2.1's text encoder + VAE (skipped when you
    have them). **Restart ComfyUI once** so it loads the new nodes. Pressing Generate without them opens the same download.
 2. Pick the **LongCat Avatar 1.6** video style in the prompt docker (an **ⓘ LongCat** hint sits beside it).
-3. Put the **speech** in the References docker's sounds - clean speech works best; for a song, ✂ Separate it in the
-   Stems docker and use the vocals. The video is as long as this sound.
+3. Put the **speech** in the References docker's sounds - clean speech works best; for a song, ✂ Separate vocals in the
+   🎹 Synth tab (Audio docker) and use the vocals layer. The video is as long as this sound.
 4. Put the **person** in the References docker's pictures (the one typed **First frame** is used first, else the first
    picture), framed as you want the video - chest up works well. No picture = the person is made from the prompt alone.
 5. Describe the person, how they move and where they are in the prompt (longer, detailed prompts work best) and press

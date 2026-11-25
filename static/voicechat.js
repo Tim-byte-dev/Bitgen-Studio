@@ -80,7 +80,7 @@
   /** a docker's words -> {el: its id, btn: the statusbar button, app: #app's class while hidden, sf: a SecFloat window} */
   const DOCKS = {
     prompt: { el: "promptdock", btn: "tP" }, preview: { el: "previewdock", btn: "tPv" }, timeline: { el: "timelinedock", btn: "tT" },
-    storyboard: { el: "videodock", btn: "tV" }, music: { el: "musicdock", btn: "tAu" }, stems: { el: "stemsdock", btn: "tAu" },
+    storyboard: { el: "videodock", btn: "tV" }, music: { el: "musicdock", btn: "tAu" }, stems: { el: "synthdock", btn: "tAu" },   /* 2.966.0: the Stems tab is gone - ✂ Separate vocals is in the 🎹 Synth tab */
     sfx: { el: "sfxdock", btn: "tAu" }, "image editor": { el: "imageeditdock", btn: "tIE" }, comfyui: { el: "comfydock", btn: "tCF" },
     chat: { el: "chatdock", btn: "tCh" }, console: { el: "consoledock", btn: "tC" },
     settings: { el: "ldock", btn: "tL", app: "no-left" }, references: { el: "refsdock", btn: "tRefs", app: "no-refs" },

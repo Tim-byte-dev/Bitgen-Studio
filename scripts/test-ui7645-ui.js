@@ -52,12 +52,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     };
     const winSel = (id) => '.h3fp[data-fp="' + id + '"]';
     // 1) a floating docker dropped on the TOP band of Music (inside the docker) = stacked above it
-    await ev(() => H3Panels.float("bd.stemsdock", { x: 40, y: 200, w: 300, h: 260 })); await p.waitForTimeout(300);
+    await ev(() => H3Panels.float("bd.comfydock", { x: 40, y: 200, w: 300, h: 260 })); await p.waitForTimeout(300);
     const mu = await rectOf(winSel("bd.musicdock"));
-    const mk1 = await drag(winSel("bd.stemsdock") + " > .h3fp-t", { x: mu.l + mu.w / 2, y: mu.t + 14 });
+    const mk1 = await drag(winSel("bd.comfydock") + " > .h3fp-t", { x: mu.l + mu.w / 2, y: mu.t + 14 });
     const tabs1 = await tabsOf("t7645-row"), stack = tabs1[0], inStack = await tabsOf(stack);
     check("the line: a horizontal bar across the top of Music while over its top band", mk1 && mk1.h <= 6 && mk1.w > mu.w * 0.8 && Math.abs(mk1.t - mu.t) < 8, { mk1, mu });
-    check("dropped there: Music's place is a stacked docker holding Stems ABOVE Music; SFX still beside it", tabs1.length === 2 && tabs1[1] === "bd.sfxdock" && /^fd-/.test(stack) && JSON.stringify(inStack) === '["bd.stemsdock","bd.musicdock"]' && (await ev((i) => H3Panels.get(i).layout, stack)) === "col", { tabs1, inStack });
+    check("dropped there: Music's place is a stacked docker holding ComfyUI ABOVE Music; SFX still beside it", tabs1.length === 2 && tabs1[1] === "bd.sfxdock" && /^fd-/.test(stack) && JSON.stringify(inStack) === '["bd.comfydock","bd.musicdock"]' && (await ev((i) => H3Panels.get(i).layout, stack)) === "col", { tabs1, inStack });
     // 2) another one on the BOTTOM band of SFX = stacked below it
     await ev(() => H3Panels.float("bd.chatdock", { x: 40, y: 200, w: 300, h: 260 })); await p.waitForTimeout(300);
     const sx = await rectOf(winSel("bd.sfxdock"));
@@ -66,9 +66,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("on SFX's bottom band: SFX + Chat stacked (Chat BELOW)", tabs2.length === 2 && JSON.stringify(await tabsOf(st2)) === '["bd.sfxdock","bd.chatdock"]', { tabs2, inner: await tabsOf(st2) });
     // 3) into a stack made earlier, between the two in it (its own slots)
     await ev(() => H3Panels.float("bd.consoledock", { x: 40, y: 200, w: 300, h: 260 })); await p.waitForTimeout(300);
-    const s1 = await rectOf(winSel("bd.stemsdock")), m1 = await rectOf(winSel("bd.musicdock"));
+    const s1 = await rectOf(winSel("bd.comfydock")), m1 = await rectOf(winSel("bd.musicdock"));
     await drag(winSel("bd.consoledock") + " > .h3fp-t", { x: m1.l + m1.w / 2, y: (s1.b + m1.t) / 2 + 2 });
-    check("over the gap inside a stack: it goes between them (Stems, Console, Music)", JSON.stringify(await tabsOf(stack)) === '["bd.stemsdock","bd.consoledock","bd.musicdock"]', await tabsOf(stack));
+    check("over the gap inside a stack: it goes between them (ComfyUI, Console, Music)", JSON.stringify(await tabsOf(stack)) === '["bd.comfydock","bd.consoledock","bd.musicdock"]', await tabsOf(stack));
     // 4) a SecFloat docker window (PODS) dragged to the top band of SFX (static/dgdock.js)
     await ev(() => { SecFloat.show("pods", true); SecFloat.windows.pods.panel.float(60, 80, 420, 340); SecFloat.show("pods", true); }); await p.waitForTimeout(400);
     const sx2 = await rectOf(winSel("bd.sfxdock"));
@@ -107,7 +107,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e)); }
   finally {
-    try { await ev(() => { for (const i of ["bd.musicdock", "bd.sfxdock", "bd.stemsdock", "bd.chatdock", "bd.consoledock", "bd.refsdock", "bd.qdock"]) { const r = H3Panels.get(i); if (r && r.home) H3Panels.home ? H3Panels.home(i) : 0; } for (const r of H3Panels.list()) if (/^fd-|^t7645/.test(r.id) && r.id !== "fd-dockers" && !/^fd-dockers/.test(r.id)) try { H3Panels.remove(r.id); } catch (e) { /* gone */ } SecFloat.show("pods", false); }); await p.waitForTimeout(600); } catch { /* fine */ }
+    try { await ev(() => { for (const i of ["bd.musicdock", "bd.sfxdock", "bd.comfydock", "bd.chatdock", "bd.consoledock", "bd.refsdock", "bd.qdock"]) { const r = H3Panels.get(i); if (r && r.home) H3Panels.home ? H3Panels.home(i) : 0; } for (const r of H3Panels.list()) if (/^fd-|^t7645/.test(r.id) && r.id !== "fd-dockers" && !/^fd-dockers/.test(r.id)) try { H3Panels.remove(r.id); } catch (e) { /* gone */ } SecFloat.show("pods", false); }); await p.waitForTimeout(600); } catch { /* fine */ }
     await b.close();
     if (lay0) fs.writeFileSync(LAYF, lay0); else fs.rmSync(LAYF, { force: true });
   }

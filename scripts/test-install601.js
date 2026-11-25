@@ -99,7 +99,8 @@ const rd = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
       "Civitai ⤓ buttons": /function paintDlButtons\(\)/.test(rd("static", "modelmgr.js")),
       "Viggle (native)": /cur\.vnTimer = setTimeout\(vnState, 2000\)/.test(rd("static", "swapdlg.js")),
       "package upgrade": /⏳ starting the upgrade…/.test(rd("static", "hwpanel.js")),
-      "stems (⟳ Reinstall, no longer hidden)": /H\.job\(b, j\.id, \{ doing: "Installing demucs…"/.test(rd("ext", "stemsdock", "stemsdock.js")),
+      // 2.966.0: the Stems tab is gone - demucs installs through the Download / Cancel box (static/needinstall.js "demucs")
+      "demucs (the Download / Cancel box)": /demucs: \{ name: "Song separation \(demucs\)"/.test(rd("static", "needinstall.js")),
       "AI matte (path layers)": /function matteChip\(mi\)/.test(rd("ext", "timelinedock", "paths.js")),
       "SAM 2 (cut out)": /function samPaint\(sam\)/.test(rd("ext", "timelinedock", "tlcutout.js")),
       "Select ▸ Subject": /const sbWords = /.test(rd("ext", "imageeditdock", "pcsubject.js")),

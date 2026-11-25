@@ -10471,14 +10471,14 @@ node scripts/test-dockstatus.js > /tmp/ds381.log 2>&1 \
 curl -sf http://127.0.0.1:8311/ | head -c 2000 | grep -q '<script>window.H3_DOCK_STATUS = {"version":1,"docks":{' \
   && ok "docker status: the page carries docker_status.json in its head (loaded first)" || bad "docker status: no record in the page head"
 curl -sf -X POST http://127.0.0.1:8311/api/docker-status -H 'Content-Type: application/json' \
-  -d '{"docks":{"stemsdock":{"max_height":233,"height":233}}}' > /dev/null
+  -d '{"docks":{"sfxdock":{"max_height":233,"height":233}}}' > /dev/null
 python3 -c "
-import json; d=json.load(open('docker_status.json'))['docks']['stemsdock']
+import json; d=json.load(open('docker_status.json'))['docks']['sfxdock']
 assert d['max_height']==233 and d['height']==233 and set(d)=={'state','hidden','height','width','max_height','max_width','maximized'}, d
 " && ok "docker status: POST /api/docker-status lands in docker_status.json at the install root (state, hidden, height, width, max_height, max_width, maximized)" \
   || bad "docker status: docker_status.json $(head -c 300 docker_status.json)"
 curl -s -X POST http://127.0.0.1:8311/api/docker-status -H 'Content-Type: application/json' \
-  -d '{"docks":{"stemsdock":{"max_height":0}}}' > /dev/null
+  -d '{"docks":{"sfxdock":{"max_height":0}}}' > /dev/null
 node scripts/test-dockstatus-ui.js > /tmp/dsui381.log 2>&1 \
   && ok "docker status browser test: 📌 first in every header, a pin caps the drag, opening a dock restores the pinned heights, maximize keeps the others open + still resizes, reload keeps it all, no queue boxes - or SKIP without playwright" \
   || { bad "docker status browser test"; grep -a "FAIL\|Error" /tmp/dsui381.log | head -12; }

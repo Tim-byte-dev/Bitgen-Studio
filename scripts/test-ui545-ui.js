@@ -37,7 +37,7 @@ const LAYF = path.join(ROOT, "panel_layout.cfg");
   const fileWhen = async (ok) => { let o = {}; for (let i = 0; i < 60; i++) { try { o = await ev(() => fetch("/api/layout/panel").then((r) => r.json())); if (ok(o)) return o; } catch (e) { /* not yet */ } await p.waitForTimeout(500); } return o; };
   try {
     await p.goto(URL_, { waitUntil: "load" });
-    await p.waitForFunction(() => window.H3DockGroup && document.getElementById("tDG") && document.getElementById("dgFloat_musicdock") && document.getElementById("dgFloat_stemsdock"), null, { timeout: 60000 });
+    await p.waitForFunction(() => window.H3DockGroup && document.getElementById("tDG") && document.getElementById("dgFloat_musicdock") && document.getElementById("dgFloat_sfxdock"), null, { timeout: 60000 });
     const q = await ev(() => { const b = document.getElementById("tDG"); return { after: b.previousElementSibling && b.previousElementSibling.id, text: b.textContent, on: b.classList.contains("on") }; });
     check("▣ Docker is in the statusbar's dockers (after Queue), dark while hidden", q.after === "tQ" && q.text === "▣ Docker" && !q.on, q);
 
@@ -58,7 +58,7 @@ const LAYF = path.join(ROOT, "panel_layout.cfg");
     await p.keyboard.type("zzz"); await p.keyboard.press("Escape");
     check("Esc drops an edit", (await ev(() => H3Panels.get("fd-dockers").title)) === "My dockers");
 
-    // float Music and Stems with ⇱, drag them in
+    // float Music and SFX with ⇱, drag them in
     const box = async () => ev(() => { const r = document.querySelector('.h3fp[data-fp="fd-dockers"] .h3fd-pane').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
     const dragIn = async (id, fx, fy) => {
       const t = await ev((i) => { const r = document.querySelector('.h3fp[data-fp="' + i + '"] > .h3fp-t').getBoundingClientRect(); return { x: r.left + 30, y: r.top + r.height / 2 }; }, id);
@@ -76,19 +76,19 @@ const LAYF = path.join(ROOT, "panel_layout.cfg");
     await dragIn("bd.musicdock", 0.5, 0.5);
     let m = await ev(() => ({ st: H3Panels.get("bd.musicdock").state, d: H3Panels.get("bd.musicdock").docker, tabs: H3Panels.get("fd-dockers").tabs }));
     check("dragged by its title over the docker = in it", m.st === "in" && m.d === "fd-dockers" && m.tabs.join() === "bd.musicdock", m);
-    await ev(() => document.getElementById("dgFloat_stemsdock").click());
-    await p.waitForFunction(() => (H3Panels.get("bd.stemsdock") || {}).state === "float", null, { timeout: 8000 }).catch(() => {});
-    const mk = await dragIn("bd.stemsdock", 0.1, 0.5);
+    await ev(() => document.getElementById("dgFloat_sfxdock").click());
+    await p.waitForFunction(() => (H3Panels.get("bd.sfxdock") || {}).state === "float", null, { timeout: 8000 }).catch(() => {});
+    const mk = await dragIn("bd.sfxdock", 0.1, 0.5);
     m = await ev(() => { const d = H3Panels.get("fd-dockers"); const ws = d.tabs.map((t) => H3Panels.get(t).win.getBoundingClientRect()); return { tabs: d.tabs, x: ws.map((r) => Math.round(r.left)), y: ws.map((r) => Math.round(r.top)), vis: ws.map((r) => r.width > 50 && r.height > 50), splits: document.querySelectorAll('.h3fp[data-fp="fd-dockers"] .h3fd-split').length }; });
     check("a drop on the LEFT side goes before Music (the orange line showed where) - both show, side by side, a splitter between",
-      mk && m.tabs.join() === "bd.stemsdock,bd.musicdock" && m.x[0] < m.x[1] && Math.abs(m.y[0] - m.y[1]) < 3 && m.vis.every(Boolean) && m.splits === 1, { mk, m });
+      mk && m.tabs.join() === "bd.sfxdock,bd.musicdock" && m.x[0] < m.x[1] && Math.abs(m.y[0] - m.y[1]) < 3 && m.vis.every(Boolean) && m.splits === 1, { mk, m });
     await shot("545-row");
 
     // the splitter sizes them
     const sp = await ev(() => { const r = document.querySelector('.h3fp[data-fp="fd-dockers"] .h3fd-split').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
-    const w0 = await ev(() => H3Panels.get("bd.stemsdock").win.getBoundingClientRect().width);
+    const w0 = await ev(() => H3Panels.get("bd.sfxdock").win.getBoundingClientRect().width);
     await p.mouse.move(sp.x, sp.y); await p.mouse.down(); await p.mouse.move(sp.x + 120, sp.y, { steps: 8 }); await p.mouse.up();
-    const w1 = await ev(() => ({ w: H3Panels.get("bd.stemsdock").win.getBoundingClientRect().width, g: H3Panels.get("bd.stemsdock").grow }));
+    const w1 = await ev(() => ({ w: H3Panels.get("bd.sfxdock").win.getBoundingClientRect().width, g: H3Panels.get("bd.sfxdock").grow }));
     check("dragging the splitter sizes them (kept as each one's share)", w1.w > w0 + 60 && w1.g > 1, { w0, w1 });
 
     // vertical
@@ -98,7 +98,7 @@ const LAYF = path.join(ROOT, "panel_layout.cfg");
     await shot("545-col");
     const saved = await fileWhen((o) => o.dockers && o.dockers["fd-dockers"] && o.dockers["fd-dockers"].layout === "col");
     const sd = (saved.dockers || {})["fd-dockers"] || {};
-    check("panel_layout.cfg keeps it: the name, stacked, what is in it in order, the sizes", sd.name === "My dockers" && sd.layout === "col" && (sd.tabs || []).join() === "bd.stemsdock,bd.musicdock" && ((saved.panels || {})["bd.stemsdock"] || {}).grow > 1, sd);
+    check("panel_layout.cfg keeps it: the name, stacked, what is in it in order, the sizes", sd.name === "My dockers" && sd.layout === "col" && (sd.tabs || []).join() === "bd.sfxdock,bd.musicdock" && ((saved.panels || {})["bd.sfxdock"] || {}).grow > 1, sd);
 
     // tabs from ⚙
     await ev(() => H3Panels.setLayout("fd-dockers", "tabs"));
@@ -109,14 +109,14 @@ const LAYF = path.join(ROOT, "panel_layout.cfg");
     // ⇲ puts Music back
     await p.click('.h3fp[data-fp="bd.musicdock"] > .h3fp-t .h3fp-home');
     const back = await ev(() => ({ st: H3Panels.get("bd.musicdock").state, home: document.getElementById("musicdock").parentNode.id, cls: document.getElementById("musicdock").classList.contains("dg-floating"), tabs: H3Panels.get("fd-dockers").tabs }));
-    check("⇲ in Music's title puts it back in the main window", back.st === "home" && !back.cls && back.tabs.join() === "bd.stemsdock", back);
+    check("⇲ in Music's title puts it back in the main window", back.st === "home" && !back.cls && back.tabs.join() === "bd.sfxdock", back);
 
     // the button hides it again
     await p.click("#tDG");
     const off = await ev(() => ({ shown: H3DockGroup.shown(), lit: document.getElementById("tDG").classList.contains("on") }));
     check("▣ Docker in the statusbar hides it (dark again)", !off.shown && !off.lit, off);
     await p.keyboard.press("Control+Alt+KeyD");
-    check("...and Ctrl+Alt+D shows it again (the same one, Stems still in it)", (await ev(() => H3DockGroup.shown() && H3Panels.get("fd-dockers").tabs.join())) === "bd.stemsdock");
+    check("...and Ctrl+Alt+D shows it again (the same one, SFX still in it)", (await ev(() => H3DockGroup.shown() && H3Panels.get("fd-dockers").tabs.join())) === "bd.sfxdock");
 
     // the StoryBoard keeps its name
     const sb = await ev(() => {

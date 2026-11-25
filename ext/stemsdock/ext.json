@@ -1,9 +1,0 @@
-{
-  "id": "stemsdock",
-  "name": "Stems",
-  "order": 65,
-  "html": "dock.html",
-  "scripts": [
-    "stemsdock.js"
-  ]
-}

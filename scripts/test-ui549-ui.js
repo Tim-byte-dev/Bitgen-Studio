@@ -100,11 +100,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const re = await ev(() => { const d = document.getElementById("dgp_fd-dockers"); return d ? { parent: d.parentNode.id, music: !!d.querySelector("#musicdock"), btn: document.getElementById("tDG") && document.getElementById("tDG").textContent } : null; });
     check("the app opened again: still a permanent docker in the main column, Music in it, the button ▣ Audio", re && re.parent === "maincol" && re.music && re.btn === "▣ Audio", re);
     // a floating docker dropped into the permanent one (its h3fp title over it)
-    await ev(() => window.H3DockGroup.floatDock("stemsdock")); await p.waitForTimeout(400);
-    const sh = await ev(() => { const r = document.querySelector('.h3fp[data-fp="bd.stemsdock"] > .h3fp-t').getBoundingClientRect(); return { x: r.left + 30, y: r.top + r.height / 2 }; });
+    await ev(() => window.H3DockGroup.floatDock("sfxdock")); await p.waitForTimeout(400);
+    const sh = await ev(() => { const r = document.querySelector('.h3fp[data-fp="bd.sfxdock"] > .h3fp-t').getBoundingClientRect(); return { x: r.left + 30, y: r.top + r.height / 2 }; });
     const pt = await ev(() => { const r = document.querySelector("#dgp_fd-dockers .h3fd-pane").getBoundingClientRect(); return { x: r.left + 20, y: r.top + r.height / 2 }; });
     await p.mouse.move(sh.x, sh.y); await p.mouse.down(); await p.mouse.move(pt.x, pt.y, { steps: 12 }); await p.mouse.up(); await p.waitForTimeout(400);
-    check("a floating docker (Stems) dropped on the permanent docker goes in (at the left)", (await ev(() => H3Panels.get("fd-dockers").tabs.join())) === "bd.stemsdock,bd.musicdock");
+    check("a floating docker (SFX) dropped on the permanent docker goes in (at the left)", (await ev(() => H3Panels.get("fd-dockers").tabs.join())) === "bd.sfxdock,bd.musicdock");
 
     /* 6 ⇱ floats it again; 🗑 deletes it and its button, the dockers go home */
     await ev(() => document.querySelector("#dgp_fd-dockers .dgp-unperm").click()); await p.waitForTimeout(400);
@@ -112,8 +112,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("⇱ on its title bar: a floating docker again (its own title bar back)", !un.perm && un.st === "float" && un.title !== "none", un);
     await ev(() => H3Panels.get("fd-dockers").win.querySelector(".h3fp-del").click());
     await p.waitForSelector("#note_ok", { state: "visible", timeout: 8000 }); await p.click("#note_ok"); await p.waitForTimeout(600);
-    const del = await ev(() => ({ rec: !!H3Panels.get("fd-dockers"), btns: [...document.querySelectorAll("#statusbar button[data-dg]")].map((b) => b.id + ":" + b.textContent), musicHome: document.getElementById("musicdock").parentNode.id, stemsHome: document.getElementById("stemsdock").parentNode.id }));
-    check("🗑 Delete (asked first): the docker is gone; Music and Stems back in the main column; the statusbar is back to ▣ Docker (makes a new one)",
+    const del = await ev(() => ({ rec: !!H3Panels.get("fd-dockers"), btns: [...document.querySelectorAll("#statusbar button[data-dg]")].map((b) => b.id + ":" + b.textContent), musicHome: document.getElementById("musicdock").parentNode.id, stemsHome: document.getElementById("sfxdock").parentNode.id }));
+    check("🗑 Delete (asked first): the docker is gone; Music and SFX back in the main column; the statusbar is back to ▣ Docker (makes a new one)",
       !del.rec && del.musicHome === "maincol" && del.stemsHome === "maincol" && del.btns.join() === "tDG:▣ Docker", del);
 
     await ev(() => { if (window.__pdHid) toggleDockGone("promptdock", "tP"); });

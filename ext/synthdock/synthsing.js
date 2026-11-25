@@ -147,10 +147,16 @@
     if (i < 0) { say("✂ Pick a layer with a song on it first (click its name)", true); return Promise.resolve(null); }
     var t = TL(), l = t.tl().layers[i], out = {};
     try { room(2); } catch (e) { say("✂ " + e.message, true); return Promise.resolve(null); }
+    var SEPWHY = "✂ Separate vocals splits the song on the picked layer into its vocal and its instrumental.";
     lock(true, "separate");
-    say("✂ " + l.name + ": rendering the layer…");
-    return toSample(i, "sep")
-      .then(function (sample) { return startJob("/api/sing/separate", { sample: sample }, "✂ Separate vocals splits the song on the picked layer into its vocal and its instrumental."); })
+    // 2.966.0: asked BEFORE anything is rendered (the Stems tab's job now) - installed = true at once, no box
+    var need = root.H3NeedInstall ? root.H3NeedInstall.ensure("demucs", SEPWHY) : Promise.resolve(true);
+    return need.then(function (ok) {
+      if (!ok) throw new Error("Separate asks to download the song separation first - nothing split");
+      say("✂ " + l.name + ": rendering the layer…");
+      return toSample(i, "sep");
+    })
+      .then(function (sample) { return startJob("/api/sing/separate", { sample: sample }, SEPWHY); })
       .then(function (r) { return follow(r.job, "✂ Separating " + l.name); })
       .then(function (res) {
         return t.addNewLayer("my:" + res.vocals, l.name.slice(0, 22) + " · vocals", 0).then(function () { out.vocals = newest(); t.patchLayer(out.vocals, { role: "vocals" }); })

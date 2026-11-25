@@ -41,7 +41,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     await ev(() => window.H3Audio.toggle(true)); await sleep(300);
     const shownTab = await ev(() => window.H3Audio.IDS.filter((i) => !document.getElementById(i).classList.contains("dockgone"))[0]);
     const tabs = await ev((id) => [...document.querySelectorAll("#" + id + " .bhead [data-autab]")].map((x) => x.textContent).join("|"), shownTab);
-    check("the Audio docker's tabs: 🎵 Music · 🎚 Stems · 💥 SFX · 🎹 Synth", tabs === "🎵 Music|🎚 Stems|💥 SFX|🎹 Synth", tabs);
+    check("the Audio docker's tabs: 🎵 Music · 💥 SFX · 🎹 Synth (Stems retired in 2.966.0)", tabs === "🎵 Music|💥 SFX|🎹 Synth", tabs);
     await p.click("#" + shownTab + ' [data-autab="synthdock"]'); await sleep(500);
     const on = await ev(() => window.H3Audio.IDS.filter((i) => !document.getElementById(i).classList.contains("dockgone")));
     const head = await ev(() => [...document.querySelector("#synthdock > .bhead").childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim());

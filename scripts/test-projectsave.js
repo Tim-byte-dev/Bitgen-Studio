@@ -125,7 +125,7 @@ function req(port, method, u, body) {
     /sessionStorage\.getItem\("h3\.openedProject"\)/.test(H) && /sessionStorage\.removeItem\("h3\.openedProject"\)/.test(H)
     && /every docker loaded from the project as it was saved/.test(H));
   check("the dock fields are in the project state and applied on load (selects retried until their options arrive)",
-    /docks: dockFieldsState\(\)/.test(H) && /const DOCK_FIELDS = \[[^\]]*"muTitle"[^\]]*"enhancedText"[^\]]*"stSong"/.test(H)
+    /docks: dockFieldsState\(\)/.test(H) && /const DOCK_FIELDS = \[[^\]]*"muTitle"[^\]]*"enhancedText"[^\]]*"sfxDur"/.test(H) && !/"stSong"/.test(H)
     && /if \(d\.docks\) applyDockFields\(d\.docks\);/.test(H) && /setTimeout\(again, 750\)/.test(H));
   check("the routes: save merges into the .prj and copies on a new name",
     /projects\.mergeState\(prev, data\)/.test(read("routes", "index.js")) && /projects\.copy\(cur, want\)/.test(read("routes", "index.js")));

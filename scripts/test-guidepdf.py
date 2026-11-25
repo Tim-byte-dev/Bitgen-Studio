@@ -96,7 +96,7 @@ check("...what it says: the title, the promise, the eight features, the four ste
 # every claim is something the studio does now - the code that does it
 EVID = {"Segment Anything": "ext/imageeditdock/pcsam.js", "PSD": "ext/imageeditdock/pcpsd.js", "Docker configs": "static/dockcfg.js",
         "LTX 2.5": "lib/ltx.js", "Wan 2.1 and 2.2": "lib/wan.js", "Blender bridge": "lib/blender.js", "karaoke": "lib/karaoke.js",
-        "split stems": "ext/stemsdock", "sound effects": "ext/sfxdock", "360° world": "lib/vrWorld.js", "Swap a character": "lib/swap.js",
+        "split stems": "lib/stems.js", "sound effects": "ext/sfxdock", "360° world": "lib/vrWorld.js", "Swap a character": "lib/swap.js",
         "Qwen Image Edit": "comfy_workflows/img_qwen_edit_2511.json", "FLUX Kontext": "comfy_workflows/img_flux_kontext_edit.json",
         "rendering step n of total": "ext/videodock/characters.js", "Append or prepend": "lib/frameOp.js", "green screen": "lib/matte.js",
         "lip-sync": "lib/ltxScenes.js", "Control layers": "lib/aiEdit.js"}
