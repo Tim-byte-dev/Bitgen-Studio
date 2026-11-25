@@ -298,6 +298,7 @@
   }
   function sortKeys(ks) { ks.sort(function (x, y) { return x.t - y.t; }); return ks; }
   /** a timeline from a save made safe */
+  var ROLES = ["vocals", "instrumental", "voice"];   // 2.965.0
   function cleanTL(j) {
     if (!j || typeof j !== "object" || !Array.isArray(j.layers)) return newTL();
     var o = { v: 1, zoom: num(j.zoom, 40, 4, 400), snap: j.snap !== false, layers: [], markers: cleanMarkers(j.markers), master: num(j.master, 1, 0, 1.5) };
@@ -305,6 +306,7 @@
       L = L || {};
       var l = { name: String(L.name || "Layer " + (i + 1)).replace(/[\u0000-\u001f<>]/g, "").slice(0, 32) || "Layer " + (i + 1), vol: num(L.vol, 1, 0, 1.5), pan: num(L.pan, 0, -1, 1),
                 mute: !!L.mute, solo: !!L.solo, clips: [], keys: [], fx: cleanFx(L.fx), auto: cleanAuto(L.auto) };
+      if (ROLES.indexOf(L.role) >= 0) l.role = L.role;   // 2.965.0: what a ✂ / 🎤 layer holds (vocals | instrumental | voice)
       (Array.isArray(L.clips) ? L.clips : []).slice(0, MAXC).forEach(function (c) {
         if (!c) return;
         var base;
@@ -443,7 +445,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, newSteps: newSteps, stepEvents: stepEvents, cleanStepRows: cleanStepRows, DIVS: DIVS, MAXROWS: MAXROWS, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              ROLES: ROLES, schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, newSteps: newSteps, stepEvents: stepEvents, cleanStepRows: cleanStepRows, DIVS: DIVS, MAXROWS: MAXROWS, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

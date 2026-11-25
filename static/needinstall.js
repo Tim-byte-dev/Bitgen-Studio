@@ -6,7 +6,8 @@
  *
  *   ensure(which, why) -> Promise<true = installed (now), false = not>   which = demucs | whisper (POST /api/audio/install
  *                 knows them) | h3sheet (2.870.0 - a Settings ▸ Add-ons add-on: /api/addons/h3sheet/install + /api/addons/job)
- *                 | h3long (2.872.0 - the same way) | longcat (2.918.0);
+ *                 | h3long (2.872.0 - the same way) | longcat (2.918.0) | sing_seedvc / sing_soulx / sing_rvc (2.965.0 - one item of
+ *                 the singvoice add-on: {items: [..]} sent with the install);
  *                 why = what it is needed for, said in the box. Installed already (GET its status) = true at
  *                 once - the box is never shown for nothing.
  *   THE MESSAGE BOX  the same as the models-not-found one (static/modelsfound.js): what is missing, what it does, its
@@ -42,6 +43,16 @@
       hint: "about 28 GB: the LongCat Avatar node pack, the int8 model (16 GB), its two LoRAs, Whisper large-v3 and Wan 2.1's text encoder + VAE (skipped when you have them) into ComfyUI; ComfyUI restarted once afterwards",
       status: "/api/longcat", addon: "longcat" },
     // 2.932.0: the Garment designer (Settings ▸ Add-ons ▸ Garment designer)
+    // 2.965.0: 🎤 Sing in my voice - one engine of the add-on at a time (its item)
+    sing_seedvc: { name: "Seed-VC (singing voice conversion)", desc: "Sings the vocal again in your voice from a 10-30 second clip of it - the notes and feeling stay the song's.",
+      hint: "about 7.5 GB: its code (GPL-3.0, from its own repository), PyTorch and its packages in their own Python, and its singing model (~1.5 GB, on the first use)",
+      status: "/api/sing/status?engine=seedvc", addon: "singvoice", items: ["seedvc"] },
+    sing_soulx: { name: "SoulX-Singer SVC (singing voice conversion)", desc: "Sings the vocal again in your voice from a 10-30 second clip of it.",
+      hint: "about 9.5 GB: its code (Apache-2.0), PyTorch and its packages in their own Python, its SVC model (2.8 GB), its pitch tracker and Whisper base",
+      status: "/api/sing/status?engine=soulx", addon: "singvoice", items: ["soulx"] },
+    sing_rvc: { name: "RVC through Applio (singing voice conversion)", desc: "Trains a model of your voice on about 10 minutes of it, then sings any vocal in that voice.",
+      hint: "about 9 GB: Applio (MIT), PyTorch and its packages in their own Python, its pretrained voices, rmvpe and contentvec",
+      status: "/api/sing/status?engine=rvc", addon: "singvoice", items: ["rvc"] },
     garment: { name: "Garment designer (GarmentCode)", desc: "Makes sewing patterns - tops, hoodies, dresses, skirts, trousers - to the mannequin's or your own measurements.",
       hint: "about 150 MB: GarmentCode's pattern programs (MIT) and numpy, scipy and matplotlib in their own Python - no graphics card needed",
       status: "/api/garment", addon: "garment" },
@@ -81,7 +92,7 @@
   /** queue the install and follow its job; resolves {ok, error} */
   /** 2.870.0: an add-on part - its Settings ▸ Add-ons install, followed line by line; resolves {ok, error} */
   function installAddon(P, ui) {
-    return root.fetch("/api/addons/" + encodeURIComponent(P.addon) + "/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+    return root.fetch("/api/addons/" + encodeURIComponent(P.addon) + "/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(P.items ? { items: P.items } : {}) })   // 2.965.0: one item of an add-on
       .then(function (r) { return r.json(); })
       .then(function (j) {
         if (j.error || !j.ok) throw new Error(j.error || "the install could not be started");

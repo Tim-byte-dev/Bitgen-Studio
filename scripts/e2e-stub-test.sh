@@ -15215,6 +15215,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui963-ui.js > /tmp/ui963.log 2>&
 # ---- 2.964.0 (🎓 Life Choices stage 2: pass and play + the 🧠 LLM player)
 node scripts/test-964.js > /tmp/t964.log 2>&1 && ok "2.964.0 units: seats (people, bots, 🧠), botPick / botApply, a whole game with a 🧠 player, lifellm (brief, payload, clean, messages, parse), POST /api/life-choices/llm (stub LLM, 502s, 400)" || { bad "2.964.0 units"; grep -a "^FAIL" -A1 /tmp/t964.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui964-ui.js > /tmp/ui964.log 2>&1 && ok "2.964.0 browser test: the seats, the pass-the-PC screen (Enter, ▶, kept over a reload), the 🧠 player's choice by a stand-in LLM through the app, too slow / no LLM -> a bot's rules, 5 minutes off, every person's score" || { bad "2.964.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui964.log | head -8; }
+# ---- 2.965.0 (🎤 Sing it in my voice + ✂ Separate vocals in the Synth tab)
+node scripts/test-965.js > /tmp/t965.log 2>&1 && ok "2.965.0 units: three engines (status, clips, RVC models), convert / separate / train jobs, the Python helper against stand-in Seed-VC + Applio programs, the add-on install, the row" || { bad "2.965.0 units"; grep -a "^FAIL" -A1 /tmp/t965.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui965-ui.js > /tmp/ui965.log 2>&1 && ok "2.965.0 browser test: the 🎤 row above the timeline, a clip of your voice, ✂ separate (vocals + instrumental, the original muted), ▶ Seed-VC on the vocals, ▶ RVC on the whole song, SoulX's Download / Cancel box, 🎓 Train" || { bad "2.965.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui965.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

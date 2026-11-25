@@ -145,6 +145,25 @@
           /* 2.954.0: the timeline */
           .sytl { position: relative; background: linear-gradient(180deg, #171a21, #101217); border: 1px solid #262b35; border-radius: 9px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
           .sytlbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+          /* 2.965.0: 🎤 Sing it in my voice - the row above the timeline */
+          .sysing { position: relative; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 4px 0 6px; margin-bottom: 4px; border-bottom: 1px solid #2a2e38; }
+          .sysing h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #5dff8a; text-shadow: 0 0 6px #5dff8a; }
+          .sysing .sep { width: 1px; align-self: stretch; background: #2a2e38; margin: 0 4px; }
+          .sysing select { width: auto; max-width: 260px; font-size: 12px; }
+          .sysinglbl { display: inline-flex; gap: 3px; align-items: center; font-size: 11px; color: var(--dim); }
+          .sysinggo { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 0; background: transparent; color: #2ee66b; cursor: pointer; filter: drop-shadow(0 0 4px rgba(46, 230, 107, .55)); }
+          .sysinggo:hover:not([disabled]) { color: #5dff8a; filter: drop-shadow(0 0 7px rgba(93, 255, 138, .9)); }
+          .sysinggo[disabled] { opacity: .45; cursor: default; }
+          .sysinggo.busy svg { animation: sysingspin 1.4s linear infinite; }
+          @keyframes sysingspin { to { transform: rotate(360deg); } }
+          #sySingRec.on { color: #07090c; background: #ff5a5a; border-color: #ff5a5a; }
+          .sysingmsg { flex: 1 1 220px; min-width: 0; font-size: 11px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .sysingmsg.bad { color: #ff8b6b; }
+          .sysingbar { display: none; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .06); }
+          .sysingbar i { display: block; height: 100%; width: 3%; background: #2ee66b; transition: width .8s linear; }
+          .sysingbox { position: absolute; z-index: 30; left: 40px; top: 36px; width: 380px; max-width: 92%; background: #12151c; border: 1px solid #2a2e38; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, .6); }
+          .sysingbox .clips { max-height: 150px; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
+          .sysingbox .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
           .sytlbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
           .sytlbar .sep { width: 1px; align-self: stretch; background: #2a2e38; margin: 0 4px; }
           #syTPlay.on, #syTSnap.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
@@ -384,6 +403,27 @@
         <!-- 2.954.0 (Tim: "add a timeline below that with waveforms that can be added from all sources, add knobs to each timeline layer
              for volume. add keyframes to each layer, start volume end volume on each key frame"): synthtl.js + synthtlcore.js -->
         <div class="sytl" id="syTL">
+          <!-- 2.965.0 (Tim: "we will put a tool row in the synth tab of audio docker above the timeline. give it a go button (green
+               triangle inside a circle pointing right). add another button to separate the vocal from the instrumental in the same
+               toolbar"): 🎤 Sing it in my voice - synthsing.js (routes/singVoice.js, lib/singVoice.js). Both work on the PICKED layer. -->
+          <div class="sysing" id="sySing" role="toolbar" aria-label="Sing it in my voice">
+            <h4>🎤 MY VOICE</h4>
+            <select id="sySingEngine" title="The singing voice model: Seed-VC and SoulX-Singer need a clip of your voice, RVC (Applio) a model trained on it"></select>
+            <select id="sySingVoice" title="Your voice"></select>
+            <button class="ghost" id="sySingRec" type="button" title="🎙 Record your voice with the microphone - sing (or read) for 15-30 seconds">🎙 Record</button>
+            <button class="ghost" id="sySingAdd" type="button" title="📂 Add a recording of your voice (any sound or video file)">📂</button>
+            <button class="ghost" id="sySingTrain" type="button" hidden title="🎓 Train an RVC model of your voice from the clips you tick (about 10 minutes is best)">🎓 Train</button>
+            <label class="sysinglbl" title="Move the song's key up or down (semitones) when it sits too high or low for your voice">Key <select id="sySingKey"></select></label>
+            <select id="sySingQ" title="Quality: more steps sound better and take longer"><option value="fast">fast</option><option value="good" selected>good</option><option value="best">best</option></select>
+            <button class="sysinggo" id="sySingGo" type="button" aria-label="Sing the picked layer in my voice" title="▶ Sing the PICKED layer in your voice - a whole song is separated first; the new layer goes under it from 0:00">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 7.2 L17.2 12 L9.5 16.8 Z" fill="currentColor"/></svg>
+            </button>
+            <span class="sep"></span>
+            <button class="ghost" id="sySingSep" type="button" title="✂ Separate vocals: the PICKED layer split into two more layers - its vocal and its instrumental (the original stays, muted)">✂ Separate vocals</button>
+            <span class="sysingmsg" id="sySingMsg" role="status" aria-live="polite">Pick a layer (click its name), then ▶ or ✂</span>
+            <div class="sysingbar" id="sySingBar"><i></i></div>
+            <input type="file" id="sySingFile" class="hidden" multiple accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4">
+          </div>
           <div class="sytlbar">
             <h4>TIMELINE</h4>
             <button class="ghost" id="syTPlay" type="button" title="Play the timeline from the playhead (click the ruler to move it)">▶ Play</button>

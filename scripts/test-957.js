@@ -36,7 +36,7 @@ check("undo / redo: steps back and forward; a new change drops the steps ahead; 
 const u4 = U.create({ get: () => st, set: (s5) => { st = s5; u4.touch(); }, quietMs: 0 }); st = { a: 10 }; u4.touch(); u4.undo();
 check("…a restore is never a new step (set() while it restores is ignored)", u4.size().past === 0 && u4.size().future === 1);
 const DH = src("ext/synthdock/dock.html"), JS = src("ext/synthdock/synthdock.js"), TJ = src("ext/synthdock/synthtl.js"), EJ = JSON.parse(src("ext/synthdock/ext.json"));
-check("ext.json: synthroll.js after the timeline, synthundo.js before the station", EJ.scripts.indexOf("synthroll.js") === EJ.scripts.indexOf("synthtl.js") + 1 && EJ.scripts.indexOf("synthundo.js") < EJ.scripts.indexOf("synthdock.js"));
+check("ext.json: synthroll.js after the timeline, synthundo.js before the station", EJ.scripts.indexOf("synthroll.js") > EJ.scripts.indexOf("synthtl.js") /* 2.965.0: synthsing.js between */ && EJ.scripts.indexOf("synthundo.js") < EJ.scripts.indexOf("synthdock.js"));
 check("buttons: ↶ ↷ (#syUndo / #syRedo), ＋ ♪ Notes, → 🎞 ♪ (#syScSendN); the clip bar: ✂ Split, ⧉ Duplicate, 🎹 Piano roll",
   ["syUndo", "syRedo", "syTNotes", "syScSendN"].every((id) => DH.includes('id="' + id + '"')) && /"syTSplit"/.test(TJ) && /"syTDup"/.test(TJ) && /"syTRollBtn"/.test(TJ));
 check("the timeline plays note clips with the synth (an engine per clip, the clip's patch) and every clip through its gain line", /new V\.Engine\(ctx, \{ dest: g \}\)/.test(TJ) && /T\.clipEnv\(c, Math\.max\(f\.fi, 0\.005\), Math\.max\(f\.fo, 0\.005\)\)/.test(TJ) && /T\.fades\(l\.clips\)/.test(TJ));

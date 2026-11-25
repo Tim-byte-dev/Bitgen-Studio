@@ -1780,6 +1780,32 @@ nothing = the **picked layer**: its **name** (type a new one) with **Vol**, **Pa
 an empty spot on the layer) and the panel edits that layer. A layer can also be renamed right in its head: click the name
 and type. The panel keeps one height, so the layers never move.
 
+**🎤 Sing it in my voice and ✂ Separate vocals (2.965.0).** The row above the timeline (🎤 MY VOICE) sings a song's vocal
+again in **your** voice - the same notes, timing, vibrato and feeling, only the voice changes - and splits a song into its
+vocal and its instrumental. Both buttons work on the **picked layer** (click its name first).
+- **Model** - **Seed-VC** (singing, from a clip of your voice), **SoulX-Singer SVC** (also from a clip) or **RVC (Applio)**
+  (a model trained on your voice). One that is not installed says so in the list; ▶ then shows the Download / Cancel box and
+  installs it in place (or Settings ▸ Add-ons ▸ 🎤 Sing in my voice - tick the ones you want). Seed-VC is GPL-3.0 (installed
+  from its own repository and run as its own program), SoulX-Singer Apache-2.0, Applio MIT.
+- **Your voice** - for Seed-VC and SoulX-Singer a **clip**: **🎙 Record** (the microphone - sing, or just read out loud, for 15
+  to 30 seconds in your normal voice, then ■ Stop) or **📂** a recording of you (any sound or video file). The clips are kept
+  for every project. For RVC a **trained model**: **🎓 Train** ticks your clips (about 10 minutes together sounds most like
+  you; singing is best, talking works) and trains one - 20 to 60 minutes on a big card.
+- **Key** moves the song up or down (semitones) when it sits too high or low for your voice; **Quality** fast / good / best
+  (more steps take longer).
+- **▶ (the green circle)** - a layer of **vocals** is sung in your voice straight away; a **whole song** is separated first
+  (so you get its vocals and instrumental layers too). The new layer (*"… · your voice (Seed-VC)"*) starts at 0:00 under the
+  others and the vocal it came from is muted - unmute it to compare. ▶ on an instrumental layer is refused.
+- **✂ Separate vocals** - the picked layer gets two more layers: its **vocals** and its **instrumental** (demucs, the same
+  song separation as the Stems tab - the Download / Cancel box if it is not installed). The original stays as the first
+  layer, muted (unmute it to hear the whole song).
+- The layer is rendered dry for both - its clips, fades and keyframes, without its volume, pan, EQ or reverb - and the
+  results go into 📂 My samples, so they are in the timeline's sounds too. The row shows what the model is doing and for
+  how long.
+- **Can't sing?** It still works: your clip only gives the model the sound of your voice; the notes and the timing come
+  from the song's own vocal, so it comes out in tune. A clip of you singing anything (even badly) matches a singing voice
+  better than one of you talking, but talking works. Use only voices you have the right to use, like your own.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

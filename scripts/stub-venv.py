@@ -43,6 +43,29 @@ def main():
         print(json.dumps(pair))
         return 0
 
+    if "singvoice_local" in helper:
+        # 2.965.0: 🎤 Sing in my voice's stand-in - "convert" writes the vocal back (the same sound - the contract, not the
+        # model, is what is tested; STUB_SING_SLOW=<s> waits first), "train" leaves Applio's file names, "check" answers ok
+        task, eng = job.get("task") or "convert", job.get("engine")
+        sys.stderr.write(f"[sing] {task} {eng}\n"); sys.stderr.flush()
+        if task == "check":
+            print(json.dumps({"ok": True, "cuda": False, "torch": "stub"})); return 0
+        if task == "train":
+            d = os.path.join(job.get("logs_dir") or ".", job.get("name") or "voice")
+            os.makedirs(d, exist_ok=True)
+            open(os.path.join(d, (job.get("name") or "voice") + "_%de_%ds.pth" % (int(job.get("epochs") or 300), 9000)), "wb").write(b"stub")
+            open(os.path.join(d, (job.get("name") or "voice") + ".index"), "wb").write(b"stub")
+            print(json.dumps({"pth": "x", "index": "y", "minutes": 0.1})); return 0
+        import time as _t
+        _t.sleep(float(os.environ.get("STUB_SING_SLOW") or 0))
+        for k in ("source",) + (("ref",) if eng in ("seedvc", "soulx") else ("pth", "index")):
+            if not os.path.isfile(job.get(k) or ""):
+                print(json.dumps({"error": "stub: no %s %s" % (k, job.get(k))})); return 1
+        with open(job["source"], "rb") as fi, open(job["out"], "wb") as fo:
+            fo.write(fi.read())
+        sys.stderr.write("[sing] %s shift %s quality %s\n" % (eng, job.get("shift"), job.get("quality"))); sys.stderr.flush()
+        print(json.dumps({"out": job["out"], "seconds": 1.0})); return 0
+
     if "asr_live" in helper:
         # 2.564.0: the live transcriber's stand-in - "ready", then one answer per JSON line on stdin (the words say how
         # long the wav was, so a test can tell its utterance arrived whole)

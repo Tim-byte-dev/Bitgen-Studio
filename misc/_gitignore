@@ -108,6 +108,9 @@ life_choices.json
 life_choices.json.tmp
 # 2.953.0: 🎹 the Synth station's samples library on this PC
 synth_samples/
+# 2.965.0: 🎤 Sing in my voice - the engines (code + venvs + models + trained voices) and your voice clips
+singvoice/
+sing_voices/
 
 # 2.520.0: the LoRA trainer's ai-toolkit checkout + the usage log
 /ai-toolkit/

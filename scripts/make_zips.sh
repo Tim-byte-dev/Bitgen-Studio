@@ -41,6 +41,8 @@ FILES=$(find . -type f \
   ! -path "./pose_sheets/*" \
   ! -path "./solidcraft/*" \
   ! -path "./synth_samples/*" \
+  ! -path "./singvoice/*" \
+  ! -path "./sing_voices/*" \
   ! -path "./team/*" ! -path "./llm_arena/*" ! -path "./refmod/*" \
   ! -path "./models/*" ! -path "./loras/*" ! -path "./llm-models/*" \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \

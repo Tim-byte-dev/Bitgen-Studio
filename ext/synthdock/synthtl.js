@@ -686,6 +686,24 @@
       .then(function (c) { if (c) { l.mute = true; liveMix(); changed(); heads(); draw(); msg("⤓ " + l.name + " bounced to a new layer (the original is muted - unmute it to go back)"); } return c; })
       .catch(function (e) { msg(e.message || String(e), true); return null; });
   }
+  /** 2.965.0 (🎤 row): layer i rendered DRY - alone, unmuted, at 100% centre with no effects or lanes (its clips, fades and
+   *  keyframes kept) - for ✂ separating and 🎤 singing; everything put back as it was */
+  function renderDry(i) {
+    var l = L(i); if (!l || !l.clips.length) return Promise.reject(new Error("Nothing on that layer - pick a layer with a song or a vocal on it"));
+    var keep = TLD.layers.map(function (q) { return { mute: q.mute, solo: q.solo }; }), mine = { vol: l.vol, pan: l.pan, fx: l.fx, auto: l.auto };
+    TLD.layers.forEach(function (q) { q.solo = false; }); l.mute = false; l.vol = 1; l.pan = 0; l.fx = T.cleanFx(null); l.auto = T.cleanAuto(null);
+    var back = function () { TLD.layers.forEach(function (q, k) { if (keep[k]) { q.mute = keep[k].mute; q.solo = keep[k].solo; } }); l.vol = mine.vol; l.pan = mine.pan; l.fx = mine.fx; l.auto = mine.auto; };
+    var p; try { p = render(48000, i); } catch (e) { back(); return Promise.reject(e); }
+    return p.then(function (r) { back(); return r; }, function (e) { back(); throw e; });
+  }
+  /** 2.965.0: a layer's name / mute / role from outside (the 🎤 row) */
+  function patchLayer(i, o) {
+    var l = L(i); if (!l || !o) return null;
+    if (o.name != null) l.name = String(o.name).replace(/[<>]/g, "").slice(0, 32) || l.name;
+    if (o.mute != null) l.mute = !!o.mute;
+    if (o.role !== undefined) { if (o.role) l.role = o.role; else delete l.role; }
+    liveMix(); changed(); heads(); draw(); return l;
+  }
   function delTempo(i) {
     if (!(i > 0) || !TLD.tempo[i]) { msg("The first tempo stays - change its BPM instead", true); return false; }
     TLD.tempo.splice(i, 1); TLD.tempo = T.cleanTempo(TLD.tempo); S.tpt = null; keyEd(); changed(); draw(); msg("♩ tempo change removed"); return true;
@@ -1054,7 +1072,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
