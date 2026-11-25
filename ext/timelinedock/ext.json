@@ -85,6 +85,7 @@
     "tlframe.js",
     "tljoin.js",
     "tlranges.js",
-    "tlmocap.js"
+    "tlmocap.js",
+    "tltech.js"
   ]
 }

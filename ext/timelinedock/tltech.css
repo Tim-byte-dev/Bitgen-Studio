@@ -1,0 +1,216 @@
+/* bitGen Studio 2.968.0 — the Timeline docker's TECHNICAL look (the 🎹 Synth tab's style: dark panels, glowing labels,
+ * LCD readouts, neon clips on a grid).
+ * Tim: "is it possible to make the timeline docker look technical like you did with the synth tab?"
+ * Everything is scoped to #timelinedock.tl-tech (tltech.js puts the class on; ⚙ Timeline settings ▸ Look ▸ Classic takes it
+ * off again). Colours: each layer keeps its own colour (--lc, set per track by the core page) - only how it is drawn
+ * changes. No layout sizes change (track 44 px, ruler 16 px, the header width): only colour, light and type. */
+
+#timelinedock.tl-tech {
+  --tt-bg0: #07090c;
+  --tt-bg1: #0b0d11;
+  --tt-bg2: #11141a;
+  --tt-line: #232935;
+  --tt-line2: #2d3340;
+  --tt-text: #d9dee8;
+  --tt-dim: #8b95a7;
+  --tt-cyan: #38e1ff;
+  --tt-amber: #ffa63d;
+  --tt-red: #ff4d5e;
+  --tt-mono: ui-monospace, Consolas, "Cascadia Mono", monospace;
+}
+#timelinedock.tl-tech .bbody {
+  background: radial-gradient(ellipse at 30% 0%, #171a22 0%, var(--tt-bg1) 70%);
+  color: var(--tt-text);
+}
+
+/* ---- panels: the frame bar, the menu bar, the layers panel, the canvas transport ---- */
+/* no border or padding of their own is added (that would push everything under them down): the edge is a ring of
+   box-shadow, and the menu bar's 2 + 2 px of padding come out of its own 6 px bottom margin (2 px left as the gap) (nothing under it moves; its top
+   edge stays put, so the preview's resize bar above it keeps every pixel) */
+#timelinedock.tl-tech #tlSizeBar,
+#timelinedock.tl-tech #tlbar,
+#timelinedock.tl-tech #tlCTrans,
+#timelinedock.tl-tech #tlLayersPanel {
+  background: linear-gradient(180deg, #1b1f27 0%, #121419 100%);
+  border-color: #262b35;
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px #262b35, 0 1px 0 #ffffff0a inset, 0 4px 12px #00000055;
+}
+#timelinedock.tl-tech #tlbar { position: relative; padding: 2px 7px; margin: 0 -7px 2px; }
+/* EDIT sits on the bar's top edge like a legend - absolutely placed (no room taken in the row) and click-through (the
+   preview's resize bar just above it keeps working) */
+#timelinedock.tl-tech #tlbar::before {
+  content: "EDIT"; position: absolute; right: 14px; top: -7px; padding: 0 5px; pointer-events: none; z-index: 1;
+  font: 700 9px/12px system-ui, sans-serif; letter-spacing: .18em; color: var(--tt-amber);
+  text-shadow: 0 0 6px var(--tt-amber); background: #1b1f27; border-radius: 3px;
+}
+#timelinedock.tl-tech #tlSizeBar .tsb-l,
+#timelinedock.tl-tech #tlLayersPanel .tll-head {
+  font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--tt-cyan); text-shadow: 0 0 6px var(--tt-cyan);
+}
+#timelinedock.tl-tech #tlLayersPanel .tll-head { background: transparent; border-bottom: 1px solid var(--tt-line); }
+#timelinedock.tl-tech .tsb-sep { background: var(--tt-line2); border-color: var(--tt-line2); }
+#timelinedock.tl-tech #tlbar > span[style*="border-left"] { border-left-color: var(--tt-line2) !important; }
+
+/* ---- buttons, selects, inputs: dark keys with a lit edge ---- */
+#timelinedock.tl-tech .ghost {
+  background: var(--tt-bg2); border: 1px solid #2a2f3a; color: #c9d2e3; border-radius: 5px;
+  box-shadow: 0 1px 0 #ffffff0d inset;
+}
+#timelinedock.tl-tech .ghost:hover:not([disabled]) { border-color: #38e1ff88; color: #fff; }
+#timelinedock.tl-tech .ghost.on {
+  color: var(--tt-cyan); border-color: #38e1ff88; background: #0b1a20;
+  box-shadow: 0 0 6px #38e1ff33 inset, 0 0 6px #38e1ff22; text-shadow: 0 0 6px #38e1ff99;
+}
+#timelinedock.tl-tech .ghost[disabled] { opacity: .45; }
+#timelinedock.tl-tech select,
+#timelinedock.tl-tech input[type=number],
+#timelinedock.tl-tech input[type=text] {
+  background: var(--tt-bg2); color: #e6ebf5; border: 1px solid #2a2f3a; border-radius: 5px;
+}
+#timelinedock.tl-tech select:focus,
+#timelinedock.tl-tech input[type=number]:focus,
+#timelinedock.tl-tech input[type=text]:focus { border-color: var(--tt-cyan); outline: none; box-shadow: 0 0 0 1px #38e1ff44; }
+#timelinedock.tl-tech input[type=checkbox],
+#timelinedock.tl-tech input[type=range] { accent-color: var(--tt-cyan); }
+#timelinedock.tl-tech .chk { color: var(--tt-dim); }
+/* ⚙ Compile stays the one amber key */
+#timelinedock.tl-tech #tlExport {
+  border-color: var(--tt-amber) !important; color: var(--tt-amber) !important; background: #1d1406;
+  box-shadow: 0 0 8px #ffa63d33, 0 0 6px #ffa63d22 inset; text-shadow: 0 0 6px #ffa63d99;
+}
+
+/* ---- the readouts: LCD windows ---- */
+#timelinedock.tl-tech #tlPh,
+#timelinedock.tl-tech #tlTc,
+#timelinedock.tl-tech #tlCTime,
+#timelinedock.tl-tech #tlSelInfo:not(:empty),
+#timelinedock.tl-tech #tlRangeN:not(:empty) {
+  font-family: var(--tt-mono) !important; color: var(--tt-cyan) !important; text-shadow: 0 0 6px #38e1ff88;
+  background: var(--tt-bg0); border: 1px solid #1d2430; border-radius: 4px; padding: 1px 6px;
+  box-shadow: inset 0 1px 4px #000;
+}
+#timelinedock.tl-tech #tlCZoom, #timelinedock.tl-tech #tlCInfo { font-family: var(--tt-mono); color: var(--tt-dim); }
+
+/* ---- the preview canvas: a screen ---- */
+#timelinedock.tl-tech #tlCanvasWrap { background: var(--tt-bg0); border-color: #1d2430; box-shadow: inset 0 2px 10px #000; }
+#timelinedock.tl-tech #tlTools { background: linear-gradient(180deg, #1b1f27, #121419); border-color: #262b35; }
+
+/* ---- the layers: a dark rack on a time grid ---- */
+#timelinedock.tl-tech #tlscroll {
+  background: var(--tt-bg0); border: 1px solid #1f2531; border-radius: 8px; box-shadow: inset 0 2px 8px #000a;
+  scrollbar-color: #2d3340 var(--tt-bg0);
+}
+#timelinedock.tl-tech #tlscroll::-webkit-scrollbar { width: 10px; height: 10px; }
+#timelinedock.tl-tech #tlscroll::-webkit-scrollbar-track { background: var(--tt-bg0); }
+#timelinedock.tl-tech #tlscroll::-webkit-scrollbar-thumb { background: #2d3340; border-radius: 5px; border: 2px solid var(--tt-bg0); }
+#timelinedock.tl-tech #tlscroll::-webkit-scrollbar-thumb:hover { background: #38e1ff66; }
+#timelinedock.tl-tech .tlruler {
+  background: linear-gradient(180deg, #10131a, #0a0c10); border-bottom: 1px solid var(--tt-line);
+  color: #38e1ffaa; font-family: var(--tt-mono);
+}
+#timelinedock.tl-tech .tlruler span { border-left-color: #38e1ff55; }
+#timelinedock.tl-tech .frameticks span { border-left-color: #2a3140; }
+/* the ruler's left end, above the layer headers: a section label that stays put while the layers scroll */
+#timelinedock.tl-tech .tlruler::before {
+  content: "LAYERS"; position: sticky; left: 0; z-index: 6; display: inline-block; box-sizing: border-box;
+  width: var(--labw); height: 100%; padding: 0 0 0 8px; vertical-align: top;
+  background: linear-gradient(180deg, #1b1f27, #121419); border-right: 1px solid var(--tt-line);
+  font: 700 9px/15px system-ui, sans-serif; letter-spacing: .18em; color: var(--tt-cyan); text-shadow: 0 0 6px var(--tt-cyan);
+}
+/* the grid: a line every --tgrid px from the headers' edge (the ruler's steps) and a fainter one every --tgrid2 px
+   (a fifth of that) - tltech.js sets both from the zoom */
+#timelinedock.tl-tech .tltrack {
+  border-bottom-color: #1a1f28;
+  background-color: var(--tt-bg1);
+  background-image: repeating-linear-gradient(90deg, #ffffff0d 0 1px, transparent 1px var(--tgrid, 70px)),
+                    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px var(--tgrid2, 14px));
+  background-position: var(--labw) 0, var(--labw) 0;
+}
+#timelinedock.tl-tech .tltrack.lcol {
+  background-image: linear-gradient(var(--ltint), var(--ltint)),
+                    repeating-linear-gradient(90deg, #ffffff0d 0 1px, transparent 1px var(--tgrid, 70px)),
+                    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px var(--tgrid2, 14px));
+  background-position: 0 0, var(--labw) 0, var(--labw) 0;
+}
+#timelinedock.tl-tech .tltrack .tlab {
+  background: linear-gradient(180deg, #1b1f27 0%, #121419 100%); border-right: 1px solid var(--tt-line);
+  color: var(--tt-dim); font-family: var(--tt-mono);
+}
+#timelinedock.tl-tech .tltrack.lcol > .tlab { box-shadow: inset 3px 0 0 var(--lc), inset 7px 0 8px -6px var(--lc); }
+#timelinedock.tl-tech .tlab .lname { color: #e6ebf5; }
+#timelinedock.tl-tech .tlab .lname:hover { border-color: var(--tt-line2); }
+#timelinedock.tl-tech .tlab .lname:focus { border-color: var(--tt-cyan); background: var(--tt-bg0); }
+#timelinedock.tl-tech .tlab button { background: var(--tt-bg0); border-color: #222833; color: #6c7688; }
+#timelinedock.tl-tech .tlab button:hover { border-color: #38e1ff88; color: #fff; }
+#timelinedock.tl-tech .tlab button.on { color: var(--tt-cyan); border-color: #38e1ff77; text-shadow: 0 0 5px var(--tt-cyan); }
+#timelinedock.tl-tech .tlab button.solo.on { color: #5dff8a; border-color: #5dff8a88; text-shadow: 0 0 5px #5dff8a; }
+#timelinedock.tl-tech .tlab button.off { color: #3c4350; }
+/* the picked layer: a cyan band, its header lit */
+#timelinedock.tl-tech .tltrack.sellayer { background-color: #0d1a20; box-shadow: inset 0 0 0 1px #38e1ff66; }
+#timelinedock.tl-tech .tltrack.sellayer > .tlab {
+  color: var(--tt-cyan); background: linear-gradient(180deg, #13262e, #0d1a20); border-color: #38e1ff66;
+  box-shadow: inset 3px 0 0 var(--tt-cyan), inset 8px 0 10px -6px var(--tt-cyan);
+}
+#timelinedock.tl-tech .tltrack.sellayer > .tlab .lname { color: #c8f6ff; text-shadow: 0 0 6px #38e1ff88; }
+
+/* ---- clips: dark glass, a name bar in the layer's colour, a soft glow ---- */
+#timelinedock.tl-tech .clip {
+  --cc: var(--lc, var(--tt-amber));
+  border: 1px solid var(--cc); border-radius: 5px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cc) 24%, #0b0e13), color-mix(in srgb, var(--cc) 9%, #07090c));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--cc) 30%, transparent), inset 0 1px 0 #ffffff14;
+}
+#timelinedock.tl-tech .clip.audio { --cc: var(--lc, var(--tt-cyan)); }
+#timelinedock.tl-tech .clip.img { --cc: var(--lc, #5dff8a); }
+#timelinedock.tl-tech .clip .cn {
+  font: 600 10px/14px var(--tt-mono); color: #fff; text-shadow: 0 0 4px #000;
+  background: color-mix(in srgb, var(--cc) 34%, #07090ccc); border-bottom: 1px solid color-mix(in srgb, var(--cc) 55%, transparent);
+  padding: 0 5px;
+}
+#timelinedock.tl-tech .clip .wave polygon { fill: var(--cc); opacity: .6; }
+#timelinedock.tl-tech .clip .strip { opacity: .5; }
+#timelinedock.tl-tech .clip .h.l, #timelinedock.tl-tech .clip .h.r { border-color: var(--cc); }
+#timelinedock.tl-tech .clip .cx { background: #07090ccc; color: #8b95a7; }
+#timelinedock.tl-tech .clip.sel {
+  outline: 2px solid var(--tt-cyan); outline-offset: -2px;
+  box-shadow: 0 0 12px #38e1ffaa, 0 0 0 1px #38e1ff inset;
+}
+#timelinedock.tl-tech .pathspan { border-color: #a98bff; color: #cbb8ff; text-shadow: 0 0 6px #a98bff88;
+  background: repeating-linear-gradient(135deg, #a98bff14 0 6px, transparent 6px 12px); }
+#timelinedock.tl-tech .mchip { background: #0d1218; border-color: #38e1ff66; font-family: var(--tt-mono); box-shadow: 0 0 6px #38e1ff22; }
+#timelinedock.tl-tech .mchip.ref { background: #120f1c; border-color: #a98bff88; box-shadow: 0 0 6px #a98bff22; }
+#timelinedock.tl-tech .kfd { color: var(--tt-amber); text-shadow: 0 0 5px var(--tt-amber), 0 0 2px #000; }
+#timelinedock.tl-tech .kfd.kfease { color: #7fd1ff; text-shadow: 0 0 5px #7fd1ff; }
+
+/* ---- the range selection and the markers ---- */
+#timelinedock.tl-tech .tlsel { background: #38e1ff17; border-left-color: var(--tt-cyan); border-right-color: var(--tt-cyan); }
+#timelinedock.tl-tech .tlsel .sh { background: #38e1ff44; }
+#timelinedock.tl-tech .tlsel .slab { color: var(--tt-cyan); background: #07090ccc; font-family: var(--tt-mono); text-shadow: 0 0 5px #38e1ff88; }
+#timelinedock.tl-tech #playhead { background: var(--tt-red); box-shadow: 0 0 6px var(--tt-red), 0 0 14px #ff4d5e66; }
+#timelinedock.tl-tech #playhead::after { border-top-color: var(--tt-red); filter: drop-shadow(0 0 4px var(--tt-red)); }
+#timelinedock.tl-tech #playcursor { background: var(--tt-amber); box-shadow: 0 0 6px var(--tt-amber); }
+
+/* ---- the timeline's own panels (stagedock.js .tsd: 🧰 Tools & Properties, 🎤 Karaoke - floating over the app or docked
+   beside the preview canvas): the same look while the docker has it ---- */
+body:has(#timelinedock.tl-tech) .tsd {
+  background: linear-gradient(180deg, #1b1f27 0%, #121419 100%); border-color: #262b35; color: #d9dee8;
+  box-shadow: 0 1px 0 #ffffff0a inset, 0 12px 34px #000000aa;
+}
+body:has(#timelinedock.tl-tech) .tsd > .tsd-title { background: #0f1217; border-bottom-color: #232935; }
+body:has(#timelinedock.tl-tech) .tsd > .tsd-title h2 { font-weight: 700; letter-spacing: .18em; color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
+body:has(#timelinedock.tl-tech) .tsd .tsd-key { color: #8b95a7; border-color: #2a2f3a; font-family: ui-monospace, Consolas, monospace; }
+body:has(#timelinedock.tl-tech) .tsd .tsd-side:hover,
+body:has(#timelinedock.tl-tech) .tsd .tsd-side.on { color: #38e1ff; }
+body:has(#timelinedock.tl-tech) .tsd .ghost { background: #11141a; border: 1px solid #2a2f3a; color: #c9d2e3; border-radius: 5px; box-shadow: 0 1px 0 #ffffff0d inset; }
+body:has(#timelinedock.tl-tech) .tsd .ghost:hover:not([disabled]) { border-color: #38e1ff88; color: #fff; }
+body:has(#timelinedock.tl-tech) .tsd .ghost.on {
+  color: #38e1ff; border-color: #38e1ff88; background: #0b1a20; box-shadow: 0 0 6px #38e1ff33 inset, 0 0 6px #38e1ff22; text-shadow: 0 0 6px #38e1ff99;
+}
+body:has(#timelinedock.tl-tech) .tsd select,
+body:has(#timelinedock.tl-tech) .tsd input[type=number],
+body:has(#timelinedock.tl-tech) .tsd input[type=text],
+body:has(#timelinedock.tl-tech) .tsd textarea { background: #11141a; color: #e6ebf5; border: 1px solid #2a2f3a; border-radius: 5px; }
+body:has(#timelinedock.tl-tech) #tlFloat #tlTools { background: transparent; border-bottom-color: #232935; }
+body:has(#timelinedock.tl-tech) #tlFloat #tlProps { background: transparent; }

@@ -1944,6 +1944,17 @@ place each take straight after the previous one instead, untick "Place each rend
   to overlap clips.
 - The arrows are left alone while you type in a field or while a dialog is open.
 
+## The timeline's look (2.968.0)
+
+The Timeline docker has the **technical** look of the 🎹 Synth tab: dark panels, glowing labels (EDIT on the menu bar,
+LAYERS over the layer headers), LCD-style time readouts, clips as dark glass with a name bar and a glow in their layer's
+colour, and a faint time grid behind the layers that follows the zoom (a line at each of the ruler's steps, a fainter one
+every fifth of that). 🧰 Tools & Properties wears it too. Only colours, light and type change - every button, clip and
+layer stays exactly where it was.
+
+- **⚙ Timeline settings ▸ Look** - **Technical** (the default) or **Classic** (the warm look of the rest of the app).
+  Saved in the settings file, so every browser and the desktop app show the same.
+
 ## Override style and the StoryBoard
 
 With **Override style** ticked in Basic Settings, the StoryBoard's renders use Basic Settings' **Steps** and

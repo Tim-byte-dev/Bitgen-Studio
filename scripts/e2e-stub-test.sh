@@ -15220,6 +15220,7 @@ node scripts/test-965.js > /tmp/t965.log 2>&1 && ok "2.965.0 units: three engine
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui965-ui.js > /tmp/ui965.log 2>&1 && ok "2.965.0 browser test: the 🎤 row above the timeline, a clip of your voice, ✂ separate (vocals + instrumental, the original muted), ▶ Seed-VC on the vocals, ▶ RVC on the whole song, SoulX's Download / Cancel box, 🎓 Train" || { bad "2.965.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui965.log | head -8; }
 node scripts/test-967.js > /tmp/t967.log 2>&1 && ok "2.967.0 units: ■ Stop (runJson onSpawn + process group, stopProc ends the helper AND its child; jobs cancelled, nothing added), Key Auto (the helper's --auto-f0-adjust), ⧉ Mix, 🎧" || { bad "2.967.0 units"; grep -a "^FAIL" -A1 /tmp/t967.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui967-ui.js > /tmp/ui967.log 2>&1 && ok "2.967.0 browser test: ■ Stop ends a slow ▶ for real, Key Auto, ⧉ Mix (a layer + the Sound assets), 🎧 while recording (the fake mic)" || { bad "2.967.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui967.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui968-ui.js > /tmp/ui968.log 2>&1 && ok "2.968.0 browser test: the Timeline docker's technical look (the Synth's colours drawn, nothing moves between Technical and Classic, the grid follows the zoom, ⚙ Timeline settings ▸ Look saves)" || { bad "2.968.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui968.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
