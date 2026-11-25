@@ -63,7 +63,7 @@ def main():
                 print(json.dumps({"error": "stub: no %s %s" % (k, job.get(k))})); return 1
         with open(job["source"], "rb") as fi, open(job["out"], "wb") as fo:
             fo.write(fi.read())
-        sys.stderr.write("[sing] %s shift %s quality %s\n" % (eng, job.get("shift"), job.get("quality"))); sys.stderr.flush()
+        sys.stderr.write("[sing] %s shift %s auto %s quality %s\n" % (eng, job.get("shift"), bool(job.get("auto_shift")), job.get("quality"))); sys.stderr.flush()
         print(json.dumps({"out": job["out"], "seconds": 1.0})); return 0
 
     if "asr_live" in helper:

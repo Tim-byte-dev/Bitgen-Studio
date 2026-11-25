@@ -10,7 +10,7 @@ imported (or run as its own program) inside the engine's folder.
 
 Job (convert):
   {"task": "convert", "engine": "seedvc" | "soulx" | "rvc", "src_dir": <the engine's code>, "source": <the vocal wav>,
-   "out": <the wav to write>, "shift": semitones (-24..24), "quality": "fast" | "good" | "best", "device": "auto" | "cuda" | "cpu",
+   "out": <the wav to write>, "shift": semitones (-24..24), "auto_shift": true = fitted to the clip (2.967.0), "quality": "fast" | "good" | "best", "device": "auto" | "cuda" | "cpu",
    seedvc / soulx: "ref": <a clip of the voice>,  soulx: "models_dir": <its downloaded files>,
    rvc: "pth": <the voice model>, "index": <its .index>, "logs_dir": <Applio's models folder>}
 Job (train - RVC only, through Applio's own core.py):
@@ -78,6 +78,12 @@ def shift_of(job):
         return 0
 
 
+def auto_of(job):
+    """2.967.0: Key = Auto - the song moved to where the clip of your voice sits (Seed-VC --auto-f0-adjust, SoulX-Singer
+    auto_shift); only with no shift of its own"""
+    return bool(job.get("auto_shift")) and shift_of(job) == 0
+
+
 def seconds_of(path):
     try:
         import soundfile as sf
@@ -96,7 +102,7 @@ def seedvc(job):
     steps = STEPS["seedvc"].get(job.get("quality") or "good", 40)
     cmd = [sys.executable, "inference.py", "--source", job["source"], "--target", job["ref"], "--output", work,
            "--diffusion-steps", str(steps), "--length-adjust", "1.0", "--inference-cfg-rate", "0.7",
-           "--f0-condition", "True", "--auto-f0-adjust", "False", "--semi-tone-shift", str(shift_of(job)),
+           "--f0-condition", "True", "--auto-f0-adjust", "True" if auto_of(job) else "False", "--semi-tone-shift", str(shift_of(job)),
            "--fp16", "True" if device_of(job) == "cuda" else "False"]
     code = run(cmd, src)
     outs = sorted(glob.glob(os.path.join(work, "*.wav")), key=os.path.getmtime)
@@ -157,7 +163,7 @@ def soulx(job):
         pass
     a = A()
     a.device, a.prompt_wav_path, a.target_wav_path, a.prompt_f0_path, a.target_f0_path = dev, pwav, twav, pf0, tf0
-    a.save_dir, a.auto_shift, a.pitch_shift = work, shift_of(job) == 0 and bool(job.get("auto_shift")), shift_of(job)
+    a.save_dir, a.auto_shift, a.pitch_shift = work, auto_of(job), shift_of(job)
     a.n_steps, a.cfg, a.use_fp16 = STEPS["soulx"].get(job.get("quality") or "good", 32), 3.0, fp16
     SVC.process(a, config, model)
     gen = os.path.join(work, "generated.wav")

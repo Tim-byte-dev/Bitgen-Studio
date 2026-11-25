@@ -160,7 +160,7 @@ const fake = (id, b) => {                              // an engine "installed":
     /function selLayer\(\) \{ var t = TL\(\); if \(!t\) return -1; var i = t\.info\(\)\.sel;/.test(J) && /TL\(\)\.renderDry\(i\)/.test(J) && /role: "vocals"/.test(J) && /role: "instrumental"/.test(J) && /t\.patchLayer\(i, \{ mute: true \}\)/.test(J) &&
     /var whole = l\.role !== "vocals" && l\.role !== "voice";/.test(J) && /H3NeedInstall\.ensure\("sing_" \+ e\.id, why\)/.test(J));
   check("the timeline: renderDry (alone, unmuted, 100% centre, no effects / lanes - put back after) and patchLayer; roles kept in the saved timeline",
-    /function renderDry\(i\)/.test(TJ) && /l\.fx = T\.cleanFx\(null\); l\.auto = T\.cleanAuto\(null\);/.test(TJ) && /renderDry: renderDry, patchLayer: patchLayer,/.test(TJ) && /var ROLES = \["vocals", "instrumental", "voice"\];/.test(TC) &&
+    /function renderDry\(i\)/.test(TJ) && /l\.fx = T\.cleanFx\(null\); l\.auto = T\.cleanAuto\(null\);/.test(TJ) && /renderDry: renderDry, (renderMix: renderMix, )?patchLayer: patchLayer,/.test(TJ) && /var ROLES = \["vocals", "instrumental", "voice"\];/.test(TC) &&
     require("../ext/synthdock/synthtlcore.js").cleanTL({ layers: [{ name: "a", role: "vocals", clips: [] }, { name: "b", role: "evil", clips: [] }] }).layers.map((l) => l.role || "-").join() === "vocals,-");
   check("ext.json: synthsing.js after the timeline", E.scripts.indexOf("synthsing.js") === E.scripts.indexOf("synthtl.js") + 1);
   const NI = src("static/needinstall.js"), RI = src("routes/index.js");

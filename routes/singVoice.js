@@ -6,10 +6,11 @@
 //   POST /api/sing/clips                   multipart "files" (a 🎙 recording or files) -> {added [{name, seconds}], errors, clips}
 //   GET  /api/sing/clips/file/:name        a clip (▶ in the row)
 //   POST /api/sing/clips/delete {name}
-//   POST /api/sing/convert {engine, sample, clip | model, shift, quality}   -> {job}   (409 {needs} when not installed)
+//   POST /api/sing/convert {engine, sample, clip | model, shift (-24..24 | "auto" - 2.967.0), quality}   -> {job}   (409 {needs} when not installed)
 //   POST /api/sing/separate {sample}       -> {job}  (409 {needs: "demucs"})
 //   POST /api/sing/train {name, clips, epochs}   -> {job}
 //   GET  /api/sing/job/:id?from=n          {job: {id, kind, label, state, result, error}, lines, next}
+//   POST /api/sing/job/:id/cancel          2.967.0: ■ Stop - its processes ended; state -> "cancelled" (nothing added)
 "use strict";
 const fs = require("fs");
 const os = require("os");
@@ -44,6 +45,7 @@ function mount(app) {
   app.post("/api/sing/convert", J, go((b) => SV.convert(b)));
   app.post("/api/sing/separate", J, go((b) => SV.separate(b)));
   app.post("/api/sing/train", J, go((b) => SV.train(b)));
+  app.post("/api/sing/job/:id/cancel", (req, res) => { try { res.json(SV.cancel(String(req.params.id || ""))); } catch (e) { fail(res, e); } });
   app.get("/api/sing/job/:id", (req, res) => {
     const j = SV.job(String(req.params.id || ""));
     if (!j) return res.status(404).json({ error: "no such job (bitGen was restarted?)" });

@@ -696,6 +696,17 @@
     var p; try { p = render(48000, i); } catch (e) { back(); return Promise.reject(e); }
     return p.then(function (r) { back(); return r; }, function (e) { back(); throw e; });
   }
+  /** 2.967.0 (🎤 ⧉ Mix): the layers in `list` rendered together AS THEY SIT in the mix (their Vol, Pan, effects and lanes),
+   *  each heard even when muted or another layer is solo; mute / solo put back after */
+  function renderMix(list) {
+    list = [].concat(list).filter(function (i) { return L(i) && L(i).clips.length; });
+    if (!list.length) return Promise.reject(new Error("Nothing to mix on those layers"));
+    var keep = TLD.layers.map(function (q) { return { mute: q.mute, solo: q.solo }; });
+    TLD.layers.forEach(function (q, k) { q.solo = false; if (list.indexOf(k) >= 0) q.mute = false; });
+    var back = function () { TLD.layers.forEach(function (q, k) { if (keep[k]) { q.mute = keep[k].mute; q.solo = keep[k].solo; } }); };
+    var p; try { p = render(48000, list); } catch (e) { back(); return Promise.reject(e); }
+    return p.then(function (r) { back(); return r; }, function (e) { back(); throw e; });
+  }
   /** 2.965.0: a layer's name / mute / role from outside (the 🎤 row) */
   function patchLayer(i, o) {
     var l = L(i); if (!l || !o) return null;
@@ -883,7 +894,7 @@
       lo.type = "lowshelf"; lo.frequency.value = 200; mid.type = "peaking"; mid.frequency.value = 1000; mid.Q.value = 0.8; hi.type = "highshelf"; hi.frequency.value = 4500;
       var flt = ctx.createBiquadFilter(); flt.type = "lowpass"; flt.Q.value = 0.7;   // 2.959.0: the layer's filter (Filter knob / lane)
       comp.knee.value = 6; comp.attack.value = 0.005; comp.release.value = 0.15; meter.fftSize = 1024;
-      var on = only == null ? T.audible(TLD, i) : (i === only && !l.mute);
+      var on = only == null ? T.audible(TLD, i) : ([].concat(only).indexOf(i) >= 0 && !l.mute);   // 2.967.0: only = a layer or a list
       vol.gain.value = on ? l.vol : 0; if (pan.pan) pan.pan.value = l.pan;
       // vol -> EQ low / mid / high -> compressor (+ make-up) -> pan -> the keyframe line -> master (+ the reverb send)
       vol.connect(lo); lo.connect(mid); mid.connect(hi); hi.connect(flt); flt.connect(comp); comp.connect(make); make.connect(pan); pan.connect(ev);
@@ -1072,7 +1083,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },

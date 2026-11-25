@@ -88,7 +88,7 @@ function wav(f, secs) { const rate = 22050, n = Math.round(secs * rate), b = Buf
     const jl = await ev((id) => fetch("/api/sing/job/" + id).then((r) => r.json()), (await si()).job);
     check("▶ on the vocals (Seed-VC): a new layer in your voice from 0:00, the vocal muted; the engine got the key and the quality",
       t2.layers.length === 4 && t2.layers[3].role === "voice" && /\(Seed-VC\)$/.test(t2.layers[3].name) && t2.layers[1].mute && t2.layers[3].clips[0].start === 0 && /^my:.*\(ui965 my voice - Seed-VC\)\.wav$/.test(t2.layers[3].clips[0].src) &&
-      l2.engine === "seedvc" && jl.lines.some((x) => /\[sing\] seedvc shift 2 quality best/.test(x)), { names: t2.layers.map((l) => [l.name, l.role, l.mute]), lines: jl.lines && jl.lines.slice(-5) });
+      l2.engine === "seedvc" && jl.lines.some((x) => /\[sing\] seedvc shift 2 (auto False )?quality best/.test(x)), { names: t2.layers.map((l) => [l.name, l.role, l.mute]), lines: jl.lines && jl.lines.slice(-5) });
     // RVC on the WHOLE song: separated first, then sung with the trained model
     await p.selectOption("#sySingEngine", "rvc"); await sleep(100);
     const rv = await ev(() => ({ v: document.getElementById("sySingVoice").value, t: document.getElementById("sySingVoice").textContent, train: !document.getElementById("sySingTrain").hidden }));
@@ -118,7 +118,7 @@ function wav(f, secs) { const rate = 22050, n = Math.round(secs * rate), b = Buf
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e && e.stack || e)); }
   finally {
-    try { await ev(() => { window.H3SynthTL.setTL(null); Object.keys(localStorage).filter((k) => /^h3\.synth\./.test(k)).forEach((k) => localStorage.removeItem(k)); }); } catch (e) { /* gone */ }
+    try { await ev(() => { try { window.toggleMax("synthdock", false); window.H3Audio.tab("musicdock"); } catch (e) { /* 2.967.0: the Music tab back - the docker state is kept by the server */ } window.H3SynthTL.setTL(null); Object.keys(localStorage).filter((k) => /^h3\.synth\./.test(k)).forEach((k) => localStorage.removeItem(k)); }); await sleep(900); } catch (e) { /* gone */ }   // the docker state is saved 400 ms later
     await b.close();
     made.forEach((d) => fs.rmSync(d, { recursive: true, force: true }));
     try { fs.readdirSync(path.join(ROOT, "synth_samples")).filter((n) => /^(sep|dry) My song|My song - |My song \(|ui965/.test(n)).forEach((n) => fs.unlinkSync(path.join(ROOT, "synth_samples", n))); } catch (e) { /* none */ }

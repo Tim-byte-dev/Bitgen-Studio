@@ -157,6 +157,10 @@
           .sysinggo.busy svg { animation: sysingspin 1.4s linear infinite; }
           @keyframes sysingspin { to { transform: rotate(360deg); } }
           #sySingRec.on { color: #07090c; background: #ff5a5a; border-color: #ff5a5a; }
+          /* 2.967.0: ■ Stop (only while a job runs), 🎧 hear yourself, ⧉ Mix */
+          #sySingStop { color: #ff8b6b; border-color: #5a2a2a; }
+          #sySingStop:hover:not([disabled]) { color: #07090c; background: #ff8b6b; border-color: #ff8b6b; }
+          #sySingMon.on { color: #07090c; background: #38e1ff; border-color: #38e1ff; }
           .sysingmsg { flex: 1 1 220px; min-width: 0; font-size: 11px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .sysingmsg.bad { color: #ff8b6b; }
           .sysingbar { display: none; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .06); }
@@ -411,6 +415,7 @@
             <select id="sySingEngine" title="The singing voice model: Seed-VC and SoulX-Singer need a clip of your voice, RVC (Applio) a model trained on it"></select>
             <select id="sySingVoice" title="Your voice"></select>
             <button class="ghost" id="sySingRec" type="button" title="🎙 Record your voice with the microphone - sing (or read) for 15-30 seconds">🎙 Record</button>
+            <button class="ghost" id="sySingMon" type="button" aria-pressed="false" title="🎧 Hear yourself while you 🎙 record a clip (wear headphones - speakers feed back into the mic)">🎧</button>
             <button class="ghost" id="sySingAdd" type="button" title="📂 Add a recording of your voice (any sound or video file)">📂</button>
             <button class="ghost" id="sySingTrain" type="button" hidden title="🎓 Train an RVC model of your voice from the clips you tick (about 10 minutes is best)">🎓 Train</button>
             <label class="sysinglbl" title="Move the song's key up or down (semitones) when it sits too high or low for your voice">Key <select id="sySingKey"></select></label>
@@ -418,9 +423,11 @@
             <button class="sysinggo" id="sySingGo" type="button" aria-label="Sing the picked layer in my voice" title="▶ Sing the PICKED layer in your voice - a whole song is separated first; the new layer goes under it from 0:00">
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 7.2 L17.2 12 L9.5 16.8 Z" fill="currentColor"/></svg>
             </button>
+            <button class="ghost" id="sySingStop" type="button" hidden title="■ Stop what is running (singing, separating or training) - nothing is added">■ Stop</button>
             <span class="sep"></span>
             <button class="ghost" id="sySingSep" type="button" title="✂ Separate vocals: the PICKED layer split into two more layers - its vocal and its instrumental (the original stays, muted)">✂ Separate vocals</button>
-            <span class="sysingmsg" id="sySingMsg" role="status" aria-live="polite">Pick a layer (click its name), then ▶ or ✂</span>
+            <button class="ghost" id="sySingMix" type="button" title="⧉ Mix: the layer sung in your voice over the song's instrumental, as you hear them -> one file (a new layer, My samples and the Sound assets)">⧉ Mix</button>
+            <span class="sysingmsg" id="sySingMsg" role="status" aria-live="polite">Pick a layer (click its name), then ▶ or ✂ - ⧉ Mix puts your voice back over the instrumental</span>
             <div class="sysingbar" id="sySingBar"><i></i></div>
             <input type="file" id="sySingFile" class="hidden" multiple accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4">
           </div>

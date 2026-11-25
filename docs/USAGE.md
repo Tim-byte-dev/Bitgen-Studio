@@ -1805,6 +1805,18 @@ vocal and its instrumental. Both buttons work on the **picked layer** (click its
 - **Can't sing?** It still works: your clip only gives the model the sound of your voice; the notes and the timing come
   from the song's own vocal, so it comes out in tune. A clip of you singing anything (even badly) matches a singing voice
   better than one of you talking, but talking works. Use only voices you have the right to use, like your own.
+- **■ Stop** (2.967.0) appears next to ▶ while something runs - singing, separating or 🎓 training - and ends it at once
+  (the engine's program and everything it started). Nothing is added. A stopped 🎓 training keeps what Applio saved so far
+  (it saves every quarter of the epochs): 🎓 Train again with the same name to carry on from there.
+- **Key ▸ Auto** (2.967.0) lets Seed-VC or SoulX-Singer move the song to where the clip of your voice sits, instead of a
+  number of semitones you pick. RVC has no Auto (it stays at ±0 - pick the semitones yourself).
+- **⧉ Mix** (2.967.0) puts your voice back over the song: the layer sung in your voice (the picked one, or the newest) and
+  the instrumental ✂ made for it, **as you hear them** (their Vol, Pan, EQ, reverb and lanes), become one file - a new
+  layer *"… · your voice (mix)"* from 0:00, a sound in 📂 My samples, and a sound in the project's **Sound assets** (so the
+  timeline and the video tools can use it). The two layers it came from are muted. Balance them with their Vol knobs
+  first if your voice sits too loud or too quiet.
+- **🎧** (2.967.0) - press it before 🎙 Record to hear yourself while you record a clip (it stays on until you press it
+  again). Wear headphones: from the speakers your voice goes back into the microphone and howls.
 
 ## Save and Save as (preview dialog and gallery)
 

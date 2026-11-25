@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.967.0** — 🎤 Synth Tab: ■ Stop a Running Sing / Separate / Train (Its Whole Process Tree), Key ▸ Auto (Seed-VC / SoulX-Singer Fit the Song to Your Clip), ⧉ Mix (Your Voice Over the Instrumental as You Hear Them - a Layer, My Samples and the Sound Assets), 🎧 Hear Yourself While Recording a Clip
 - **2.966.0** — 🎚 The Stems Tab Removed From the Audio Docker - the 🎹 Synth Tab's ✂ Separate Vocals Does Its Job (Music, SFX and Synth Are the Tabs); an Older Install's Stems Folder Is Never Loaded; ✂ Asks to Download the Song Separation Before Anything Is Rendered
 - **2.965.0** — 🎤 Synth Tab: Sing It in My Voice - a Row Above the Timeline Sings the Picked Layer's Vocal Again in Your Voice (Seed-VC, SoulX-Singer SVC From a Clip of You, or RVC Through Applio From a Model Trained on Your Clips; Key, Quality, a Whole Song Separated First), ✂ Separate Vocals Splits the Picked Layer Into Vocals + Instrumental Layers; Settings ▸ Add-ons ▸ 🎤 Sing in My Voice
 - **2.964.0** — 🎓 Life Choices: Pass and Play - 2-6 Seats of People at One PC, Bots and 🧠 LLM Players (a "Pass the PC" Screen Before Each Person's Turn); the 🧠 LLM Player's Choices Made by bitGen's LLM With Its Reason in the Log, a Bot's Rules When It Does Not Answer in Time; Every Person's Score to 🏆
