@@ -512,16 +512,83 @@
     msg("⏺ Recording - play, then ⏹ Stop rec");
   }
 
-  /** 2.955.0: a recorded take (the keyboard's or the looper's) -> a WAV in 📂 My samples -> a new timeline layer at the playhead */
+  /** 2.955.0: a recorded take -> a new timeline layer at the playhead. 2.956.0: a take saved on stop is already a WAV in
+   *  📂 My samples (take.src) - that one is used; a take loaded from a file is just its src */
   function sendTake(take, label) {
     if (!take || !TL) return Promise.resolve(null);
-    var name = label + " " + new Date().toTimeString().slice(0, 8).replace(/:/g, "-") + ".wav";
     msg("→ 🎞 " + label + " to the timeline…");
-    return upload([new root.File([C.wav(take.chans, take.sampleRate)], name, { type: "audio/wav" })], null).then(function (j) {
-      var got = j && j.added && j.added[0]; if (!got) throw new Error("the take could not be saved");
-      return TL.addNewLayer("my:" + got.name, label);
-    }).then(function (c) { if (c) msg("→ 🎞 " + label + " is on a new timeline layer at " + root.H3SynthTLCore.fmt(c.start)); return c; })
+    var srcP = take.src ? Promise.resolve(take.src) : take.saving ? take.saving.then(function () { if (!take.src) throw new Error("the take could not be saved"); return take.src; })
+      : upload([new root.File([C.wav(take.chans, take.sampleRate)], label + " " + new Date().toTimeString().slice(0, 8).replace(/:/g, "-") + ".wav", { type: "audio/wav" })], null)
+        .then(function (j) { var got = j && j.added && j.added[0]; if (!got) throw new Error("the take could not be saved"); return "my:" + got.name; });
+    return srcP.then(function (src) { return TL.addNewLayer(src, label); })
+      .then(function (c) { if (c) msg("→ 🎞 " + label + " is on a new timeline layer at " + root.H3SynthTLCore.fmt(c.start)); return c; })
       .catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
+
+  /* ---------------- 2.956.0: the .sfx files (lib/synthFiles.js) ---------------- */
+  // Tim: "when record button is pressed in keyboard or looper , save the file on stop. allow the synth or keyboard to load any of
+  // the saved files. save the timeline file as filename.sfx, looper files _loop_ random name.sfx and keyboard as _key_random
+  // name.sfx. add a save button to timeline, if save does not have a filename ask for filename(dialog) , if it does have a
+  // filename overwrite the file loaded. add a save as button."
+  var FL = root.H3SynthFile;
+  function postFile(name, data, overwrite) {
+    return root.fetch("/api/synth/files", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, data: data, overwrite: !!overwrite }) })
+      .then(function (r) { return r.json().then(function (j) { j.status = r.status; return j; }); });
+  }
+  /** a take, on stop: its sound -> 📂 My samples (<_kind_name>.wav), the file -> the project (<_kind_name>.sfx) */
+  function autoSave(kind, take, extra) {
+    if (!take || !FL) return Promise.resolve(null);
+    var base = FL.randomName("_" + kind + "_");
+    take.saving = upload([new root.File([C.wav(take.chans, take.sampleRate)], base + ".wav", { type: "audio/wav" })], null).then(function (j) {
+      var got = j && j.added && j.added[0]; if (!got) throw new Error("the take's sound could not be saved");
+      take.src = "my:" + got.name;
+      return postFile(base, FL.pack(kind, Object.assign({ take: take.src, seconds: Math.round(take.seconds * 1000) / 1000 }, extra)), false);
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.error || "the file could not be saved");
+      take.file = r.name; G.lastFile = r.name;
+      msg("💾 " + r.name + " saved (" + take.seconds.toFixed(1) + " s) - 🗂 Load opens it again, → 🎞 puts it on the timeline");
+      return r;
+    }).catch(function (e) { msg(e.message || String(e), true); return null; });
+    return take.saving;
+  }
+  function tlName() { var n = $("syTName"); if (n) { n.textContent = G.tlFile ? G.tlFile.replace(/\.sfx$/i, "") : "unsaved"; n.classList.toggle("saved", !!G.tlFile); n.title = G.tlFile ? G.tlFile + " - 💾 Save writes over it" : "Not saved yet - 💾 Save asks for a name"; } }
+  /** 💾 Save (overwrite the file loaded / saved, else ask) or Save as… (always ask) */
+  function saveTL(as) {
+    if (!FL || !TL) return Promise.resolve(null);
+    var data = FL.pack("tl", { tl: TL.tl(), loop: LP.loop(), patch: G.p, preset: G.preset, pads: PD ? PD.pads() : undefined, sheet: SC ? SC.abc() : undefined, bpm: LP.loop().bpm });
+    var named = (!as && G.tlFile) ? Promise.resolve({ name: G.tlFile, over: true })
+      : FL.nameDialog({ title: as ? "Save the timeline as…" : "Save the timeline", value: G.tlFile || "my song", note: "Saved in this project as <name>.sfx - the timeline and the whole Synth tab with it." }).then(function (n) { return n && { name: n, over: false }; });
+    return named.then(function (w) {
+      if (!w) return null;
+      var go = function (over) {
+        return postFile(w.name, data, over).then(function (r) {
+          if (r.status === 409) return FL.confirm({ title: "Overwrite?", text: r.name + " is already in this project. Write over it?", yes: "Overwrite" }).then(function (y) { return y ? go(true) : null; });
+          if (!r.ok) throw new Error(r.error || "not saved");
+          G.tlFile = r.name; LS.set("tlfile", r.name); tlName(); msg("💾 " + r.name + (r.overwrote ? " saved (written over)" : " saved"));
+          return r;
+        });
+      };
+      return go(w.over);
+    }).catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
+  /** 🗂 Load: any file, anywhere - applied by its kind */
+  function load(kind) {
+    if (!FL) return Promise.resolve(null);
+    return getJ("/api/synth/files").then(function (j) { return FL.loadDialog(j.files || [], { kind: kind }); })
+      .then(function (name) { if (!name) return null; return getJ("/api/synth/files/" + encodeURIComponent(name)).then(function (f) { applyFile(f, name); return f; }); })
+      .catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
+  function applyFile(f, name) {
+    var k = FL.check(f); if (!k) { msg(name + " is not a synth file", true); return; }
+    var take = f.take && C.okSnd(f.take) ? { src: f.take, seconds: f.seconds || 0, file: name } : null;
+    if (f.patch) applyPatch(f.patch, f.preset && allPresets().indexOf(f.preset) >= 0 ? f.preset : G.preset);
+    if (k === "key") { if (SC) { if (f.abc) SC.open(f.abc, name); SC.setTake(take); } msg("🗂 " + name + " - its sheet music and patch" + (take ? "; → 🎞 puts its take on the timeline" : "")); }
+    else if (k === "loop") { if (f.loop) LP.setLoop(f.loop); LP.setTake(take); msg("🗂 " + name + " - its loop" + (take ? "; → 🎞 Timeline puts its take on the timeline" : "")); }
+    else {
+      if (f.tl && TL) TL.setTL(f.tl); if (f.loop) LP.setLoop(f.loop); if (f.pads && PD) PD.setPads(f.pads); if (f.sheet && SC) SC.open(f.sheet, name);
+      G.tlFile = name; LS.set("tlfile", name); tlName(); msg("🗂 " + name + " - the timeline and the whole tab");
+    }
+    LS.set("loop", JSON.stringify(LP.loop()));
   }
 
   /* ---------------- 2.955.0: the tab's parts as dockers that fold ---------------- */
@@ -567,14 +634,14 @@
     try { if (root.localStorage.getItem("h3.g.synthdock") === "1") d.classList.add("dockgone"); } catch (e) { /* fine */ }
     G.p = C.cleanPatch(jget("patch", null) || presetOf(G.preset) || C.defaults());
     rack(); presetList(); setOct(G.oct); sections();
-    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, changed: function () { root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
+    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, onTake: function (t) { autoSave("loop", t, { loop: JSON.parse(JSON.stringify(LP.loop())) }); }, changed: function () { root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
               upload: upload, pick: function (r) { G.pickRow = r; $("syFile").click(); } });
     var saved = jget("loop", null); if (saved) LP.setLoop(saved);
     wirePiano();
     // 2.954.0: the deck - the drum pads, the score screen, the patch buttons, the volume knob, the timeline
     // 2.955.0: the pads play through the looper's bus - its ⏺ Rec hears them
     if (PD) PD.init({ ctx: ctx, dest: function () { return LP.bus(); }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { LS.set("pads", JSON.stringify(p)); } });
-    if (SC) SC.init({ engine: engine, send: sendTake, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
+    if (SC) SC.init({ engine: engine, send: sendTake, onTake: function (t, abc) { autoSave("key", t, { abc: abc, patch: G.p, preset: G.preset }); }, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
                       guide: function (ms) { G.guide = {}; (ms || []).forEach(function (m) { G.guide[m] = true; }); piano(); } });
     if (TL) TL.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, bpm: function () { return LP.loop().bpm; }, saved: jget("tl", null),
                       save: function (t) { root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
@@ -585,6 +652,9 @@
     W.mod = wheel("syMod", false, function (v) { engine().mod(v); });
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
     on("syPrev", function () { stepPreset(-1); }); on("syNext", function () { stepPreset(1); });
+    on("syDkLoad", function () { load("key"); }); on("syLLoad", function () { load("loop"); }); on("syTLoad", function () { load("tl"); });
+    on("syTSave", function () { saveTL(false); }); on("syTSaveAs", function () { saveTL(true); });
+    G.tlFile = LS.get("tlfile", "") || ""; tlName();
     on("syDkPrev", function () { stepPreset(-1); }); on("syDkNext", function () { stepPreset(1); });
     $("syPreset").onchange = function (e) { pickPreset(e.target.value); };
     on("sySave", savePreset); on("syDelPreset", delPreset);
@@ -624,7 +694,7 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),

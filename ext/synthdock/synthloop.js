@@ -101,7 +101,7 @@
   function endRec() {
     if (!R.rec || !R.rec.on()) return null;
     var t = R.rec.stop({ trim: false }); R.rec = null;
-    if (t) { R.take = t; msg("⏺ A " + t.seconds.toFixed(1) + " s take - → 🎞 Timeline puts it on a new layer"); } else msg("⏺ Nothing was recorded", true);
+    if (t) { R.take = t; if (O.onTake) O.onTake(t); msg("⏺ A " + t.seconds.toFixed(1) + " s take - → 🎞 Timeline puts it on a new layer"); } else msg("⏺ Nothing was recorded", true);
     if (S.playing) play(false);
     paintRec(); return t;
   }
@@ -323,5 +323,5 @@
              on: L.pats[L.pat].map(function (row) { return row.join(""); }) };
   }
   root.H3SynthLoop = { init: init, play: play, playing: function () { return S.playing; }, render: render, buffer: buffer, forget: forget, setLists: setLists,
-                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, bus: out, rec: rec, endRec: endRec, take: function () { return R.take; }, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
+                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, bus: out, rec: rec, endRec: endRec, take: function () { return R.take; }, setTake: function (t) { R.take = t || null; paintRec(); }, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
 })(typeof window !== "undefined" ? window : globalThis);

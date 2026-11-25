@@ -171,7 +171,7 @@
   function stop() {
     var was = Z.mode;
     if (was === "rec" && Z.krec) { var tk = Z.krec.stop({ trim: true }); Z.krec = null; if (tk) Z.take = tk; paintSend(); }
-    if (was === "rec") { writeRec(); keep(); msg("■ " + Z.st.length + " note" + (Z.st.length === 1 ? "" : "s") + " written - 💾 Save keeps the sheet, 🎓 Learn plays it back with you"); }
+    if (was === "rec") { writeRec(); keep(); if (Z.take && !Z.take.saved && O.onTake) { Z.take.saved = true; O.onTake(Z.take, Z.abc); }   /* 2.956.0: saved on stop */ msg("■ " + Z.st.length + " note" + (Z.st.length === 1 ? "" : "s") + " written - 💾 Save keeps the sheet, 🎓 Learn plays it back with you"); }
     if (was === "play" && Z.play) { root.cancelAnimationFrame(Z.play.raf); try { O.engine().allOff(); } catch (e) { /* fine */ } }
     setMode("idle"); guide([]); lightAt(null);
     return was;
@@ -201,7 +201,7 @@
     if (f) f.onchange = function () { var file = f.files && f.files[0]; if (!file) return; file.text().then(function (t) { open(t, file.name); f.value = ""; }); };
   }
   function init(o) { O = o; wire(); Z.abc = o.saved || ""; draw(); setMode("idle"); paintSend(); }
-  root.H3SynthScore = Object.assign({ init: init, send: send, take: function () { return Z.take || null; }, noteOn: noteOn, noteOff: noteOff, rec: rec, play: play, stop: stop, learn: learn, open: open, save: save, toStart: toStart, draw: draw,
+  root.H3SynthScore = Object.assign({ init: init, send: send, take: function () { return Z.take || null; }, setTake: function (t) { Z.take = t || null; paintSend(); }, noteOn: noteOn, noteOff: noteOff, rec: rec, play: play, stop: stop, learn: learn, open: open, save: save, toStart: toStart, draw: draw,
     abc: function () { return Z.abc; },
     info: function () { return { mode: Z.mode, abc: Z.abc, steps: Z.st.length, li: Z.li, wrong: Z.wrong, firstTry: Z.firstTry, recorded: Z.rec.length, lit: doc.querySelectorAll("#syScoreView path.lit").length, next: Z.st[Z.li] ? Z.st[Z.li].midis.slice() : null }; } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

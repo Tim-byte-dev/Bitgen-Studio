@@ -197,6 +197,21 @@
           .sysecbody { display: flex; flex-direction: column; padding: 6px; min-width: 0; }
           .sysecbody > .syloop, .sysecbody > .sytl { border: 0; background: transparent; padding: 0; }
           .sysecbody .sylbar h4, .sysecbody .sytlbar h4 { display: none; }
+          /* 2.956.0: the .sfx dialogs */
+          .sytlname { font: 600 11px/1 ui-monospace, Consolas, monospace; color: #9fb0c8; background: #07090c; border: 1px solid #2d323d; border-radius: 4px; padding: 3px 6px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .sytlname.saved { color: #5dff8a; }
+          .sydlgback { position: absolute; inset: 0; z-index: 50; background: #0008; display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; }
+          .sydlg { width: 420px; max-width: 92%; background: #12151b; border: 1px solid #38e1ff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 12px 40px #000; color: #dfe6f2; display: flex; flex-direction: column; gap: 8px; }
+          .sydlg h3 { margin: 0; font-size: 13px; }
+          .sydlg input { font-size: 13px; background: #07090c; color: #fff; border: 1px solid #2d323d; border-radius: 5px; padding: 6px 8px; }
+          .sydlg .note { margin: 0; font-size: 11px; color: #8b95a7; }
+          .sydlg .bad { margin: 0; font-size: 11px; color: #ff7a7a; min-height: 0; }
+          .sydlg .row, .sydlg .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+          .sydlg .list { display: flex; flex-direction: column; gap: 3px; max-height: 50vh; overflow: auto; }
+          .sydlg .item { display: flex; gap: 8px; align-items: center; text-align: left; padding: 5px 8px !important; background: #181c24 !important; border: 1px solid #262b35 !important; border-radius: 5px; color: #e6ebf5; cursor: pointer; }
+          .sydlg .item:hover, .sydlg .item:focus { border-color: #38e1ff !important; }
+          .sydlg .item b { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .sydlg .item i { font-size: 10px; color: #6c7688; font-style: normal; }
           .sylib { display: none; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
           .sylib.on { display: block; }
           .sylib .sylist { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; margin-top: 4px; }
@@ -254,7 +269,7 @@
                 <div class="sydkvol" id="syDkVol"></div>
               </div>
               <div class="syctlrow">
-                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk" id="syScSend" type="button" title="→ 🎞 Put the last ● recording (its sound) on a new timeline layer, at the playhead" disabled>→ 🎞</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
+                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk" id="syDkLoad" type="button" title="🗂 Load a synth file (.sfx) of this project - a keyboard take, a loop take or a whole timeline">🗂</button><button class="sydk" id="syScSend" type="button" title="→ 🎞 Put the last ● recording (its sound) on a new timeline layer, at the playhead" disabled>→ 🎞</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
               </div>
               <div class="sytransport">
                 <button class="sydk" id="syScStart" type="button" title="⏮ Back to the start of the sheet">⏮</button>
@@ -272,6 +287,7 @@
             <h4>LOOPER</h4>
             <button class="ghost" id="syPlay" type="button" title="Play / stop the loop (Space)">▶ Play</button>
             <button class="ghost" id="syLRec" type="button" title="⏺ Record the looper - the loop and the drum pads - from the loop's start; ⏺ again or ■ Stop ends the take">⏺ Rec</button>
+            <button class="ghost" id="syLLoad" type="button" title="🗂 Load a synth file (.sfx) - a loop take brings back its loop (and its take); any file loads">🗂 Load</button>
             <button class="ghost" id="syLSend" type="button" title="→ 🎞 Put the last looper take on a new timeline layer (at the playhead)" disabled>→ 🎞 Timeline</button>
             <label title="Beats a minute">BPM <input type="number" id="syBpm" min="40" max="240" step="1" value="120"></label>
             <span id="sySwingK"></span>
@@ -307,6 +323,10 @@
             <button class="ghost" id="syTStart" type="button" title="Back to the start">⏮</button>
             <span class="sytlpos" id="syTPos">0:00.0</span>
             <button class="ghost" id="syTAddBtn" type="button" title="＋ Sound: the loop, the kit, your samples, the project's SFX, the Sound assets (stems), songs and the gallery's audio, a file">＋ Sound</button>
+            <span class="sytlname" id="syTName" title="The timeline's file (.sfx in this project)">unsaved</span>
+            <button class="ghost" id="syTSave" type="button" title="💾 Save the timeline (the whole tab) - into its file, or asks for a name the first time">💾 Save</button>
+            <button class="ghost" id="syTSaveAs" type="button" title="Save the timeline under a new name">Save as…</button>
+            <button class="ghost" id="syTLoad" type="button" title="🗂 Load a synth file (.sfx) of this project">🗂 Load</button>
             <button class="ghost" id="syTOpen" type="button" title="📂 Open sound files - each on a new layer of its own, at the playhead">📂 Open → new layer</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>

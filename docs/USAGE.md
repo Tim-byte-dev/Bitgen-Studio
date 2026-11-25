@@ -1689,6 +1689,17 @@ layer ("Loop take"). Takes are saved as WAVs in 📂 My samples.
 whether it goes **on that layer** (where you dropped it) or on **a new layer** of its own (✕ cancels). Pictures and videos
 are not taken. **📂 Open → new layer** opens sound files and puts each on a new layer named after it, at the playhead.
 
+**Synth files (.sfx, 2.956.0).** The Synth tab keeps its work as **.sfx files in the project** (the project's `synth` folder).
+A take is **saved the moment you stop recording**: ■ after ● on the keyboard saves `_key_<random name>.sfx` (the sheet
+music, the patch and the take), ⏺ again in the looper saves `_loop_<random name>.sfx` (the loop as it was and the take);
+the sound of each take is a WAV with the same name in 📂 My samples. **🗂 Load** (on the keyboard, in the looper, in the
+timeline) lists the project's files - All, 🎞 Timeline, 🥁 Loop takes, 🎹 Keyboard takes - and any file loads anywhere: a
+keyboard take brings back its sheet music and patch, a loop take its loop, and **→ 🎞** then puts that take on the timeline;
+a timeline file brings back the whole tab. The timeline's **💾 Save** asks for a name the first time and saves
+`<name>.sfx` (the timeline with the loop, the patch, the pads and the sheet); after that - or after loading a timeline
+file - **💾 Save** writes over that file. **Save as…** always asks for a name (and asks before writing over a file that
+is already there). The bar shows the timeline's file name (or "unsaved").
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

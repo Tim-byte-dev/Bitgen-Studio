@@ -15155,6 +15155,13 @@ node scripts/test-955.js > /tmp/t955.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui955-ui.js > /tmp/ui955.log 2>&1 \
   && ok "2.955.0 browser test: fold / unfold (kept), ● keyboard take -> → 🎞 a new layer, ⏺ looper take (with a pad) -> → 🎞, an asset dropped: here / a new layer / ✕, a picture refused, 📂 Open → 2 new layers" \
   || { bad "2.955.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui955.log | head -12; }
+# ---- 2.956.0 (🎹 .sfx files)
+node scripts/test-956.js > /tmp/t956.log 2>&1 \
+  && ok "2.956.0 units: random names, the file shape, lib/synthFiles (safe names, 409 / overwrite, list kinds, read, remove), the routes, saved on stop, Save / Save as…, Load by kind" \
+  || { bad "2.956.0 units"; grep -a "^FAIL" -A1 /tmp/t956.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui956-ui.js > /tmp/ui956.log 2>&1 \
+  && ok "2.956.0 browser test: ■ keyboard = _key_ .sfx + WAV, ⏺ looper = _loop_ .sfx, 💾 Save asks then writes over, Save as… (overwrite? asked), 🗂 Load loop / key / timeline files anywhere, → 🎞 a loaded take" \
+  || { bad "2.956.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui956.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

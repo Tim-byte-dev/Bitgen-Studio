@@ -106,7 +106,7 @@ const call = (k, req) => new Promise((ok) => routes[k](req, res(ok)));
   /* ---- the wiring */
   const EJ = JSON.parse(src("ext/synthdock/ext.json")), DH = src("ext/synthdock/dock.html"), JS = src("ext/synthdock/synthdock.js"), LJ = src("ext/synthdock/synthloop.js"), AU = src("static/audiodock.js"), IX = src("static/index.html");
   check("ext/synthdock: ext.json (Synth, column 67 - next to SFX, the rules first, the station last; no server part - the routes are core, like SFX's)",
-    EJ.id === "synthdock" && EJ.name === "Synth" && EJ.order === 67 && EJ.scripts.join() === "synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthrec.js,synthloop.js,synthpads.js,synthscore.js,synthtlcore.js,synthtl.js,synthdock.js" /* 2.954.0: + pads, the score, the timeline */ && !EJ.server
+    EJ.id === "synthdock" && EJ.name === "Synth" && EJ.order === 67 && EJ.scripts.join() === "synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthrec.js,synthloop.js,synthpads.js,synthscore.js,synthtlcore.js,synthtl.js,synthfile.js,synthdock.js" /* 2.954.0: + pads, the score, the timeline */ && !EJ.server
     && EJ.scripts.every((s) => fs.existsSync(path.join(ROOT, "ext/synthdock", s))));
   check("the Audio docker: 🎹 Synth is its 4th tab; the shell has its marker after SFX; no statusbar button of its own (tSy in GONE_DOCKS); Audio's tip says so",
     require("../static/audiodock.js").IDS.join() === "musicdock,stemsdock,sfxdock,synthdock" && require("../static/audiodock.js").TABS.synthdock.icon === "🎹" && require("../static/audiodock.js").TABS.synthdock.name === "Synth"

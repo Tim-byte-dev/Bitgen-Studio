@@ -9,6 +9,10 @@
 //                                          SFX (lib/sfx.js - a 48 kHz WAV), for "sound" its Sound assets too
 //   GET  /api/synth/sources                2.954.0: every sound the timeline can take, grouped (lib/synthSources.js)
 //   GET  /api/synth/source/:group/:name    one of them (my | sfx | snd | out)
+//   GET  /api/synth/files                  2.956.0: the project's synth files (.sfx: timeline / loop / key - lib/synthFiles.js)
+//   GET  /api/synth/files/:name            one (JSON)
+//   POST /api/synth/files {name, data, overwrite}   save (409 when it is there and overwrite is not set)
+//   POST /api/synth/files/delete {name}
 "use strict";
 const fs = require("fs");
 const os = require("os");
@@ -18,6 +22,7 @@ const multer = require("multer");
 const sfx = require("../lib/sfx");
 const S = require("../lib/synthSamples");
 const SRC = require("../lib/synthSources");
+const SF = require("../lib/synthFiles");
 
 function mount(app) {
   const upload = multer({ dest: path.join(os.tmpdir(), "bitgen-synth"), limits: { fileSize: S.MAX_MB * 1024 * 1024, files: 50 } });
@@ -53,6 +58,22 @@ function mount(app) {
     if (!p) return res.status(404).json({ error: "no such sound" });
     res.set("Cache-Control", "no-store");
     res.sendFile(p);
+  });
+  app.get("/api/synth/files", (_req, res) => {
+    try { res.json({ dir: SF.dir(), files: SF.list() }); } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/synth/files/:name", (req, res) => {
+    try { res.json(SF.read(req.params.name)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
+  });
+  app.post("/api/synth/files", express.json({ limit: "9mb" }), (req, res) => {
+    const b = req.body || {}, r = SF.write(b.name, b.data, !!b.overwrite);
+    if (r.error) return res.status(r.status || 400).json(r);
+    res.json({ ok: true, ...r });
+  });
+  app.post("/api/synth/files/delete", express.json({ limit: "4kb" }), (req, res) => {
+    const r = SF.remove((req.body || {}).name);
+    if (r.error) return res.status(r.status || 400).json(r);
+    res.json({ ok: true, ...r });
   });
   app.post("/api/synth/to-project", upload.single("file"), (req, res) => {
     const f = req.file, to = String((req.body || {}).to || "sfx");

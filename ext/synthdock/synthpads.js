@@ -144,6 +144,6 @@
   }
   function init(o) { O = o; P = cleanPads(o.saved); wire(); build(); }
   function setLists(groups) { S.lists = groups || []; paint(); if (S.edit && S.sel >= 0) pick(S.sel); }
-  root.H3SynthPads = Object.assign({ init: init, hit: hit, flash: flash, paint: paint, setLists: setLists, pads: function () { return P; },
+  root.H3SynthPads = Object.assign({ setPads: function (j) { P = cleanPads(j); save(); paint(); }, init: init, hit: hit, flash: flash, paint: paint, setLists: setLists, pads: function () { return P; },
     info: function () { return { rec: S.rec, edit: S.edit, sel: S.sel, hits: S.hits, last: S.last, names: ORDER.map(function (i) { return nameOf(i); }), own: P.map(function (x) { return x.snd; }) }; } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

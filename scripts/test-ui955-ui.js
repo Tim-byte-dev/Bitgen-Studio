@@ -63,7 +63,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     await p.waitForFunction((n) => window.H3SynthTL.tl().layers.length === n + 1 && window.H3SynthTL.tl().layers[n].clips.length === 1, n0, { timeout: 15000 });
     let L = (await tl()).layers[n0];
     made.push(L.clips[0].src.slice(3));
-    check("→ 🎞: the take on a NEW layer (\"Keys take\") at the playhead, as a WAV in My samples", L.name === "Keys take" && /^my:Keys take \d\d-\d\d-\d\d\.wav$/.test(L.clips[0].src) && L.clips[0].start === 1 && Math.abs(L.clips[0].len - take.secs) < 0.05, L);
+    check("→ 🎞: the take on a NEW layer (\"Keys take\") at the playhead, as its WAV in My samples", L.name === "Keys take" && /^my:_key_[a-z]+-[a-z]+-\d\d\.wav$/.test(L.clips[0].src) /* 2.956.0: the take saved on stop */ && L.clips[0].start === 1 && Math.abs(L.clips[0].len - take.secs) < 0.05, L);
     /* ---- the looper's take */
     check("the looper: ⏺ Rec and → 🎞 Timeline (off until a take)", await ev(() => !!document.getElementById("syLRec") && document.getElementById("syLSend").disabled));
     await p.click("#syLRec"); await sleep(1300);
@@ -76,7 +76,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     await p.waitForFunction((n) => window.H3SynthTL.tl().layers.length === n + 2 && window.H3SynthTL.tl().layers[n + 1].clips.length === 1, n0, { timeout: 15000 });
     L = (await tl()).layers[n0 + 1];
     made.push(L.clips[0].src.slice(3));
-    check("→ 🎞 Timeline: the looper's take on a new layer (\"Loop take\")", L.name === "Loop take" && /^my:Loop take /.test(L.clips[0].src) && Math.abs(L.clips[0].len - li.take) < 0.05, L);
+    check("→ 🎞 Timeline: the looper's take on a new layer (\"Loop take\")", L.name === "Loop take" && /^my:_loop_[a-z]+-[a-z]+-\d\d\.wav$/.test(L.clips[0].src) && Math.abs(L.clips[0].len - li.take) < 0.05, L);
     // a pad's own sound reaches the take: the take is louder after 1.3 s than silent
     const padHeard = await ev(async () => { const b2 = await window.H3SynthLoop.buffer(window.H3SynthTL.tl().layers[window.H3SynthTL.tl().layers.length - 1].clips[0].src); const d = b2.getChannelData(0); let m = 0; for (let i = Math.floor(1.3 * b2.sampleRate); i < d.length; i++) m = Math.max(m, Math.abs(d[i])); return m; });
     check("…the drum pads are in the take (they play through the looper's bus)", padHeard > 0.05, padHeard);
@@ -120,6 +120,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e && e.stack || e)); }
   finally {
+    try { for (const n of made) if (/^_(key|loop)_/.test(n)) await ev((nm) => fetch("/api/synth/files/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nm.replace(/\.wav$/, ".sfx") }) }), n); } catch (e) { /* gone */ }
     try { for (const n of made) await ev((nm) => fetch("/api/synth/samples/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nm }) }), n); } catch (e) { /* gone */ }
     try { await ev(() => { Object.keys(localStorage).filter((k) => /^h3\.synth\./.test(k)).forEach((k) => localStorage.removeItem(k)); }); } catch (e) { /* fine */ }
     await b.close();

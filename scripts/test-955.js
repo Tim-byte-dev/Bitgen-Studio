@@ -26,7 +26,7 @@ check("the keyboard: ● records the synth's sound beside the sheet (the lead si
 check("the looper: its own bus (rows + every pad); ⏺ Rec (#syLRec) starts the loop and records the bus, ⏺ / ■ end the take; → 🎞 Timeline (#syLSend)",
   /function out\(\) \{ var ctx = O\.ctx\(\); if \(!bus/.test(LJ) && !/voice\(ctx, O\.dest\(\)/.test(LJ) && /R\.rec = root\.H3SynthRec\.create\(ctx, out\(\)\)/.test(LJ) && /R\.rec\.start\(\); play\(true\)/.test(LJ)
   && /if \(R\.rec && R\.rec\.on\(\)\) \{ S\.playing = false; endRec\(\); \}/.test(LJ) && /id="syLRec"/.test(DH) && /id="syLSend"[^>]*disabled/.test(DH) && /dest: function \(\) \{ return LP\.bus\(\); \}/.test(JS));
-check("a take -> a WAV in 📂 My samples -> a new layer named for it at the playhead", /function sendTake\(take, label\)/.test(JS) && /C\.wav\(take\.chans, take\.sampleRate\)/.test(JS) && /TL\.addNewLayer\("my:" \+ got\.name, label\)/.test(JS));
+check("a take -> a WAV in 📂 My samples -> a new layer named for it at the playhead", /function sendTake\(take, label\)/.test(JS) && /C\.wav\(take\.chans, take\.sampleRate\)/.test(JS) && /TL\.addNewLayer\(src, label\)/.test(JS) /* 2.956.0: the take's own saved WAV when it has one */);
 check("drops on the timeline: ＋ Sound, the app's drags (gallery = out:, assets / references = snd:), several at once (h3multi), files; then a box - here / a new layer / ✕",
   /function dropped\(e\)/.test(TJ) && /it\.type === "output" \? "out:" \+ it\.name : it\.type === "asset" \? "snd:" \+ it\.name/.test(TJ) && /typeof dragPayload !== "undefined"/.test(TJ) && /text\/h3multi/.test(TJ)
   && /function ask\(cx, cy, li, name, done\)/.test(TJ) && /data-w=\\"here\\"/.test(TJ) && /data-w=\\"new\\"/.test(TJ));
