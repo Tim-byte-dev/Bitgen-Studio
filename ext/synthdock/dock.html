@@ -116,6 +116,7 @@
           .sylbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #ffd23a; text-shadow: 0 0 6px #ffd23a; }
           .sylbar input[type=number] { width: 54px; font-size: 12px; background: #07090c; color: #ffd23a; border: 1px solid #2d323d; border-radius: 4px; padding: 2px 4px; font-family: ui-monospace, Consolas, monospace; }
           .sylbar .sykn { width: 44px; }
+          #syLRec.on { color: #fff; background: #b3242c; border-color: #ff5560; }
           #syPlay.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; box-shadow: 0 0 8px #5dff8a; }
           .sypats { display: inline-flex; gap: 2px; }
           .sypats button { width: 24px; padding: 2px 0 !important; font: 700 11px/1 ui-monospace, Consolas, monospace !important; position: relative; }
@@ -181,6 +182,21 @@
           #syTCanvas { position: sticky; left: 0; display: block; outline: none; }
           #syTCanvas:focus-visible { box-shadow: inset 0 0 0 1px #38e1ff; }
           .sytlspacer { height: 1px; }
+          .sytlask { position: absolute; z-index: 6; background: #0d1015f2; border: 1px solid #38e1ff; border-radius: 8px; padding: 7px 8px; box-shadow: 0 8px 20px #000c;
+                     font-size: 11.5px; display: flex; flex-direction: column; gap: 6px; max-width: 320px; }
+          .sytlask .row { display: flex; gap: 4px; }
+          /* 2.955.0: the tab's parts as dockers that fold (title bars like the app's own dockers) */
+          .sysec { display: flex; flex-direction: column; border: 1px solid #232832; border-radius: 10px; background: #0d0f14; flex-shrink: 0; }
+          .sysechead { display: flex; align-items: center; gap: 6px; text-align: left; font: 700 10px/1 system-ui, sans-serif !important; letter-spacing: .16em; text-transform: uppercase;
+                       padding: 6px 10px !important; color: #9fb0c8 !important; background: linear-gradient(180deg, #1c1f27, #14161b) !important; border: 0 !important;
+                       border-bottom: 1px solid #232832 !important; border-radius: 10px 10px 0 0 !important; cursor: pointer; }
+          .sysechead:hover { color: #fff !important; }
+          .sysechead .car { display: inline-block; width: 10px; color: #ffae3a; }
+          .sysec.folded .sysecbody { display: none; }
+          .sysec.folded .sysechead { border-radius: 10px !important; border-bottom: 0 !important; }
+          .sysecbody { display: flex; flex-direction: column; padding: 6px; min-width: 0; }
+          .sysecbody > .syloop, .sysecbody > .sytl { border: 0; background: transparent; padding: 0; }
+          .sysecbody .sylbar h4, .sysecbody .sytlbar h4 { display: none; }
           .sylib { display: none; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
           .sylib.on { display: block; }
           .sylib .sylist { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; margin-top: 4px; }
@@ -238,7 +254,7 @@
                 <div class="sydkvol" id="syDkVol"></div>
               </div>
               <div class="syctlrow">
-                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
+                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk" id="syScSend" type="button" title="→ 🎞 Put the last ● recording (its sound) on a new timeline layer, at the playhead" disabled>→ 🎞</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
               </div>
               <div class="sytransport">
                 <button class="sydk" id="syScStart" type="button" title="⏮ Back to the start of the sheet">⏮</button>
@@ -255,6 +271,8 @@
           <div class="sylbar">
             <h4>LOOPER</h4>
             <button class="ghost" id="syPlay" type="button" title="Play / stop the loop (Space)">▶ Play</button>
+            <button class="ghost" id="syLRec" type="button" title="⏺ Record the looper - the loop and the drum pads - from the loop's start; ⏺ again or ■ Stop ends the take">⏺ Rec</button>
+            <button class="ghost" id="syLSend" type="button" title="→ 🎞 Put the last looper take on a new timeline layer (at the playhead)" disabled>→ 🎞 Timeline</button>
             <label title="Beats a minute">BPM <input type="number" id="syBpm" min="40" max="240" step="1" value="120"></label>
             <span id="sySwingK"></span>
             <span class="sypats" id="syPats" role="group" aria-label="Patterns"></span>
@@ -289,6 +307,7 @@
             <button class="ghost" id="syTStart" type="button" title="Back to the start">⏮</button>
             <span class="sytlpos" id="syTPos">0:00.0</span>
             <button class="ghost" id="syTAddBtn" type="button" title="＋ Sound: the loop, the kit, your samples, the project's SFX, the Sound assets (stems), songs and the gallery's audio, a file">＋ Sound</button>
+            <button class="ghost" id="syTOpen" type="button" title="📂 Open sound files - each on a new layer of its own, at the playhead">📂 Open → new layer</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>
@@ -303,6 +322,7 @@
             <div class="sytlheads" id="syTHeads"></div>
             <div class="sytlscroll" id="syTScroll"><canvas id="syTCanvas" tabindex="0" aria-label="Timeline - layers of sounds with their waveforms and volume keyframes"></canvas><div id="syTSpacer" class="sytlspacer"></div></div>
           </div>
+          <input type="file" id="syTOpenFile" class="hidden" multiple accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4">
           <input type="file" id="syTFile" class="hidden" multiple accept=".wav, .mp3, .flac, .ogg, .oga, .m4a, .aac, .opus, .wma, .aif, .aiff, .webm, .mov, .mp4">
         </div>
         <input type="file" id="syFile" class="hidden" multiple

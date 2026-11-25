@@ -512,6 +512,45 @@
     msg("⏺ Recording - play, then ⏹ Stop rec");
   }
 
+  /** 2.955.0: a recorded take (the keyboard's or the looper's) -> a WAV in 📂 My samples -> a new timeline layer at the playhead */
+  function sendTake(take, label) {
+    if (!take || !TL) return Promise.resolve(null);
+    var name = label + " " + new Date().toTimeString().slice(0, 8).replace(/:/g, "-") + ".wav";
+    msg("→ 🎞 " + label + " to the timeline…");
+    return upload([new root.File([C.wav(take.chans, take.sampleRate)], name, { type: "audio/wav" })], null).then(function (j) {
+      var got = j && j.added && j.added[0]; if (!got) throw new Error("the take could not be saved");
+      return TL.addNewLayer("my:" + got.name, label);
+    }).then(function (c) { if (c) msg("→ 🎞 " + label + " is on a new timeline layer at " + root.H3SynthTLCore.fmt(c.start)); return c; })
+      .catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
+
+  /* ---------------- 2.955.0: the tab's parts as dockers that fold ---------------- */
+  // Tim: "make the keyboard and looper panels into collapsible dockers inside the synth tab" - the rack, the keyboard, the
+  // looper and the timeline each get a title bar: click it (or Enter / Space on it) to fold / unfold; kept (h3.synth.fold)
+  var SECS = [["rack", "syRack", "🎛 Synth"], ["keys", "syDeck", "🎹 Keyboard"], ["loop", ".syloop", "🥁 Looper"], ["tl", "syTL", "🎞 Timeline"]];
+  function sections() {
+    var fold = jget("fold", {}); if (!fold || typeof fold !== "object") fold = {};
+    SECS.forEach(function (x) {
+      var el = x[1].charAt(0) === "." ? doc.querySelector("#syBody " + x[1]) : $(x[1]);
+      if (!el || (el.parentElement && el.parentElement.classList.contains("sysecbody"))) return;
+      var sec = doc.createElement("section"), h = doc.createElement("button"), body = doc.createElement("div");
+      sec.className = "sysec"; sec.id = "sySec_" + x[0]; sec.dataset.sec = x[0];
+      h.type = "button"; h.className = "sysechead"; h.id = "sySecH_" + x[0]; h.title = "Fold / unfold " + x[2].replace(/^\S+ /, "");
+      h.innerHTML = '<span class="car">▾</span>' + x[2];
+      body.className = "sysecbody";
+      el.parentNode.insertBefore(sec, el); sec.appendChild(h); sec.appendChild(body); body.appendChild(el);
+      h.onclick = function () { setFold(x[0], !sec.classList.contains("folded")); };
+      setFold(x[0], !!fold[x[0]], true);
+    });
+  }
+  function setFold(id, on, quiet) {
+    var sec = $("sySec_" + id); if (!sec) return;
+    sec.classList.toggle("folded", !!on);
+    var h = $("sySecH_" + id); if (h) { h.setAttribute("aria-expanded", on ? "false" : "true"); h.querySelector(".car").textContent = on ? "▸" : "▾"; }
+    if (!quiet) { var f = jget("fold", {}) || {}; f[id] = !!on; LS.set("fold", JSON.stringify(f)); }
+    if (!on) root.setTimeout(function () { piano(); envDraw(); drawIdle(); if (TL) TL.draw(); }, 40);
+  }
+
   /* ---------------- ⛶ = the whole window ---------------- */
   function setFull(on) {
     on = !!on; if (on === doc.body.classList.contains("sy-full")) return;
@@ -527,14 +566,15 @@
     var d = $("synthdock"); if (!d) return;
     try { if (root.localStorage.getItem("h3.g.synthdock") === "1") d.classList.add("dockgone"); } catch (e) { /* fine */ }
     G.p = C.cleanPatch(jget("patch", null) || presetOf(G.preset) || C.defaults());
-    rack(); presetList(); setOct(G.oct);
-    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, changed: function () { root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
+    rack(); presetList(); setOct(G.oct); sections();
+    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, changed: function () { root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
               upload: upload, pick: function (r) { G.pickRow = r; $("syFile").click(); } });
     var saved = jget("loop", null); if (saved) LP.setLoop(saved);
     wirePiano();
     // 2.954.0: the deck - the drum pads, the score screen, the patch buttons, the volume knob, the timeline
-    if (PD) PD.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { LS.set("pads", JSON.stringify(p)); } });
-    if (SC) SC.init({ engine: engine, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
+    // 2.955.0: the pads play through the looper's bus - its ⏺ Rec hears them
+    if (PD) PD.init({ ctx: ctx, dest: function () { return LP.bus(); }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { LS.set("pads", JSON.stringify(p)); } });
+    if (SC) SC.init({ engine: engine, send: sendTake, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
                       guide: function (ms) { G.guide = {}; (ms || []).forEach(function (m) { G.guide[m] = true; }); piano(); } });
     if (TL) TL.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, bpm: function () { return LP.loop().bpm; }, saved: jget("tl", null),
                       save: function (t) { root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
@@ -584,12 +624,12 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),
                loop: LP.info(), guide: Object.keys(G.guide).map(Number), keys: KB.n + 1,
-               pads: PD ? PD.info() : null, score: SC ? SC.info() : null, tl: TL ? TL.info() : null };
+               pads: PD ? PD.info() : null, folded: SECS.filter(function (x) { var e = $("sySec_" + x[0]); return e && e.classList.contains("folded"); }).map(function (x) { return x[0]; }), score: SC ? SC.info() : null, tl: TL ? TL.info() : null };
     },
   };
 })(window);

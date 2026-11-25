@@ -64,12 +64,12 @@
   /** one pad, now (a click on a row's sound = a listen) */
   function audition(r) {
     if (!O) return;
-    var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, O.dest(), r, 0.9, ctx.currentTime + 0.005, b); }).catch(function () { /* said */ });
+    var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, out(), r, 0.9, ctx.currentTime + 0.005, b); }).catch(function () { /* said */ });
   }
   /** 2.954.0: a drum pad played a row now (its velocity) */
   function hit(r, vel) {
     if (!O || !L.rows[r]) return;
-    var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, O.dest(), r, vel == null ? 0.9 : vel, ctx.currentTime + 0.003, b); }).catch(function () { /* said */ });
+    var ctx = O.ctx(); buffer(L.rows[r].snd).then(function (b) { voice(ctx, out(), r, vel == null ? 0.9 : vel, ctx.currentTime + 0.003, b); }).catch(function () { /* said */ });
     flash(r);
   }
   /** 2.954.0: ⏺ Into loop - a pad hit while the loop plays is written on the nearest step of the pattern playing -> the step */
@@ -82,6 +82,33 @@
     return k;
   }
   function bar() { return 16 * C.stepDur(L.bpm); }
+  /** 2.955.0: the looper's own bus (its rows and every drum pad) -> the mix; ⏺ Rec records it */
+  var bus = null;
+  function out() { var ctx = O.ctx(); if (!bus || bus.context !== ctx) { bus = ctx.createGain(); bus.connect(O.dest()); } return bus; }
+  /** 2.955.0 (Tim: "add a record button to looper and send button to send last recorded piece to timeline"): ⏺ Rec records the
+   *  looper (the loop and the pads) from the loop's start; ⏺ again or ■ Stop ends the take; → 🎞 puts the last take on a new
+   *  timeline layer */
+  var R = { rec: null, take: null };
+  function rec() {
+    if (!O || !root.H3SynthRec) return false;
+    if (R.rec && R.rec.on()) { endRec(); return false; }
+    var ctx = O.ctx(); R.rec = root.H3SynthRec.create(ctx, out());
+    if (S.playing) play(false);
+    R.rec.start(); play(true); paintRec();
+    msg("⏺ Recording the looper (the loop and the pads) - ⏺ or ■ Stop ends the take");
+    return true;
+  }
+  function endRec() {
+    if (!R.rec || !R.rec.on()) return null;
+    var t = R.rec.stop({ trim: false }); R.rec = null;
+    if (t) { R.take = t; msg("⏺ A " + t.seconds.toFixed(1) + " s take - → 🎞 Timeline puts it on a new layer"); } else msg("⏺ Nothing was recorded", true);
+    if (S.playing) play(false);
+    paintRec(); return t;
+  }
+  function paintRec() {
+    var b = $("syLRec"), on = !!(R.rec && R.rec.on()); if (b) { b.classList.toggle("on", on); b.textContent = on ? "⏹ Stop rec" : "⏺ Rec"; b.setAttribute("aria-pressed", on ? "true" : "false"); }
+    var sd = $("syLSend"); if (sd) sd.disabled = !R.take;
+  }
   function tick() {
     if (!S.playing) return;
     var ctx = O.ctx(), ahead = ctx.currentTime + 0.14, ord = C.order(L);
@@ -94,7 +121,7 @@
           var v = L.pats[p][r][S.step];
           if (!v || !C.audible(L, r)) continue;
           var bp = buffer(L.rows[r].snd);
-          if (bp.ready) { voice(ctx, O.dest(), r, v === 2 ? 1 : 0.7, Math.max(t, ctx.currentTime), bp.ready); S.hits++; S.queue.push({ t: t, row: r }); }
+          if (bp.ready) { voice(ctx, out(), r, v === 2 ? 1 : 0.7, Math.max(t, ctx.currentTime), bp.ready); S.hits++; S.queue.push({ t: t, row: r }); }
         }
         S.queue.push({ t: t, step: S.step, pat: p });
       }
@@ -122,6 +149,7 @@
       tick(); S.timer = root.setInterval(tick, 25);
       if (!S.raf) S.raf = root.requestAnimationFrame(frame);
     } else {
+      if (R.rec && R.rec.on()) { S.playing = false; endRec(); }
       S.playing = false; root.clearInterval(S.timer); S.timer = 0; S.queue = []; S.now = -1; S.nowPat = -1; paintNow();
     }
     var b = $("syPlay"); if (b) { b.classList.toggle("on", S.playing); b.textContent = S.playing ? "■ Stop" : "▶ Play"; b.setAttribute("aria-pressed", S.playing ? "true" : "false"); }
@@ -268,6 +296,8 @@
   function wire() {
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
     on("syPlay", function () { play(); });
+    on("syLRec", function () { rec(); });
+    on("syLSend", function () { if (R.take && O.send) O.send(R.take, "Loop take"); });
     on("syChain", function () { L.chain = !L.chain; paintPads(); changed(); });
     on("syClear", function () { var g = L.pats[L.pat]; g.forEach(function (row) { for (var s = 0; s < row.length; s++) row[s] = 0; }); paintPads(); changed(); msg("Pattern " + C.PAT_NAMES.charAt(L.pat) + " cleared"); });
     on("syCopy", function () {
@@ -280,7 +310,7 @@
   }
 
   /* ---------------- the outside ---------------- */
-  function init(o) { O = o; wire(); wirePads(); build(); }
+  function init(o) { O = o; wire(); wirePads(); build(); paintRec(); }
   function setLists(my, sfx) {
     lists.my = (my || []).slice(); lists.sfx = (sfx || []).slice();
     doc.querySelectorAll("#syRows .syr select").forEach(function (sel) { fillSelect(sel, L.rows[+sel.closest(".syr").dataset.r].snd); });
@@ -288,10 +318,10 @@
   function setLoop(j) { var was = S.playing; if (was) play(false); L = C.cleanLoop(j); build(); if (was) play(true); }
   function assign(r, snd) { if (!C.okSnd(snd) || !L.rows[r]) return false; L.rows[r].snd = snd; forget(snd); buffer(snd).catch(function () { /* said */ }); paintPads(); changed(); return true; }
   function info() {
-    return { playing: S.playing, step: S.now, pat: L.pat, playPat: S.nowPat, bpm: L.bpm, swing: L.swing, chain: L.chain, hits: S.hits,
+    return { recording: !!(R.rec && R.rec.on()), take: R.take ? Math.round(R.take.seconds * 100) / 100 : 0, playing: S.playing, step: S.now, pat: L.pat, playPat: S.nowPat, bpm: L.bpm, swing: L.swing, chain: L.chain, hits: S.hits,
              rows: L.rows.map(function (r) { return { snd: r.snd, name: sndName(r.snd), vol: r.vol, pitch: r.pitch, pan: r.pan, mute: r.mute, solo: r.solo, ready: !!(bufs[r.snd] && bufs[r.snd].ready) }; }),
              on: L.pats[L.pat].map(function (row) { return row.join(""); }) };
   }
   root.H3SynthLoop = { init: init, play: play, playing: function () { return S.playing; }, render: render, buffer: buffer, forget: forget, setLists: setLists,
-                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
+                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, bus: out, rec: rec, endRec: endRec, take: function () { return R.take; }, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
 })(typeof window !== "undefined" ? window : globalThis);

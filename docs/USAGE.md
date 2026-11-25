@@ -1677,6 +1677,18 @@ scales the whole line. Drag a keyframe's **◆** sideways for when and up / down
 the end of its line for its end volume, or click it for **Start vol / End vol** knobs. **▶ Play** plays from the playhead
 (click the ruler to move it); **⬇ WAV**, **→ 💥 SFX** and **→ 🔊** mix the whole timeline down.
 
+**Folding the parts, sending takes (2.955.0).** The tab's four parts - **🎛 Synth** (the knobs), **🎹 Keyboard**, **🥁 Looper**
+and **🎞 Timeline** - are dockers of their own: click a title bar to fold it away or bring it back (kept for next time).
+**● on the keyboard** records the sound of what you play beside the sheet music (the silence before your first note is cut);
+**→ 🎞** puts that last take on a **new timeline layer** ("Keys take") at the playhead. In the looper, **⏺ Rec** starts the
+loop and records it - the loop and the drum pads - until **⏺** or **■ Stop**; **→ 🎞 Timeline** puts that take on a new
+layer ("Loop take"). Takes are saved as WAVs in 📂 My samples.
+
+**Dragging sounds onto the timeline (2.955.0).** Drag a sound from the **gallery**, the **assets** or the **references**
+(several picked at once too), a source from **＋ Sound**, or sound files from your computer onto a layer: a small box asks
+whether it goes **on that layer** (where you dropped it) or on **a new layer** of its own (✕ cancels). Pictures and videos
+are not taken. **📂 Open → new layer** opens sound files and puts each on a new layer named after it, at the playhead.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

@@ -13017,6 +13017,10 @@ function renderRefLists() {
     el.innerHTML = `<div class="an"><button class="pv" title="Preview">▶</button>`
       + `<span>${n}</span><button class="gdel">✕</button></div>`;
     el.querySelector(".gdel").onclick = () => { refAuds.splice(i, 1); renderRefLists(); };
+    // 2.955.0 (Tim: "allow user to drag audio from gallery, assets, reference to timeline"): a reference sound drags like a sound asset
+    el.draggable = true;
+    el.ondragstart = (ev) => { dragPayload = { type: "asset", kind: "sound", name: n }; ev.dataTransfer.setData("text/plain", n); };
+    el.ondragend = () => setTimeout(() => (dragPayload = null), 50);
     useMetaBtn(el.querySelector(".an"), "sound", n, el.querySelector(".an .gdel"));   // 2.575.0: ✎→ To prompt
     el.querySelector(".pv").onclick = () => previewRef("sound", n, el.querySelector(".pv"));
     if (window.RefInfo) el.appendChild(RefInfo.descBox(refNotes.audio[n] || "", (v) => { if (v) refNotes.audio[n] = v; else delete refNotes.audio[n]; }, "describe it - e.g. her voice, calm and low"));   // 2.539.0

@@ -15148,6 +15148,13 @@ node scripts/test-954.js > /tmp/t954.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui954-ui.js > /tmp/ui954.log 2>&1 \
   && ok "2.954.0 browser test: the deck (49 natural keys, no branding), pads (click, keys, MIDI ch 10, ⏺ into the loop, ✎), ● record sheet music, 💾 .abc, 📂 open, 🎓 learn to the end, ▶, the timeline (sources, the loop, move, trim, Vol knob, keyframes ◆ start / ● end, Delete, play, mixdown -> SFX), kept over a reload" \
   || { bad "2.954.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui954.log | head -12; }
+# ---- 2.955.0 (🎹 takes -> the timeline, drags, folding parts)
+node scripts/test-955.js > /tmp/t955.log 2>&1 \
+  && ok "2.955.0 units: the take recorder (lead silence cut), the keyboard / looper takes + → 🎞, the looper's bus, drops (gallery / assets / references / several / files) + here-or-new, Open → new layer, the parts fold" \
+  || { bad "2.955.0 units"; grep -a "^FAIL" -A1 /tmp/t955.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui955-ui.js > /tmp/ui955.log 2>&1 \
+  && ok "2.955.0 browser test: fold / unfold (kept), ● keyboard take -> → 🎞 a new layer, ⏺ looper take (with a pad) -> → 🎞, an asset dropped: here / a new layer / ✕, a picture refused, 📂 Open → 2 new layers" \
+  || { bad "2.955.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui955.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

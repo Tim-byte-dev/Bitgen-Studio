@@ -127,6 +127,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     await p.click('#syPats button[data-p="3"]');
     const pad = (r, s) => '#syRows .systeps button[data-r="' + r + '"][data-s="' + s + '"]';
     await p.click(pad(0, 0)); await p.click(pad(0, 8), { modifiers: ["Shift"] }); await p.click(pad(1, 4), { button: "right" });
+    await p.locator(pad(3, 0)).scrollIntoViewIfNeeded();   // 2.955.0: the tab is taller (the parts' title bars) - the pads may be below the fold
     const b0 = await p.locator(pad(3, 0)).boundingBox(), b3 = await p.locator(pad(3, 3)).boundingBox();
     await p.mouse.move(b0.x + 5, b0.y + 5); await p.mouse.down(); await p.mouse.move(b3.x + 5, b3.y + 5, { steps: 8 }); await p.mouse.up();
     let li = (await info()).loop;

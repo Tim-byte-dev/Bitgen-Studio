@@ -255,18 +255,60 @@
       if (e.key !== "Delete" && e.key !== "Backspace") return;
       e.preventDefault(); e.stopPropagation(); del();
     });
-    // a source dragged from ＋ Sound, or sound files from the computer
-    cv.addEventListener("dragover", function (e) { e.preventDefault(); });
+    // 2.955.0 (Tim: "allow user to drag audio from gallery, assets, reference to timeline ask if track goes on the layer it is
+    // dragged to or create a new layer"): a source from ＋ Sound, the gallery's / the assets' / the references' sounds (the
+    // app's drag), several picked at once, or sound files from the computer - then: this layer or a new one?
+    cv.addEventListener("dragover", function (e) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = "copy"; });
     cv.addEventListener("drop", function (e) {
       e.preventDefault(); e.stopPropagation();
       var p = pos(e), li = Math.max(0, Math.min(TLD.layers.length - 1, Math.floor((p.y - RULER) / LH))), t = T.snap(tAt(p.x), bpm(), TLD.snap);
-      var src = e.dataTransfer && e.dataTransfer.getData("text/x-h3snd");
-      if (src === "loop") { addLoop(li, t); return; }
-      if (src) { addClip(src, li, t); return; }
-      if (e.dataTransfer && e.dataTransfer.files.length) O.upload(e.dataTransfer.files, null).then(function (j) { ((j && j.added) || []).forEach(function (a, n) { addClip("my:" + a.name, Math.min(TLD.layers.length - 1, li + n), t); }); });
+      var got = dropped(e);
+      if (!got.srcs.length && !got.files.length) { msg("Only sounds go on the timeline (audio from the gallery, the assets, the references, ＋ Sound or a file)", true); return; }
+      var name = got.srcs.length ? got.srcs[0].replace(/^\w+:/, "") + (got.srcs.length > 1 ? " + " + (got.srcs.length - 1) : "") : got.files[0].name + (got.files.length > 1 ? " + " + (got.files.length - 1) : "");
+      ask(e.clientX, e.clientY, li, name, function (where) {
+        var place = function (srcs) { srcs.forEach(function (s2, n) { if (s2 === "loop") { if (where === "new") newLayer("The loop").then(function (ni) { addLoop(ni, t); }); else addLoop(li, t); return; }
+          if (where === "new") newLayer(s2.replace(/^\w+:/, "").replace(/\.[a-z0-9]+$/i, "")).then(function (ni) { addClip(s2, ni, t); }); else addClip(s2, Math.min(TLD.layers.length - 1, li + n), t); }); };
+        if (got.files.length) O.upload(got.files, null).then(function (j) { place(((j && j.added) || []).map(function (x) { return "my:" + x.name; })); });
+        place(got.srcs);
+      });
     });
     if (root.ResizeObserver) new root.ResizeObserver(function () { draw(); }).observe(sc);
   }
+  /** what a drop brings: {srcs: ["out:a.wav", ...], files: [File]} */
+  function dropped(e) {
+    var dt = e.dataTransfer, srcs = [], files = [];
+    var x = dt && dt.getData("text/x-h3snd"); if (x) srcs.push(x);
+    var map = function (it) { if (!it || it.kind !== "sound" || !it.name) return null; return it.type === "output" ? "out:" + it.name : it.type === "asset" ? "snd:" + it.name : null; };
+    var multi = null; try { multi = JSON.parse((dt && dt.getData("text/h3multi")) || "null"); } catch (er) { multi = null; }
+    if (Array.isArray(multi)) multi.forEach(function (it) { var s2 = map(it); if (s2) srcs.push(s2); });
+    var dp = null; try { dp = typeof dragPayload !== "undefined" ? dragPayload : null; } catch (er) { dp = null; }   // the app's own drags (index.html)
+    if (!srcs.length && dp) { var s3 = map(dp); if (s3) srcs.push(s3); }
+    if (!srcs.length && dt && dt.files && dt.files.length) [].forEach.call(dt.files, function (f) { if (/^audio\//.test(f.type) || /\.(wav|mp3|flac|ogg|oga|m4a|aac|opus|wma|aif|aiff|webm)$/i.test(f.name)) files.push(f); });
+    return { srcs: srcs.filter(function (s4) { return s4 === "loop" || T.okSrc(s4); }), files: files };
+  }
+  /** this layer or a new one? - a small box where it was dropped */
+  function ask(cx, cy, li, name, done) {
+    var old = $("syTAsk"); if (old) old.remove();
+    var box = doc.createElement("div"), host = $("syTL"), hr = host.getBoundingClientRect();
+    box.id = "syTAsk"; box.className = "sytlask"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Where does it go?");
+    box.style.left = Math.max(4, Math.min(hr.width - 250, cx - hr.left - 20)) + "px"; box.style.top = Math.max(4, cy - hr.top - 10) + "px";
+    var esc2 = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    box.innerHTML = "<div>Put <b>" + esc2(name) + "</b> on…</div><div class=\"row\"><button type=\"button\" data-w=\"here\" class=\"sydk\">" + esc2(L(li).name) + " (here)</button>"
+      + "<button type=\"button\" data-w=\"new\" class=\"sydk\">＋ A new layer</button><button type=\"button\" data-w=\"\" class=\"sydk\" title=\"Cancel\">✕</button></div>";
+    if (TLD.layers.length >= T.MAXL) box.querySelector('[data-w="new"]').disabled = true;
+    box.addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; box.remove(); if (b.dataset.w) done(b.dataset.w); });
+    box.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Escape") box.remove(); });
+    host.appendChild(box); var f = box.querySelector("button"); if (f) f.focus();
+  }
+  /** a new layer at the bottom -> its index (a promise, so it chains like addClip) */
+  function newLayer(name) {
+    if (TLD.layers.length >= T.MAXL) { msg("16 layers at most", true); return Promise.reject(new Error("16 layers at most")); }
+    var l = T.newLayer(TLD.layers.length); if (name) l.name = String(name).replace(/[<>]/g, "").slice(0, 32);
+    TLD.layers.push(l); S.sel = TLD.layers.length - 1; changed(); heads(); draw();
+    return Promise.resolve(TLD.layers.length - 1);
+  }
+  /** → 🎞: a sound on a new layer of its own at the playhead */
+  function addNewLayer(src, name, t) { return newLayer(name).then(function (li) { return addClip(src, li, t == null ? S.ph : t); }).catch(function () { return null; }); }
   function del() {
     if (S.key) { var l = L(S.key.l); l.keys.splice(S.key.k, 1); S.key = null; keyEd(); changed(); draw(); msg("◆ keyframe removed"); return true; }
     if (S.clip) { L(S.clip.l).clips.splice(S.clip.c, 1); S.clip = null; changed(); draw(); msg("Clip removed"); return true; }
@@ -399,6 +441,11 @@
     on("syTPlay", function () { O.ctx(); play(); });
     on("syTStart", function () { var p = S.playing; stop(); S.ph = 0; var sc = $("syTScroll"); if (sc) sc.scrollLeft = 0; draw(); if (p) play(); });
     on("syTAddBtn", function () { var b = $("syTPick"); b.classList.toggle("on"); if (b.classList.contains("on") && O.refresh) O.refresh(); });
+    on("syTOpen", function () { $("syTOpenFile").click(); });
+    var of = $("syTOpenFile");
+    if (of) of.onchange = function () {   // 2.955.0 (Tim: "allow user to open audio file to new layer"): each file on a layer of its own
+      O.upload(of.files, null).then(function (j) { of.value = ""; ((j && j.added) || []).reduce(function (pr, a) { return pr.then(function () { return addNewLayer("my:" + a.name, a.name.replace(/\.[a-z0-9]+$/i, ""), S.ph); }); }, Promise.resolve()); });
+    };
     on("syTSnap", function () { TLD.snap = !TLD.snap; paintSnap(); changed(); });
     on("syTZoomIn", function () { zoom(1.5); }); on("syTZoomOut", function () { zoom(1 / 1.5); });
     on("syTWav", function () { exportTL(null); }); on("syTToSfx", function () { exportTL("sfx"); }); on("syTToSound", function () { exportTL("sound"); });
@@ -407,7 +454,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
+  root.H3SynthTL = { init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { stop(); TLD = T.cleanTL(j); S.sel = 0; S.clip = null; S.key = null; keyEd(); heads(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
     info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
