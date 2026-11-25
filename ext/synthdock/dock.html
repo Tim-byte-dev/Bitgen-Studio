@@ -224,6 +224,21 @@
           #syRollCv { flex: 1; min-height: 0; width: 100%; display: block; cursor: crosshair; touch-action: none; }
           #syRollVel { height: 62px; width: 100%; display: block; border-top: 1px solid #262b35; cursor: ns-resize; touch-action: none; }
           #syUndo:disabled, #syRedo:disabled { opacity: .4; }
+          /* 2.958.0: the mixer, the metronome */
+          #syClick.on { color: #07090c; background: #ffd23a; border-color: #ffd23a; }
+          .sycount { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; color: #9aa4b6; }
+          .sycount select { font-size: 11px; background: #11141a; color: #e6ebf5; border: 1px solid #2a2f3a; border-radius: 5px; }
+          #syTMixBtn.on { color: #07090c; background: #b78cff; border-color: #b78cff; }
+          .symix { display: none; gap: 4px; overflow-x: auto; padding: 6px; background: #0b0d11; border: 1px solid #232832; border-radius: 8px; }
+          .symix.on { display: flex; }
+          .systrip { flex: 0 0 auto; width: 92px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: linear-gradient(180deg, #181c24, #111318); border: 1px solid #262b35; border-top: 3px solid var(--lc); border-radius: 6px; padding: 4px 2px; }
+          .systrip.master { border-top-color: #f4f1e8; width: 100px; }
+          .systrip b { font-size: 10px; max-width: 86px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #dfe6f2; }
+          .systrip .row { display: flex; gap: 2px; }
+          .systrip .sykn { width: 42px; }
+          .systrip .sykl { font-size: 8.5px; }
+          .systrip canvas.symeter { width: 18px; height: 110px; background: #05070a; border: 1px solid #000; border-radius: 3px; }
+          .systrip .vm { display: flex; gap: 6px; align-items: flex-end; }
           .sylib { display: none; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
           .sylib.on { display: block; }
           .sylib .sylist { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; margin-top: 4px; }
@@ -245,6 +260,8 @@
           <button class="ghost" id="syRec" type="button" title="⏺ Record what you play (the synth and the loop) - ⏹ puts the take in this project's SFX">⏺ Rec</button>
           <button class="ghost" id="syUndo" type="button" title="↶ Undo (Ctrl+Z) - the timeline, the loop, the knobs, the pads" disabled>↶</button>
           <button class="ghost" id="syRedo" type="button" title="↷ Redo (Ctrl+Y / Ctrl+Shift+Z)" disabled>↷</button>
+          <button class="ghost" id="syClick" type="button" title="🕒 Metronome: a click on every beat (the looper's BPM) while the timeline plays and while you record">🕒 Click</button>
+          <label class="sycount" title="Count-in: bars of clicks before ● (the keyboard) and ⏺ (the looper) start recording">Count-in <select id="syCount"><option value="0" selected>off</option><option value="1">1 bar</option><option value="2">2 bars</option></select></label>
           <button class="ghost" id="syPanic" type="button" title="Every note off">⏹ All off</button>
           <button id="syAudioOn" type="button" title="The browser keeps the sound off until you click">🔈 Sound on</button>
           <span class="sep"></span>
@@ -342,15 +359,19 @@
             <button class="ghost" id="syTSaveAs" type="button" title="Save the timeline under a new name">Save as…</button>
             <button class="ghost" id="syTLoad" type="button" title="🗂 Load a synth file (.sfx) of this project">🗂 Load</button>
             <button class="ghost" id="syTOpen" type="button" title="📂 Open sound files - each on a new layer of its own, at the playhead">📂 Open → new layer</button>
+            <button class="ghost" id="syTMark" type="button" title="⚑ A marker at the playhead (M) - click it on the ruler to go there, double-click to rename, right-click to remove">⚑ Marker</button>
+            <button class="ghost" id="syTMixBtn" type="button" title="🎚 The mixer: each layer's level, pan, EQ, compressor, reverb and a meter">🎚 Mixer</button>
             <button class="ghost" id="syTNotes" type="button" title="＋ Notes: an empty note clip (one bar) at the playhead on the picked layer - drawn in the 🎹 piano roll">＋ ♪ Notes</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>
             <button class="ghost" id="syTWav" type="button" title="⬇ The timeline mixed down to a WAV">⬇ WAV</button>
             <button class="ghost" id="syTToSfx" type="button" title="The mix into this project's SFX">→ 💥 SFX</button>
+            <button class="ghost" id="syTStems" type="button" title="⬇ Stems: every layer rendered alone (with its effects) into this project's Sound assets">⬇ Stems</button>
             <button class="ghost" id="syTToSound" type="button" title="The mix into this project's Sound assets (the timeline, the references)">→ 🔊</button>
             <span class="sytlhint">double-click a layer = a ◆ keyframe · drag ◆ = when + start volume, ● = end volume · Delete removes</span>
           </div>
+          <div class="symix" id="syMix"></div>
           <div class="sytlpick" id="syTPick"></div>
           <div class="sytlkey" id="syTKeyEd"></div>
           <div class="sytlbody">

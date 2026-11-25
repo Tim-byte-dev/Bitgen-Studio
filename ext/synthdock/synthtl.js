@@ -89,6 +89,7 @@
     var add = doc.createElement("button"); add.type = "button"; add.className = "ghost sytladd"; add.textContent = "＋ Layer"; add.title = "Add a layer";
     add.onclick = function () { if (TLD.layers.length >= T.MAXL) { msg("16 layers at most", true); return; } TLD.layers.push(T.newLayer(TLD.layers.length)); S.sel = TLD.layers.length - 1; changed(); heads(); draw(); };
     box.appendChild(add);
+    if (root.H3SynthMix && root.H3SynthMix.isOpen()) root.H3SynthMix.build();   // 2.958.0: the mixer follows the layers
   }
 
   /* ---------------- the canvas ---------------- */
@@ -190,6 +191,13 @@
       });
       x.restore();
     });
+    // 2.958.0: the markers - a flag on the ruler and a faint line down the layers
+    (TLD.markers || []).forEach(function (m) {
+      var mx = Math.round(px(m.t)); if (mx < -80 || mx > w) return;
+      x.fillStyle = "#ffd23a44"; x.fillRect(mx, RULER, 1, g.h - RULER);
+      x.font = "600 9px system-ui, sans-serif"; var tw = x.measureText(m.name).width + 8;
+      x.fillStyle = "#ffd23a"; x.fillRect(mx, 11, tw, 11); x.fillStyle = "#07090c"; x.textAlign = "left"; x.fillText(m.name, mx + 4, 20);
+    });
     // the playhead
     var P = px(S.ph); x.fillStyle = "#ffae3a"; x.fillRect(Math.round(P), 0, 1.5, g.h);
     x.beginPath(); x.moveTo(P - 5, 0); x.lineTo(P + 5, 0); x.lineTo(P, 7); x.closePath(); x.fill();
@@ -234,7 +242,11 @@
       var p = pos(e), h = hit(p.x, p.y); if (!h) return;
       cv.focus({ preventScroll: true }); e.preventDefault();
       try { cv.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
-      if (h.kind === "ruler") { seek(tAt(p.x)); S.drag = { kind: "ruler" }; return; }
+      if (h.kind === "ruler") {
+        var mk = markerAt(p.x);
+        if (mk >= 0) { seek(TLD.markers[mk].t); return; }   // 2.958.0: a marker = go there
+        seek(tAt(p.x)); S.drag = { kind: "ruler" }; return;
+      }
       S.sel = h.l;
       if (h.kind === "keyA" || h.kind === "keyB") { S.key = { l: h.l, k: h.k }; S.clip = null; S.drag = { kind: h.kind, l: h.l, k: h.k }; keyEd(); }
       else if (h.kind === "clip" || h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut") {
@@ -270,7 +282,18 @@
     });
     var up = function () { if (S.drag && S.drag.kind !== "ruler") changed(); S.drag = null; };
     cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+    cv.addEventListener("contextmenu", function (e) {   // 2.958.0: right-click a marker = gone
+      var p = pos(e); if (p.y >= RULER) return; var mk = markerAt(p.x); if (mk < 0) return;
+      e.preventDefault(); var m = TLD.markers.splice(mk, 1)[0]; changed(); draw(); msg("⚑ " + m.name + " removed");
+    });
     cv.addEventListener("dblclick", function (e) {
+      var pr = pos(e);
+      if (pr.y < RULER) {   // 2.958.0: double-click a marker = rename it; the ruler elsewhere = a marker there
+        var mk = markerAt(pr.x);
+        if (mk < 0) { addMarker(T.snap(tAt(pr.x), bpm(), TLD.snap)); return; }
+        if (root.H3SynthFile) root.H3SynthFile.nameDialog({ title: "Rename the marker", value: TLD.markers[mk].name }).then(function (n) { if (!n) return; TLD.markers[mk].name = n.replace(/\.sfx$/i, "").slice(0, 32); changed(); draw(); });
+        return;
+      }
       var p = pos(e), h = hit(p.x, p.y); if (!h || h.kind === "ruler" || h.kind === "keyA" || h.kind === "keyB") return;
       if (h.c != null && L(h.l).clips[h.c].kind === "notes") { openRoll(h.l, h.c); return; }   // 2.957.0: a note clip -> the piano roll
       var l = L(h.l), k = T.addKey(l, T.snap(tAt(p.x), bpm(), TLD.snap), T.end(TLD)); if (k < 0) return;
@@ -282,6 +305,7 @@
       if (k === "delete" || k === "backspace") { e.preventDefault(); e.stopPropagation(); del(); return; }
       if (k === "s" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); split(); return; }          // 2.957.0
       if (k === "d" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); dup(); return; }
+      if (k === "m" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); addMarker(); return; }   // 2.958.0
     });
     // 2.955.0 (Tim: "allow user to drag audio from gallery, assets, reference to timeline ask if track goes on the layer it is
     // dragged to or create a new layer"): a source from ＋ Sound, the gallery's / the assets' / the references' sounds (the
@@ -428,24 +452,49 @@
   function liveMix() {
     if (!S.nodes) return;
     var t = O.ctx().currentTime;
-    S.nodes.forEach(function (n, i) { var l = L(i); if (!n || !l) return; n.vol.gain.setTargetAtTime(T.audible(TLD, i) ? l.vol : 0, t, 0.02); if (n.pan.pan) n.pan.pan.setTargetAtTime(l.pan, t, 0.02); });
+    S.nodes.forEach(function (n, i) { var l = L(i); if (!n || !l) return; n.vol.gain.setTargetAtTime(T.audible(TLD, i) ? l.vol : 0, t, 0.02); if (n.pan.pan) n.pan.pan.setTargetAtTime(l.pan, t, 0.02); setFx(n, l, t); });
+    if (S.master) S.master.gain.setTargetAtTime(TLD.master == null ? 1 : TLD.master, t, 0.02);
   }
   /** the timeline into a context: per layer volume (knob) -> pan -> its keyframe line -> dest; each clip with 5 ms fades */
-  function mixInto(ctx, dest, from, at, bufs) {
+  /** 2.958.0: the reverb the layers send to (made, not recorded) */
+  function space(ctx) {
+    var sr = ctx.sampleRate, n = Math.round(sr * 2.4), b = ctx.createBuffer(2, n, sr), r = root.H3SynthKit ? root.H3SynthKit.rng(4242) : Math.random;
+    for (var c = 0; c < 2; c++) { var d = b.getChannelData(c); for (var i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3); }
+    return b;
+  }
+  /** a layer's effects onto its nodes (the mixer's knobs - live while it plays) */
+  function setFx(n, l, t) {
+    var f = l.fx || T.FX0, set = function (prm, v) { if (t == null) prm.value = v; else prm.setTargetAtTime(v, t, 0.02); };
+    set(n.lo.gain, f.lo); set(n.mid.gain, f.mid); set(n.hi.gain, f.hi);
+    set(n.comp.threshold, -f.comp * 32); set(n.comp.ratio, 1 + f.comp * 9); set(n.make.gain, 1 + f.comp * 0.9);
+    set(n.send.gain, f.rev * 0.9);
+  }
+  function mixInto(ctx, dest, from, at, bufs, only) {
     var endT = T.end(TLD), nodes = [], srcs = [];
+    // 2.958.0: master (its own level + a meter) and one reverb for every layer's send
+    var master = ctx.createGain(); master.gain.value = TLD.master == null ? 1 : TLD.master; master.connect(dest);
+    var mMeter = ctx.createAnalyser(); mMeter.fftSize = 1024; master.connect(mMeter);
+    var verb = ctx.createConvolver(); verb.buffer = space(ctx); verb.connect(master);
     TLD.layers.forEach(function (l, i) {
       var vol = ctx.createGain(), pan = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain(), ev = ctx.createGain();
-      vol.gain.value = T.audible(TLD, i) ? l.vol : 0; if (pan.pan) pan.pan.value = l.pan;
-      vol.connect(pan); pan.connect(ev); ev.connect(dest);
+      var lo = ctx.createBiquadFilter(), mid = ctx.createBiquadFilter(), hi = ctx.createBiquadFilter(), comp = ctx.createDynamicsCompressor(), make = ctx.createGain(), send = ctx.createGain(), meter = ctx.createAnalyser();
+      lo.type = "lowshelf"; lo.frequency.value = 200; mid.type = "peaking"; mid.frequency.value = 1000; mid.Q.value = 0.8; hi.type = "highshelf"; hi.frequency.value = 4500;
+      comp.knee.value = 6; comp.attack.value = 0.005; comp.release.value = 0.15; meter.fftSize = 1024;
+      var on = only == null ? T.audible(TLD, i) : (i === only && !l.mute);
+      vol.gain.value = on ? l.vol : 0; if (pan.pan) pan.pan.value = l.pan;
+      // vol -> EQ low / mid / high -> compressor (+ make-up) -> pan -> the keyframe line -> master (+ the reverb send)
+      vol.connect(lo); lo.connect(mid); mid.connect(hi); hi.connect(comp); comp.connect(make); make.connect(pan); pan.connect(ev);
+      ev.connect(master); ev.connect(send); send.connect(verb); ev.connect(meter);
       T.automation(l.keys, from, endT).forEach(function (op) {
         var when = at + Math.max(0, op.t - from);
         if (op.op === "set") ev.gain.setValueAtTime(op.v, when); else ev.gain.linearRampToValueAtTime(op.v, when);
       });
-      nodes.push({ vol: vol, pan: pan, ev: ev });
+      var nd = { vol: vol, pan: pan, ev: ev, lo: lo, mid: mid, hi: hi, comp: comp, make: make, send: send, meter: meter, on: on };
+      setFx(nd, l); nodes.push(nd);
     });
     var fl = TLD.layers.map(function (l) { return T.fades(l.clips); }), engines = [];
     T.schedule(TLD, from).forEach(function (s) {
-      if (s.dur <= 0) return;
+      if (s.dur <= 0 || !nodes[s.layer].on) return;
       var c = L(s.layer).clips[s.clip], f = fl[s.layer][s.clip], g = ctx.createGain(), t0 = at + s.when;
       // 2.957.0: the clip's gain line - its gain, fade in / out (longer where it overlaps a neighbour: a crossfade), 5 ms at
       // least at each end (no click); started part-way = from where the line is
@@ -469,7 +518,7 @@
       src.buffer = b; src.connect(g);
       src.start(t0, Math.min(s.off, Math.max(0, b.duration - 0.001)), s.dur); srcs.push(src);
     });
-    return { nodes: nodes, srcs: srcs, engines: engines, end: endT };
+    return { nodes: nodes, srcs: srcs, engines: engines, end: endT, master: master, mMeter: mMeter };
   }
   function buffersFor(from) {
     var need = {}; T.schedule(TLD, from || 0).forEach(function (s) { if (s.kind !== "notes") need[s.src] = 1; });
@@ -483,7 +532,8 @@
     return buffersFor(from).then(function (bufs) {
       if (!S.playing) return;
       var at = ctx.currentTime + 0.08, m = mixInto(ctx, O.dest(), from, at, bufs);
-      S.nodes = m.nodes; S.srcs = m.srcs; S.engines = m.engines; S.at = at; S.from = from;
+      S.nodes = m.nodes; S.srcs = m.srcs; S.engines = m.engines; S.at = at; S.from = from; S.master = m.master; S.mMeter = m.mMeter;
+      if (O.clickOn && O.clickOn() && root.H3SynthClick) S.click = root.H3SynthClick.play(ctx, O.dest(), root.H3SynthClick.times(bpm(), from, m.end, 4).map(function (c) { return { t: c.t - from, accent: c.accent }; }), at);
       var tick = function () {
         if (!S.playing) return;
         S.ph = S.from + Math.max(0, ctx.currentTime - S.at);
@@ -498,23 +548,45 @@
     var was = S.playing; S.playing = false; root.cancelAnimationFrame(S.raf);
     (S.srcs || []).forEach(function (s) { try { s.stop(); } catch (e) { /* done */ } });
     (S.nodes || []).forEach(function (n) { try { n.ev.disconnect(); } catch (e) { /* gone */ } });
+    if (S.click) { S.click(); S.click = null; } if (S.master) { try { S.master.disconnect(); } catch (e) { /* gone */ } S.master = null; S.mMeter = null; }
     (S.engines || []).forEach(function (x) { try { x.g.disconnect(); [x.E.lfo, x.E.cLfo, x.E.bendSrc].forEach(function (n) { if (n) n.stop(); }); } catch (e) { /* gone */ } });
     S.srcs = null; S.nodes = null; S.engines = null; paintPlay(); draw();
     return was;
   }
   function paintPlay() { var b = $("syTPlay"); if (b) { b.classList.toggle("on", S.playing); b.textContent = S.playing ? "■ Stop" : "▶ Play"; b.setAttribute("aria-pressed", S.playing ? "true" : "false"); } }
   /** the whole timeline -> {chans, sampleRate, seconds} */
-  function render(sr) {
+  function render(sr, only) {
     var OAC = root.OfflineAudioContext || root.webkitOfflineAudioContext; if (!OAC) return Promise.reject(new Error("this browser cannot render sound"));
     sr = sr || 48000;
     if (!T.schedule(TLD, 0).length) return Promise.reject(new Error("the timeline is empty (or every layer is muted) - add a sound first"));
     return buffersFor(0).then(function (bufs) {
       var secs = T.end(TLD) + 0.05, ctx = new OAC(2, Math.round(sr * secs), sr), lim = ctx.createDynamicsCompressor();
       lim.threshold.value = -1; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.1; lim.connect(ctx.destination);
-      mixInto(ctx, lim, 0, 0, bufs);
+      mixInto(ctx, lim, 0, 0, bufs, only);
       return ctx.startRendering().then(function (b) { return { chans: [b.getChannelData(0), b.getChannelData(1)], sampleRate: sr, seconds: secs }; });
     });
   }
+  /** 2.958.0: ⬇ Stems - every layer with sounds on it (not muted) rendered alone, with its effects -> the Sound assets */
+  function stems() {
+    var list = TLD.layers.map(function (l, i) { return i; }).filter(function (i) { return !L(i).mute && L(i).clips.length; });
+    if (!list.length) { msg("No layer has sounds on it (or they are all muted)", true); return Promise.resolve([]); }
+    var base = (O.fileName && O.fileName() ? O.fileName().replace(/\.sfx$/i, "") : "timeline"), out = [];
+    return list.reduce(function (pr, i) {
+      return pr.then(function () {
+        msg("⬇ Stems: " + L(i).name + " (" + (out.length + 1) + " / " + list.length + ")…");
+        return render(48000, i).then(function (r) { return O.toProject(O.blobOf(r), "stem.wav", "sound", base + " - " + L(i).name); }).then(function (j) { out.push(j && j.name); });
+      });
+    }, Promise.resolve()).then(function () { msg("⬇ " + out.length + " stem" + (out.length === 1 ? "" : "s") + " in the Sound assets: " + out.join(", ")); return out; })
+      .catch(function (e) { msg(e.message || String(e), true); return out; });
+  }
+  /** 2.958.0: markers - ＋ at the playhead (M), click on the ruler = go there, double-click = rename, right-click = gone */
+  function addMarker(t, name) {
+    TLD.markers = TLD.markers || [];
+    if (TLD.markers.length >= 100) { msg("100 markers at most", true); return null; }
+    var m = { t: Math.max(0, t == null ? S.ph : t), name: name || "Marker " + (TLD.markers.length + 1) };
+    TLD.markers.push(m); TLD.markers.sort(function (a, b) { return a.t - b.t; }); changed(); draw(); msg("⚑ " + m.name + " at " + T.fmt(m.t)); return m;
+  }
+  function markerAt(mx) { var ms = TLD.markers || [], best = -1, bd = 7; ms.forEach(function (m, i) { var d = Math.abs(px(m.t) - mx); if (d < bd) { bd = d; best = i; } }); return best; }
   function exportTL(to) {
     msg("Mixing the timeline…");
     return render().then(function (r) {
@@ -537,6 +609,9 @@
     if (of) of.onchange = function () {   // 2.955.0 (Tim: "allow user to open audio file to new layer"): each file on a layer of its own
       O.upload(of.files, null).then(function (j) { of.value = ""; ((j && j.added) || []).reduce(function (pr, a) { return pr.then(function () { return addNewLayer("my:" + a.name, a.name.replace(/\.[a-z0-9]+$/i, ""), S.ph); }); }, Promise.resolve()); });
     };
+    on("syTMark", function () { addMarker(); });
+    on("syTStems", function () { stems(); });
+    on("syTMixBtn", function () { if (root.H3SynthMix) root.H3SynthMix.toggle(); });
     on("syTNotes", function () { addNotes([], "Notes", null, S.sel, S.ph).then(function (c) { var l = L(S.sel); openRoll(S.sel, l.clips.indexOf(c)); }); });
     on("syTSnap", function () { TLD.snap = !TLD.snap; paintSnap(); changed(); });
     on("syTZoomIn", function () { zoom(1.5); }); on("syTZoomOut", function () { zoom(1 / 1.5); });
@@ -546,9 +621,10 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
+  root.H3SynthTL = { stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+    meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { stop(); TLD = T.cleanTL(j); S.sel = 0; S.clip = null; S.key = null; keyEd(); heads(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
     info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
-      clip: S.clip, key: S.key, ph: S.ph, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
+      clip: S.clip, key: S.key, ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
 })(typeof window !== "undefined" ? window : globalThis);

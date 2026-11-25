@@ -1718,6 +1718,18 @@ layer overlap, they **crossfade** by themselves over the overlap.
 focus in the tab) step back and forward through your changes to the timeline, the loop, the knobs and the pads - a knob
 turned or a clip dragged is one step.
 
+**The mixer, the metronome, markers, stems (2.958.0).** **🎚 Mixer** in the timeline's bar opens a strip for every layer
+(in its colour) and the master: a **meter** (while ▶ plays - the line on top holds the peak), **Vol**, **Pan**, a three-band
+**EQ** (**Low** shelf at 200 Hz, **Mid** at 1 kHz, **High** shelf at 4.5 kHz, ± 15 dB), **Comp** (how hard the layer's
+compressor squeezes - the level made up after it), **Rev** (how much goes to the shared reverb) and **M / S**; the master
+strip has its own level. Every knob works while it plays and is kept in the timeline (and its .sfx file); ↶ undoes it.
+**🕒 Click** in the Synth tab's bar clicks every beat (the looper's BPM, the first of the bar higher) while the timeline
+plays and while you record - the click is never in the take. **Count-in** (off, 1 or 2 bars) clicks before ● on the
+keyboard or ⏺ in the looper starts recording. **⚑ Marker** (or **M** on the timeline) puts a marker at the playhead; click
+a marker on the ruler to go there, double-click it to rename it (double-click the ruler elsewhere for a new one),
+right-click to remove it. **⬇ Stems** renders every layer that has sounds (and is not muted) on its own, with its effects,
+into this project's Sound assets as "<timeline name> - <layer name>".
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.958.0** — 🎹 Synth Tab: 🎚 a Mixer (per-Layer Meter, Vol, Pan, 3-Band EQ, Compressor, Reverb Send, Master), 🕒 a Metronome and a Count-In for Recording, ⚑ Timeline Markers, ⬇ Stems
 - **2.957.0** — 🎹 Synth Tab: Note Clips (→ 🎞 ♪, ＋ ♪ Notes) and a Piano Roll (Draw, Move, Length, Velocity, Quantize); Clip Editing (Split, Duplicate, Fade Handles, Automatic Crossfades, Gain); Undo / Redo Across the Tab
 - **2.956.0** — 🎹 Synth Tab .sfx Files: Keyboard and Looper Takes Saved on Stop (_key_ / _loop_ + a Random Name), the Timeline's 💾 Save (Asks a Name Once, Then Writes Over) and Save As…, 🗂 Load Any Synth File Anywhere
 - **2.955.0** — 🎹 Synth Tab: → 🎞 Send the Keyboard's and the Looper's Last Take to a New Timeline Layer (⏺ Rec in the Looper), Drag Sounds From the Gallery, Assets and References Onto the Timeline (This Layer or a New One?), 📂 Open → New Layer, the Synth / Keyboard / Looper / Timeline Parts Fold Like Dockers

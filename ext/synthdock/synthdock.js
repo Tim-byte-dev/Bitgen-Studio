@@ -620,6 +620,24 @@
     if (!on) root.setTimeout(function () { piano(); envDraw(); drawIdle(); if (TL) TL.draw(); }, 40);
   }
 
+  /* ---------------- 2.958.0: 🕒 the metronome and the count-in ---------------- */
+  function paintClick() { var b = $("syClick"); if (b) { b.classList.toggle("on", G.click); b.setAttribute("aria-pressed", G.click ? "true" : "false"); } }
+  /** the count-in (Count-in bars of clicks at the looper's BPM), then go() */
+  function countIn(go) {
+    var bars = +(($("syCount") || {}).value || 0), CK = root.H3SynthClick;
+    if (!bars || !CK) { go(); return 0; }
+    var c = ctx(), b = 60 / LP.loop().bpm, secs = bars * 4 * b;
+    CK.play(c, engine().mix, CK.times(LP.loop().bpm, 0, secs - 1e-6, 4), c.currentTime + 0.05);
+    msg("🕒 Count-in: " + bars + " bar" + (bars === 1 ? "" : "s") + "…"); G.counting = true;
+    root.setTimeout(function () { G.counting = false; go(); }, Math.round((secs + 0.05) * 1000));
+    return secs;
+  }
+  /** 🕒 on: clicks while a recording runs (they are never in the take) */
+  function recClick() {
+    if (!G.click || !root.H3SynthClick || G.recClick) return;
+    G.recClick = root.H3SynthClick.run(ctx(), engine().mix, function () { return LP.loop().bpm; }, 0);
+    var t = root.setInterval(function () { var on = (SC && SC.info().mode === "rec") || LP.info().recording; if (!on) { root.clearInterval(t); if (G.recClick) { G.recClick(); G.recClick = null; } } }, 100);
+  }
   function undo() { if (!G.U) return false; var ok = G.U.undo(); msg(ok ? "↶ undone" : "Nothing to undo", !ok); return ok; }
   function redo() { if (!G.U) return false; var ok = G.U.redo(); msg(ok ? "↷ redone" : "Nothing to redo", !ok); return ok; }
 
@@ -651,6 +669,7 @@
                       guide: function (ms) { G.guide = {}; (ms || []).forEach(function (m) { G.guide[m] = true; }); piano(); } });
     if (TL) TL.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, bpm: function () { return LP.loop().bpm; }, saved: jget("tl", null),
                       save: function (t) { touch(); root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
+                      clickOn: function () { return G.click; }, fileName: function () { return G.tlFile; },
                       renderLoop: function () { return LP.render(+(($("syPasses") || {}).value || 2)); }, patch: function () { return JSON.parse(JSON.stringify(G.p)); },
                       preview: function (m, v, patch) { try { var E = engine(); E.noteOn(m, v || 0.8); root.setTimeout(function () { E.noteOff(m); }, 220); } catch (e) { /* asleep */ } }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh });
     var dv = $("syDkVol");
@@ -695,6 +714,12 @@
       .observe(d, { attributes: true, attributeFilter: ["class"] });
     doc.addEventListener("visibilitychange", function () { if (doc.hidden) allKeysOff(); });
     setFull(d.classList.contains("maxed") && !d.classList.contains("dockgone"));
+    // 2.958.0: 🕒 Click + Count-in (kept); ● and ⏺ start after the count-in
+    G.click = LS.get("click", "0") === "1"; paintClick();
+    on("syClick", function () { G.click = !G.click; LS.set("click", G.click ? "1" : "0"); paintClick(); msg(G.click ? "🕒 Click on - while the timeline plays and while you record" : "🕒 Click off"); });
+    var cs = $("syCount"); if (cs) { cs.value = LS.get("count", "0"); cs.onchange = function () { LS.set("count", cs.value); }; }
+    on("syScRec", function () { if (G.counting) return; if (SC.info().mode === "rec") { SC.rec(); return; } countIn(function () { SC.rec(); recClick(); }); });
+    on("syLRec", function () { if (G.counting) return; if (LP.info().recording) { LP.rec(); return; } countIn(function () { LP.rec(); recClick(); }); });
     // 2.957.0: ↶ / ↷ for the whole tab (the timeline, the loop, the knobs, the pads)
     if (root.H3SynthUndo) {
       G.U = root.H3SynthUndo.create({
@@ -720,7 +745,7 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, countIn: countIn, clickOn: function () { return G.click; }, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),

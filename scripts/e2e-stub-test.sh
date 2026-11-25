@@ -15169,6 +15169,13 @@ node scripts/test-957.js > /tmp/t957.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui957-ui.js > /tmp/ui957.log 2>&1 \
   && ok "2.957.0 browser test: ● notes -> → 🎞 ♪ a note clip (played in the mix), the piano roll (draw, drag, move, velocity, ↓, right-click, quantize, Esc), ✂ split, ⧉ duplicate, gain / fade knobs, a fade handle, crossfades, Ctrl+Z / ↷ / undo knobs + loop" \
   || { bad "2.957.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui957.log | head -12; }
+# ---- 2.958.0 (🎹 mixer, metronome + count-in, markers, stems)
+node scripts/test-958.js > /tmp/t958.log 2>&1 \
+  && ok "2.958.0 units: layer effects + markers + master kept safe, the click's beats, the meters, the mix chain (EQ, comp, send, meters), live knobs, stems, markers, the bar, count-in" \
+  || { bad "2.958.0 units"; grep -a "^FAIL" -A1 /tmp/t958.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui958-ui.js > /tmp/ui958.log 2>&1 \
+  && ok "2.958.0 browser test: 🎚 strips + knobs -> layer fx (reverb heard), meters move, 🕒 click with ▶, count-in before ●, ⚑ markers (go / rename / remove), ⬇ Stems -> Sound assets, ↶ a mixer change" \
+  || { bad "2.958.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui958.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

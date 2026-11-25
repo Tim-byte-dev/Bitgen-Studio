@@ -13,23 +13,33 @@
  *   notes: [{m, t (s from the clip's start), d, v}], patch} played by the synth; every clip has gain (0-2), fi / fo (fade in / out,
  *   s); splitClip(c, t) -> [a, b], dupClip(c), fades(clips) (overlaps on a layer = automatic crossfades), clipEnv(c, fi, fo) (the
  *   clip's gain line), cleanNotes(), quantize(notes, grid, strength)
+ *   2.958.0 (Tim: "continue"): layer.fx {lo, mid, hi (dB), comp, rev} (the mixer), tl.markers [{t, name}], tl.master
  */
 (function (root) {
   "use strict";
   var MAXL = 16, MAXC = 200, MAXK = 200, MIN = 0.02, MAXT = 3600;
   var num = function (v, d, lo, hi) { v = Number(v); if (!Number.isFinite(v)) v = d; return Math.max(lo, Math.min(hi, v)); };
   function okSrc(s) { return typeof s === "string" && /^(kit|my|sfx|snd|out):[^\u0000-\u001f<>]{1,160}$/.test(s) && s.indexOf("..") < 0 ? s : null; }
-  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [] }; }
-  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer) }; }
+  // 2.958.0: each layer's effects (the mixer): EQ low / mid / high in dB, compressor amount 0-1, reverb send 0-1
+  var FX0 = { lo: 0, mid: 0, hi: 0, comp: 0, rev: 0 };
+  function cleanFx(f) { f = f || {}; return { lo: num(f.lo, 0, -15, 15), mid: num(f.mid, 0, -15, 15), hi: num(f.hi, 0, -15, 15), comp: num(f.comp, 0, 0, 1), rev: num(f.rev, 0, 0, 1) }; }
+  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null) }; }
+  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1 }; }
+  /** 2.958.0: markers [{t, name}] - in time order, 100 at most */
+  function cleanMarkers(a) {
+    return (Array.isArray(a) ? a : []).slice(0, 100).filter(function (m) { return m && Number.isFinite(+m.t); })
+      .map(function (m) { return { t: num(m.t, 0, 0, MAXT), name: String(m.name || "Marker").replace(/[\u0000-\u001f<>]/g, "").slice(0, 32) || "Marker" }; })
+      .sort(function (a2, b) { return a2.t - b.t; });
+  }
   function sortKeys(ks) { ks.sort(function (x, y) { return x.t - y.t; }); return ks; }
   /** a timeline from a save made safe */
   function cleanTL(j) {
     if (!j || typeof j !== "object" || !Array.isArray(j.layers)) return newTL();
-    var o = { v: 1, zoom: num(j.zoom, 40, 4, 400), snap: j.snap !== false, layers: [] };
+    var o = { v: 1, zoom: num(j.zoom, 40, 4, 400), snap: j.snap !== false, layers: [], markers: cleanMarkers(j.markers), master: num(j.master, 1, 0, 1.5) };
     j.layers.slice(0, MAXL).forEach(function (L, i) {
       L = L || {};
       var l = { name: String(L.name || "Layer " + (i + 1)).replace(/[\u0000-\u001f<>]/g, "").slice(0, 32) || "Layer " + (i + 1), vol: num(L.vol, 1, 0, 1.5), pan: num(L.pan, 0, -1, 1),
-                mute: !!L.mute, solo: !!L.solo, clips: [], keys: [] };
+                mute: !!L.mute, solo: !!L.solo, clips: [], keys: [], fx: cleanFx(L.fx) };
       (Array.isArray(L.clips) ? L.clips : []).slice(0, MAXC).forEach(function (c) {
         if (!c) return;
         var base;
@@ -163,7 +173,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);
