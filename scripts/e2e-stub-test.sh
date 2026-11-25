@@ -15212,6 +15212,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui962-ui.js > /tmp/ui962.log 2>&
 # ---- 2.963.0 (🎹 the panel above the layers)
 node scripts/test-963.js > /tmp/t963.log 2>&1 && ok "2.963.0 units: the panel top left, the layer editor, renaming" || { bad "2.963.0 units"; grep -a "^FAIL" /tmp/t963.log | head -6; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui963-ui.js > /tmp/ui963.log 2>&1 && ok "2.963.0 browser test: the panel top left, the layer's name + knobs, click a layer, rename (panel / head), a clip's panel, the lanes never move" || { bad "2.963.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui963.log | head -6; }
+# ---- 2.964.0 (🎓 Life Choices stage 2: pass and play + the 🧠 LLM player)
+node scripts/test-964.js > /tmp/t964.log 2>&1 && ok "2.964.0 units: seats (people, bots, 🧠), botPick / botApply, a whole game with a 🧠 player, lifellm (brief, payload, clean, messages, parse), POST /api/life-choices/llm (stub LLM, 502s, 400)" || { bad "2.964.0 units"; grep -a "^FAIL" -A1 /tmp/t964.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui964-ui.js > /tmp/ui964.log 2>&1 && ok "2.964.0 browser test: the seats, the pass-the-PC screen (Enter, ▶, kept over a reload), the 🧠 player's choice by a stand-in LLM through the app, too slow / no LLM -> a bot's rules, 5 minutes off, every person's score" || { bad "2.964.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui964.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

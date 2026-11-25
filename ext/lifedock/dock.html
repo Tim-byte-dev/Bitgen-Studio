@@ -100,6 +100,20 @@
           #lcCalc .keys button.op { background: rgba(255, 255, 255, .08); }
           #lcCalc .keys button.eq { background: var(--tiger); color: #000; font-weight: 700; }
           #lcCalcUse { font-size: 12px; }
+          /* 2.964.0: the seats (people, bots, 🧠 LLM players) and the "pass the PC" screen */
+          #lcSeats { display: flex; flex-direction: column; gap: 4px; margin: 4px 0; }
+          .lcseat { display: flex; gap: 6px; align-items: center; }
+          .lcseat .dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+          .lcseat input { flex: 1 1 auto; min-width: 0; }
+          .lcseat select { flex: 0 0 190px; }
+          .lcseats-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+          .lcseats-bar label { margin: 0 0 0 auto !important; }
+          .lcseats-bar label > span { width: auto !important; }
+          #lcSeatHint:empty { display: none; }
+          #lcPass { z-index: 3; }
+          #lcPass > div { text-align: center; max-width: 380px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+          #lcPass .who { font-size: 26px; font-weight: 800; }
+          #lcPassGo { font-size: 15px; padding: 7px 14px; }
         </style>
         <div class="lcbar">
           <button class="ghost" id="lcNew" type="button" title="Set up a new game">▶ New game</button>
@@ -109,7 +123,7 @@
           <span class="sep"></span>
           <label class="hint" for="lcSpeed">Bots</label>
           <select id="lcSpeed" aria-label="How fast the bots play"><option value="normal">normal</option><option value="fast">fast</option><option value="instant">instant</option></select>
-          <span id="lcHint" class="hint">Answers 1-4 · Enter = roll / carry on · 🧮 in the puzzle box (drag it anywhere) · the game is saved as you play</span>
+          <span id="lcHint" class="hint">Up to 6 players: people at this PC, bots, 🧠 LLM players · Answers 1-4 · Enter = roll / carry on · 🧮 in the puzzle box (drag it anywhere) · the game is saved as you play</span>
         </div>
         <div id="lcMain">
           <div id="lcBoardWrap"><canvas id="lcBoard" aria-label="The Life Choices board"></canvas><div id="lcTip"></div></div>
@@ -123,9 +137,17 @@
             <h3>🎓 Life Choices - a new game</h3>
             <p class="hint" style="margin:0 0 6px">You start at 16 in high school. Answer quizzes, maths and word puzzles (grade 12 and up), choose college, a trade
               or the factory, find work, then buy property and shares once you have a steady income. Every turn is three months of your life.</p>
-            <label><span>Your name</span><input type="text" id="lcName" maxlength="18" placeholder="Your name"></label>
-            <label><span>Bots</span><select id="lcBots"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
+            <!-- 2.964.0: 2-6 seats - people taking turns at this PC, rule bots and 🧠 LLM players (lifedock.js seatsView) -->
+            <div class="hint" style="margin-top:4px">Players (2 to 6) - the first row is you.</div>
+            <div id="lcSeats"></div>
+            <div class="lcseats-bar">
+              <button class="ghost" id="lcAddPerson" type="button" title="Another person at this PC (pass and play)">＋ 🙂 Person</button>
+              <button class="ghost" id="lcAddLlm" type="button" title="A player whose choices bitGen's LLM makes">＋ 🧠 LLM player</button>
+              <label><span>Bots</span><select id="lcBots" title="How many rule bots (the people and 🧠 players are kept)"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
+            </div>
+            <div id="lcSeatHint" class="hint"></div>
             <label><span>Bots answer right</span><select id="lcSkill"><option value="0.45">sometimes (easy)</option><option value="0.65" selected>often (fair)</option><option value="0.85">nearly always (sharp)</option></select></label>
+            <label><span>🧠 LLM players think</span><select id="lcLlmWait" title="How long a 🧠 player waits for the LLM before it plays by a bot's rules"><option value="10">up to 10 s a choice</option><option value="20" selected>up to 20 s a choice</option><option value="45">up to 45 s a choice (a slow PC)</option></select></label>
             <label><span>Retire at</span><select id="lcRetire"><option value="30">30 - a quick game</option><option value="45">45 - a standard game</option><option value="65" selected>65 - a full life</option></select></label>
             <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:10px"><button class="ghost" id="lcSetupCancel" type="button">Cancel</button><button id="lcStart" type="button">▶ Start</button></div>
           </div></div>
@@ -157,6 +179,11 @@
               you pay only the excess. Pay is taxed on the 2026-27 Australian scale with the 2% Medicare levy; each birthday is a tax
               return - deductions (the $1,000 standard deduction, or loan interest, rates and repairs on your rentals) can bring a refund.
               A game's tax, not tax advice.</p>
+            <p><b>Playing together</b> (pass and play): add up to six seats in ▶ New game - 🙂 people who take turns at this PC, 🤖 bots
+              and 🧠 LLM players. Before each person's turn a screen asks to pass the PC to them (▶ or Enter starts the turn), so
+              nobody rolls for somebody else. A 🧠 <b>LLM player</b> rolls and answers puzzles like a bot, but its choices - which path,
+              which job, buying, building, the bank and the exchange - are made by the LLM loaded in bitGen, with its reason in the log.
+              No LLM, or no answer in time, and it plays by a bot's rules.</p>
             <p><b>Winning</b>: when everyone has retired, net worth + $1,000 for every IQ point over 100 + a bonus for your qualification + $2,000 for every ❤ wellbeing point over 50 (less below).
               "IQ" here is a game score, not a real IQ test.</p>
             <div style="text-align:right"><button id="lcHelpClose" type="button">Got it</button></div>
@@ -178,6 +205,8 @@
               <button type="button" id="lcCalcUse" title="Put the result in the answer box">➜ Use as the answer</button>
             </div>
           </div></div>
+          <!-- 2.964.0: two or more people - the next one takes the PC (lifedock.js passShow / passGo) -->
+          <div class="lcpanel" id="lcPass" role="dialog" aria-modal="true" aria-labelledby="lcPassGo"><div><div id="lcPassBody"></div><button class="big" id="lcPassGo" type="button">▶ Start my turn</button><div class="hint">Enter starts the turn too.</div></div></div>
           <div class="lcpanel" id="lcScores"><div><div id="lcScoresBody"></div><div style="text-align:right;margin-top:8px"><button id="lcScoresClose" type="button">Close</button></div></div></div>
         </div>
       </div>

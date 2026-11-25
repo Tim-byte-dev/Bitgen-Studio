@@ -6,6 +6,7 @@
   "scripts": [
     "lifemoney.js",
     "lifecore.js",
+    "lifellm.js",
     "lifepuzzles.js",
     "lifecalc.js",
     "lifedock.js"

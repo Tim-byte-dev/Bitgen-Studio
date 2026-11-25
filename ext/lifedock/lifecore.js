@@ -39,6 +39,11 @@
  *   tax return (p.fy: salary, rent, dividends, deductions, withheld -> a refund or a bill). Luck events a cover pays (car,
  *   home, health) cost only the excess when insured. A jobseeker payment while out of work.
  * WINNER at the end: net worth + (IQ - 100) x $1,000 + a qualification bonus (diploma $10k, trade $30k, degree $50k).
+ * 2.964.0 (stage 2: "pass-and-play 2-6 on one PC + the optional 🧠 LLM player"): any seat can be a person (several people take
+ *   turns at one PC - humans(s)), a rule bot or a 🧠 LLM player {llm: true}: it rolls and answers like its fallback bot
+ *   (p.bot, a persona - its puzzle skill too), and the view asks the LLM for its choices (lifellm.js; botPick = the rule bot's
+ *   pick when the LLM does not answer, botApply = make a pick). s.handed = the person who last took the PC (the view's
+ *   "pass the PC" screen); note(s, text) = a line in the log from the view.
  *
  * newGame({seed, retire, players: [{name, bot: null | "saver" | "tycoon" | "risk", skill 0-1}]}) -> state (plain JSON -
  * save it as it is);  roll(s, die?) -> events;  answer(s, right);  choose(s, optionId);  botStep(s) (one bot move);
@@ -87,6 +92,7 @@
   var COLORS = ["#ff8a1c", "#3fa9f5", "#5ccf6c", "#e25d9b", "#b48cff", "#f2d14a"];
   var NAMES = ["Ava", "Kai", "Mila", "Theo", "Zara", "Leo", "Isla", "Remy"];
   var PERSONAS = { saver: "careful saver", tycoon: "property tycoon", risk: "risk-taker" };
+  var LLMWORD = "🧠 LLM player";
 
   function rng(s) {                                                // mulberry32 on a number kept in the state (saved games replay)
     s.rs = (s.rs + 0x6D2B79F5) >>> 0; var t = s.rs;
@@ -103,7 +109,8 @@
     s.rs = s.seed;
     var list = (o.players && o.players.length ? o.players : [{ name: "You" }]).slice(0, 6);
     s.players = list.map(function (q, i) {
-      return { id: i, name: String(q.name || NAMES[i] || "Player " + (i + 1)).slice(0, 18), bot: PERSONAS[q.bot] ? q.bot : null,
+      var llm = !!q.llm;                                                    // 2.964.0: a 🧠 LLM player plays on a rule bot's legs
+      return { id: i, name: String(q.name || NAMES[i] || "Player " + (i + 1)).slice(0, 18), bot: PERSONAS[q.bot] ? q.bot : llm ? "tycoon" : null, llm: llm,
                skill: q.skill == null ? 0.65 : Math.max(0, Math.min(1, Number(q.skill))), color: q.color || COLORS[i % COLORS.length],
                ring: "hs", pos: 0, age: 16, cash: MONEY.start, iq: 100, qual: "none", hsRight: 0, hsWrong: 0, colRight: 0, colWrong: 0,
                job: null, paydays: 0, open: false, studentDebt: 0, loan: 0, shares: {}, retired: false, bankrupt: false, night: false, dropped: [] };
@@ -111,7 +118,8 @@
     Object.keys(PROPS).forEach(function (k) { s.props[k] = { value: PROPS[k], owner: -1 }; });
     upgrade(s);
     COMPANIES.forEach(function (c) { s.price[c[0]] = 10 + Math.round(rng(s) * 40); });
-    log(s, "A new game: " + s.players.map(function (p) { return p.name + (p.bot ? " (" + PERSONAS[p.bot] + ")" : ""); }).join(", ") + " - retire at " + s.retire + ".");
+    s.handed = -1;                                                        // 2.964.0: nobody has taken the PC yet
+    log(s, "A new game: " + s.players.map(function (p) { return p.name + (p.llm ? " (" + LLMWORD + ")" : p.bot ? " (" + PERSONAS[p.bot] + ")" : ""); }).join(", ") + " - retire at " + s.retire + ".");
     return s;
   }
   /** a game saved before 2.945.0 gets the land & houses ring */
@@ -125,7 +133,8 @@
     return p;
   }
   function upgrade(s) {
-    if (s && s.players) s.players.forEach(money0);
+    if (s && s.players) s.players.forEach(function (p) { money0(p); if (p.llm == null) p.llm = false; });
+    if (s && s.handed == null) s.handed = -1;                               // 2.964.0
     if (s && !s.estate) { s.estate = {}; Object.keys(ESTATE).forEach(function (k) { s.estate[k] = { type: ESTATE[k][0], value: ESTATE[k][2], owner: -1 }; }); }
     return s;
   }
@@ -616,12 +625,24 @@
     if (s.over || !p.bot) return false;
     if (!s.pending) { s._botBuys = 0; roll(s); return true; }
     if (s.pending.type === "puzzle") { var sk = s.pending.level === "college" ? p.skill - 0.1 : p.skill; answer(s, rng(s) < sk); return true; }
-    var id = botChoice(s, p, s.pending);
-    if (id == null || !choose(s, id)) { s.pending = null; s.phase = "roll"; finishTurn(s); }
+    botApply(s, botPick(s));
     return true;
   }
+  /** 2.964.0: the rule bot's pick for the choice on the table (a 🧠 LLM player's fallback), or null */
+  function botPick(s) { var p = cur(s); return !s.over && p.bot && s.pending && s.pending.type === "choice" ? botChoice(s, p, s.pending) : null; }
+  /** make a pick for the bot whose turn it is; a pick that is not there (or none) ends the turn as the rule bot does */
+  function botApply(s, id) {
+    if (!s.pending || s.pending.type !== "choice") return false;
+    if (id == null || !choose(s, id)) { s.pending = null; s.phase = "roll"; finishTurn(s); return false; }
+    return true;
+  }
+  /** the people at the PC (not bots, not 🧠 LLM players) */
+  function humans(s) { return s.players.filter(function (p) { return !p.bot; }); }
+  /** a line in the game's log from the view (the 🧠 player's reasons) */
+  function note(s, t) { log(s, String(t).slice(0, 400)); }
 
-  var API = { RINGS: RINGS, PROPS: PROPS, COMPANIES: COMPANIES, JOBS: JOBS, MONEY: MONEY, NEED: NEED, QBONUS: QBONUS, COLORS: COLORS, PERSONAS: PERSONAS,
+  var API = { LLMWORD: LLMWORD, botPick: botPick, botApply: botApply, humans: humans, note: note,
+              RINGS: RINGS, PROPS: PROPS, COMPANIES: COMPANIES, JOBS: JOBS, MONEY: MONEY, NEED: NEED, QBONUS: QBONUS, COLORS: COLORS, PERSONAS: PERSONAS,
               newGame: newGame, current: cur, square: square, canRoll: canRoll, roll: roll, answer: answer, choose: choose, botStep: botStep,
               offers: offers, loanLimit: loanLimit, netWorth: netWorth, score: score, standings: standings, propsOf: propsOf, sharesValue: sharesValue,
               money: money, coName: coName, rng: rng,

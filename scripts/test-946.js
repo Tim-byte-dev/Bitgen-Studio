@@ -64,7 +64,7 @@ check("bots roll the pair too: the totals spread like two dice (7 the most commo
 
 const J = src("ext/lifedock/lifedock.js"), D = src("ext/lifedock/dock.html");
 check("the docker: the dice (⚀-⚅), the roll's luck and a 2-12 luck meter; your own last roll stays in view; the dice tumble for a moment",
-  /id="lcDice"/.test(D) && /FACE = \["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"\]/.test(J) && /function meter\(lv\)/.test(J) && /Your last roll: /.test(J) && /function doRoll\(\)/.test(J) && /diceView\(true\)/.test(J));
+  /id="lcDice"/.test(D) && /FACE = \["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"\]/.test(J) && /function meter\(lv\)/.test(J) && /\(many \? esc\(me\.name\) \+ "'s" : "Your"\) \+ " last roll: "/.test(J) /* 2.964.0: whose, with several people */ && /function doRoll\(\)/.test(J) && /diceView\(true\)/.test(J));
 check("...🎲 Roll the dice; double six says roll again; How to play explains luck", /🎲 Roll the dice/.test(J) && /Double six - roll again/.test(J) && /<b>Luck<\/b>: every turn you roll a pair of dice/.test(D));
 
 console.log(`\n${pass} passed, ${fail} failed`);

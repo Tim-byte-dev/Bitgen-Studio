@@ -20,11 +20,18 @@
  *   2.952.0     (Tim: "make the dialog draggable. when user presses enter while waiting for dice roll then roll the dice"):
  *               drag the puzzle box anywhere over the game (kept in view, remembered; double-click puts it back); Enter
  *               rolls whenever it is your roll - wherever the focus is (not while typing, never with a panel open)
+ *   2.964.0     stage 2 - PASS-AND-PLAY and the 🧠 LLM PLAYER: the set-up is a list of 2-6 seats, each a person, a rule bot
+ *               (careful saver / property tycoon / risk-taker) or a 🧠 LLM player (lifellm.js). With two or more people a
+ *               "pass the PC" screen (#lcPass) comes up before each person's turn (Enter / ▶ starts it - nobody rolls for
+ *               somebody else). A 🧠 player rolls and answers like its fallback bot, and for every choice bitGen's LLM is asked
+ *               (POST /api/life-choices/llm) - up to 3 times a turn, within the 🧠 time the set-up gives (10 / 20 / 45 s); no
+ *               answer, or one that is not an open option, = the rule bot's pick; two failures in a row = its own rules for 5
+ *               minutes. Every person's score goes to 🏆.
  * window.H3Life: newGame(opts), state(), act(), info() (tests)
  */
 (function (root) {
   "use strict";
-  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles, MN = root.H3LifeMoney, K = root.H3LifeCalc;
+  var doc = root.document, C = root.H3LifeCore, P = root.H3LifePuzzles, MN = root.H3LifeMoney, K = root.H3LifeCalc, LL = root.H3LifeLLM;
   if (!doc || !C || !P || !MN) return;
   var $ = function (id) { return doc.getElementById(id); };
   var LS = {
@@ -32,7 +39,8 @@
     set: function (k, v) { try { root.localStorage.setItem("h3.life." + k, String(v)); } catch (e) { /* private mode */ } },
   };
   try { if (root.localStorage.getItem("h3.g.lifedock") == null) root.localStorage.setItem("h3.g.lifedock", "1"); } catch (e) { /* fine */ }
-  var G = { s: null, geo: null, timer: 0, botT: 0, hover: null, speed: LS.get("speed", "normal"), posted: false };
+  var G = { s: null, geo: null, timer: 0, botT: 0, hover: null, speed: LS.get("speed", "normal"), posted: false,
+            llmWait: Number(LS.get("llmwait", "20")) || 20, llmBusy: null, llmN: 0, llmKey: "", llmFails: 0, llmOffUntil: 0, seats: null };
   var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var M = function (v) { return C.money(v); };
   var k$ = function (v) { return v >= 1e6 ? "$" + (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + "m" : "$" + Math.round(v / 1000) + "k"; };
@@ -204,8 +212,8 @@
     var cur = s.over ? null : C.current(s);
     b.innerHTML = "<table><tr><th>Player</th><th>Age</th><th class=\"n\">Cash</th><th>IQ</th><th title=\"Wellbeing\">❤</th><th>Where / work</th><th class=\"n\">Worth</th></tr>" + s.players.map(function (p) {
       var work = p.job ? p.job.title : p.ring === "fork" ? "choosing" : RINGNAME[p.ring];
-      return "<tr class=\"" + (p === cur ? "now" : "") + (p.retired ? " out" : "") + "\" title=\"" + esc(RINGNAME[p.ring] + " · " + p.qual + (p.loan ? " · loan " + M(p.loan) : "") + (p.studentDebt ? " · student debt " + M(p.studentDebt) : "") + (p.bot ? " · " + C.PERSONAS[p.bot] : "") + (p.ins ? " · cover: " + (Object.keys(p.ins).filter(function (k) { return p.ins[k]; }).join(", ") || "none") : "")) + "\">" +
-        "<td><span class=\"dot\" style=\"background:" + p.color + "\"></span>" + esc(p.name) + (p.bot ? " 🤖" : "") + (p.retired ? (p.bankrupt ? " 💥" : " 🏖") : "") + "</td><td>" + Math.floor(p.age) +
+      return "<tr class=\"" + (p === cur ? "now" : "") + (p.retired ? " out" : "") + "\" title=\"" + esc(RINGNAME[p.ring] + " · " + p.qual + (p.loan ? " · loan " + M(p.loan) : "") + (p.studentDebt ? " · student debt " + M(p.studentDebt) : "") + (p.llm ? " · " + C.LLMWORD + " (else a " + C.PERSONAS[p.bot] + ")" : p.bot ? " · " + C.PERSONAS[p.bot] : "") + (p.ins ? " · cover: " + (Object.keys(p.ins).filter(function (k) { return p.ins[k]; }).join(", ") || "none") : "")) + "\">" +
+        "<td><span class=\"dot\" style=\"background:" + p.color + "\"></span>" + esc(p.name) + (p.llm ? " 🧠" : p.bot ? " 🤖" : "") + (p.retired ? (p.bankrupt ? " 💥" : " 🏖") : "") + "</td><td>" + Math.floor(p.age) +
         "</td><td class=\"n\">" + M(p.cash) + "</td><td>" + p.iq + "</td><td>" + Math.round(p.wellbeing == null ? 50 : p.wellbeing) + "</td><td>" + esc(work) + (p.qual !== "none" ? " · " + ({ diploma: "🎓HS", trade: "🔧", degree: "🎓" })[p.qual] : "") + "</td><td class=\"n\">" + k$(C.netWorth(s, p)) + "</td></tr>";
     }).join("") + "</table>";
   }
@@ -219,13 +227,28 @@
     var b = $("lcDice"), s = G.s; if (!b) return;
     if (spin) { b.innerHTML = "<div class=\"row\"><span class=\"faces\">" + FACE[1 + Math.floor(Math.random() * 6)] + FACE[1 + Math.floor(Math.random() * 6)] + "</span><span>rolling…</span></div>"; return; }
     var L = s && s.luck; if (!L) { b.innerHTML = ""; return; }
-    var who = s.players[L.who], me = s.players.filter(function (q) { return !q.bot; })[0];
+    var who = s.players[L.who], me = lastPerson(s), many = C.humans(s).length > 1;   // 2.964.0: the person who last had the PC
     b.innerHTML = "<div class=\"row\"><span class=\"faces\" style=\"color:" + who.color + "\">" + FACE[L.dice[0]] + FACE[L.dice[1]] + "</span><span>" + esc(who.name) + " rolled " + luckLine(L) + "</span></div>" + meter(L.level) +
-      (me && who !== me && me.lastLuck ? "<div class=\"mine\">Your last roll: " + luckLine(me.lastLuck) + "</div>" : "");
+      (me && who !== me && me.lastLuck ? "<div class=\"mine\">" + (many ? esc(me.name) + "'s" : "Your") + " last roll: " + luckLine(me.lastLuck) + "</div>" : "");
+  }
+  /** 2.964.0: the person who last took the PC (else the first person) */
+  function lastPerson(s) { var h = s.handed >= 0 ? s.players[s.handed] : null; return h && !h.bot ? h : C.humans(s)[0] || null; }
+  /** 2.964.0: two or more people at the PC and the next one has not taken it yet */
+  function needPass(s) { var p = human(s); return !!(p && !s.pending && !s.puz && C.humans(s).length > 1 && s.handed !== p.id); }
+  function passGo() { var s = G.s, p = human(s); if (!p || !needPass(s)) return; s.handed = p.id; C.note(s, "🙂 " + p.name + " takes the PC."); save(); passShow(null); logView(); act(); }
+  function passShow(p) {
+    var d = $("lcPass"); if (!d) return;
+    d.classList.toggle("on", !!p);
+    if (!p) return;
+    var s = G.s;
+    $("lcPassBody").innerHTML = "<div class=\"who\" style=\"color:" + p.color + "\">" + esc(p.name) + "</div><div>Pass the PC to <b>" + esc(p.name) + "</b>.</div>" +
+      "<div class=\"hint\">Age " + Math.floor(p.age) + " · " + M(p.cash) + " · IQ " + p.iq + " · " + RINGNAME[p.ring] + (p.job ? " · " + esc(p.job.title) : "") + (s && s.round ? " · round " + s.round : "") + "</div>";
+    $("lcPassGo").textContent = "▶ I'm " + p.name + " - start my turn";
+    setTimeout(function () { try { if ($("lcPass").classList.contains("on")) $("lcPassGo").focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 0);
   }
   /** your roll: the dice tumble for a moment, then land */
   function doRoll() {
-    var s = G.s; if (!s || !C.canRoll(s) || !human(s) || G.rolling) return;
+    var s = G.s; if (!s || !C.canRoll(s) || !human(s) || G.rolling || needPass(s)) return;
     if (C.current(s).ring === "fork") { C.roll(s); after(); return; }
     G.rolling = true; var n = 0;
     var face = function () { return 1 + Math.floor(Math.random() * 6); };
@@ -295,6 +318,7 @@
     var typing = t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable);
     if (typing) return false;
     if (doc.querySelector("#lcSetup.on, #lcHelp.on, #lcScores.on")) return false;
+    if (needPass(s)) { passGo(); return true; }                          // 2.964.0: the next person takes the PC first
     var z = s.puz;
     if (z && z.done) { carryOn(); return true; }
     if (!s.pending && C.canRoll(s)) { doRoll(); return true; }
@@ -304,6 +328,7 @@
     var b = $("lcAct"), s = G.s; if (!b) return;
     var pdz = s && !s.over && human(s) && s.pending && s.pending.type !== "choice";
     if (!pdz) pzShow(false);
+    if (!(s && !s.over && needPass(s))) passShow(null);
     if (!s) { b.innerHTML = "<h4>🎓 Life Choices</h4><div>From high school to retirement - your choices, your puzzles.</div><button class=\"big\" id=\"lcGo\" type=\"button\">▶ New game</button>"; $("lcGo").onclick = setup; return; }
     if (s.over) {
       b.innerHTML = "<h4>🏁 Everyone has retired</h4><table>" + C.standings(s).map(function (r, i) {
@@ -312,10 +337,16 @@
     }
     var p = C.current(s), pd = s.pending;
     if (p.bot) {
-      var me = s.players.filter(function (q) { return !q.bot; })[0];
-      b.innerHTML = "<h4>🤖 " + esc(p.name) + " (" + C.PERSONAS[p.bot] + ") is playing…</h4>" + (me && me.retired ? "<button id=\"lcFinish\" type=\"button\">⏩ Play out the rest</button>" : "");
+      var people = C.humans(s), gone = people.length && people.every(function (q) { return q.retired; }), T = G.llmBusy;
+      b.innerHTML = (p.llm ? T ? "<h4>🧠 " + esc(p.name) + " is thinking: " + esc(T.title) + "…</h4><div class=\"hint\">bitGen's LLM decides; after " + Math.round(T.wait / 1000) + " s it plays by its own rules (a " + esc(C.PERSONAS[p.bot]) + ").</div>"
+          : "<h4>🧠 " + esc(p.name) + " (" + C.LLMWORD + ") is playing…</h4>" : "<h4>🤖 " + esc(p.name) + " (" + C.PERSONAS[p.bot] + ") is playing…</h4>") +
+        (gone ? "<button id=\"lcFinish\" type=\"button\">⏩ Play out the rest</button>" : "");
       if ($("lcFinish")) $("lcFinish").onclick = function () { G.speed = "instant"; $("lcSpeed").value = "instant"; pump(); };
       return;
+    }
+    if (!pd && needPass(s)) {                                               // 2.964.0: pass the PC to the next person
+      b.innerHTML = "<h4>🙂 Next up: " + esc(p.name) + "</h4><div class=\"hint\">Pass the PC to " + esc(p.name) + " - ▶ or Enter starts the turn.</div>";
+      passShow(p); return;
     }
     if (!pd) {
       var lbl = p.ring === "trade" ? "🎲 Roll for luck (then one square)" : "🎲 Roll the dice";
@@ -428,13 +459,53 @@
   /* ---------------- bots ---------------- */
   function pump() {
     clearTimeout(G.botT); G.botT = 0;
-    var s = G.s; if (!s || s.over || human(s)) return;
+    var s = G.s; if (!s || s.over || human(s) || G.llmBusy) return;
     if (!shown()) { G.botT = setTimeout(pump, 800); return; }
+    if (llmNeeded(s)) { llmAsk(s); return; }                               // 2.964.0: a 🧠 player's choice
     if (G.speed === "instant") {
-      var n = 0; while (!s.over && !human(s) && n < 4000) { C.botStep(s); n++; }
+      var n = 0; while (!s.over && !human(s) && !llmNeeded(s) && n < 4000) { C.botStep(s); n++; }
       after(); return;
     }
-    G.botT = setTimeout(function () { G.botT = 0; if (G.s !== s) return; C.botStep(s); after(); }, G.speed === "fast" ? 90 : 420);
+    G.botT = setTimeout(function () { G.botT = 0; if (G.s !== s) return; if (llmNeeded(s)) { llmAsk(s); return; } C.botStep(s); after(); }, G.speed === "fast" ? 90 : 420);
+  }
+  /* ---------------- 2.964.0: the 🧠 LLM player (lifellm.js; the server asks bitGen's LLM) ---------------- */
+  var LLMMAX = 3;
+  /** a 🧠 player has a choice on the table, the LLM is not resting, and this turn has asks left */
+  function llmNeeded(s) {
+    var p = s && !s.over ? C.current(s) : null;
+    if (!p || !p.llm || !LL || !s.pending || s.pending.type !== "choice" || LL.KINDS.indexOf(s.pending.kind) < 0) return false;
+    var key = s.round + ":" + s.turn; if (G.llmKey !== key) { G.llmKey = key; G.llmN = 0; }
+    if (!s.pending.options.some(function (o) { return !o.off; })) return false;
+    return G.llmN < LLMMAX && Date.now() >= G.llmOffUntil;
+  }
+  function llmAsk(s) {
+    if (G.llmBusy) return;
+    var p = C.current(s), pd = s.pending, body = LL.payload(s);
+    if (!body || body.options.length < 2) { C.botApply(s, body && body.options.length ? body.options[0].id : C.botPick(s)); after(); return; }
+    G.llmN++;
+    var wait = Math.max(3, G.llmWait) * 1000, ac = typeof root.AbortController === "function" ? new root.AbortController() : null, done = false;
+    G.llmBusy = { name: p.name, title: pd.title, wait: wait, since: Date.now() }; act();
+    var t = setTimeout(function () { if (ac) ac.abort(); finish({ error: "no answer in " + Math.round(wait / 1000) + " s", slow: true }); }, wait);
+    function finish(r) {
+      if (done) return; done = true; clearTimeout(t); G.llmBusy = null;
+      if (G.s !== s || s.pending !== pd) { after(); return; }                  // a new game / a reload meanwhile
+      var opt = r && r.id ? pd.options.filter(function (o) { return o.id === r.id && !o.off; })[0] : null;
+      if (opt) { G.llmFails = 0; G.llmLast = { id: opt.id, why: r.why || "" }; C.note(s, "🧠 " + p.name + " chooses: " + opt.label + (r.why ? " - " + r.why : "")); C.botApply(s, opt.id); }
+      else {
+        var why = (r && r.error) || "its answer was not one of the options";
+        if (r && r.error) G.llmFails++;
+        if (G.llmFails >= 2) { G.llmFails = 0; G.llmOffUntil = Date.now() + 5 * 60000; C.note(s, "🧠 The LLM did not answer twice (" + why + ") - the 🧠 players use their own rules for 5 minutes. Load an LLM in the Prompt docker."); }
+        else C.note(s, "🧠 " + p.name + ": " + why + " - plays by its own rules this time.");
+        G.llmLast = { id: null, why: why };
+        C.botApply(s, C.botPick(s));
+      }
+      after();
+    }
+    try {
+      fetch("/api/life-choices/llm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
+        .then(function (r) { return r.json().then(function (j) { return r.ok ? j : { error: (j && j.error) || "HTTP " + r.status }; }, function () { return { error: "HTTP " + r.status }; }); })
+        .then(finish, function (e) { finish({ error: e && e.name === "AbortError" ? "no answer in " + Math.round(wait / 1000) + " s" : String((e && e.message) || e) }); });
+    } catch (e) { finish({ error: String((e && e.message) || e) }); }
   }
   function setFull(on) {
     on = !!on; if (on === doc.body.classList.contains("lc-full")) return;
@@ -455,24 +526,92 @@
   }
   function setup() {
     $("lcSetup").classList.add("on");
-    if (!$("lcName").value) playerName().then(function (n) { if (!$("lcName").value) $("lcName").value = n || LS.get("name", "") || "You"; });
-    $("lcBots").value = LS.get("bots", "2"); $("lcSkill").value = LS.get("skill", "0.65"); $("lcRetire").value = LS.get("retire", "65");
+    if (!G.seats) G.seats = loadSeats();
+    seatsView();
+    if (!$("lcName").value) playerName().then(function (n) { if (!$("lcName").value) { $("lcName").value = n || LS.get("name", "") || "You"; seatsRead(); } });
+    $("lcSkill").value = LS.get("skill", "0.65"); $("lcRetire").value = LS.get("retire", "65"); $("lcLlmWait").value = String(G.llmWait);
   }
-  var PERS = ["saver", "tycoon", "risk", "saver", "tycoon"], BOTNAMES = ["Ava", "Kai", "Mila", "Theo", "Zara"];
+  var PERS = ["saver", "tycoon", "risk", "saver", "tycoon"], BOTNAMES = ["Ava", "Kai", "Mila", "Theo", "Zara"], LLMNAMES = ["Nova", "Orin", "Juno", "Wren", "Sol"];
+  /* ---------------- 2.964.0: the seats - 2 to 6, each a person, a rule bot or a 🧠 LLM player ---------------- */
+  var SEATTYPE = [["human", "🙂 Person"], ["saver", "🤖 Bot: careful saver"], ["tycoon", "🤖 Bot: property tycoon"], ["risk", "🤖 Bot: risk-taker"], ["llm", "🧠 LLM player"]];
+  function loadSeats() {
+    try { var j = JSON.parse(LS.get("seats", "null")); if (Array.isArray(j) && j.length >= 1) return j.slice(0, 6).map(function (q, i) { return { name: String(q.name || "").slice(0, 18), type: SEATTYPE.some(function (t) { return t[0] === q.type; }) ? q.type : i ? "saver" : "human" }; }); } catch (e) { /* a fresh list */ }
+    var n = Math.max(1, Math.min(5, Number(LS.get("bots", "2")) || 2)), out = [{ name: LS.get("name", ""), type: "human" }];
+    for (var i = 0; i < n; i++) out.push({ name: BOTNAMES[i], type: PERS[i] });
+    return out;
+  }
+  function freeName(list, pool, skip) { var used = list.map(function (q, i) { return i === skip ? "" : String(q.name).toLowerCase(); }); for (var i = 0; i < pool.length; i++) if (used.indexOf(pool[i].toLowerCase()) < 0) return pool[i]; return pool[0] + " " + (list.length + 1); }
+  /** what is typed in the rows -> G.seats */
+  function seatsRead() {
+    Array.prototype.forEach.call(doc.querySelectorAll("#lcSeats .lcseat"), function (row) {
+      var i = +row.getAttribute("data-seat"), q = G.seats[i]; if (!q) return;
+      q.name = row.querySelector("[data-seat-name]").value.slice(0, 18); q.type = row.querySelector("[data-seat-type]").value;
+    });
+  }
+  function seatsView() {
+    var box = $("lcSeats"); if (!box) return;
+    box.innerHTML = G.seats.map(function (q, i) {
+      return "<div class=\"lcseat\" data-seat=\"" + i + "\"><span class=\"dot\" style=\"background:" + C.COLORS[i % C.COLORS.length] + "\"></span>" +
+        "<input type=\"text\" data-seat-name maxlength=\"18\"" + (i === 0 ? " id=\"lcName\"" : "") + " value=\"" + esc(q.name) + "\" placeholder=\"" + (q.type === "human" ? "Name" : "A name") + "\" aria-label=\"Player " + (i + 1) + "'s name\">" +
+        "<select data-seat-type aria-label=\"Player " + (i + 1) + " is\">" + SEATTYPE.map(function (t) { return "<option value=\"" + t[0] + "\"" + (t[0] === q.type ? " selected" : "") + ">" + t[1] + "</option>"; }).join("") + "</select>" +
+        "<button type=\"button\" class=\"ghost\" data-seat-del title=\"Take this seat away\"" + (G.seats.length <= 1 ? " disabled" : "") + ">✕</button></div>";
+    }).join("");
+    var bots = G.seats.filter(function (q) { return PERS.indexOf(q.type) >= 0; }).length, people = G.seats.filter(function (q) { return q.type === "human"; }).length;
+    $("lcBots").value = String(Math.min(5, bots));
+    $("lcAddPerson").disabled = $("lcAddLlm").disabled = G.seats.length >= 6;
+    $("lcSeatHint").textContent = G.seats.length < 2 ? "Add a person, a bot or a 🧠 LLM player - a game needs two or more." :
+      (people > 1 ? "🙂 " + people + " people take turns at this PC - a \"pass the PC\" screen comes up before each one's turn. " : "") +
+      (G.seats.some(function (q) { return q.type === "llm"; }) ? "🧠 LLM players use the LLM loaded in bitGen (the Prompt docker's); without one they play by a bot's rules." : "");
+    $("lcStart").disabled = G.seats.length < 2;
+    Array.prototype.forEach.call(box.querySelectorAll("[data-seat-type]"), function (el) { el.onchange = function () {
+      seatsRead(); var i = +el.closest(".lcseat").getAttribute("data-seat"), q = G.seats[i];
+      if (q.type === "llm" && (!q.name || BOTNAMES.indexOf(q.name) >= 0)) q.name = freeName(G.seats, LLMNAMES, i);
+      else if (PERS.indexOf(q.type) >= 0 && (!q.name || LLMNAMES.indexOf(q.name) >= 0)) q.name = freeName(G.seats, BOTNAMES, i);
+      seatsView(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-seat-del]"), function (el) { el.onclick = function () { seatsRead(); G.seats.splice(+el.closest(".lcseat").getAttribute("data-seat"), 1); if (!G.seats.length) G.seats.push({ name: "", type: "human" }); seatsView(); }; });
+  }
+  function seatAdd(type) {
+    seatsRead(); if (G.seats.length >= 6) return;
+    G.seats.push({ name: type === "llm" ? freeName(G.seats, LLMNAMES) : type === "human" ? "" : freeName(G.seats, BOTNAMES), type: type });
+    seatsView();
+    if (type === "human") { var ins = doc.querySelectorAll("#lcSeats [data-seat-name]"); try { ins[ins.length - 1].focus(); } catch (e) { /* fine */ } }
+  }
+  /** "Bots: n" - that many rule bots, the people and 🧠 players kept */
+  function seatBots(n) {
+    seatsRead();
+    var keep = G.seats.filter(function (q) { return PERS.indexOf(q.type) < 0; }), out = keep.slice();
+    for (var i = 0; i < n && out.length < 6; i++) out.push({ name: freeName(out, BOTNAMES), type: PERS[i] });
+    G.seats = out.length ? out : [{ name: "", type: "human" }]; seatsView();
+  }
   function newGame(o) {
     o = o || {};
-    var nb = Math.max(1, Math.min(5, Number(o.bots) || 2)), sk = Number(o.skill) || 0.65;
-    var list = [{ name: o.name || "You" }];
-    for (var i = 0; i < nb; i++) list.push({ name: BOTNAMES[i], bot: PERS[i], skill: Math.max(0.2, Math.min(0.95, sk + (i % 3 - 1) * 0.08)) });
+    var sk = Number(o.skill) || 0.65, list = [], seats = o.seats;
+    if (!seats) {                                                        // the old way: you + n bots
+      var nb = Math.max(1, Math.min(5, Number(o.bots) || 2)); seats = [{ name: o.name || "You", type: "human" }];
+      for (var i = 0; i < nb; i++) seats.push({ name: BOTNAMES[i], type: PERS[i] });
+    }
+    var taken = [];
+    seats.slice(0, 6).forEach(function (q, i) {
+      var t = q.type || "human", nm = String(q.name || "").trim().slice(0, 18) || (t === "human" ? (i ? "Player " + (i + 1) : "You") : t === "llm" ? LLMNAMES[i % 5] : BOTNAMES[i % 5]);
+      var base = nm, k = 2; while (taken.indexOf(nm.toLowerCase()) >= 0) nm = (base.slice(0, 15) + " " + k++);   // two of the same name: numbered
+      taken.push(nm.toLowerCase());
+      var bskill = Math.max(0.2, Math.min(0.95, sk + (i % 3 - 1) * 0.08));
+      list.push(t === "human" ? { name: nm } : t === "llm" ? { name: nm, llm: true, bot: "tycoon", skill: bskill } : { name: nm, bot: t, skill: bskill });
+    });
+    if (list.length < 2) list.push({ name: BOTNAMES[0], bot: "saver", skill: sk });
+    G.llmBusy = null; G.llmN = 0; G.llmKey = ""; G.llmFails = 0; G.llmOffUntil = 0;
     G.s = C.newGame({ seed: o.seed == null ? (Date.now() % 1000000) : o.seed, retire: o.retire || 65, players: list });
     G.posted = false; after(); return G.s;
   }
+  /** every person's score to 🏆 (2.964.0: each of the people at the PC) */
   function postScore() {
     var s = G.s; if (!s || !s.over || s.scored) return;
-    var me = s.players.filter(function (p) { return !p.bot; })[0]; if (!me) return;
+    var people = C.humans(s); if (!people.length) return;
     s.scored = true; save();
-    fetch("/api/life-choices/scores", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: me.name, score: C.score(s, me), worth: C.netWorth(s, me), retire: s.retire, bots: s.players.length - 1 }) }).catch(function () { /* offline */ });
+    people.forEach(function (me) {
+      fetch("/api/life-choices/scores", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: me.name, score: C.score(s, me), worth: C.netWorth(s, me), retire: s.retire, bots: s.players.length - people.length }) }).catch(function () { /* offline */ });
+    });
   }
   function showScores() {
     $("lcScores").classList.add("on"); $("lcScoresBody").innerHTML = "<h3>🏆 High scores</h3><div class=\"hint\">Loading…</div>";
@@ -491,10 +630,17 @@
     G.s = load();
     $("lcNew").onclick = setup;
     $("lcStart").onclick = function () {
-      var o = { name: ($("lcName").value || "You").trim().slice(0, 18) || "You", bots: $("lcBots").value, skill: $("lcSkill").value, retire: Number($("lcRetire").value) };
-      LS.set("name", o.name); LS.set("bots", o.bots); LS.set("skill", o.skill); LS.set("retire", o.retire);
+      seatsRead(); if (G.seats.length < 2) return;
+      var o = { seats: G.seats.map(function (q) { return { name: q.name, type: q.type }; }), skill: $("lcSkill").value, retire: Number($("lcRetire").value) };
+      G.llmWait = Number($("lcLlmWait").value) || 20;
+      LS.set("name", (G.seats[0].name || "").trim()); LS.set("seats", JSON.stringify(o.seats)); LS.set("skill", o.skill); LS.set("retire", o.retire); LS.set("llmwait", G.llmWait);
       $("lcSetup").classList.remove("on"); newGame(o);
     };
+    // 2.964.0: the seats
+    $("lcAddPerson").onclick = function () { seatAdd("human"); };
+    $("lcAddLlm").onclick = function () { seatAdd("llm"); };
+    $("lcBots").onchange = function () { seatBots(Number(this.value) || 0); };
+    $("lcPassGo").onclick = passGo;
     $("lcSetupCancel").onclick = function () { $("lcSetup").classList.remove("on"); };
     $("lcHelpBtn").onclick = function () { $("lcHelp").classList.add("on"); };
     $("lcHelpClose").onclick = function () { $("lcHelp").classList.remove("on"); };
@@ -580,7 +726,10 @@
     newGame: newGame, state: function () { return G.s; }, act: act, draw: draw, setup: setup, scores: showScores,
     speed: function (v) { if (v) { G.speed = v; LS.set("speed", v); pump(); } return G.speed; },
     _geo: function () { return G.geo; }, _pzOff: function () { return G.pzOff || { x: 0, y: 0 }; }, _hit: function (x, y) { return G.geo ? hit(G.geo, x, y) : null; },
-    info: function () { var s = G.s; return { centre: G.centre || null, dialog: !!($("lcPz") && $("lcPz").classList.contains("on")), game: !!s, over: !!(s && s.over), round: s ? s.round : 0, turn: s ? s.turn : -1, human: !!human(s), pending: s && s.pending ? s.pending.type : null,
+    seats: function () { if (G.seats) seatsRead(); return G.seats ? G.seats.map(function (q) { return { name: q.name, type: q.type }; }) : null; },
+    llm: function () { return { busy: G.llmBusy ? { name: G.llmBusy.name, title: G.llmBusy.title, wait: G.llmBusy.wait } : null, asked: G.llmN, off: G.llmOffUntil > Date.now(), last: G.llmLast || null, wait: G.llmWait }; },
+    llmWait: function (v) { if (v) { G.llmWait = Number(v) || 20; LS.set("llmwait", G.llmWait); } return G.llmWait; },
+    info: function () { var s = G.s; return { pass: !!($("lcPass") && $("lcPass").classList.contains("on")), handed: s ? s.handed : -1, people: s ? C.humans(s).length : 0, centre: G.centre || null, dialog: !!($("lcPz") && $("lcPz").classList.contains("on")), game: !!s, over: !!(s && s.over), round: s ? s.round : 0, turn: s ? s.turn : -1, human: !!human(s), pending: s && s.pending ? s.pending.type : null,
                                              puzzle: s && s.puz ? { kind: s.puz.p.kind, done: !!s.puz.done } : null, shown: shown(), squares: G.geo ? G.geo.sq.length : 0, speed: G.speed }; },
   };
 })(window);

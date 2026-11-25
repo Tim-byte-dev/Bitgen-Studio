@@ -5,6 +5,10 @@
  *   GET  /api/life-choices/scores                                  -> {scores}
  *   POST /api/life-choices/scores {name, score, worth, retire, bots} -> {scores, rank (1-10 | 0 = not in the ten)}
  *   clean(entry) / add(list, entry) -> {scores, rank}   (pure - scripts/test-944.js)
+ * 2.964.0: the 🧠 LLM player's choices -
+ *   POST /api/life-choices/llm {name, brief, kind, title, text, options [{id, label}]} -> {id, why} | {error} (502: no LLM answer)
+ *   lifellm.js builds the messages and reads the reply; the LLM is bitGen's own (lib/llmChat.js complete - whichever the app
+ *   uses: llama-server here, an external endpoint, a pod, OpenRouter). setComplete(fn) for the tests.
  */
 "use strict";
 const fs = require("fs");
@@ -44,8 +48,25 @@ function write(scores) {
   fs.writeFileSync(tmp, JSON.stringify({ scores }, null, 1));
   fs.renameSync(tmp, f);
 }
+let completeFn = null;
+function setComplete(fn) { completeFn = fn || null; }          // tests
+/** one 🧠 decision: {id, why} - or throws {status, message} */
+async function decide(body) {
+  const L = require("./lifellm.js");
+  const o = L.clean(body);
+  const call = completeFn || ((q) => require("../../lib/llmChat").complete(require("../../lib/core"), q));
+  const r = await call({ messages: L.messages(o), temperature: 0.4, max_tokens: 300 });
+  if (!r || !r.ok) throw Object.assign(new Error((r && r.error) || "the LLM did not answer"), { status: 502 });
+  const pick = L.parse(r.text, o.options);
+  if (!pick) throw Object.assign(new Error("the LLM's answer named none of the options: " + String(r.text || "").slice(0, 120)), { status: 502 });
+  return pick;
+}
 function mount(app) {
   const express = require("express");
+  app.post("/api/life-choices/llm", express.json({ limit: "32kb" }), async (req, res) => {
+    try { res.json(await decide(req.body || {})); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
+  });
   app.get("/api/life-choices/scores", (req, res) => res.json({ scores: read() }));
   app.post("/api/life-choices/scores", express.json({ limit: "4kb" }), (req, res) => {
     try {
@@ -55,4 +76,4 @@ function mount(app) {
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
 }
-module.exports = { mount, clean, add, read, setFile, KEEP };
+module.exports = { mount, clean, add, read, setFile, KEEP, decide, setComplete };

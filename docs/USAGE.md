@@ -11196,15 +11196,32 @@ same one. The game is the same maze; the setting changes what stands on the bloc
 The lighting is filmic, with soft shadows from the moon (or the low sun) and glowing headlights, light bars and lamps. While a
 render runs and the game plays lighter, the shadows are left out.
 
-## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0, bills, insurance and tax 2.947.0)
+## 🎓 Life Choices - a board game of a whole life (2.944.0, the land & houses ring 2.945.0, luck 2.946.0, bills, insurance and tax 2.947.0, pass and play + 🧠 LLM players 2.964.0)
 
 Press **🎓** on the top bar (after 🚓 Police Chase). The game fills the window; **🗗 Back to the docker**, **Esc** (2.950.0 - even while typing an answer) or ⛶ puts it back.
 It is hidden until you open it the first time, and it is saved as you play - close it and carry on later.
 
-**▶ New game**: your name (bitGen's name for you from Settings ▸ Security), 1 to 5 bots, how often the bots answer right
-(sometimes, often, nearly always) and when everyone retires - **30** (a quick game), **45** or **65** (a full life). Every
-turn is three months of your life. The bots are a careful saver, a property tycoon and a risk-taker; **Bots** on the bar sets
-how fast they play (normal, fast, instant). They only play while the game is on screen.
+**▶ New game**: the players - 2 to 6 seats (2.964.0), the first one you (named from Settings ▸ Security) - how often the
+bots answer right (sometimes, often, nearly always) and when everyone retires - **30** (a quick game), **45** or **65** (a full
+life). Every turn is three months of your life. The bots are a careful saver, a property tycoon and a risk-taker; **Bots** on
+the bar sets how fast they play (normal, fast, instant). They only play while the game is on screen.
+
+**Players (2.964.0 - pass and play and the 🧠 LLM player)**: each seat has a name and a kind - **🙂 Person**, one of the three
+**🤖 bots** or a **🧠 LLM player**. **＋ 🙂 Person** adds someone else at this PC, **＋ 🧠 LLM player** adds a player whose
+choices bitGen's LLM makes, **Bots** sets how many rule bots there are (the people and 🧠 players stay), ✕ takes a seat away;
+▶ Start needs two or more. The list is remembered for the next game.
+- **Pass and play**: with two or more people, a screen comes up before each person's turn - *Pass the PC to …* - with their
+  age, cash and where they are. **▶ I'm …** (or **Enter**) starts the turn; nobody can roll for somebody else. A double six
+  rolls again without the screen. The game remembers who has the PC over a reload, and at the end every person's score goes
+  to 🏆.
+- **🧠 LLM players** roll and answer puzzles like a bot (as often as the bots answer right), but their choices - college, a
+  trade or the factory, which job, moving out to the investment ring, buying, building and renovating, night school, the bank
+  and the exchange - are made by the LLM loaded in bitGen (the Prompt docker's, or the endpoint, pod or OpenRouter model
+  Settings uses). The LLM is told the player's situation (age and years left, cash, work, loans, property, shares, the other
+  players' worth) and the open options, and answers with one; its reason goes in the log (*🧠 Nova chooses: … - …*). **🧠 LLM
+  players think** sets how long it may take (10, 20 or 45 seconds a choice); at most three asks a turn. No answer in time, an
+  answer that is not one of the options, or no LLM at all and it plays that choice by a property tycoon's rules; two failures
+  in a row and the 🧠 players use their own rules for five minutes (said in the log). Load an LLM in the Prompt docker first.
 
 **The board** is rings, from the centre out:
 

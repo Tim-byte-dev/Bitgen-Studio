@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.964.0** — 🎓 Life Choices: Pass and Play - 2-6 Seats of People at One PC, Bots and 🧠 LLM Players (a "Pass the PC" Screen Before Each Person's Turn); the 🧠 LLM Player's Choices Made by bitGen's LLM With Its Reason in the Log, a Bot's Rules When It Does Not Answer in Time; Every Person's Score to 🏆
 - **2.963.0** — 🎹 Synth Tab: the Clip / Layer Panel Top Left above the Layers (Rename a Layer, Vol / Pan / Filter)
 - **2.962.1** — The 🎹 Synth Tab's Features Listed under Music, Voices and Sound
 - **2.962.0** — 🎹 Synth Tab: ▦ a Step Sequencer (Step Clips on Any Layer: Rows of Sounds, Accents, Swing, Triplets) That Follows the Tempo Track
