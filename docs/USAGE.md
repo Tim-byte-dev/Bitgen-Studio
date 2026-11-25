@@ -1741,6 +1741,20 @@ lowpass - turn it down to make the layer darker, "Open" lets everything through)
 the layer (its clips, notes, effects, lanes and keyframes) is rendered to one sound in your samples, put on a new layer
 "<name> (bounced)" from 0:00, and the original layer is muted - unmute it to go back.
 
+**Recording takes and comping (2.960.0).** **● Rec** in the timeline's bar records onto the **armed** layer (the red **●**
+in a layer's head - one at a time; the picked layer if none is armed) from the playhead, while the timeline plays. The
+picker beside it says what is recorded: **🎹 Keys** (the keyboard's synth), **🥁 Looper + pads**, **Keys + looper** or
+**🎤 Mic** (the browser asks first). **■** (▶'s button, or ● Rec again) stops; the recording is saved to your samples and
+put on the layer exactly where it was played (the tab reads the sound card's own clock, and takes off the delay between
+the speakers and your ears). **Shift+drag the ruler** to set a range (or press **⟳ Loop** with none: two bars from the
+playhead's bar). With **⟳ Loop** on the timeline plays the range round and round without a gap, and ● Rec makes **a take
+of every pass**. With **Punch** on (loop off) ● Rec keeps only what falls inside the range - start the playhead before it
+for a run-up. Recording over a clip or over takes adds a take: the layer shows a **⧉ Takes** box with a row per take,
+the parts that play lit. **Drag across a take** to play that take there (comping); **click** a take to play all of it;
+**right-click** it (or pick it and press **Delete**) to remove it; drag the box's **top strip** to move the takes
+together. **▤ Flatten** turns the comp into plain clips, exactly what plays (✂ Split and ⧉ Duplicate need that first).
+A recording stops by itself after 10 minutes; ↶ undoes a recording or a comp.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

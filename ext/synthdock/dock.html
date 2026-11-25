@@ -148,6 +148,17 @@
           .sytlbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
           .sytlbar .sep { width: 1px; align-self: stretch; background: #2a2e38; margin: 0 4px; }
           #syTPlay.on, #syTSnap.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
+          /* 2.960.0: ● Rec, ⟳ Loop, Punch, the armed layer */
+          .sytlrec { display: inline-flex; gap: 3px; align-items: center; padding: 0 4px; border-left: 1px solid #262b35; border-right: 1px solid #262b35; }
+          .sytlrec button { white-space: nowrap; }
+          .sytlrec select { max-width: 118px; font-size: 11px; background: #0b0d11; color: #c9d1de; border: 1px solid #2d323d; border-radius: 3px; padding: 1px 2px; }
+          #syTRec { color: #ff6a6a; }
+          #syTRec.on { color: #fff; background: #c8323c; border-color: #ff5a5a; animation: syRecPulse 1s ease-in-out infinite; }
+          @keyframes syRecPulse { 50% { box-shadow: 0 0 10px #ff5a5a; } }
+          #syTLoop.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
+          #syTPunch.on { color: #fff; background: #a8343c; border-color: #ff5a5a; }
+          .sytlh1 .sym.arm { color: #ff6a6a; }
+          .sytlh1 .sym.arm.on { background: #c8323c; color: #fff; }
           #syTSnap.on { background: #38e1ff; border-color: #38e1ff; }
           .sytlpos { font: 600 11px/1 ui-monospace, Consolas, monospace; color: #ffae3a; background: #07090c; border: 1px solid #2d323d; border-radius: 4px; padding: 3px 6px; min-width: 96px; text-align: center; }
           .sytlhint { font-size: 10px; color: #6c7688; margin-left: auto; }
@@ -360,6 +371,12 @@
             <button class="ghost" id="syTSaveAs" type="button" title="Save the timeline under a new name">Save as…</button>
             <button class="ghost" id="syTLoad" type="button" title="🗂 Load a synth file (.sfx) of this project">🗂 Load</button>
             <button class="ghost" id="syTOpen" type="button" title="📂 Open sound files - each on a new layer of its own, at the playhead">📂 Open → new layer</button>
+            <span class="sytlrec" role="group" aria-label="Recording onto the timeline">
+              <button class="ghost" id="syTRec" type="button" aria-pressed="false" title="● Rec: record onto the armed layer (● in its head - the picked layer if none) from the playhead; with ⟳ Loop every pass is a take, with Punch only the range is kept. ■ (or ● again) stops">● Rec</button>
+              <select id="syTIn" title="What ● Rec records"><option value="keys" selected>🎹 Keys</option><option value="loop">🥁 Looper + pads</option><option value="both">Keys + looper</option><option value="mic">🎤 Mic</option></select>
+              <button class="ghost" id="syTLoop" type="button" aria-pressed="false" title="⟳ Loop: play the range round and round (Shift+drag the ruler to set it; 2 bars from the playhead if none) - ● Rec makes a take of every pass">⟳ Loop</button>
+              <button class="ghost" id="syTPunch" type="button" aria-pressed="false" title="Punch: ● Rec keeps only what falls inside the range (Shift+drag the ruler) - play in from before it">Punch</button>
+            </span>
             <button class="ghost" id="syTMark" type="button" title="⚑ A marker at the playhead (M) - click it on the ruler to go there, double-click to rename, right-click to remove">⚑ Marker</button>
             <button class="ghost" id="syTMixBtn" type="button" title="🎚 The mixer: each layer's level, pan, EQ, compressor, reverb and a meter">🎚 Mixer</button>
             <button class="ghost" id="syTNotes" type="button" title="＋ Notes: an empty note clip (one bar) at the playhead on the picked layer - drawn in the 🎹 piano roll">＋ ♪ Notes</button>

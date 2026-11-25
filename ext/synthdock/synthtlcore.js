@@ -15,6 +15,9 @@
  *   clip's gain line), cleanNotes(), quantize(notes, grid, strength)
  *   2.958.0 (Tim: "continue"): layer.fx {lo, mid, hi (dB), comp, rev} (the mixer), tl.markers [{t, name}], tl.master
  *   2.959.0 (Tim: "continue next please"): layer.fx.cut (its filter), layer.auto {pan, cut, rev: [{t, v}]} (automation lanes)
+ *   2.960.0 (Tim: "lets do the next one"): takes + comping - audio clips with grp ("g1") + ti (take 0..31) are one take group;
+ *   layer.comps {grp: [{t, ti}]} says which take plays from t on (comp, compAt, ranges, playable -> what really plays);
+ *   tl.loop {on, a, b, punch} (cleanLoop) - the loop / punch range; passRanges / punchCut slice a recording into takes.
  */
 (function (root) {
   "use strict";
@@ -48,8 +51,155 @@
     (pts || []).forEach(function (p) { if (p.t > from) ops.push({ op: "ramp", t: p.t, v: p.v }); });
     return ops;
   }
-  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null) }; }
-  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1 }; }
+  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null), comps: {} }; }
+  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1, loop: cleanLoop(null) }; }
+  /* ---------------- 2.960.0: the loop / punch range, takes and comping ---------------- */
+  function cleanLoop(o) {
+    o = o && typeof o === "object" ? o : {};
+    var a = num(o.a, 0, 0, MAXT), b = num(o.b, 0, 0, MAXT); if (b < a) { var x = a; a = b; b = x; }
+    return { on: !!o.on && b - a >= MIN, a: a, b: b, punch: !!o.punch && b - a >= MIN };
+  }
+  var GRP = /^g\d{1,6}$/, MAXTK = 32;
+  /** which take plays at t: the last segment starting at or before t (the first segment before it); def with no segments */
+  function compAt(segs, t, def) {
+    if (!segs || !segs.length) return def;
+    var v = segs[0].ti;
+    for (var i = 0; i < segs.length; i++) { if (segs[i].t <= t + 1e-9) v = segs[i].ti; else break; }
+    return v;
+  }
+  function tidySegs(segs) {
+    var out = [];
+    segs.slice().sort(function (a, b) { return a.t - b.t; }).forEach(function (sg) {
+      var n = { t: Math.round(Math.max(0, sg.t) * 10000) / 10000, ti: sg.ti };
+      if (out.length && Math.abs(out[out.length - 1].t - n.t) < 1e-9) out[out.length - 1] = n;
+      else if (!out.length || out[out.length - 1].ti !== n.ti) out.push(n);
+    });
+    return out;
+  }
+  /** take ti plays from a to b (the rest as it was) -> new segments */
+  function comp(segs, a, b, ti, def) {
+    if (b < a) { var x = a; a = b; b = x; }
+    var base = segs && segs.length ? segs : [{ t: 0, ti: def }];
+    if (base[0].t > 0) base = [{ t: 0, ti: base[0].ti }].concat(base);
+    if (b - a < 1e-6) return tidySegs(base);
+    var after = compAt(base, b, def);
+    var out = base.filter(function (sg) { return sg.t < a - 1e-9 || sg.t > b + 1e-9; });
+    out.push({ t: a, ti: ti }, { t: b, ti: after });
+    return tidySegs(out);
+  }
+  /** where take ti plays between from and to -> [[a, b], ...] */
+  function ranges(segs, ti, from, to, def) {
+    var pts = [from];
+    (segs || []).forEach(function (sg) { if (sg.t > from && sg.t < to) pts.push(sg.t); });
+    pts.push(to);
+    var out = [];
+    for (var i = 0; i + 1 < pts.length; i++) {
+      var a = pts[i], b = pts[i + 1]; if (b - a <= 1e-9) continue;
+      if (compAt(segs, a, def) !== ti) continue;
+      if (out.length && Math.abs(out[out.length - 1][1] - a) < 1e-9) out[out.length - 1][1] = b; else out.push([a, b]);
+    }
+    return out;
+  }
+  /** a layer's take groups -> {grp: [clip index, ...]} (by take number) */
+  function groups(l) {
+    var g = {};
+    l.clips.forEach(function (c, i) { if (c.grp) (g[c.grp] = g[c.grp] || []).push(i); });
+    Object.keys(g).forEach(function (k) { g[k].sort(function (a, b) { return l.clips[a].ti - l.clips[b].ti; }); });
+    return g;
+  }
+  function newest(l, grp) { var m = 0; l.clips.forEach(function (c) { if (c.grp === grp) m = Math.max(m, c.ti); }); return m; }
+  function span(l, grp) { var a = Infinity, b = 0; l.clips.forEach(function (c) { if (c.grp === grp) { a = Math.min(a, c.start); b = Math.max(b, clipEnd(c)); } }); return a === Infinity ? null : [a, b]; }
+  /** what a layer really plays: its plain clips + each take group as the pieces of the takes the comp picks (8 ms fades) */
+  function playable(l) {
+    var out = [], g = groups(l);
+    l.clips.forEach(function (c, i) { if (!c.grp) out.push({ c: c, ci: i }); });
+    Object.keys(g).forEach(function (k) {
+      var segs = (l.comps && l.comps[k]) || [], def = newest(l, k);
+      g[k].forEach(function (i) {
+        var c = l.clips[i];
+        ranges(segs, c.ti, c.start, clipEnd(c), def).forEach(function (r) {
+          out.push({ ci: i, c: { src: c.src, name: c.name, start: r[0], off: c.off + (r[0] - c.start), len: r[1] - r[0], gain: c.gain, fi: 0.008, fo: 0.008, grp: k, ti: c.ti } });
+        });
+      });
+    });
+    return out;
+  }
+  /** a loop recording -> the samples of each pass: starts = when each pass began (s, same clock as t0), len = the loop's length */
+  function passRanges(n, sr, t0, starts, len) {
+    var out = [];
+    (starts || []).forEach(function (p) {
+      var i0 = Math.round((p - t0) * sr), i1 = i0 + Math.round(len * sr), lead = 0;
+      if (i0 < 0) { lead = -i0 / sr; i0 = 0; }
+      i1 = Math.min(n, i1);
+      if (i1 - i0 >= 0.25 * sr) out.push({ i0: i0, i1: i1, lead: lead });
+    });
+    return out;
+  }
+  /** a take recorded from `from` for `dur` s, kept only between a and b -> {start, skip, len} | null */
+  function punchCut(from, dur, a, b) {
+    var s0 = Math.max(from, a), s1 = Math.min(from + dur, b);
+    return s1 - s0 < MIN ? null : { start: s0, skip: s0 - from, len: s1 - s0 };
+  }
+  function nextGrp(l) { var m = 0; l.clips.forEach(function (c) { if (c.grp) m = Math.max(m, +c.grp.slice(1)); }); return "g" + (m + 1); }
+  /** new recorded takes [{src, name, start, len}] onto layer l: they join the take group they overlap; a plain audio clip they
+   *  overlap becomes take 1 of a new group; one take over nothing is just a clip. The newest take plays where it was recorded.
+   *  -> {grp, added: [clip index], full} */
+  function addTakes(l, takes) {
+    takes = (takes || []).filter(function (t) { return t && t.len >= MIN; }); if (!takes.length) return { grp: null, added: [] };
+    var a = Math.min.apply(null, takes.map(function (t) { return t.start; })), b = Math.max.apply(null, takes.map(function (t) { return t.start + t.len; }));
+    var over = function (c) { return c.start < b - 1e-6 && clipEnd(c) > a + 1e-6; }, grp = null, full = false;
+    l.clips.forEach(function (c) { if (!grp && c.grp && over(c)) grp = c.grp; });
+    if (!grp) {
+      var plain = -1; l.clips.forEach(function (c, i) { if (plain < 0 && !c.grp && c.kind !== "notes" && over(c)) plain = i; });
+      if (plain < 0 && takes.length === 1) { var t1 = takes[0]; if (l.clips.length >= MAXC) return { grp: null, added: [], full: true }; l.clips.push({ src: t1.src, name: t1.name, start: t1.start, off: 0, len: t1.len, gain: 1, fi: 0, fo: 0 }); return { grp: null, added: [l.clips.length - 1] }; }
+      grp = nextGrp(l);
+      if (plain >= 0) { l.clips[plain].grp = grp; l.clips[plain].ti = 0; }
+    }
+    l.comps = l.comps || {};
+    var added = [], ti = l.clips.some(function (c) { return c.grp === grp; }) ? newest(l, grp) + 1 : 0, def = newest(l, grp);
+    takes.forEach(function (t) {
+      if (ti >= MAXTK || l.clips.length >= MAXC) { full = true; return; }
+      l.clips.push({ src: t.src, name: t.name, start: t.start, off: 0, len: t.len, gain: 1, fi: 0, fo: 0, grp: grp, ti: ti });
+      added.push(l.clips.length - 1);
+      l.comps[grp] = comp(l.comps[grp], t.start, t.start + t.len, ti, def); def = ti; ti++;
+    });
+    return { grp: grp, added: added, full: full };
+  }
+  /** take clip ci gone: where it played, the newest take left plays; one take left = a plain clip again */
+  function dropTake(l, ci) {
+    var c = l.clips[ci]; if (!c) return false;
+    l.clips.splice(ci, 1); if (!c.grp) return true;
+    var k = c.grp, left = l.clips.filter(function (x) { return x.grp === k; });
+    if (left.length <= 1) { left.forEach(function (x) { delete x.grp; delete x.ti; }); if (l.comps) delete l.comps[k]; return true; }
+    var nw = newest(l, k);
+    if (l.comps && l.comps[k]) l.comps[k] = tidySegs(l.comps[k].map(function (sg) { return { t: sg.t, ti: sg.ti === c.ti ? nw : sg.ti }; }));
+    return true;
+  }
+  /** a take group -> plain clips: exactly what the comp plays */
+  function flatten(l, grp) {
+    var pieces = playable(l).filter(function (p) { return p.c.grp === grp; }).map(function (p) { var c = p.c; return { src: c.src, name: c.name, start: c.start, off: c.off, len: c.len, gain: c.gain, fi: c.fi, fo: c.fo }; });
+    if (!l.clips.some(function (c) { return c.grp === grp; })) return 0;
+    l.clips = l.clips.filter(function (c) { return c.grp !== grp; }).concat(pieces);
+    if (l.comps) delete l.comps[grp];
+    return pieces.length;
+  }
+  /** a take group moved by d seconds (its comp with it) */
+  function moveGroup(l, grp, d) {
+    var sp = span(l, grp); if (!sp) return 0;
+    d = Math.max(-sp[0], d);
+    l.clips.forEach(function (c) { if (c.grp === grp) c.start = Math.round((c.start + d) * 10000) / 10000; });
+    if (l.comps && l.comps[grp]) l.comps[grp] = tidySegs(l.comps[grp].map(function (sg) { return { t: sg.t + d, ti: sg.ti }; }));
+    return d;
+  }
+  function cleanComps(c, l) {
+    var o = {}; if (!c || typeof c !== "object") return o;
+    var g = groups(l);
+    Object.keys(g).forEach(function (k) {
+      if (!Array.isArray(c[k])) return;
+      o[k] = tidySegs(c[k].slice(0, 400).filter(function (sg) { return sg && Number.isFinite(+sg.t) && Number.isInteger(+sg.ti); }).map(function (sg) { return { t: num(sg.t, 0, 0, MAXT), ti: Math.max(0, Math.min(MAXTK - 1, +sg.ti)) }; }));
+    });
+    return o;
+  }
   /** 2.958.0: markers [{t, name}] - in time order, 100 at most */
   function cleanMarkers(a) {
     return (Array.isArray(a) ? a : []).slice(0, 100).filter(function (m) { return m && Number.isFinite(+m.t); })
@@ -72,12 +222,14 @@
                                          patch: c.patch && typeof c.patch === "object" ? c.patch : null };
         else { var src = okSrc(c.src); if (!src) return; base = { src: src, name: String(c.name || src.replace(/^\w+:/, "")).slice(0, 120), start: num(c.start, 0, 0, MAXT), off: num(c.off, 0, 0, MAXT), len: num(c.len, 1, MIN, MAXT) }; }
         base.gain = num(c.gain, 1, 0, 2); base.fi = num(c.fi, 0, 0, base.len); base.fo = num(c.fo, 0, 0, base.len);
+        if (base.kind !== "notes" && typeof c.grp === "string" && GRP.test(c.grp) && Number.isInteger(+c.ti) && +c.ti >= 0 && +c.ti < MAXTK) { base.grp = c.grp; base.ti = +c.ti; }   // 2.960.0
         l.clips.push(base);
       });
       (Array.isArray(L.keys) ? L.keys : []).slice(0, MAXK).forEach(function (k) { if (k) l.keys.push({ t: num(k.t, 0, 0, MAXT), a: num(k.a, 1, 0, 1), b: num(k.b, 1, 0, 1) }); });
-      sortKeys(l.keys); o.layers.push(l);
+      sortKeys(l.keys); l.comps = cleanComps(L.comps, l); o.layers.push(l);
     });
     if (!o.layers.length) o.layers.push(layer(0));
+    o.loop = cleanLoop(j.loop);
     return o;
   }
   function clipEnd(c) { return c.start + c.len; }
@@ -163,10 +315,11 @@
     var out = [];
     tl.layers.forEach(function (l, i) {
       if (!audible(tl, i)) return;
-      l.clips.forEach(function (c, ci) {
+      playable(l).forEach(function (p, pi) {   // 2.960.0: take groups as their comp
+        var c = p.c, ci = p.ci;
         if (clipEnd(c) <= from) return;
         var skip = Math.max(0, from - c.start);
-        out.push({ layer: i, clip: ci, src: c.src, kind: c.kind || "audio", when: Math.max(0, c.start - from), skip: skip, off: c.off + skip, dur: c.len - skip });
+        out.push({ layer: i, clip: ci, pi: pi, c: c, src: c.src, kind: c.kind || "audio", when: Math.max(0, c.start - from), skip: skip, off: c.off + skip, dur: c.len - skip });
       });
     });
     return out.sort(function (a, b) { return a.when - b.when; });
@@ -198,7 +351,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

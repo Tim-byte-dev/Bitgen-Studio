@@ -15185,6 +15185,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui959-ui.js > /tmp/ui959.log 2>&
   && ok "2.959.0 browser test: the lane picker, double-click / drag / right-click / Delete points, the Filter + Pan lanes heard, • marks, ▶ with lanes, the mixer's Filter knob, ⤓ bounce -> a new layer (original muted)" \
   || { bad "2.959.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui959.log | head -12; }
 
+# ---- 2.960.0 (🎹 takes + comping)
+node scripts/test-960.js > /tmp/t960.log 2>&1 \
+  && ok "2.960.0 units: the range, comp / compAt / ranges, playable + schedule play the comp, passRanges, punchCut, addTakes (clip -> take 1, joins a group, 32 max), dropTake, moveGroup, flatten, cleanTL, the recorder's clock (place), the bar, the loop without a gap" \
+  || { bad "2.960.0 units"; grep -a "^FAIL" -A1 /tmp/t960.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui960-ui.js > /tmp/ui960.log 2>&1 \
+  && ok "2.960.0 browser test: ● arm, ⟳ Loop + Shift+drag range, loop recording = a take a pass (to the sample), the newest plays, drag / click comping (heard), right-click, move the group, ▤ Flatten, Punch, recording over a clip = takes, ↶" \
+  || { bad "2.960.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui960.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

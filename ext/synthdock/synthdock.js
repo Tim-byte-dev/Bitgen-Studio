@@ -671,7 +671,8 @@
                       save: function (t) { touch(); root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
                       clickOn: function () { return G.click; }, fileName: function () { return G.tlFile; },
                       renderLoop: function () { return LP.render(+(($("syPasses") || {}).value || 2)); }, patch: function () { return JSON.parse(JSON.stringify(G.p)); },
-                      preview: function (m, v, patch) { try { var E = engine(); E.noteOn(m, v || 0.8); root.setTimeout(function () { E.noteOff(m); }, 220); } catch (e) { /* asleep */ } }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh });
+                      preview: function (m, v, patch) { try { var E = engine(); E.noteOn(m, v || 0.8); root.setTimeout(function () { E.noteOff(m); }, 220); } catch (e) { /* asleep */ } }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh,
+                      keysOut: function () { return engine().out; }, loopOut: function () { return LP.bus(); }, countIn: countIn });   // 2.960.0: what the timeline's ● Rec records
     var dv = $("syDkVol");
     if (dv) { G.dkVol = KN.knob({ label: "VOLUME", size: 44, color: "#f4f1e8", def: C.toNorm("vol", C.BY.vol.def), get: function () { return C.toNorm("vol", G.p.vol); }, set: function (n) { setParam("vol", C.fromNorm("vol", n)); }, text: function () { return C.show("vol", G.p.vol); } }); dv.appendChild(G.dkVol.el); }
     W.bend = wheel("syBend", true, function (v) { engine().bend(v); });

@@ -20,7 +20,7 @@ check("trimLead(): the silence before the first sound cut (10 ms kept), every ch
 const EJ = JSON.parse(src("ext/synthdock/ext.json")), DH = src("ext/synthdock/dock.html"), RJ = src("ext/synthdock/synthrec.js"), LJ = src("ext/synthdock/synthloop.js"),
   SJ = src("ext/synthdock/synthscore.js"), TJ = src("ext/synthdock/synthtl.js"), JS = src("ext/synthdock/synthdock.js"), IX = src("static/index.html");
 check("ext.json: synthrec.js before the looper and the score", EJ.scripts.indexOf("synthrec.js") >= 0 && EJ.scripts.indexOf("synthrec.js") < EJ.scripts.indexOf("synthloop.js"));
-check("the recorder: plain samples (a ScriptProcessor tap, silent to the speakers), no codec", /createScriptProcessor\(4096, 2, 2\)/.test(RJ) && /mute\.gain\.value = 0/.test(RJ) && !/MediaRecorder/.test(RJ));
+check("the recorder: plain samples (a ScriptProcessor tap, silent to the speakers), no codec", /createScriptProcessor\(4096, (?:withClock \? 3 : )?2, 2\)/.test(RJ) && /mute\.gain\.value = 0/.test(RJ) && !/MediaRecorder/.test(RJ));
 check("the keyboard: ● records the synth's sound beside the sheet (the lead silence cut); → 🎞 (#syScSend, off until a take) sends it",
   /H3SynthRec\.create\(E\.ctx, E\.out\)/.test(SJ) && /Z\.krec\.stop\(\{ trim: true \}\)/.test(SJ) && /id="syScSend"[^>]*disabled/.test(DH) && /O\.send\(Z\.take, "Keys take"\)/.test(SJ));
 check("the looper: its own bus (rows + every pad); ⏺ Rec (#syLRec) starts the loop and records the bus, ⏺ / ■ end the take; → 🎞 Timeline (#syLSend)",
