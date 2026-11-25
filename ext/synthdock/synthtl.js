@@ -1,6 +1,8 @@
 /* bitGen Studio — ext/synthdock/synthtl.js (2.954.0): 🎹 THE SYNTH TAB's TIMELINE under the looper (window.H3SynthTL).
  * Tim: "add a timeline below that with waveforms that can be added from all sources, add knobs to each timeline layer for
  * volume. add keyframes to each layer, start volume end volume on each key frame".
+ * 2.959.0 ("continue next please"): automation lanes (Pan / Filter / Rev points over a layer, picked per layer), a lowpass per
+ * layer (fx.cut), ⤓ bounce (a layer rendered alone -> a sample -> a new layer, the original muted).
  *   Layers   each with its name, M(ute) / S(olo), a Vol knob (0-150%), a Pan knob, ◆ (a keyframe at the playhead), 🗑
  *   Sounds   ＋ Sound: the loop (made into a sample), the built-in kit, 📂 My samples, this project's SFX, the Sound assets
  *            (stems too), songs and the gallery's audio, or a file - click one to put it at the playhead on the picked
@@ -19,7 +21,7 @@
   var $ = function (id) { return doc.getElementById(id); };
   var RULER = 22, LH = 64, HUES = ["#38e1ff", "#ff4fd8", "#ffae3a", "#5dff8a", "#b78cff", "#ffd23a", "#4f9dff", "#ff5a5a"];
   var O = null, TLD = T.newTL(), sources = [], peaks = {}, dur = {};
-  var S = { sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0 };
+  var S = { view: {}, apt: null, sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0 };
   function hue(i) { return HUES[i % HUES.length]; }
   function msg(t, bad) { if (O && O.msg) O.msg(t, bad); }
   function changed() { if (O && O.save) O.save(TLD); }
@@ -78,11 +80,19 @@
         if (TLD.layers.length <= 1) { msg("A timeline keeps at least one layer", true); return; }
         TLD.layers.splice(i, 1); S.sel = Math.min(S.sel, TLD.layers.length - 1); S.clip = null; S.key = null; keyEd(); changed(); heads(); draw();
       };
+      // 2.959.0: which lane the layer shows: ◆ volume keyframes or an automation lane (pan / filter / reverb); ⤓ bounce
+      var lane = doc.createElement("select"); lane.className = "sytlview"; lane.title = "What the line over this layer edits: ◆ volume keyframes, or the automation of Pan, Filter or Rev - double-click the layer to add a point";
+      [["vol", "◆ Vol"], ["pan", "Pan"], ["cut", "Filter"], ["rev", "Rev"]].forEach(function (o) { var op = doc.createElement("option"); op.value = o[0]; op.textContent = o[0] !== "vol" && l.auto && l.auto[o[0]] && l.auto[o[0]].length ? o[1] + " •" : o[1]; lane.appendChild(op); });
+      lane.value = view(i); lane.onchange = function () { S.view[i] = lane.value; S.apt = null; S.key = null; keyEd(); draw(); };
+      lane.addEventListener("keydown", function (e) { e.stopPropagation(); });
+      var bn = doc.createElement("button"); bn.type = "button"; bn.className = "ghost sym"; bn.dataset.bounce = i; bn.textContent = "⤓"; bn.title = "⤓ Bounce: this layer (its effects and lanes too) rendered to one sound on a new layer; this one is muted";
+      bn.onclick = function () { bounce(i); };
+      h.querySelector(".sytlh1").insertBefore(bn, h.querySelector("[data-x]"));
       var k2 = h.querySelector(".sytlh2");
       var kv = KN.knob({ label: "Vol", size: 30, color: hue(i), def: 1 / 1.5, get: function () { return l.vol / 1.5; }, set: function (n) { l.vol = Math.round(n * 150) / 100; liveMix(); changed(); }, text: function () { return Math.round(l.vol * 100) + "%"; } });
       var kp = KN.knob({ label: "Pan", size: 30, color: hue(i), def: 0.5, bipolar: true, get: function () { return (l.pan + 1) / 2; }, set: function (n) { l.pan = Math.round((n * 2 - 1) * 100) / 100; liveMix(); changed(); }, text: function () { return Math.abs(l.pan) < 0.02 ? "C" : (l.pan < 0 ? "L" : "R") + Math.round(Math.abs(l.pan) * 100); } });
       kv.el.setAttribute("aria-label", l.name + " volume"); kp.el.setAttribute("aria-label", l.name + " pan"); kv.el.dataset.vol = i;
-      k2.appendChild(kv.el); k2.appendChild(kp.el);
+      k2.appendChild(kv.el); k2.appendChild(kp.el); k2.appendChild(lane);
       h.addEventListener("pointerdown", function (e) { if (e.target.closest("button, input, .sykn")) return; S.sel = i; heads(); draw(); });
       box.appendChild(h);
     });
@@ -171,8 +181,17 @@
       });
     });
     // the keyframe lines (start / end volume) and their handles
+    TLD.layers.forEach(function (l, i) {   // 2.959.0: an automation lane in view: its points and line
+      var k = view(i); if (k === "vol") return;
+      var pts = (l.auto && l.auto[k]) || [], col = hue(i), def = T.autoNorm(k, k === "pan" ? l.pan : k === "cut" ? ((l.fx || T.FX0).cut || 20000) : (l.fx || T.FX0).rev);
+      x.save(); x.strokeStyle = col; x.lineWidth = 1.6; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(px(0), vy(i, def)); x.lineTo(px(pts.length ? pts[0].t : T.end(TLD)), vy(i, def)); x.stroke(); x.setLineDash([]);
+      if (pts.length) { x.beginPath(); x.moveTo(px(pts[0].t), vy(i, pts[0].v)); pts.forEach(function (p2) { x.lineTo(px(p2.t), vy(i, p2.v)); }); x.lineTo(px(Math.max(T.end(TLD), pts[pts.length - 1].t)), vy(i, pts[pts.length - 1].v)); x.stroke(); }
+      pts.forEach(function (p2, j) { var sel = S.apt && S.apt.l === i && S.apt.p === j; x.beginPath(); x.arc(px(p2.t), vy(i, p2.v), 4.5, 0, Math.PI * 2); x.fillStyle = sel ? "#f4f1e8" : col; x.fill(); x.strokeStyle = "#07090c"; x.lineWidth = 1; x.stroke(); });
+      x.fillStyle = col; x.font = "600 9px system-ui, sans-serif"; x.textAlign = "right"; x.fillText({ pan: "PAN", cut: "FILTER", rev: "REV" }[k] + " lane", w - 6, laneTop(i) + LH - 7);
+      x.restore();
+    });
     TLD.layers.forEach(function (l, i) {
-      if (!l.keys.length) return;
+      if (!l.keys.length || view(i) !== "vol") return;
       var col = hue(i);
       x.save(); x.strokeStyle = col; x.lineWidth = 1.6; x.shadowColor = col; x.shadowBlur = 4; x.globalAlpha = T.audible(TLD, i) ? 1 : 0.5;
       x.setLineDash([3, 3]); x.beginPath(); x.moveTo(px(0), vy(i, 1)); x.lineTo(px(l.keys[0].t), vy(i, 1)); x.stroke(); x.setLineDash([]);
@@ -209,8 +228,13 @@
     if (my < RULER) return { kind: "ruler" };
     var i = Math.floor((my - RULER) / LH), l = L(i); if (!l) return null;
     var endT = T.end(TLD);
+    if (view(i) !== "vol") {   // 2.959.0: an automation lane - its points instead of the keyframes
+      var lk = view(i), pts = (l.auto && l.auto[lk]) || [], ab = null, ad = 8;
+      pts.forEach(function (p2, j) { var d2 = Math.hypot(mx - px(p2.t), my - vy(i, p2.v)); if (d2 < ad) { ad = d2; ab = { kind: "apt", l: i, p: j, k: lk }; } });
+      if (ab) return ab;
+    }
     var best = null, bd = 8;   // the nearest handle: a ◆ (when + start volume) or a ● (end volume) - they sit close together
-    for (var k = 0; k < l.keys.length; k++) {
+    for (var k = 0; view(i) === "vol" && k < l.keys.length; k++) {
       var K = l.keys[k], e = k + 1 < l.keys.length ? l.keys[k + 1].t : Math.max(endT, K.t), ex = px(e) - (k + 1 < l.keys.length ? 9 : 0);
       var da = Math.hypot(mx - px(K.t), my - vy(i, K.a)), db = Math.hypot(mx - ex, my - vy(i, K.b));
       if (da < bd) { bd = da; best = { kind: "keyA", l: i, k: k }; }
@@ -248,6 +272,8 @@
         seek(tAt(p.x)); S.drag = { kind: "ruler" }; return;
       }
       S.sel = h.l;
+      if (h.kind !== "apt") S.apt = null;
+      if (h.kind === "apt") { S.apt = { l: h.l, p: h.p, k: h.k }; S.key = null; S.clip = null; keyEd(); S.drag = { kind: "apt", l: h.l, p: h.p, k: h.k }; heads(); draw(); return; }
       if (h.kind === "keyA" || h.kind === "keyB") { S.key = { l: h.l, k: h.k }; S.clip = null; S.drag = { kind: h.kind, l: h.l, k: h.k }; keyEd(); }
       else if (h.kind === "clip" || h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut") {
         var c = L(h.l).clips[h.c]; S.clip = { l: h.l, c: h.c }; S.key = null; keyEd();
@@ -260,6 +286,12 @@
       if (!d) { var h = hit(p.x, p.y); cv.style.cursor = !h ? "default" : h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut" ? "ew-resize" : h.kind === "clip" ? "grab" : h.kind === "keyA" ? "move" : h.kind === "keyB" ? "ns-resize" : "default"; return; }
       var t = tAt(p.x);
       if (d.kind === "ruler") { seek(t); return; }
+      if (d.kind === "apt") {   // 2.959.0: an automation point - when (between its neighbours) and its value
+        var pl = L(d.l).auto[d.k], P2 = pl[d.p], tp = laneTop(d.l) + 16, bt = laneTop(d.l) + LH - 5;
+        var lo2 = d.p > 0 ? pl[d.p - 1].t + 0.005 : 0, hi2 = d.p + 1 < pl.length ? pl[d.p + 1].t - 0.005 : 3600;
+        P2.t = Math.max(lo2, Math.min(hi2, T.snap(t, bpm(), TLD.snap && !e.shiftKey))); P2.v = Math.round(Math.max(0, Math.min(1, (bt - p.y) / (bt - tp))) * 1000) / 1000;
+        msg(autoText(d.k, P2.v) + " at " + T.fmt(P2.t)); draw(); return;
+      }
       if (d.kind === "keyA" || d.kind === "keyB") {
         var l = L(d.l), K = l.keys[d.k], top = laneTop(d.l) + 16, bot = laneTop(d.l) + LH - 5, v = Math.round(Math.max(0, Math.min(1, (bot - p.y) / (bot - top))) * 100) / 100;
         if (d.kind === "keyA") {
@@ -283,7 +315,9 @@
     var up = function () { if (S.drag && S.drag.kind !== "ruler") changed(); S.drag = null; };
     cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
     cv.addEventListener("contextmenu", function (e) {   // 2.958.0: right-click a marker = gone
-      var p = pos(e); if (p.y >= RULER) return; var mk = markerAt(p.x); if (mk < 0) return;
+      var p = pos(e);
+      if (p.y >= RULER) { var ha = hit(p.x, p.y); if (ha && ha.kind === "apt") { e.preventDefault(); L(ha.l).auto[ha.k].splice(ha.p, 1); S.apt = null; changed(); heads(); draw(); msg("point removed"); } return; }   // 2.959.0
+      var mk = markerAt(p.x); if (mk < 0) return;
       e.preventDefault(); var m = TLD.markers.splice(mk, 1)[0]; changed(); draw(); msg("⚑ " + m.name + " removed");
     });
     cv.addEventListener("dblclick", function (e) {
@@ -294,7 +328,13 @@
         if (root.H3SynthFile) root.H3SynthFile.nameDialog({ title: "Rename the marker", value: TLD.markers[mk].name }).then(function (n) { if (!n) return; TLD.markers[mk].name = n.replace(/\.sfx$/i, "").slice(0, 32); changed(); draw(); });
         return;
       }
-      var p = pos(e), h = hit(p.x, p.y); if (!h || h.kind === "ruler" || h.kind === "keyA" || h.kind === "keyB") return;
+      var p = pos(e), h = hit(p.x, p.y); if (!h || h.kind === "ruler" || h.kind === "keyA" || h.kind === "keyB" || h.kind === "apt") return;
+      if (view(h.l) !== "vol") {   // 2.959.0: a point on the automation lane in view
+        var k3 = view(h.l), la = L(h.l); la.auto = la.auto || T.cleanAuto(null);
+        var tp3 = laneTop(h.l) + 16, bt3 = laneTop(h.l) + LH - 5, pt = { t: T.snap(tAt(p.x), bpm(), TLD.snap), v: Math.round(Math.max(0, Math.min(1, (bt3 - p.y) / (bt3 - tp3))) * 1000) / 1000 };
+        la.auto[k3].push(pt); la.auto[k3].sort(function (a, b) { return a.t - b.t; }); S.apt = { l: h.l, p: la.auto[k3].indexOf(pt), k: k3 }; S.sel = h.l; changed(); heads(); draw();
+        msg("● " + autoText(k3, pt.v) + " at " + T.fmt(pt.t) + " - drag it, right-click / Delete removes it"); return;
+      }
       if (h.c != null && L(h.l).clips[h.c].kind === "notes") { openRoll(h.l, h.c); return; }   // 2.957.0: a note clip -> the piano roll
       var l = L(h.l), k = T.addKey(l, T.snap(tAt(p.x), bpm(), TLD.snap), T.end(TLD)); if (k < 0) return;
       S.sel = h.l; S.key = { l: h.l, k: k }; S.clip = null; keyEd(); changed(); heads(); draw();
@@ -388,7 +428,21 @@
       play: function (m, v) { if (O.preview) O.preview(m, v, c.patch); } });
     return true;
   }
+  function view(i) { return S.view[i] || "vol"; }
+  function autoText(k, v) { var x = T.autoVal(k, v); return k === "pan" ? (Math.abs(x) < 0.02 ? "Pan C" : "Pan " + (x < 0 ? "L" : "R") + Math.round(Math.abs(x) * 100)) : k === "cut" ? "Filter " + (x >= 1000 ? (x / 1000).toFixed(1) + " kHz" : Math.round(x) + " Hz") : "Rev " + Math.round(x * 100) + "%"; }
+  /** ⤓ (2.959.0): layer i rendered alone (its effects, lanes, keyframes) -> a sample -> a new layer from 0; layer i muted */
+  function bounce(i) {
+    var l = L(i); if (!l || !l.clips.length) { msg("Nothing on that layer to bounce", true); return Promise.resolve(null); }
+    if (TLD.layers.length >= T.MAXL) { msg("16 layers at most", true); return Promise.resolve(null); }
+    msg("⤓ Bouncing " + l.name + "…");
+    var name = "bounce " + l.name.replace(/[^\w\- ]+/g, "") + " " + new Date().toTimeString().slice(0, 8).replace(/:/g, "-") + ".wav";
+    return render(48000, i).then(function (r) { return O.upload([new root.File([C.wav(r.chans, r.sampleRate)], name, { type: "audio/wav" })], null); })
+      .then(function (j) { var got = j && j.added && j.added[0]; if (!got) throw new Error("the bounce could not be saved"); return addNewLayer("my:" + got.name, l.name + " (bounced)", 0); })
+      .then(function (c) { if (c) { l.mute = true; liveMix(); changed(); heads(); draw(); msg("⤓ " + l.name + " bounced to a new layer (the original is muted - unmute it to go back)"); } return c; })
+      .catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
   function del() {
+    if (S.apt) { var la = L(S.apt.l); if (la && la.auto && la.auto[S.apt.k]) la.auto[S.apt.k].splice(S.apt.p, 1); S.apt = null; changed(); heads(); draw(); msg("point removed"); return true; }
     if (S.key) { var l = L(S.key.l); l.keys.splice(S.key.k, 1); S.key = null; keyEd(); changed(); draw(); msg("◆ keyframe removed"); return true; }
     if (S.clip) { L(S.clip.l).clips.splice(S.clip.c, 1); S.clip = null; changed(); draw(); msg("Clip removed"); return true; }
     return false;
@@ -452,7 +506,7 @@
   function liveMix() {
     if (!S.nodes) return;
     var t = O.ctx().currentTime;
-    S.nodes.forEach(function (n, i) { var l = L(i); if (!n || !l) return; n.vol.gain.setTargetAtTime(T.audible(TLD, i) ? l.vol : 0, t, 0.02); if (n.pan.pan) n.pan.pan.setTargetAtTime(l.pan, t, 0.02); setFx(n, l, t); });
+    S.nodes.forEach(function (n, i) { var l = L(i); if (!n || !l) return; n.vol.gain.setTargetAtTime(T.audible(TLD, i) ? l.vol : 0, t, 0.02); if (n.pan.pan && !(l.auto && l.auto.pan && l.auto.pan.length)) n.pan.pan.setTargetAtTime(l.pan, t, 0.02); setFx(n, l, t); });
     if (S.master) S.master.gain.setTargetAtTime(TLD.master == null ? 1 : TLD.master, t, 0.02);
   }
   /** the timeline into a context: per layer volume (knob) -> pan -> its keyframe line -> dest; each clip with 5 ms fades */
@@ -467,7 +521,23 @@
     var f = l.fx || T.FX0, set = function (prm, v) { if (t == null) prm.value = v; else prm.setTargetAtTime(v, t, 0.02); };
     set(n.lo.gain, f.lo); set(n.mid.gain, f.mid); set(n.hi.gain, f.hi);
     set(n.comp.threshold, -f.comp * 32); set(n.comp.ratio, 1 + f.comp * 9); set(n.make.gain, 1 + f.comp * 0.9);
-    set(n.send.gain, f.rev * 0.9);
+    var au = l.auto || {}, has = function (k) { return au[k] && au[k].length; };
+    if (!has("rev")) set(n.send.gain, f.rev * 0.9);
+    if (!has("cut")) set(n.flt.frequency, f.cut || 20000);
+  }
+  /** 2.959.0: a layer's automation lanes onto its nodes, from `from` (timeline s) - `at` = when `from` plays */
+  function autoInto(n, l, from, at) {
+    var au = l.auto || {}, f = l.fx || T.FX0;
+    T.AUTO.forEach(function (k) {
+      var pts = au[k]; if (!pts || !pts.length) return;
+      var prm = k === "pan" ? (n.pan.pan || null) : k === "cut" ? n.flt.frequency : n.send.gain; if (!prm) return;
+      var def = T.autoNorm(k, k === "pan" ? l.pan : k === "cut" ? (f.cut || 20000) : f.rev), val = function (v) { var x = T.autoVal(k, v); return k === "rev" ? x * 0.9 : x; };
+      T.autoOps(pts, from, def).forEach(function (op) {
+        var when = at + Math.max(0, op.t - from);
+        if (op.op === "set") prm.setValueAtTime(val(op.v), when);
+        else if (k === "cut") prm.exponentialRampToValueAtTime(Math.max(40, val(op.v)), when); else prm.linearRampToValueAtTime(val(op.v), when);
+      });
+    });
   }
   function mixInto(ctx, dest, from, at, bufs, only) {
     var endT = T.end(TLD), nodes = [], srcs = [];
@@ -479,18 +549,19 @@
       var vol = ctx.createGain(), pan = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain(), ev = ctx.createGain();
       var lo = ctx.createBiquadFilter(), mid = ctx.createBiquadFilter(), hi = ctx.createBiquadFilter(), comp = ctx.createDynamicsCompressor(), make = ctx.createGain(), send = ctx.createGain(), meter = ctx.createAnalyser();
       lo.type = "lowshelf"; lo.frequency.value = 200; mid.type = "peaking"; mid.frequency.value = 1000; mid.Q.value = 0.8; hi.type = "highshelf"; hi.frequency.value = 4500;
+      var flt = ctx.createBiquadFilter(); flt.type = "lowpass"; flt.Q.value = 0.7;   // 2.959.0: the layer's filter (Filter knob / lane)
       comp.knee.value = 6; comp.attack.value = 0.005; comp.release.value = 0.15; meter.fftSize = 1024;
       var on = only == null ? T.audible(TLD, i) : (i === only && !l.mute);
       vol.gain.value = on ? l.vol : 0; if (pan.pan) pan.pan.value = l.pan;
       // vol -> EQ low / mid / high -> compressor (+ make-up) -> pan -> the keyframe line -> master (+ the reverb send)
-      vol.connect(lo); lo.connect(mid); mid.connect(hi); hi.connect(comp); comp.connect(make); make.connect(pan); pan.connect(ev);
+      vol.connect(lo); lo.connect(mid); mid.connect(hi); hi.connect(flt); flt.connect(comp); comp.connect(make); make.connect(pan); pan.connect(ev);
       ev.connect(master); ev.connect(send); send.connect(verb); ev.connect(meter);
       T.automation(l.keys, from, endT).forEach(function (op) {
         var when = at + Math.max(0, op.t - from);
         if (op.op === "set") ev.gain.setValueAtTime(op.v, when); else ev.gain.linearRampToValueAtTime(op.v, when);
       });
-      var nd = { vol: vol, pan: pan, ev: ev, lo: lo, mid: mid, hi: hi, comp: comp, make: make, send: send, meter: meter, on: on };
-      setFx(nd, l); nodes.push(nd);
+      var nd = { flt: flt, vol: vol, pan: pan, ev: ev, lo: lo, mid: mid, hi: hi, comp: comp, make: make, send: send, meter: meter, on: on };
+      setFx(nd, l); autoInto(nd, l, from, at); nodes.push(nd);
     });
     var fl = TLD.layers.map(function (l) { return T.fades(l.clips); }), engines = [];
     T.schedule(TLD, from).forEach(function (s) {
@@ -621,10 +692,10 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { bounce: bounce, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
-    tl: function () { return TLD; }, setTL: function (j) { stop(); TLD = T.cleanTL(j); S.sel = 0; S.clip = null; S.key = null; keyEd(); heads(); draw(); warm(); changed(); },
+    tl: function () { return TLD; }, setTL: function (j) { stop(); TLD = T.cleanTL(j); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
     info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
-      clip: S.clip, key: S.key, ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
+      clip: S.clip, key: S.key, apt: S.apt, views: TLD.layers.map(function (l, i) { return view(i); }), ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
 })(typeof window !== "undefined" ? window : globalThis);

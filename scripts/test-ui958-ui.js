@@ -33,7 +33,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     /* ---- the mixer */
     await p.click("#syTMixBtn"); await sleep(200);
     const mx = await ev(() => ({ info: window.H3SynthMix.info(), knobs: [...document.querySelectorAll('#syMix .systrip[data-l="0"] [data-mix]')].map((k) => k.dataset.mix) }));
-    check("🎚 Mixer: a strip per layer (4) + master; each: a meter, Vol, Pan, Low / Mid / High, Comp, Rev, M / S", mx.info.open && mx.info.strips === 5 && mx.knobs.join() === "vol,pan,lo,mid,hi,comp,rev"
+    check("🎚 Mixer: a strip per layer (4) + master; each: a meter, Vol, Pan, Low / Mid / High, Comp, Rev, M / S", mx.info.open && mx.info.strips === 5 && mx.knobs.join() === "vol,pan,lo,mid,hi,comp,cut,rev"
       && (await ev(() => document.querySelectorAll("#syMix canvas.symeter").length)) === 5, mx);
     await p.focus('#syMix .systrip[data-l="0"] [data-mix="hi"]'); for (let i = 0; i < 6; i++) await p.keyboard.press("ArrowDown");
     await p.focus('#syMix .systrip[data-l="1"] [data-mix="rev"]'); for (let i = 0; i < 10; i++) await p.keyboard.press("ArrowUp");

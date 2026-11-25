@@ -14,6 +14,7 @@
  *   s); splitClip(c, t) -> [a, b], dupClip(c), fades(clips) (overlaps on a layer = automatic crossfades), clipEnv(c, fi, fo) (the
  *   clip's gain line), cleanNotes(), quantize(notes, grid, strength)
  *   2.958.0 (Tim: "continue"): layer.fx {lo, mid, hi (dB), comp, rev} (the mixer), tl.markers [{t, name}], tl.master
+ *   2.959.0 (Tim: "continue next please"): layer.fx.cut (its filter), layer.auto {pan, cut, rev: [{t, v}]} (automation lanes)
  */
 (function (root) {
   "use strict";
@@ -21,9 +22,33 @@
   var num = function (v, d, lo, hi) { v = Number(v); if (!Number.isFinite(v)) v = d; return Math.max(lo, Math.min(hi, v)); };
   function okSrc(s) { return typeof s === "string" && /^(kit|my|sfx|snd|out):[^\u0000-\u001f<>]{1,160}$/.test(s) && s.indexOf("..") < 0 ? s : null; }
   // 2.958.0: each layer's effects (the mixer): EQ low / mid / high in dB, compressor amount 0-1, reverb send 0-1
-  var FX0 = { lo: 0, mid: 0, hi: 0, comp: 0, rev: 0 };
-  function cleanFx(f) { f = f || {}; return { lo: num(f.lo, 0, -15, 15), mid: num(f.mid, 0, -15, 15), hi: num(f.hi, 0, -15, 15), comp: num(f.comp, 0, 0, 1), rev: num(f.rev, 0, 0, 1) }; }
-  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null) }; }
+  var FX0 = { lo: 0, mid: 0, hi: 0, comp: 0, rev: 0, cut: 20000 };
+  function cleanFx(f) { f = f || {}; return { lo: num(f.lo, 0, -15, 15), mid: num(f.mid, 0, -15, 15), hi: num(f.hi, 0, -15, 15), comp: num(f.comp, 0, 0, 1), rev: num(f.rev, 0, 0, 1), cut: num(f.cut, 20000, 40, 20000) }; }
+  /** 2.959.0: automation lanes - points {t, v (0..1)} for pan, cut (the layer's filter) and rev (its reverb send); before the first
+   *  point the knob's own value; straight lines between points; the last one holds */
+  var AUTO = ["pan", "cut", "rev"];
+  function cleanAuto(a) {
+    var o = {}; a = a || {};
+    AUTO.forEach(function (k) { o[k] = (Array.isArray(a[k]) ? a[k] : []).slice(0, 400).filter(function (p) { return p && Number.isFinite(+p.t); })
+      .map(function (p) { return { t: num(p.t, 0, 0, MAXT), v: Math.round(num(p.v, 0.5, 0, 1) * 1000) / 1000 }; }).sort(function (x, y) { return x.t - y.t; }); });
+    return o;
+  }
+  /** a lane's 0..1 value <-> the parameter: pan -1..1, cut 40 Hz..20 kHz (log), rev 0..1 */
+  function autoVal(k, v) { return k === "pan" ? v * 2 - 1 : k === "cut" ? 40 * Math.pow(500, v) : v; }
+  function autoNorm(k, x) { return k === "pan" ? (x + 1) / 2 : k === "cut" ? Math.log(Math.max(40, x) / 40) / Math.log(500) : x; }
+  /** the lane's value at t (0..1); def = the knob's (0..1) before the first point */
+  function autoAt(pts, t, def) {
+    if (!pts || !pts.length || t < pts[0].t) return def;
+    for (var i = 1; i < pts.length; i++) if (t <= pts[i].t) { var a = pts[i - 1], b = pts[i]; return b.t === a.t ? b.v : a.v + (b.v - a.v) * (t - a.t) / (b.t - a.t); }
+    return pts[pts.length - 1].v;
+  }
+  /** the lane from `from` on as Web Audio calls (timeline s): set where it is, ramp to each point after */
+  function autoOps(pts, from, def) {
+    var ops = [{ op: "set", t: from, v: autoAt(pts, from, def) }];
+    (pts || []).forEach(function (p) { if (p.t > from) ops.push({ op: "ramp", t: p.t, v: p.v }); });
+    return ops;
+  }
+  function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null) }; }
   function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1 }; }
   /** 2.958.0: markers [{t, name}] - in time order, 100 at most */
   function cleanMarkers(a) {
@@ -39,7 +64,7 @@
     j.layers.slice(0, MAXL).forEach(function (L, i) {
       L = L || {};
       var l = { name: String(L.name || "Layer " + (i + 1)).replace(/[\u0000-\u001f<>]/g, "").slice(0, 32) || "Layer " + (i + 1), vol: num(L.vol, 1, 0, 1.5), pan: num(L.pan, 0, -1, 1),
-                mute: !!L.mute, solo: !!L.solo, clips: [], keys: [], fx: cleanFx(L.fx) };
+                mute: !!L.mute, solo: !!L.solo, clips: [], keys: [], fx: cleanFx(L.fx), auto: cleanAuto(L.auto) };
       (Array.isArray(L.clips) ? L.clips : []).slice(0, MAXC).forEach(function (c) {
         if (!c) return;
         var base;
@@ -173,7 +198,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1730,6 +1730,17 @@ a marker on the ruler to go there, double-click it to rename it (double-click th
 right-click to remove it. **⬇ Stems** renders every layer that has sounds (and is not muted) on its own, with its effects,
 into this project's Sound assets as "<timeline name> - <layer name>".
 
+**Automation lanes, the Filter, bounce (2.959.0).** Under each layer's knobs a small picker says what the line drawn over
+the layer edits: **◆ Vol** (the volume keyframes, as before) or the **Pan**, **Filter** or **Rev** lane. With a lane
+picked, **double-click** the layer to put a point there - where you click is the time and the value (up = right / open /
+more reverb) - **drag** a point to change it (it stays between its neighbours; Shift = off the grid), **right-click** it or
+select it and press **Delete** to remove it. The line runs straight from point to point and holds the last point to the
+end; before the first point the layer's own knob is used. A lane that has points marks itself **•** in the picker, and while
+it has points it, not the knob, drives that setting. Every strip in the **🎚 Mixer** also has a **Filter** knob (a
+lowpass - turn it down to make the layer darker, "Open" lets everything through). **⤓** in a layer's head **bounces** it:
+the layer (its clips, notes, effects, lanes and keyframes) is rendered to one sound in your samples, put on a new layer
+"<name> (bounced)" from 0:00, and the original layer is muted - unmute it to go back.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

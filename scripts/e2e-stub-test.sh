@@ -15177,6 +15177,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui958-ui.js > /tmp/ui958.log 2>&
   && ok "2.958.0 browser test: 🎚 strips + knobs -> layer fx (reverb heard), meters move, 🕒 click with ▶, count-in before ●, ⚑ markers (go / rename / remove), ⬇ Stems -> Sound assets, ↶ a mixer change" \
   || { bad "2.958.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui958.log | head -12; }
 
+# ---- 2.959.0 (🎹 automation lanes, the filter, bounce)
+node scripts/test-959.js > /tmp/t959.log 2>&1 \
+  && ok "2.959.0 units: lanes kept safe (sorted, 0-1, 400 max), pan / filter / rev values + back, autoAt / autoOps, the filter in the chain, lanes own their knob, the picker, point editing, bounce, the mixer's Filter" \
+  || { bad "2.959.0 units"; grep -a "^FAIL" -A1 /tmp/t959.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui959-ui.js > /tmp/ui959.log 2>&1 \
+  && ok "2.959.0 browser test: the lane picker, double-click / drag / right-click / Delete points, the Filter + Pan lanes heard, • marks, ▶ with lanes, the mixer's Filter knob, ⤓ bounce -> a new layer (original muted)" \
+  || { bad "2.959.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui959.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

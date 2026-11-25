@@ -2,7 +2,7 @@
  * Tim: "continue" (the Cakewalk-style list: a mixer view with effects per layer and meters).
  * 🎚 Mixer in the timeline's bar opens it over the layers: each layer a strip in its colour - its meter (while ▶ plays), Vol and
  * Pan, the EQ (Low 200 Hz shelf, Mid 1 kHz, High 4.5 kHz shelf, ± 15 dB), Comp (how hard its compressor squeezes - with make-up
- * gain), Rev (its send to the shared reverb), M / S; the master strip: its level and its meter. Every knob is live while it plays,
+ * gain), Filter (a lowpass), Rev (its send to the shared reverb), M / S; the master strip: its level and its meter. Every knob is live while it plays,
  * kept in the timeline (layer.fx, tl.master) and in its .sfx file; undo covers it.
  *   level(analyser) -> {rms, peak} (0..1); dbText(v) (pure parts; the meters fall back 30 dB a second)
  */
@@ -21,6 +21,7 @@
   var HUES = ["#38e1ff", "#ff4fd8", "#ffae3a", "#5dff8a", "#b78cff", "#ffd23a", "#4f9dff", "#ff5a5a"];
   var M = { open: false, raf: 0, hold: {}, buf: null };
   function TL() { return root.H3SynthTL; }
+  function T0() { return root.H3SynthTLCore; }
   function fxKnob(label, color, get, set, lo, hi, def, txt, bip) {
     return KN.knob({ label: label, size: 26, color: color, def: (def - lo) / (hi - lo), bipolar: bip, get: function () { return (get() - lo) / (hi - lo); },
                      set: function (n) { set(Math.round((lo + n * (hi - lo)) * 100) / 100); TL().changedFx(); }, text: txt });
@@ -41,6 +42,8 @@
       add(".r2", fxKnob("Mid", col, function () { return l.fx.mid; }, function (v) { l.fx.mid = v; }, -15, 15, 0, function () { return dbt(l.fx.mid); }, true), "mid");
       add(".r2", fxKnob("High", col, function () { return l.fx.hi; }, function (v) { l.fx.hi = v; }, -15, 15, 0, function () { return dbt(l.fx.hi); }, true), "hi");
       add(".r3", fxKnob("Comp", col, function () { return l.fx.comp; }, function (v) { l.fx.comp = v; }, 0, 1, 0, function () { return Math.round(l.fx.comp * 100) + "%"; }), "comp");
+      add(".r3", KN.knob({ label: "Filter", size: 26, color: col, def: 1, get: function () { return T0().autoNorm("cut", l.fx.cut || 20000); },   // 2.959.0: lowpass, log scale
+        set: function (n) { l.fx.cut = Math.round(T0().autoVal("cut", n)); TL().changedFx(); }, text: function () { var c = l.fx.cut || 20000; return c >= 19900 ? "Open" : c >= 1000 ? (c / 1000).toFixed(1) + "k" : c + ""; } }), "cut");
       add(".r3", fxKnob("Rev", col, function () { return l.fx.rev; }, function (v) { l.fx.rev = v; }, 0, 1, 0, function () { return Math.round(l.fx.rev * 100) + "%"; }), "rev");
       var ms = doc.createElement("div"); ms.className = "row";
       ms.innerHTML = '<button type="button" class="ghost sym m' + (l.mute ? " on" : "") + '" title="Mute">M</button><button type="button" class="ghost sym s' + (l.solo ? " on" : "") + '" title="Solo">S</button>';
