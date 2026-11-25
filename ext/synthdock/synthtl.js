@@ -33,13 +33,13 @@
       return b;
     });
   }
-  function warm() { TLD.layers.forEach(function (l) { l.clips.forEach(function (c) { if (!peaks[c.src]) load(c.src).then(draw).catch(function () { /* said */ }); }); }); }
+  function warm() { TLD.layers.forEach(function (l) { l.clips.forEach(function (c) { if (c.kind !== "notes" && !peaks[c.src]) load(c.src).then(draw).catch(function () { /* said */ }); }); }); }
   /** a sound onto layer li at t (seconds) -> the clip (its length once the sound is read) */
   function addClip(src, li, t, name) {
     if (!T.okSrc(src)) return Promise.resolve(null);
     li = Math.max(0, Math.min(TLD.layers.length - 1, li == null ? S.sel : li));
     return load(src).then(function (b) {
-      var c = { src: src, name: name || src.replace(/^\w+:/, "").replace(/\.[a-z0-9]+$/i, ""), start: T.snap(t == null ? S.ph : t, bpm(), TLD.snap), off: 0, len: b.duration };
+      var c = { src: src, name: name || src.replace(/^\w+:/, "").replace(/\.[a-z0-9]+$/i, ""), start: T.snap(t == null ? S.ph : t, bpm(), TLD.snap), off: 0, len: b.duration, gain: 1, fi: 0, fo: 0 };
       L(li).clips.push(c); S.sel = li; S.clip = { l: li, c: L(li).clips.length - 1 }; S.key = null;
       changed(); heads(); draw(); msg("＋ " + c.name + " on " + L(li).name + " at " + T.fmt(c.start));
       return c;
@@ -129,14 +129,22 @@
     }
     // clips with their waveforms
     TLD.layers.forEach(function (l, i) {
-      var col = hue(i), dim = !T.audible(TLD, i);
+      var col = hue(i), dim = !T.audible(TLD, i), fdl = T.fades(l.clips);
       l.clips.forEach(function (c, ci) {
         var X0 = px(c.start), W = c.len * TLD.zoom; if (X0 > w || X0 + W < 0) return;
         var Y = laneTop(i) + 3, H = LH - 7, sel = S.clip && S.clip.l === i && S.clip.c === ci;
         x.save(); x.globalAlpha = dim ? 0.45 : 1;
         rr(x, X0, Y, W, H, 5); x.fillStyle = col; x.globalAlpha *= 0.18; x.fill(); x.globalAlpha = dim ? 0.45 : 1;
         x.lineWidth = sel ? 2 : 1; x.strokeStyle = sel ? "#f4f1e8" : col; x.stroke();
-        var p = peaks[c.src];
+        var p = c.kind === "notes" ? null : peaks[c.src];
+        if (c.kind === "notes" && c.notes.length) {   // 2.957.0: a note clip = its notes as little bars
+          x.save(); rr(x, X0, Y, W, H, 5); x.clip();
+          var lo2 = 127, hi2 = 0; c.notes.forEach(function (n) { lo2 = Math.min(lo2, n.m); hi2 = Math.max(hi2, n.m); });
+          var span = Math.max(12, hi2 - lo2 + 1), rowH = (H - 16) / span;
+          x.fillStyle = col; x.globalAlpha = dim ? 0.4 : 0.9;
+          c.notes.forEach(function (n) { if (n.t >= c.len) return; x.fillRect(X0 + n.t * TLD.zoom, Y + 14 + (hi2 + (span - (hi2 - lo2 + 1)) / 2 - n.m) * rowH, Math.max(2, Math.min(n.d, c.len - n.t) * TLD.zoom - 1), Math.max(2, rowH - 1)); });
+          x.restore();
+        }
         if (p) {
           x.save(); rr(x, X0, Y, W, H, 5); x.clip();
           var mid = Y + H / 2 + 5, amp = (H - 14) / 2, a = Math.max(0, Math.floor(-X0)), bEnd = Math.min(W, w - X0);
@@ -148,8 +156,16 @@
           }
           x.restore();
         }
+        // 2.957.0: the fades (shaded, with a handle at each top corner) and the clip's gain
+        var fd = fdl[ci];
+        x.save(); rr(x, X0, Y, W, H, 5); x.clip(); x.fillStyle = "#000"; x.globalAlpha = 0.45;
+        if (fd.fi > 0) { x.beginPath(); x.moveTo(X0, Y); x.lineTo(X0 + fd.fi * TLD.zoom, Y); x.lineTo(X0, Y + H); x.closePath(); x.fill(); }
+        if (fd.fo > 0) { x.beginPath(); x.moveTo(X0 + W, Y); x.lineTo(X0 + W - fd.fo * TLD.zoom, Y); x.lineTo(X0 + W, Y + H); x.closePath(); x.fill(); }
+        x.restore();
+        if (sel || W > 30) { x.fillStyle = sel ? "#f4f1e8" : col; x.fillRect(X0 + fd.fi * TLD.zoom - 3, Y, 6, 6); x.fillRect(X0 + W - fd.fo * TLD.zoom - 3, Y, 6, 6); }
         x.fillStyle = "#e9eef6"; x.font = "600 10px system-ui, sans-serif"; x.textAlign = "left";
-        x.save(); rr(x, X0, Y, W, H, 5); x.clip(); x.fillText(c.name, Math.max(X0, 0) + 5, Y + 11); x.restore();
+        var gl = (c.gain != null && Math.abs(c.gain - 1) > 0.005) ? "  " + (c.gain > 0 ? (20 * Math.log10(c.gain) >= 0 ? "+" : "") + (20 * Math.log10(c.gain)).toFixed(1) + " dB" : "-∞ dB") : "";
+        x.save(); rr(x, X0, Y, W, H, 5); x.clip(); x.fillText((c.kind === "notes" ? "♪ " : "") + c.name + gl, Math.max(X0, 0) + 9, Y + 11); x.restore();
         x.restore();
       });
     });
@@ -193,10 +209,16 @@
       if (db < bd) { bd = db; best = { kind: "keyB", l: i, k: k }; }
     }
     if (best) return best;
+    var fdl = T.fades(l.clips), ty = laneTop(i) + 3, fb = null, fdd = 7;
+    if (my <= ty + 9) l.clips.forEach(function (cl, c) {   // the nearest fade handle (neighbours' handles sit close together)
+      var a = Math.abs(mx - (px(cl.start) + fdl[c].fi * TLD.zoom)), b = Math.abs(mx - (px(T.clipEnd(cl)) - fdl[c].fo * TLD.zoom));
+      if (a < fdd) { fdd = a; fb = { kind: "fadeIn", l: i, c: c }; } if (b < fdd) { fdd = b; fb = { kind: "fadeOut", l: i, c: c }; }
+    });
+    if (fb) return fb;
     for (var c = l.clips.length - 1; c >= 0; c--) {
       var cl = l.clips[c], X0 = px(cl.start), X1 = px(T.clipEnd(cl));
       if (mx >= X0 - 2 && mx <= X1 + 2) {
-        if (mx - X0 <= 6) return { kind: "trimA", l: i, c: c };
+        if (mx - X0 <= 6 && cl.kind !== "notes") return { kind: "trimA", l: i, c: c };
         if (X1 - mx <= 6) return { kind: "trimB", l: i, c: c };
         return { kind: "clip", l: i, c: c };
       }
@@ -215,7 +237,7 @@
       if (h.kind === "ruler") { seek(tAt(p.x)); S.drag = { kind: "ruler" }; return; }
       S.sel = h.l;
       if (h.kind === "keyA" || h.kind === "keyB") { S.key = { l: h.l, k: h.k }; S.clip = null; S.drag = { kind: h.kind, l: h.l, k: h.k }; keyEd(); }
-      else if (h.kind === "clip" || h.kind === "trimA" || h.kind === "trimB") {
+      else if (h.kind === "clip" || h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut") {
         var c = L(h.l).clips[h.c]; S.clip = { l: h.l, c: h.c }; S.key = null; keyEd();
         S.drag = { kind: h.kind, l: h.l, c: h.c, dx: tAt(p.x) - c.start };
       } else { S.clip = null; S.key = null; keyEd(); seek(T.snap(tAt(p.x), bpm(), TLD.snap)); }
@@ -223,7 +245,7 @@
     });
     cv.addEventListener("pointermove", function (e) {
       var p = pos(e), d = S.drag;
-      if (!d) { var h = hit(p.x, p.y); cv.style.cursor = !h ? "default" : h.kind === "trimA" || h.kind === "trimB" ? "ew-resize" : h.kind === "clip" ? "grab" : h.kind === "keyA" ? "move" : h.kind === "keyB" ? "ns-resize" : "default"; return; }
+      if (!d) { var h = hit(p.x, p.y); cv.style.cursor = !h ? "default" : h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut" ? "ew-resize" : h.kind === "clip" ? "grab" : h.kind === "keyA" ? "move" : h.kind === "keyB" ? "ns-resize" : "default"; return; }
       var t = tAt(p.x);
       if (d.kind === "ruler") { seek(t); return; }
       if (d.kind === "keyA" || d.kind === "keyB") {
@@ -239,21 +261,27 @@
         T.moveClip(c, T.snap(t - d.dx, bpm(), TLD.snap && !e.shiftKey));
         var li = Math.max(0, Math.min(TLD.layers.length - 1, Math.floor((p.y - RULER) / LH)));
         if (li !== d.l) { L(d.l).clips.splice(d.c, 1); L(li).clips.push(c); d.l = li; d.c = L(li).clips.length - 1; S.clip = { l: li, c: d.c }; S.sel = li; heads(); }
-      } else if (d.kind === "trimA") T.trimStart(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey));
-      else T.trimEnd(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey), dur[c.src]);
+      } else if (d.kind === "fadeIn") c.fi = Math.max(0, Math.min(c.len - (c.fo || 0), t - c.start));
+      else if (d.kind === "fadeOut") c.fo = Math.max(0, Math.min(c.len - (c.fi || 0), T.clipEnd(c) - t));
+      else if (d.kind === "trimA") T.trimStart(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey));
+      else T.trimEnd(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey), c.kind === "notes" ? 3600 : dur[c.src]);
+      if (d.kind !== "clip") keyEd();
       draw();
     });
     var up = function () { if (S.drag && S.drag.kind !== "ruler") changed(); S.drag = null; };
     cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
     cv.addEventListener("dblclick", function (e) {
       var p = pos(e), h = hit(p.x, p.y); if (!h || h.kind === "ruler" || h.kind === "keyA" || h.kind === "keyB") return;
+      if (h.c != null && L(h.l).clips[h.c].kind === "notes") { openRoll(h.l, h.c); return; }   // 2.957.0: a note clip -> the piano roll
       var l = L(h.l), k = T.addKey(l, T.snap(tAt(p.x), bpm(), TLD.snap), T.end(TLD)); if (k < 0) return;
       S.sel = h.l; S.key = { l: h.l, k: k }; S.clip = null; keyEd(); changed(); heads(); draw();
       msg("◆ a keyframe on " + l.name + " - drag the ◆ for when and its start volume, the ● for its end volume");
     });
     cv.addEventListener("keydown", function (e) {
-      if (e.key !== "Delete" && e.key !== "Backspace") return;
-      e.preventDefault(); e.stopPropagation(); del();
+      var k = e.key.toLowerCase();
+      if (k === "delete" || k === "backspace") { e.preventDefault(); e.stopPropagation(); del(); return; }
+      if (k === "s" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); split(); return; }          // 2.957.0
+      if (k === "d" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); dup(); return; }
     });
     // 2.955.0 (Tim: "allow user to drag audio from gallery, assets, reference to timeline ask if track goes on the layer it is
     // dragged to or create a new layer"): a source from ＋ Sound, the gallery's / the assets' / the references' sounds (the
@@ -309,16 +337,59 @@
   }
   /** → 🎞: a sound on a new layer of its own at the playhead */
   function addNewLayer(src, name, t) { return newLayer(name).then(function (li) { return addClip(src, li, t == null ? S.ph : t); }).catch(function () { return null; }); }
+  /** ✂ the picked clip at the playhead (or every clip of the picked layer under it) */
+  function split() {
+    var targets = S.clip ? [S.clip] : L(S.sel).clips.map(function (c, i) { return { l: S.sel, c: i }; }).filter(function (q) { var c = L(q.l).clips[q.c]; return S.ph > c.start && S.ph < T.clipEnd(c); });
+    var n = 0;
+    targets.sort(function (a, b) { return b.c - a.c; }).forEach(function (q) { var l = L(q.l), parts = T.splitClip(l.clips[q.c], S.ph); if (parts) { l.clips.splice(q.c, 1, parts[0], parts[1]); n++; S.clip = { l: q.l, c: q.c + 1 }; } });
+    if (!n) { msg("✂ Put the playhead inside a clip (click the ruler), pick the clip, then ✂ Split (S)", true); return false; }
+    keyEd(); changed(); draw(); msg("✂ split at " + T.fmt(S.ph)); return true;
+  }
+  function dup() {
+    if (!S.clip) { msg("Pick a clip first", true); return false; }
+    var l = L(S.clip.l), d = T.dupClip(l.clips[S.clip.c]); l.clips.push(d); S.clip = { l: S.clip.l, c: l.clips.length - 1 };
+    keyEd(); changed(); draw(); msg("⧉ a copy at " + T.fmt(d.start)); return true;
+  }
+  /** 2.957.0: a note clip -> layer li (null = a new layer named `name`) at t; notes [{m, t, d, v}] from the clip's start */
+  function addNotes(notes, name, patch, li, t, len) {
+    var ns = T.cleanNotes(notes), end = ns.reduce(function (a, n) { return Math.max(a, n.t + n.d); }, 0);
+    var c = { kind: "notes", name: name || "Notes", start: T.snap(t == null ? S.ph : t, bpm(), TLD.snap), off: 0, len: Math.max(len || 0, end, 60 / bpm() * 4), notes: ns, patch: patch || (O.patch ? O.patch() : null), gain: 1, fi: 0, fo: 0 };
+    var put = function (i) { L(i).clips.push(c); S.sel = i; S.clip = { l: i, c: L(i).clips.length - 1 }; S.key = null; keyEd(); changed(); heads(); draw(); return c; };
+    if (li == null) return newLayer(name).then(put); return Promise.resolve(put(Math.max(0, Math.min(TLD.layers.length - 1, li))));
+  }
+  function openRoll(li, ci) {
+    var l = L(li), c = l && l.clips[ci]; if (!c || c.kind !== "notes" || !root.H3SynthRoll) return false;
+    S.sel = li; S.clip = { l: li, c: ci }; keyEd(); heads(); draw();
+    root.H3SynthRoll.open(c, { bpm: bpm(), color: hue(li), changed: function () { c.len = Math.max(c.len, c.notes.reduce(function (a, n) { return Math.max(a, n.t + n.d); }, 0)); changed(); draw(); keyEd(); },
+      play: function (m, v) { if (O.preview) O.preview(m, v, c.patch); } });
+    return true;
+  }
   function del() {
     if (S.key) { var l = L(S.key.l); l.keys.splice(S.key.k, 1); S.key = null; keyEd(); changed(); draw(); msg("◆ keyframe removed"); return true; }
     if (S.clip) { L(S.clip.l).clips.splice(S.clip.c, 1); S.clip = null; changed(); draw(); msg("Clip removed"); return true; }
     return false;
   }
   /* the picked keyframe: its start and end volume as knobs */
+  /** 2.957.0: the picked clip: its gain and fades as knobs, ✂ split at the playhead, ⧉ duplicate, 🎹 piano roll, 🗑 */
+  function clipEd(box) {
+    var l = L(S.clip.l), c = l && l.clips[S.clip.c]; if (!c) { box.classList.remove("on"); return; }
+    var col = hue(S.clip.l), b = doc.createElement("b"); b.style.color = col; b.textContent = (c.kind === "notes" ? "♪ " : "") + c.name + " · " + T.fmt(c.start) + " - " + T.fmt(T.clipEnd(c)); box.appendChild(b);
+    var kn = function (label, key, max, def, txt) {
+      var k = KN.knob({ label: label, size: 30, color: col, def: def / max, get: function () { return (c[key] == null ? def : c[key]) / max; }, set: function (n) { c[key] = Math.round(n * max * 1000) / 1000; if (key === "fi") c.fi = Math.min(c.fi, c.len - (c.fo || 0)); if (key === "fo") c.fo = Math.min(c.fo, c.len - (c.fi || 0)); changed(); draw(); }, text: txt });
+      k.el.dataset.clip = key; box.appendChild(k.el);
+    };
+    kn("Gain", "gain", 2, 1, function () { var g = c.gain == null ? 1 : c.gain; return g <= 0 ? "-∞ dB" : (20 * Math.log10(g) >= 0 ? "+" : "") + (20 * Math.log10(g)).toFixed(1) + " dB"; });
+    kn("Fade in", "fi", Math.max(0.05, c.len), 0, function () { return Math.round((c.fi || 0) * 1000) + " ms"; });
+    kn("Fade out", "fo", Math.max(0.05, c.len), 0, function () { return Math.round((c.fo || 0) * 1000) + " ms"; });
+    var btn = function (t, title, f, id) { var x = doc.createElement("button"); x.type = "button"; x.className = "ghost"; x.textContent = t; x.title = title; x.onclick = f; if (id) x.id = id; box.appendChild(x); };
+    btn("✂ Split", "Cut it at the playhead (S)", split, "syTSplit"); btn("⧉ Duplicate", "A copy right after it (Ctrl+D)", dup, "syTDup");
+    if (c.kind === "notes") btn("🎹 Piano roll", "Edit its notes (or double-click the clip)", function () { openRoll(S.clip.l, S.clip.c); }, "syTRollBtn");
+    btn("🗑", "Remove it (Delete)", del);
+  }
   function keyEd() {
     var box = $("syTKeyEd"); if (!box) return;
-    box.innerHTML = ""; box.classList.toggle("on", !!S.key);
-    if (!S.key) return;
+    box.innerHTML = ""; box.classList.toggle("on", !!S.key || !!S.clip);
+    if (!S.key) { if (S.clip) clipEd(box); return; }
     var l = L(S.key.l), K = l && l.keys[S.key.k]; if (!K) { box.classList.remove("on"); return; }
     var col = hue(S.key.l), b = doc.createElement("b"); b.style.color = col; b.textContent = "◆ " + l.name + " · " + T.fmt(K.t); box.appendChild(b);
     [["Start vol", "a"], ["End vol", "b"]].forEach(function (q) {
@@ -372,17 +443,36 @@
       });
       nodes.push({ vol: vol, pan: pan, ev: ev });
     });
+    var fl = TLD.layers.map(function (l) { return T.fades(l.clips); }), engines = [];
     T.schedule(TLD, from).forEach(function (s) {
-      var b = bufs[s.src]; if (!b || s.dur <= 0) return;
-      var src = ctx.createBufferSource(), g = ctx.createGain(), t0 = at + s.when, fade = Math.min(0.005, s.dur / 4);
-      src.buffer = b; src.connect(g); g.connect(nodes[s.layer].vol);
-      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(1, t0 + fade); g.gain.setValueAtTime(1, t0 + s.dur - fade); g.gain.linearRampToValueAtTime(0, t0 + s.dur);
+      if (s.dur <= 0) return;
+      var c = L(s.layer).clips[s.clip], f = fl[s.layer][s.clip], g = ctx.createGain(), t0 = at + s.when;
+      // 2.957.0: the clip's gain line - its gain, fade in / out (longer where it overlaps a neighbour: a crossfade), 5 ms at
+      // least at each end (no click); started part-way = from where the line is
+      var pts = T.clipEnv(c, Math.max(f.fi, 0.005), Math.max(f.fo, 0.005)), x0 = s.skip;
+      g.gain.setValueAtTime(T.envAt(pts, x0), t0);
+      pts.forEach(function (pt) { if (pt[0] > x0) g.gain.linearRampToValueAtTime(pt[1], t0 + (pt[0] - x0)); });
+      g.connect(nodes[s.layer].vol);
+      if (c.kind === "notes") {
+        // 2.957.0: a note clip is played by the synth - its own engine with the clip's patch
+        var V = root.H3SynthVoice; if (!V) return;
+        var E = new V.Engine(ctx, { dest: g }); E.setAll(c.patch || (O.patch ? O.patch() : null) || C.defaults()); engines.push({ E: E, g: g });
+        c.notes.forEach(function (n) {
+          var ne = Math.min(n.t + n.d, c.len); if (ne <= x0 || n.t >= c.len) return;
+          var on = t0 + Math.max(0, n.t - x0), off = t0 + (ne - x0);
+          E.noteOn(n.m, n.v, on); E.noteOff(n.m, Math.max(on + 0.01, off));
+        });
+        return;
+      }
+      var b = bufs[s.src]; if (!b) return;
+      var src = ctx.createBufferSource();
+      src.buffer = b; src.connect(g);
       src.start(t0, Math.min(s.off, Math.max(0, b.duration - 0.001)), s.dur); srcs.push(src);
     });
-    return { nodes: nodes, srcs: srcs, end: endT };
+    return { nodes: nodes, srcs: srcs, engines: engines, end: endT };
   }
   function buffersFor(from) {
-    var need = {}; T.schedule(TLD, from || 0).forEach(function (s) { need[s.src] = 1; });
+    var need = {}; T.schedule(TLD, from || 0).forEach(function (s) { if (s.kind !== "notes") need[s.src] = 1; });
     var names = Object.keys(need);
     return Promise.all(names.map(function (n) { return load(n).then(function (b) { return [n, b]; }); })).then(function (pairs) { var o = {}; pairs.forEach(function (p) { o[p[0]] = p[1]; }); return o; });
   }
@@ -393,7 +483,7 @@
     return buffersFor(from).then(function (bufs) {
       if (!S.playing) return;
       var at = ctx.currentTime + 0.08, m = mixInto(ctx, O.dest(), from, at, bufs);
-      S.nodes = m.nodes; S.srcs = m.srcs; S.at = at; S.from = from;
+      S.nodes = m.nodes; S.srcs = m.srcs; S.engines = m.engines; S.at = at; S.from = from;
       var tick = function () {
         if (!S.playing) return;
         S.ph = S.from + Math.max(0, ctx.currentTime - S.at);
@@ -408,7 +498,8 @@
     var was = S.playing; S.playing = false; root.cancelAnimationFrame(S.raf);
     (S.srcs || []).forEach(function (s) { try { s.stop(); } catch (e) { /* done */ } });
     (S.nodes || []).forEach(function (n) { try { n.ev.disconnect(); } catch (e) { /* gone */ } });
-    S.srcs = null; S.nodes = null; paintPlay(); draw();
+    (S.engines || []).forEach(function (x) { try { x.g.disconnect(); [x.E.lfo, x.E.cLfo, x.E.bendSrc].forEach(function (n) { if (n) n.stop(); }); } catch (e) { /* gone */ } });
+    S.srcs = null; S.nodes = null; S.engines = null; paintPlay(); draw();
     return was;
   }
   function paintPlay() { var b = $("syTPlay"); if (b) { b.classList.toggle("on", S.playing); b.textContent = S.playing ? "■ Stop" : "▶ Play"; b.setAttribute("aria-pressed", S.playing ? "true" : "false"); } }
@@ -446,6 +537,7 @@
     if (of) of.onchange = function () {   // 2.955.0 (Tim: "allow user to open audio file to new layer"): each file on a layer of its own
       O.upload(of.files, null).then(function (j) { of.value = ""; ((j && j.added) || []).reduce(function (pr, a) { return pr.then(function () { return addNewLayer("my:" + a.name, a.name.replace(/\.[a-z0-9]+$/i, ""), S.ph); }); }, Promise.resolve()); });
     };
+    on("syTNotes", function () { addNotes([], "Notes", null, S.sel, S.ph).then(function (c) { var l = L(S.sel); openRoll(S.sel, l.clips.indexOf(c)); }); });
     on("syTSnap", function () { TLD.snap = !TLD.snap; paintSnap(); changed(); });
     on("syTZoomIn", function () { zoom(1.5); }); on("syTZoomOut", function () { zoom(1 / 1.5); });
     on("syTWav", function () { exportTL(null); }); on("syTToSfx", function () { exportTL("sfx"); }); on("syTToSound", function () { exportTL("sound"); });
@@ -454,7 +546,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
+  root.H3SynthTL = { addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { stop(); TLD = T.cleanTL(j); S.sel = 0; S.clip = null; S.key = null; keyEd(); heads(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
     info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,

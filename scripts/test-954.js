@@ -46,7 +46,7 @@ check("automation(): the line from the playhead as Web Audio calls (set where it
 const tl = T.newTL();
 tl.layers[0].clips.push({ src: "kit:kick", name: "k", start: 1, off: 0, len: 0.5 }); tl.layers[1].clips.push({ src: "snd:song.wav", name: "s", start: 0, off: 2, len: 2 });
 check("schedule(): from the playhead - what starts when, how far into each sound; a muted layer is silent, a solo one alone",
-  JSON.stringify(T.schedule(tl, 0.5)) === JSON.stringify([{ layer: 1, clip: 0, src: "snd:song.wav", when: 0, off: 2.5, dur: 1.5 }, { layer: 0, clip: 0, src: "kit:kick", when: 0.5, off: 0, dur: 0.5 }])
+  JSON.stringify(T.schedule(tl, 0.5)) === JSON.stringify([{ layer: 1, clip: 0, src: "snd:song.wav", kind: "audio", when: 0, skip: 0.5, off: 2.5, dur: 1.5 }, { layer: 0, clip: 0, src: "kit:kick", kind: "audio", when: 0.5, skip: 0, off: 0, dur: 0.5 }]) /* 2.957.0: + kind, skip */
   && (() => { tl.layers[1].mute = true; const a = T.schedule(tl, 0).length === 1; tl.layers[1].mute = false; tl.layers[0].solo = true; const b = T.schedule(tl, 0).map((s) => s.layer).join() === "0"; tl.layers[0].solo = false; return a && b; })());
 check("trim: the left edge keeps the sound in place (start + offset move together), never before the sound's start; the right edge no further than its end; 20 ms at least",
   (() => { const c = { start: 1, off: 0, len: 3 }; T.trimStart(c, 1.5); const a = c.start === 1.5 && c.off === 0.5 && c.len === 2.5; T.trimStart(c, 0); const b = c.start === 1 && c.off === 0 && c.len === 3;
@@ -77,11 +77,11 @@ check("the timeline (dock.html): its bar (▶ ⏮ the time, ＋ Sound, ⌗ Snap,
   ["syTL", "syTPlay", "syTStart", "syTPos", "syTAddBtn", "syTSnap", "syTZoomIn", "syTZoomOut", "syTWav", "syTToSfx", "syTToSound", "syTPick", "syTKeyEd", "syTHeads", "syTScroll", "syTCanvas", "syTFile"].every((id) => DH.includes('id="' + id + '"'))
   && /\.sytlkey \{[^}]*position: absolute;/.test(DH) && !/id="tl[A-Z]/.test(DH));
 check("synthdock.js: notes go to the score (● Rec / 🎓 Learn); MIDI channel 10 = the pads (36-51); the guide keys drawn green; every source to the pads + the timeline; all three kept (h3.synth.pads / sheet / tl)",
-  /if \(SC\) SC\.noteOn\(m\);/.test(JS) && /if \(!G\.down\[m\] && SC\) SC\.noteOff\(m\);/.test(JS) && /\(d\[0\] & 0x0f\) === 9/.test(JS) && /PD\.hit\(a - 36, b \/ 127\)/.test(JS)
+  /if \(SC\) SC\.noteOn\(m, vel\);/.test(JS) /* 2.957.0: + the velocity */ && /if \(!G\.down\[m\] && SC\) SC\.noteOff\(m\);/.test(JS) && /\(d\[0\] & 0x0f\) === 9/.test(JS) && /PD\.hit\(a - 36, b \/ 127\)/.test(JS)
   && /G\.guide\[k\.m\]/.test(JS) && /"\/api\/synth\/sources"/.test(JS) && /LS\.set\("pads"/.test(JS) && /LS\.set\("sheet", a\)/.test(JS) && /LS\.set\("tl", JSON\.stringify\(t\)\)/.test(JS)
   && /if \(SC\) SC\.stop\(\); if \(TL\) TL\.stop\(\);/.test(JS));
 check("synthtl.js: a layer's Vol (0-150%) and Pan knobs; per layer volume -> pan -> the keyframe line (set / ramp) -> out; 5 ms fades per clip; the nearest handle wins; offline mixdown",
-  /l\.vol = Math\.round\(n \* 150\) \/ 100/.test(TJ) && /T\.automation\(l\.keys, from, endT\)/.test(TJ) && /linearRampToValueAtTime\(op\.v, when\)/.test(TJ) && /Math\.min\(0\.005, s\.dur \/ 4\)/.test(TJ)
+  /l\.vol = Math\.round\(n \* 150\) \/ 100/.test(TJ) && /T\.automation\(l\.keys, from, endT\)/.test(TJ) && /linearRampToValueAtTime\(op\.v, when\)/.test(TJ) && /Math\.max\(f\.fi, 0\.005\)/.test(TJ) /* 2.957.0: the clip's gain line, 5 ms at least */
   && /var best = null, bd = 8;/.test(TJ) && /new OAC\(2,/.test(TJ) && /addEventListener\("dblclick"/.test(TJ));
 check("synthloop.js: a pad hit plays its row; ⏺ Loop writes it on the nearest step of the pattern playing; a row's sound may be snd: / out: (the sources route)",
   /function hit\(r, vel\)/.test(LJ) && /function recordHit\(r, vel\)/.test(LJ) && /L\.pats\[p\]\[r\]\[k\] = vel >= 0\.85 \? 2 : 1/.test(LJ) && /"\/api\/synth\/source\/" \+ m\[1\]/.test(LJ));

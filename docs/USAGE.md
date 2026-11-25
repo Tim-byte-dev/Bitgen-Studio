@@ -1700,6 +1700,24 @@ a timeline file brings back the whole tab. The timeline's **💾 Save** asks for
 file - **💾 Save** writes over that file. **Save as…** always asks for a name (and asks before writing over a file that
 is already there). The bar shows the timeline's file name (or "unsaved").
 
+**Note clips and the piano roll (2.957.0).** ● on the keyboard keeps the notes you play too (pitch, timing, how hard):
+**→ 🎞 ♪** puts them on a new timeline layer as a **note clip** ("Keys notes", with the patch you played them with), played
+by the synth - change it any time. **＋ ♪ Notes** in the timeline makes an empty one-bar note clip at the playhead.
+Double-click a note clip (or **🎹 Piano roll** in its bar) for the **piano roll**: the keys down the left (click = hear), the
+beats across; click an empty place to draw a note (drag on to make it longer), drag a note to move it, drag its right edge
+for its length, right-click or **Delete** removes it, **↑ ↓** move the picked note a semitone, **← →** a grid step. The
+velocity lane under it: drag a note's bar up or down. **Grid** 1/4 to 1/32, **⌗ Quantize** puts every note on the grid,
+**▶** plays the clip, the wheel scrolls the pitches (Shift + wheel the time); **Esc** or **✕ Done** closes it.
+
+**Editing clips (2.957.0).** Click a clip to pick it: its bar shows **Gain** (in dB), **Fade in** and **Fade out** knobs,
+**✂ Split** (at the playhead - **S**), **⧉ Duplicate** (a copy right after it - **Ctrl+D**) and 🗑. Each clip has a small
+handle at its top-left and top-right corners: drag them for the fades (the faded part is shaded). Where two clips on a
+layer overlap, they **crossfade** by themselves over the overlap.
+
+**Undo / redo (2.957.0).** **↶** and **↷** in the Synth tab's bar (or **Ctrl+Z**, **Ctrl+Y** / **Ctrl+Shift+Z** with the
+focus in the tab) step back and forward through your changes to the timeline, the loop, the knobs and the pads - a knob
+turned or a clip dragged is one step.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

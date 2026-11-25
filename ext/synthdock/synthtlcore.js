@@ -9,6 +9,10 @@
  *   env(keys, t, end) the line's value at t;  automation(keys, from, end) -> [{op: "set" | "ramp", t, v}] (Web Audio calls)
  *   schedule(tl, from) -> what to start: [{layer, clip, when, off, dur}];  audible(tl, i) (mute / solo);  end(tl)
  *   moveClip / trimStart / trimEnd (kept inside the sound, at least 20 ms), addKey(layer, t), snap(t, bpm, on), peaks(), fmt()
+ *   2.957.0 (Tim: "go with your suggestion" - a piano roll, clip editing, undo): a NOTE clip {kind: "notes", name, start, len,
+ *   notes: [{m, t (s from the clip's start), d, v}], patch} played by the synth; every clip has gain (0-2), fi / fo (fade in / out,
+ *   s); splitClip(c, t) -> [a, b], dupClip(c), fades(clips) (overlaps on a layer = automatic crossfades), clipEnv(c, fi, fo) (the
+ *   clip's gain line), cleanNotes(), quantize(notes, grid, strength)
  */
 (function (root) {
   "use strict";
@@ -27,8 +31,13 @@
       var l = { name: String(L.name || "Layer " + (i + 1)).replace(/[\u0000-\u001f<>]/g, "").slice(0, 32) || "Layer " + (i + 1), vol: num(L.vol, 1, 0, 1.5), pan: num(L.pan, 0, -1, 1),
                 mute: !!L.mute, solo: !!L.solo, clips: [], keys: [] };
       (Array.isArray(L.clips) ? L.clips : []).slice(0, MAXC).forEach(function (c) {
-        var src = okSrc(c && c.src); if (!src) return;
-        l.clips.push({ src: src, name: String(c.name || src.replace(/^\w+:/, "")).slice(0, 120), start: num(c.start, 0, 0, MAXT), off: num(c.off, 0, 0, MAXT), len: num(c.len, 1, MIN, MAXT) });
+        if (!c) return;
+        var base;
+        if (c.kind === "notes") base = { kind: "notes", name: String(c.name || "Notes").slice(0, 120), start: num(c.start, 0, 0, MAXT), off: 0, len: num(c.len, 1, MIN, MAXT), notes: cleanNotes(c.notes),
+                                         patch: c.patch && typeof c.patch === "object" ? c.patch : null };
+        else { var src = okSrc(c.src); if (!src) return; base = { src: src, name: String(c.name || src.replace(/^\w+:/, "")).slice(0, 120), start: num(c.start, 0, 0, MAXT), off: num(c.off, 0, 0, MAXT), len: num(c.len, 1, MIN, MAXT) }; }
+        base.gain = num(c.gain, 1, 0, 2); base.fi = num(c.fi, 0, 0, base.len); base.fo = num(c.fo, 0, 0, base.len);
+        l.clips.push(base);
       });
       (Array.isArray(L.keys) ? L.keys : []).slice(0, MAXK).forEach(function (k) { if (k) l.keys.push({ t: num(k.t, 0, 0, MAXT), a: num(k.a, 1, 0, 1), b: num(k.b, 1, 0, 1) }); });
       sortKeys(l.keys); o.layers.push(l);
@@ -37,6 +46,56 @@
     return o;
   }
   function clipEnd(c) { return c.start + c.len; }
+  /** notes made safe: m 0-127, t >= 0, d >= 10 ms, v 0.05-1; in time order; 4000 at most */
+  function cleanNotes(a) {
+    return (Array.isArray(a) ? a : []).slice(0, 4000).filter(function (n) { return n && Number.isFinite(+n.m) && Number.isFinite(+n.t); })
+      .map(function (n) { return { m: Math.round(num(n.m, 60, 0, 127)), t: num(n.t, 0, 0, MAXT), d: num(n.d, 0.25, 0.01, MAXT), v: Math.round(num(n.v, 0.8, 0.05, 1) * 100) / 100 }; })
+      .sort(function (x, y) { return x.t - y.t || x.m - y.m; });
+  }
+  /** notes to the grid (s): strength 1 = right on it */
+  function quantize(notes, grid, strength) {
+    var k = strength == null ? 1 : strength;
+    return notes.map(function (n) { var t = Math.round(n.t / grid) * grid, e = Math.max(t + grid, Math.round((n.t + n.d) / grid) * grid); return { m: n.m, t: n.t + (t - n.t) * k, d: Math.max(0.01, n.d + ((e - t) - n.d) * k), v: n.v }; });
+  }
+  /** cut a clip at t (timeline s) -> [left, right] (null when t is not inside it); a note clip's notes go to the side they start
+   *  on (one crossing the cut ends there) */
+  function splitClip(c, t) {
+    var x = t - c.start; if (x <= MIN || x >= c.len - MIN) return null;
+    var a = JSON.parse(JSON.stringify(c)), b = JSON.parse(JSON.stringify(c));
+    a.len = x; a.fo = 0; a.fi = Math.min(a.fi || 0, x);
+    b.start = t; b.len = c.len - x; b.fi = 0; b.fo = Math.min(b.fo || 0, b.len);
+    if (c.kind === "notes") {
+      a.notes = c.notes.filter(function (n) { return n.t < x; }).map(function (n) { return { m: n.m, t: n.t, d: Math.min(n.d, x - n.t), v: n.v }; });
+      b.notes = c.notes.filter(function (n) { return n.t >= x; }).map(function (n) { return { m: n.m, t: n.t - x, d: n.d, v: n.v }; });
+    } else b.off = c.off + x;
+    return [a, b];
+  }
+  /** a copy right after it */
+  function dupClip(c) { var d = JSON.parse(JSON.stringify(c)); d.start = clipEnd(c); return d; }
+  /** each clip's fades on its layer: its own fi / fo, or longer where it overlaps its neighbour (an automatic crossfade) */
+  function fades(clips) {
+    return clips.map(function (c) {
+      var fi = c.fi || 0, fo = c.fo || 0;
+      clips.forEach(function (o) {
+        if (o === c) return;
+        if (o.start < c.start && clipEnd(o) > c.start && clipEnd(o) < clipEnd(c)) fi = Math.max(fi, clipEnd(o) - c.start);   // o ends inside c: c fades in over it
+        if (o.start > c.start && o.start < clipEnd(c) && clipEnd(o) > clipEnd(c)) fo = Math.max(fo, clipEnd(c) - o.start);   // o starts inside c: c fades out
+      });
+      return { fi: Math.min(fi, c.len), fo: Math.min(fo, c.len) };
+    });
+  }
+  /** a clip's gain line in clip time: [[x, v], ...] - 0 -> gain over fi, gain, gain -> 0 over fo */
+  function clipEnv(c, fi, fo) {
+    var g = c.gain == null ? 1 : c.gain, L = c.len; fi = Math.min(fi || 0, L); fo = Math.min(fo || 0, L - fi);
+    var pts = [[0, fi > 0 ? 0 : g]]; if (fi > 0) pts.push([fi, g]); if (fo > 0) pts.push([L - fo, g]); pts.push([L, fo > 0 ? 0 : g]);
+    return pts;
+  }
+  /** the line's value at clip time x */
+  function envAt(pts, x) {
+    if (x <= pts[0][0]) return pts[0][1];
+    for (var i = 1; i < pts.length; i++) if (x <= pts[i][0]) { var a = pts[i - 1], b = pts[i]; return b[0] === a[0] ? b[1] : a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); }
+    return pts[pts.length - 1][1];
+  }
   /** the end of the timeline: its last sound (or keyframe + 1 s), never 0 */
   function end(tl) {
     var e = 0;
@@ -72,7 +131,7 @@
       l.clips.forEach(function (c, ci) {
         if (clipEnd(c) <= from) return;
         var skip = Math.max(0, from - c.start);
-        out.push({ layer: i, clip: ci, src: c.src, when: Math.max(0, c.start - from), off: c.off + skip, dur: c.len - skip });
+        out.push({ layer: i, clip: ci, src: c.src, kind: c.kind || "audio", when: Math.max(0, c.start - from), skip: skip, off: c.off + skip, dur: c.len - skip });
       });
     });
     return out.sort(function (a, b) { return a.when - b.when; });
@@ -104,7 +163,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

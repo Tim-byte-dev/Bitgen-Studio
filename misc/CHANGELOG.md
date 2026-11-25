@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.957.0** — 🎹 Synth Tab: Note Clips (→ 🎞 ♪, ＋ ♪ Notes) and a Piano Roll (Draw, Move, Length, Velocity, Quantize); Clip Editing (Split, Duplicate, Fade Handles, Automatic Crossfades, Gain); Undo / Redo Across the Tab
 - **2.956.0** — 🎹 Synth Tab .sfx Files: Keyboard and Looper Takes Saved on Stop (_key_ / _loop_ + a Random Name), the Timeline's 💾 Save (Asks a Name Once, Then Writes Over) and Save As…, 🗂 Load Any Synth File Anywhere
 - **2.955.0** — 🎹 Synth Tab: → 🎞 Send the Keyboard's and the Looper's Last Take to a New Timeline Layer (⏺ Rec in the Looper), Drag Sounds From the Gallery, Assets and References Onto the Timeline (This Layer or a New One?), 📂 Open → New Layer, the Synth / Keyboard / Looper / Timeline Parts Fold Like Dockers
 - **2.954.0** — 🎹 The Synth Tab's Deck (49 Natural Keys, No Branding): 16 Drum Pads (⏺ Into the Loop, MIDI Channel 10), a Score Screen That Writes Sheet Music as You Play, Opens .abc Sheets and Teaches You to Play Them (🎓 Learn); a Timeline of Sounds From Every Source With Waveforms, Volume / Pan Knobs per Layer and Keyframes With a Start and an End Volume

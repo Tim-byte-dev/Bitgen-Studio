@@ -212,6 +212,17 @@
           .sydlg .item:hover, .sydlg .item:focus { border-color: #38e1ff !important; }
           .sydlg .item b { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .sydlg .item i { font-size: 10px; color: #6c7688; font-style: normal; }
+          /* 2.957.0: the piano roll */
+          .syrollback { position: absolute; inset: 0; z-index: 45; background: #000a; display: flex; align-items: center; justify-content: center; padding: 16px; }
+          .syroll { width: 100%; max-width: 1400px; height: min(620px, 92%); background: #0d1015; border: 1px solid #38e1ff; border-radius: 10px; box-shadow: 0 16px 50px #000;
+                    display: flex; flex-direction: column; overflow: hidden; outline: none; }
+          .syrollbar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #14171d; border-bottom: 1px solid #262b35; font-size: 11px; color: #cfd6e2; }
+          .syrollbar select { font-size: 11px; background: #07090c; color: #e6ebf5; border: 1px solid #2d323d; border-radius: 4px; }
+          .syrollbar .hint { margin-left: auto; color: #6c7688; font-size: 10px; }
+          #syRollInfo { color: #8b95a7; font-family: ui-monospace, Consolas, monospace; min-width: 120px; }
+          #syRollCv { flex: 1; min-height: 0; width: 100%; display: block; cursor: crosshair; touch-action: none; }
+          #syRollVel { height: 62px; width: 100%; display: block; border-top: 1px solid #262b35; cursor: ns-resize; touch-action: none; }
+          #syUndo:disabled, #syRedo:disabled { opacity: .4; }
           .sylib { display: none; background: #0d1015; border: 1px solid #2d323d; border-radius: 8px; padding: 6px; }
           .sylib.on { display: block; }
           .sylib .sylist { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; margin-top: 4px; }
@@ -231,6 +242,8 @@
           <span class="sep"></span>
           <button class="ghost" id="sySample" type="button" title="🎙 Sample it: play one note of this patch into a new sample in your samples library - then pick it in a row of the looper">🎙 Sample it</button>
           <button class="ghost" id="syRec" type="button" title="⏺ Record what you play (the synth and the loop) - ⏹ puts the take in this project's SFX">⏺ Rec</button>
+          <button class="ghost" id="syUndo" type="button" title="↶ Undo (Ctrl+Z) - the timeline, the loop, the knobs, the pads" disabled>↶</button>
+          <button class="ghost" id="syRedo" type="button" title="↷ Redo (Ctrl+Y / Ctrl+Shift+Z)" disabled>↷</button>
           <button class="ghost" id="syPanic" type="button" title="Every note off">⏹ All off</button>
           <button id="syAudioOn" type="button" title="The browser keeps the sound off until you click">🔈 Sound on</button>
           <span class="sep"></span>
@@ -269,7 +282,7 @@
                 <div class="sydkvol" id="syDkVol"></div>
               </div>
               <div class="syctlrow">
-                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk" id="syDkLoad" type="button" title="🗂 Load a synth file (.sfx) of this project - a keyboard take, a loop take or a whole timeline">🗂</button><button class="sydk" id="syScSend" type="button" title="→ 🎞 Put the last ● recording (its sound) on a new timeline layer, at the playhead" disabled>→ 🎞</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
+                <div class="sygrp"><small>SHEET</small><div><button class="sydk" id="syScOpen" type="button" title="📂 Open an .abc sheet (the 🎼 Sheet music tab's, or any ABC tune)">📂</button><button class="sydk" id="syScSave" type="button" title="💾 Save the sheet as .abc">💾</button><button class="sydk" id="syDkLoad" type="button" title="🗂 Load a synth file (.sfx) of this project - a keyboard take, a loop take or a whole timeline">🗂</button><button class="sydk" id="syScSendN" type="button" title="→ 🎞 ♪ Put the last ● recording on a new timeline layer as NOTES - edit them in the piano roll" disabled>♪</button><button class="sydk" id="syScSend" type="button" title="→ 🎞 Put the last ● recording (its sound) on a new timeline layer, at the playhead" disabled>→ 🎞</button><button class="sydk wide" id="syScLearn" type="button" title="🎓 Learn: the next notes light up on the sheet and the keys - play them and it goes on">🎓 Learn</button></div></div>
               </div>
               <div class="sytransport">
                 <button class="sydk" id="syScStart" type="button" title="⏮ Back to the start of the sheet">⏮</button>
@@ -328,6 +341,7 @@
             <button class="ghost" id="syTSaveAs" type="button" title="Save the timeline under a new name">Save as…</button>
             <button class="ghost" id="syTLoad" type="button" title="🗂 Load a synth file (.sfx) of this project">🗂 Load</button>
             <button class="ghost" id="syTOpen" type="button" title="📂 Open sound files - each on a new layer of its own, at the playhead">📂 Open → new layer</button>
+            <button class="ghost" id="syTNotes" type="button" title="＋ Notes: an empty note clip (one bar) at the playhead on the picked layer - drawn in the 🎹 piano roll">＋ ♪ Notes</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>

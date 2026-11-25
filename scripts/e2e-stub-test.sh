@@ -15162,6 +15162,13 @@ node scripts/test-956.js > /tmp/t956.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui956-ui.js > /tmp/ui956.log 2>&1 \
   && ok "2.956.0 browser test: ■ keyboard = _key_ .sfx + WAV, ⏺ looper = _loop_ .sfx, 💾 Save asks then writes over, Save as… (overwrite? asked), 🗂 Load loop / key / timeline files anywhere, → 🎞 a loaded take" \
   || { bad "2.956.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui956.log | head -12; }
+# ---- 2.957.0 (🎹 piano roll, clip editing, undo)
+node scripts/test-957.js > /tmp/t957.log 2>&1 \
+  && ok "2.957.0 units: split (audio / notes), duplicate, fades + automatic crossfades, the clip gain line, quantize, clean note clips, the piano roll's noteAt, undo / redo steps" \
+  || { bad "2.957.0 units"; grep -a "^FAIL" -A1 /tmp/t957.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui957-ui.js > /tmp/ui957.log 2>&1 \
+  && ok "2.957.0 browser test: ● notes -> → 🎞 ♪ a note clip (played in the mix), the piano roll (draw, drag, move, velocity, ↓, right-click, quantize, Esc), ✂ split, ⧉ duplicate, gain / fade knobs, a fade handle, crossfades, Ctrl+Z / ↷ / undo knobs + loop" \
+  || { bad "2.957.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui957.log | head -12; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

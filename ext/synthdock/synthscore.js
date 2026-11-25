@@ -114,8 +114,8 @@
     msg("● Recording - play; the sheet is written from your first note (" + (O.bpm ? O.bpm() : 120) + " BPM, the looper's). ■ stops.");
   }
   function now() { return (root.performance ? root.performance.now() : Date.now()) / 1000; }
-  function noteOn(m) {
-    if (Z.mode === "rec") { var t = now(); Z.held[m] = { m: m, t0: t, t1: null }; Z.rec.push(Z.held[m]); }
+  function noteOn(m, v) {
+    if (Z.mode === "rec") { var t = now(); Z.held[m] = { m: m, t0: t, t1: null, v: v == null ? 0.8 : v }; Z.rec.push(Z.held[m]); }
     else if (Z.mode === "learn") learnHit(m);
   }
   function noteOff(m) {
@@ -171,6 +171,11 @@
   function stop() {
     var was = Z.mode;
     if (was === "rec" && Z.krec) { var tk = Z.krec.stop({ trim: true }); Z.krec = null; if (tk) Z.take = tk; paintSend(); }
+    if (was === "rec") {   // 2.957.0: the notes as played (from the first one) - → 🎞 ♪ puts them on the timeline as a note clip
+      var first = Z.rec.length ? Math.min.apply(null, Z.rec.map(function (n) { return n.t0; })) : 0, tn = now();
+      Z.notesTake = Z.rec.length ? Z.rec.map(function (n) { return { m: n.m, t: Math.round((n.t0 - first) * 1000) / 1000, d: Math.max(0.02, Math.round(((n.t1 || tn) - n.t0) * 1000) / 1000), v: n.v || 0.8 }; }) : null;
+      if (Z.take) Z.take.notes = Z.notesTake; paintSend();
+    }
     if (was === "rec") { writeRec(); keep(); if (Z.take && !Z.take.saved && O.onTake) { Z.take.saved = true; O.onTake(Z.take, Z.abc); }   /* 2.956.0: saved on stop */ msg("■ " + Z.st.length + " note" + (Z.st.length === 1 ? "" : "s") + " written - 💾 Save keeps the sheet, 🎓 Learn plays it back with you"); }
     if (was === "play" && Z.play) { root.cancelAnimationFrame(Z.play.raf); try { O.engine().allOff(); } catch (e) { /* fine */ } }
     setMode("idle"); guide([]); lightAt(null);
@@ -189,19 +194,21 @@
     a.href = u; a.download = name + ".abc"; doc.body.appendChild(a); a.click(); a.remove(); root.setTimeout(function () { root.URL.revokeObjectURL(u); }, 4000);
     msg("💾 " + name + ".abc"); return name + ".abc";
   }
-  function paintSend() { var b = $("syScSend"); if (b) b.disabled = !Z.take; }
+  function paintSend() { var b = $("syScSend"); if (b) b.disabled = !Z.take; var n = $("syScSendN"); if (n) n.disabled = !(Z.notesTake && Z.notesTake.length); }
+  /** → 🎞 ♪ (2.957.0): the last recording as notes - a note clip on a new layer */
+  function sendNotes() { if (!Z.notesTake || !Z.notesTake.length) { msg("● Record something first", true); return null; } return O.sendNotes ? O.sendNotes(Z.notesTake) : null; }
   /** → 🎞 (Tim: "add a send to timeline button in keyboard, send last recorded piece"): the last ● take on a new timeline layer */
   function send() { if (!Z.take) { msg("● Record something first - then → 🎞 puts it on the timeline", true); return null; } return O.send ? O.send(Z.take, "Keys take") : null; }
   function wire() {
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
-    on("syScSend", send);
+    on("syScSend", send); on("syScSendN", sendNotes);
     on("syScRec", rec); on("syScPlay", play); on("syScStop", function () { stop(); }); on("syScStart", toStart); on("syScLearn", learn); on("syScSave", save);
     on("syScOpen", function () { $("syScoreFile").click(); });
     var f = $("syScoreFile");
     if (f) f.onchange = function () { var file = f.files && f.files[0]; if (!file) return; file.text().then(function (t) { open(t, file.name); f.value = ""; }); };
   }
   function init(o) { O = o; wire(); Z.abc = o.saved || ""; draw(); setMode("idle"); paintSend(); }
-  root.H3SynthScore = Object.assign({ init: init, send: send, take: function () { return Z.take || null; }, setTake: function (t) { Z.take = t || null; paintSend(); }, noteOn: noteOn, noteOff: noteOff, rec: rec, play: play, stop: stop, learn: learn, open: open, save: save, toStart: toStart, draw: draw,
+  root.H3SynthScore = Object.assign({ init: init, send: send, take: function () { return Z.take || null; }, setTake: function (t) { Z.take = t || null; Z.notesTake = t && t.notes ? t.notes : null; paintSend(); }, sendNotes: sendNotes, notes: function () { return Z.notesTake || null; }, noteOn: noteOn, noteOff: noteOff, rec: rec, play: play, stop: stop, learn: learn, open: open, save: save, toStart: toStart, draw: draw,
     abc: function () { return Z.abc; },
     info: function () { return { mode: Z.mode, abc: Z.abc, steps: Z.st.length, li: Z.li, wrong: Z.wrong, firstTry: Z.firstTry, recorded: Z.rec.length, lit: doc.querySelectorAll("#syScoreView path.lit").length, next: Z.st[Z.li] ? Z.st[Z.li].midis.slice() : null }; } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

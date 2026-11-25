@@ -52,7 +52,9 @@
 
   /* ---------------- the patch ---------------- */
   var saveT = 0;
+  function touch() { if (G.U) G.U.touch(); }   // 2.957.0: a change -> an undo step once it goes quiet
   function keep() {
+    touch();
     root.clearTimeout(saveT);
     saveT = root.setTimeout(function () { LS.set("patch", JSON.stringify(G.p)); LS.set("preset", G.preset); LS.set("dirty", G.dirty ? "1" : "0"); }, 250);
   }
@@ -219,7 +221,7 @@
     if (m < 0 || m > 127) return;
     try { engine().noteOn(m, vel); } catch (e) { msg(e.message, true); return; }
     G.down[m] = (G.down[m] || 0) + 1; G.last = m; piano(); screenText(); wake();
-    if (SC) SC.noteOn(m);   // 2.954.0: ● Rec writes it, 🎓 Learn checks it
+    if (SC) SC.noteOn(m, vel);   // 2.954.0: ● Rec writes it, 🎓 Learn checks it
   }
   function noteOff(m) {
     if (!G.down[m]) return;
@@ -580,7 +582,7 @@
   }
   function applyFile(f, name) {
     var k = FL.check(f); if (!k) { msg(name + " is not a synth file", true); return; }
-    var take = f.take && C.okSnd(f.take) ? { src: f.take, seconds: f.seconds || 0, file: name } : null;
+    var take = f.take && C.okSnd(f.take) ? { src: f.take, seconds: f.seconds || 0, file: name, notes: Array.isArray(f.notes) ? f.notes : null } : null;
     if (f.patch) applyPatch(f.patch, f.preset && allPresets().indexOf(f.preset) >= 0 ? f.preset : G.preset);
     if (k === "key") { if (SC) { if (f.abc) SC.open(f.abc, name); SC.setTake(take); } msg("🗂 " + name + " - its sheet music and patch" + (take ? "; → 🎞 puts its take on the timeline" : "")); }
     else if (k === "loop") { if (f.loop) LP.setLoop(f.loop); LP.setTake(take); msg("🗂 " + name + " - its loop" + (take ? "; → 🎞 Timeline puts its take on the timeline" : "")); }
@@ -618,6 +620,9 @@
     if (!on) root.setTimeout(function () { piano(); envDraw(); drawIdle(); if (TL) TL.draw(); }, 40);
   }
 
+  function undo() { if (!G.U) return false; var ok = G.U.undo(); msg(ok ? "↶ undone" : "Nothing to undo", !ok); return ok; }
+  function redo() { if (!G.U) return false; var ok = G.U.redo(); msg(ok ? "↷ redone" : "Nothing to redo", !ok); return ok; }
+
   /* ---------------- ⛶ = the whole window ---------------- */
   function setFull(on) {
     on = !!on; if (on === doc.body.classList.contains("sy-full")) return;
@@ -634,18 +639,20 @@
     try { if (root.localStorage.getItem("h3.g.synthdock") === "1") d.classList.add("dockgone"); } catch (e) { /* fine */ }
     G.p = C.cleanPatch(jget("patch", null) || presetOf(G.preset) || C.defaults());
     rack(); presetList(); setOct(G.oct); sections();
-    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, onTake: function (t) { autoSave("loop", t, { loop: JSON.parse(JSON.stringify(LP.loop())) }); }, changed: function () { root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
+    LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, onTake: function (t) { autoSave("loop", t, { loop: JSON.parse(JSON.stringify(LP.loop())) }); }, changed: function () { touch(); root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
               upload: upload, pick: function (r) { G.pickRow = r; $("syFile").click(); } });
     var saved = jget("loop", null); if (saved) LP.setLoop(saved);
     wirePiano();
     // 2.954.0: the deck - the drum pads, the score screen, the patch buttons, the volume knob, the timeline
     // 2.955.0: the pads play through the looper's bus - its ⏺ Rec hears them
-    if (PD) PD.init({ ctx: ctx, dest: function () { return LP.bus(); }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { LS.set("pads", JSON.stringify(p)); } });
-    if (SC) SC.init({ engine: engine, send: sendTake, onTake: function (t, abc) { autoSave("key", t, { abc: abc, patch: G.p, preset: G.preset }); }, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
+    if (PD) PD.init({ ctx: ctx, dest: function () { return LP.bus(); }, msg: msg, loop: LP, saved: jget("pads", null), save: function (p) { touch(); LS.set("pads", JSON.stringify(p)); } });
+    if (SC) SC.init({ engine: engine, send: sendTake, onTake: function (t, abc) { autoSave("key", t, { abc: abc, notes: t.notes || undefined, patch: G.p, preset: G.preset }); },
+                      sendNotes: function (notes) { return TL ? TL.addNotes(notes, "Keys notes", JSON.parse(JSON.stringify(G.p)), null).then(function (c) { msg("→ 🎞 ♪ " + c.notes.length + " notes on a new timeline layer - double-click the clip for the piano roll"); return c; }) : null; }, base: base, setOct: setOct, bpm: function () { return LP.loop().bpm; }, msg: msg, saved: LS.get("sheet", ""), save: function (a) { LS.set("sheet", a); },
                       guide: function (ms) { G.guide = {}; (ms || []).forEach(function (m) { G.guide[m] = true; }); piano(); } });
     if (TL) TL.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, loop: LP, bpm: function () { return LP.loop().bpm; }, saved: jget("tl", null),
-                      save: function (t) { root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
-                      renderLoop: function () { return LP.render(+(($("syPasses") || {}).value || 2)); }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh });
+                      save: function (t) { touch(); root.clearTimeout(G.tlT); G.tlT = root.setTimeout(function () { LS.set("tl", JSON.stringify(t)); }, 300); },
+                      renderLoop: function () { return LP.render(+(($("syPasses") || {}).value || 2)); }, patch: function () { return JSON.parse(JSON.stringify(G.p)); },
+                      preview: function (m, v, patch) { try { var E = engine(); E.noteOn(m, v || 0.8); root.setTimeout(function () { E.noteOff(m); }, 220); } catch (e) { /* asleep */ } }, toProject: toProject, blobOf: blobOf, upload: upload, refresh: refresh });
     var dv = $("syDkVol");
     if (dv) { G.dkVol = KN.knob({ label: "VOLUME", size: 44, color: "#f4f1e8", def: C.toNorm("vol", C.BY.vol.def), get: function () { return C.toNorm("vol", G.p.vol); }, set: function (n) { setParam("vol", C.fromNorm("vol", n)); }, text: function () { return C.show("vol", G.p.vol); } }); dv.appendChild(G.dkVol.el); }
     W.bend = wheel("syBend", true, function (v) { engine().bend(v); });
@@ -680,6 +687,7 @@
     // Esc while it fills the window: back to the docker (capture: before the page's own) - not while naming a patch
     root.addEventListener("keydown", function (e) {
       if (e.key !== "Escape" || e.ctrlKey || e.metaKey || e.altKey || !doc.body.classList.contains("sy-full") || typing(e.target)) return;
+      if ($("syRollBack") || $("syDlg") || $("syTAsk")) return;   // 2.957.0: Esc closes the piano roll / a box first
       e.preventDefault(); e.stopImmediatePropagation(); exitFull();
     }, true);
     doc.addEventListener("fullscreenchange", function () { if (!doc.fullscreenElement && doc.body.classList.contains("sy-full")) exitFull(); });
@@ -687,6 +695,24 @@
       .observe(d, { attributes: true, attributeFilter: ["class"] });
     doc.addEventListener("visibilitychange", function () { if (doc.hidden) allKeysOff(); });
     setFull(d.classList.contains("maxed") && !d.classList.contains("dockgone"));
+    // 2.957.0: ↶ / ↷ for the whole tab (the timeline, the loop, the knobs, the pads)
+    if (root.H3SynthUndo) {
+      G.U = root.H3SynthUndo.create({
+        get: function () { return { tl: TL ? TL.tl() : null, loop: LP.loop(), patch: G.p, pads: PD ? PD.pads() : null }; },
+        set: function (st) {
+          if (TL && st.tl) TL.setTL(st.tl); if (st.loop) LP.setLoop(st.loop); if (st.patch) applyPatch(st.patch, G.preset); if (PD && st.pads) PD.setPads(st.pads);
+          LS.set("loop", JSON.stringify(LP.loop())); if (TL) LS.set("tl", JSON.stringify(TL.tl()));
+        },
+        changed: function (u, r) { var a = $("syUndo"), b = $("syRedo"); if (a) a.disabled = !u; if (b) b.disabled = !r; },
+      });
+      on("syUndo", function () { undo(); }); on("syRedo", function () { redo(); });
+      body.addEventListener("keydown", function (e) {
+        if (!(e.ctrlKey || e.metaKey) || typing(e.target)) return;
+        var k = e.key.toLowerCase();
+        if (k === "z" && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); undo(); }
+        else if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); e.stopPropagation(); redo(); }
+      });
+    }
     piano(); drawIdle();
     if (shown()) { midiStart(); refresh(); }
   }
@@ -694,7 +720,7 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),

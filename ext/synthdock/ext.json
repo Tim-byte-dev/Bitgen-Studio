@@ -14,6 +14,8 @@
     "synthscore.js",
     "synthtlcore.js",
     "synthtl.js",
+    "synthroll.js",
+    "synthundo.js",
     "synthfile.js",
     "synthdock.js"
   ]
