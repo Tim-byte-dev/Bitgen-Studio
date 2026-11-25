@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.961.0** — 🎹 Synth Tab: ♩ a Tempo Track (Tempo Changes and Ramps) that the Beat Grid, Snap, Metronome, Loop Bars and Bar.Beat Follow
 - **2.960.0** — 🎹 Synth Tab: ● Rec onto the Timeline (Keys, Looper + Pads, Mic), ⟳ Loop Recording with a Take per Pass, Punch, Comping Across Takes, ▤ Flatten
 - **2.959.0** — 🎹 Synth Tab: Automation Lanes (Pan, Filter, Reverb Send) Drawn Over Each Timeline Layer, a Lowpass Filter per Layer, ⤓ Bounce a Layer to Audio
 - **2.958.0** — 🎹 Synth Tab: 🎚 a Mixer (per-Layer Meter, Vol, Pan, 3-Band EQ, Compressor, Reverb Send, Master), 🕒 a Metronome and a Count-In for Recording, ⚑ Timeline Markers, ⬇ Stems

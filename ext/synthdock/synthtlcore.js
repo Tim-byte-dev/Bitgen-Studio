@@ -18,6 +18,8 @@
  *   2.960.0 (Tim: "lets do the next one"): takes + comping - audio clips with grp ("g1") + ti (take 0..31) are one take group;
  *   layer.comps {grp: [{t, ti}]} says which take plays from t on (comp, compAt, ranges, playable -> what really plays);
  *   tl.loop {on, a, b, punch} (cleanLoop) - the loop / punch range; passRanges / punchCut slice a recording into takes.
+ *   2.961.0 (Tim: "continue please"): the tempo track - tl.tempoOn + tl.tempo [{t, bpm, ramp}] (a step, or a straight ramp to
+ *   the next point); beatAt / timeAt / bpmAt / beatTimes / snapBeat / barBeat: the grid, snap, the click and bar.beat follow it.
  */
 (function (root) {
   "use strict";
@@ -52,7 +54,61 @@
     return ops;
   }
   function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null), comps: {} }; }
-  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1, loop: cleanLoop(null) }; }
+  function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1, loop: cleanLoop(null), tempo: [], tempoOn: false }; }
+  /* ---------------- 2.961.0: the tempo track ---------------- */
+  /** [{t, bpm, ramp}] sorted, the first at 0, 20-300 BPM, 200 at most ([] = none) */
+  function cleanTempo(a) {
+    var out = [];
+    (Array.isArray(a) ? a : []).slice(0, 200).forEach(function (p) {
+      if (!p || !Number.isFinite(+p.t) || !Number.isFinite(+p.bpm)) return;
+      var n = { t: Math.round(num(p.t, 0, 0, MAXT) * 10000) / 10000, bpm: Math.round(num(p.bpm, 120, 20, 300) * 100) / 100, ramp: !!p.ramp };
+      var same = out.findIndex(function (q) { return Math.abs(q.t - n.t) < 1e-6; }); if (same >= 0) out[same] = n; else out.push(n);
+    });
+    out.sort(function (x, y) { return x.t - y.t; });
+    if (out.length && out[0].t > 0) out.unshift({ t: 0, bpm: out[0].bpm, ramp: false });
+    if (out.length) out[out.length - 1].ramp = false;
+    return out;
+  }
+  function tseg(map, i) { var p = map[i], q = map[i + 1], k = p.ramp && q ? (q.bpm - p.bpm) / (q.t - p.t) : 0; return { t: p.t, b: p.bpm, k: k, end: q ? q.t : Infinity }; }
+  function bpmAt(map, t) {
+    if (!map || !map.length) return 120;
+    var i = 0; while (i + 1 < map.length && map[i + 1].t <= t) i++;
+    var g = tseg(map, i); return g.b + g.k * (Math.min(t, g.end) - g.t);
+  }
+  /** beats from 0 to t (a ramp = the tempo changing evenly in time) */
+  function beatAt(map, t) {
+    if (!map || !map.length) map = [{ t: 0, bpm: 120 }];
+    var beats = 0;
+    for (var i = 0; i < map.length; i++) {
+      var g = tseg(map, i); if (t <= g.t) break;
+      var dt = Math.min(t, g.end) - g.t; beats += (g.b * dt + g.k * dt * dt / 2) / 60;
+    }
+    return beats;
+  }
+  /** the time of beat n */
+  function timeAt(map, n) {
+    if (!map || !map.length) map = [{ t: 0, bpm: 120 }];
+    var beats = 0;
+    for (var i = 0; i < map.length; i++) {
+      var g = tseg(map, i), dtE = g.end - g.t, segB = g.end === Infinity ? Infinity : (g.b * dtE + g.k * dtE * dtE / 2) / 60;
+      if (n <= beats + segB) {
+        var db = n - beats;
+        if (Math.abs(g.k) < 1e-9) return g.t + db * 60 / g.b;
+        return g.t + (-g.b + Math.sqrt(Math.max(0, g.b * g.b + 2 * g.k * 60 * db))) / g.k;
+      }
+      beats += segB;
+    }
+    return MAXT;
+  }
+  /** the clicks: every beat from `from` (incl.) to `until` (excl.) -> [{t, accent (first of the bar)}] */
+  function beatTimes(map, from, until, perBar) {
+    perBar = perBar || 4; var out = [], b = Math.ceil(beatAt(map, from) - 1e-9);
+    for (var n = 0; n < 20000; n++, b++) { var t = timeAt(map, b); if (t >= until - 1e-9) break; out.push({ t: Math.round(t * 1e6) / 1e6, accent: b % perBar === 0 }); }
+    return out;
+  }
+  /** t to the nearest 1/div of a beat (16ths = 4) */
+  function snapBeat(map, t, on, div) { if (!on) return Math.max(0, t); div = div || 4; return Math.max(0, Math.round(timeAt(map, Math.round(beatAt(map, t) * div) / div) * 1e6) / 1e6); }
+  function barBeat(map, t, perBar) { perBar = perBar || 4; var b = beatAt(map, t) + 1e-6; return { bar: Math.floor(b / perBar) + 1, beat: Math.floor(b % perBar) + 1 }; }
   /* ---------------- 2.960.0: the loop / punch range, takes and comping ---------------- */
   function cleanLoop(o) {
     o = o && typeof o === "object" ? o : {};
@@ -230,6 +286,7 @@
     });
     if (!o.layers.length) o.layers.push(layer(0));
     o.loop = cleanLoop(j.loop);
+    o.tempo = cleanTempo(j.tempo); o.tempoOn = !!j.tempoOn && o.tempo.length > 0;   // 2.961.0
     return o;
   }
   function clipEnd(c) { return c.start + c.len; }
@@ -351,7 +408,7 @@
   }
   function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
-              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
+              schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

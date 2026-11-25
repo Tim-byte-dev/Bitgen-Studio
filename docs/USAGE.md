@@ -1755,6 +1755,15 @@ the parts that play lit. **Drag across a take** to play that take there (comping
 together. **▤ Flatten** turns the comp into plain clips, exactly what plays (✂ Split and ⧉ Duplicate need that first).
 A recording stops by itself after 10 minutes; ↶ undoes a recording or a comp.
 
+**The tempo track (2.961.0).** **♩ Tempo** in the timeline's bar shows a tempo strip under the ruler; its first tempo is
+the looper's BPM. **Double-click** the strip for a tempo change there (on a beat, at the tempo playing there); **drag** a
+change up or down for its BPM (Shift = finer) or sideways to move it (to the beat); **right-click** it, or pick it and press
+**Delete**, to remove it (the first one stays). A picked change shows its **BPM** (type one in) and **Ramp to the next**:
+the tempo then glides evenly to the next change (an accelerando or a ritardando) instead of jumping. The beat grid, **⌗
+Snap**, the **🕒 Click**, ⟳ Loop's two bars and the piano roll's grid follow the tempo track, and the position readout
+shows **bar.beat** and the BPM there. Sounds and recorded notes are not stretched - they stay where they are in time.
+♩ Tempo again turns the track off (it is kept, and the looper's BPM is used again).
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

@@ -157,6 +157,10 @@
           @keyframes syRecPulse { 50% { box-shadow: 0 0 10px #ff5a5a; } }
           #syTLoop.on { color: #07090c; background: #5dff8a; border-color: #5dff8a; }
           #syTPunch.on { color: #fff; background: #a8343c; border-color: #ff5a5a; }
+          /* 2.961.0: the tempo track */
+          #syTTempo.on { color: #07090c; background: #ffae3a; border-color: #ffae3a; }
+          .sytlrul { position: relative; }
+          .sytltempo { position: absolute; left: 8px; display: flex; align-items: center; font: 600 10px system-ui, sans-serif; color: #ffae3a; }
           .sytlh1 .sym.arm { color: #ff6a6a; }
           .sytlh1 .sym.arm.on { background: #c8323c; color: #fff; }
           #syTSnap.on { background: #38e1ff; border-color: #38e1ff; }
@@ -380,6 +384,7 @@
             <button class="ghost" id="syTMark" type="button" title="⚑ A marker at the playhead (M) - click it on the ruler to go there, double-click to rename, right-click to remove">⚑ Marker</button>
             <button class="ghost" id="syTMixBtn" type="button" title="🎚 The mixer: each layer's level, pan, EQ, compressor, reverb and a meter">🎚 Mixer</button>
             <button class="ghost" id="syTNotes" type="button" title="＋ Notes: an empty note clip (one bar) at the playhead on the picked layer - drawn in the 🎹 piano roll">＋ ♪ Notes</button>
+            <button class="ghost" id="syTTempo" type="button" aria-pressed="false" title="♩ Tempo track: tempo changes over the song (a step, or a ramp to the next) - the beat grid, ⌗ snap, 🕒 click and the bar.beat follow it. Double-click its strip for a change, drag a change up / down for its BPM, sideways to move it, right-click to remove it">♩ Tempo</button>
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>

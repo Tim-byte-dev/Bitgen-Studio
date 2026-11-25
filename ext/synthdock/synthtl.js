@@ -6,6 +6,8 @@
  * 2.960.0 ("lets do the next one"): ● Rec onto the armed layer (keys / looper + pads / mic, H3SynthRec with its clock),
  * ⟳ loop (a take a pass, the next pass mixed ahead - no gap), punch; take groups drawn as rows, comping by dragging across a
  * take, ▤ flatten.
+ * 2.961.0 ("continue please"): ♩ the tempo track - a strip under the ruler (RULER = R0 + TS when on); tmap() drives the grid,
+ * snapT (every snap), the click (T.beatTimes), the loop's 2 bars, the roll's grid and the bar.beat readout.
  *   Layers   each with its name, M(ute) / S(olo), a Vol knob (0-150%), a Pan knob, ◆ (a keyframe at the playhead), 🗑
  *   Sounds   ＋ Sound: the loop (made into a sample), the built-in kit, 📂 My samples, this project's SFX, the Sound assets
  *            (stems too), songs and the gallery's audio, or a file - click one to put it at the playhead on the picked
@@ -22,13 +24,17 @@
   var doc = root.document, T = root.H3SynthTLCore, C = root.H3SynthCore, KN = root.H3SynthKnob;
   if (!doc || !T || !C || !KN) return;
   var $ = function (id) { return doc.getElementById(id); };
-  var RULER = 22, LH = 64, HUES = ["#38e1ff", "#ff4fd8", "#ffae3a", "#5dff8a", "#b78cff", "#ffd23a", "#4f9dff", "#ff5a5a"];
+  var R0 = 22, TS = 22, RULER = 22, LH = 64, HUES = ["#38e1ff", "#ff4fd8", "#ffae3a", "#5dff8a", "#b78cff", "#ffd23a", "#4f9dff", "#ff5a5a"];
   var O = null, TLD = T.newTL(), sources = [], peaks = {}, dur = {};
-  var S = { view: {}, apt: null, sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0 };
+  var S = { tpt: null, view: {}, apt: null, sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0 };
   function hue(i) { return HUES[i % HUES.length]; }
   function msg(t, bad) { if (O && O.msg) O.msg(t, bad); }
   function changed() { if (O && O.save) O.save(TLD); }
   function bpm() { return O && O.bpm ? O.bpm() : 120; }
+  /* 2.961.0: the tempo track - the map the grid / snap / click / bars follow (the looper's BPM when it is off) */
+  function tmap() { return TLD.tempoOn && TLD.tempo && TLD.tempo.length ? TLD.tempo : [{ t: 0, bpm: bpm(), ramp: false }]; }
+  function snapT(t, on) { return T.snapBeat(tmap(), t, on, 4); }
+  function layout() { RULER = R0 + (TLD.tempoOn ? TS : 0); }
   function L(i) { return TLD.layers[i]; }
 
   /* ---------------- sounds: buffers + waveforms ---------------- */
@@ -44,7 +50,7 @@
     if (!T.okSrc(src)) return Promise.resolve(null);
     li = Math.max(0, Math.min(TLD.layers.length - 1, li == null ? S.sel : li));
     return load(src).then(function (b) {
-      var c = { src: src, name: name || src.replace(/^\w+:/, "").replace(/\.[a-z0-9]+$/i, ""), start: T.snap(t == null ? S.ph : t, bpm(), TLD.snap), off: 0, len: b.duration, gain: 1, fi: 0, fo: 0 };
+      var c = { src: src, name: name || src.replace(/^\w+:/, "").replace(/\.[a-z0-9]+$/i, ""), start: snapT(t == null ? S.ph : t, TLD.snap), off: 0, len: b.duration, gain: 1, fi: 0, fo: 0 };
       L(li).clips.push(c); S.sel = li; S.clip = { l: li, c: L(li).clips.length - 1 }; S.key = null;
       changed(); heads(); draw(); msg("＋ " + c.name + " on " + L(li).name + " at " + T.fmt(c.start));
       return c;
@@ -66,7 +72,7 @@
   /* ---------------- the layers' heads ---------------- */
   function heads() {
     var box = $("syTHeads"); if (!box) return;
-    box.innerHTML = '<div class="sytlrul" style="height:' + RULER + 'px"></div>';
+    box.innerHTML = '<div class="sytlrul" style="height:' + RULER + 'px">' + (TLD.tempoOn ? '<span class="sytltempo" style="top:' + R0 + 'px;height:' + TS + 'px">♩ Tempo</span>' : '') + '</div>';
     TLD.layers.forEach(function (l, i) {
       var h = doc.createElement("div"); h.className = "sytlhead" + (i === S.sel ? " sel" : ""); h.style.height = LH + "px"; h.style.setProperty("--lc", hue(i)); h.dataset.l = i;
       h.innerHTML = '<div class="sytlh1"><input maxlength="32" title="The layer\'s name"><button class="ghost sym m" type="button" title="Mute">M</button><button class="ghost sym s" type="button" title="Solo">S</button>'
@@ -135,18 +141,20 @@
       x.fillStyle = "#1c2028"; x.fillRect(0, laneTop(i) + LH - 1, w, 1);
     });
     // the beat grid (the looper's BPM) + the ruler
-    var beat = 60 / bpm(), t0 = tAt(0), t1 = tAt(w), fine = beat * TLD.zoom > 14;
-    for (var b = Math.floor(t0 / beat); b * beat <= t1; b++) {
-      var X = px(b * beat), bar = b % 4 === 0; if (!bar && !fine) continue;
-      x.fillStyle = bar ? "#252a34" : "#171b22"; x.fillRect(Math.round(X), RULER, 1, g.h - RULER);
+    var tm = tmap(), t0 = tAt(0), t1 = tAt(w);   // 2.961.0: the beats from the tempo map
+    for (var b = Math.floor(T.beatAt(tm, t0)), gn = 0; gn < 5000; b++, gn++) {
+      var tb = T.timeAt(tm, b); if (tb > t1) break;
+      var bar = b % 4 === 0, fine = (T.timeAt(tm, b + 1) - tb) * TLD.zoom > 14; if (!bar && !fine) continue;
+      x.fillStyle = bar ? "#252a34" : "#171b22"; x.fillRect(Math.round(px(tb)), RULER, 1, g.h - RULER);
     }
     x.fillStyle = "#07090c"; x.fillRect(0, 0, w, RULER);
     var stepS = TLD.zoom > 80 ? 0.5 : TLD.zoom > 30 ? 1 : TLD.zoom > 12 ? 2 : TLD.zoom > 6 ? 5 : 10;
     x.font = "9px ui-monospace, Consolas, monospace"; x.textAlign = "left";
     for (var s = Math.floor(t0 / stepS) * stepS; s <= t1; s += stepS) {
-      var sx = Math.round(px(s)); x.fillStyle = "#3a404c"; x.fillRect(sx, RULER - 7, 1, 7);
+      var sx = Math.round(px(s)); x.fillStyle = "#3a404c"; x.fillRect(sx, R0 - 7, 1, 7);
       x.fillStyle = "#8b95a7"; x.fillText(T.fmt(s).replace(/\.0$/, ""), sx + 3, 10);
     }
+    if (TLD.tempoOn) drawTempo(x, w);
     // clips with their waveforms
     TLD.layers.forEach(function (l, i) {
       var col = hue(i), dim = !T.audible(TLD, i), fdl = T.fades(l.clips);
@@ -232,12 +240,16 @@
     // the playhead
     var P = px(S.ph); x.fillStyle = "#ffae3a"; x.fillRect(Math.round(P), 0, 1.5, g.h);
     x.beginPath(); x.moveTo(P - 5, 0); x.lineTo(P + 5, 0); x.lineTo(P, 7); x.closePath(); x.fill();
-    var pos = $("syTPos"); if (pos) pos.textContent = T.fmt(S.ph) + " / " + T.fmt(endT);
+    var pos = $("syTPos"); if (pos) { var bb = T.barBeat(tmap(), S.ph); pos.textContent = T.fmt(S.ph) + " / " + T.fmt(endT) + "  ·  " + bb.bar + "." + bb.beat + (TLD.tempoOn ? "  ♩" + Math.round(T.bpmAt(tmap(), S.ph) * 10) / 10 : ""); }
   }
 
   /* ---------------- pointer: the ruler, clips, edges, keyframes ---------------- */
   function hit(mx, my) {
-    if (my < RULER) return { kind: "ruler" };
+    if (my < R0) return { kind: "ruler" };
+    if (my < RULER) {   // 2.961.0: the tempo strip
+      var tb2 = null, td = 8; TLD.tempo.forEach(function (q, j) { var d2 = Math.abs(mx - px(q.t)); if (d2 < td) { td = d2; tb2 = j; } });
+      return tb2 == null ? { kind: "tstrip" } : { kind: "tpt", p: tb2 };
+    }
     var i = Math.floor((my - RULER) / LH), l = L(i); if (!l) return null;
     var endT = T.end(TLD);
     if (view(i) !== "vol") {   // 2.959.0: an automation lane - its points instead of the keyframes
@@ -280,22 +292,24 @@
       var p = pos(e), h = hit(p.x, p.y); if (!h) return;
       cv.focus({ preventScroll: true }); e.preventDefault();
       try { cv.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
+      if (h.kind === "tpt") { S.tpt = h.p; S.clip = null; S.key = null; S.apt = null; keyEd(); var q0 = TLD.tempo[h.p]; S.drag = { kind: "tpt", p: h.p, x0: p.x, y0: p.y, bpm0: q0.bpm, t0: q0.t, axis: null }; draw(); return; }
+      if (h.kind === "tstrip") { S.tpt = null; keyEd(); seek(tAt(p.x)); S.drag = { kind: "ruler" }; return; }
       if (h.kind === "ruler") {
         var mk = markerAt(p.x);
-        if (e.shiftKey) { var t0 = T.snap(tAt(p.x), bpm(), TLD.snap); S.drag = { kind: "range", a: t0 }; TLD.loop = TLD.loop || T.cleanLoop(null); TLD.loop.a = t0; TLD.loop.b = t0; draw(); return; }   // 2.960.0
+        if (e.shiftKey) { var t0 = snapT(tAt(p.x), TLD.snap); S.drag = { kind: "range", a: t0 }; TLD.loop = TLD.loop || T.cleanLoop(null); TLD.loop.a = t0; TLD.loop.b = t0; draw(); return; }   // 2.960.0
         if (mk >= 0) { seek(TLD.markers[mk].t); return; }   // 2.958.0: a marker = go there
         seek(tAt(p.x)); S.drag = { kind: "ruler" }; return;
       }
-      S.sel = h.l;
+      S.sel = h.l; S.tpt = null;
       if (h.kind !== "apt") S.apt = null;
       if (h.kind === "tgroup") { var sp0 = T.span(L(h.l), h.grp); S.clip = { l: h.l, c: h.c }; S.key = null; keyEd(); S.drag = { kind: "tgroup", l: h.l, grp: h.grp, dx: tAt(p.x) - sp0[0], a0: sp0[0] }; heads(); draw(); return; }
-      if (h.kind === "take") { var t1 = T.snap(tAt(p.x), bpm(), TLD.snap && !e.shiftKey); S.clip = { l: h.l, c: h.c }; S.key = null; keyEd(); S.drag = { kind: "comp", l: h.l, grp: h.grp, ci: h.c, a: t1, b: t1 }; heads(); draw(); return; }
+      if (h.kind === "take") { var t1 = snapT(tAt(p.x), TLD.snap && !e.shiftKey); S.clip = { l: h.l, c: h.c }; S.key = null; keyEd(); S.drag = { kind: "comp", l: h.l, grp: h.grp, ci: h.c, a: t1, b: t1 }; heads(); draw(); return; }
       if (h.kind === "apt") { S.apt = { l: h.l, p: h.p, k: h.k }; S.key = null; S.clip = null; keyEd(); S.drag = { kind: "apt", l: h.l, p: h.p, k: h.k }; heads(); draw(); return; }
       if (h.kind === "keyA" || h.kind === "keyB") { S.key = { l: h.l, k: h.k }; S.clip = null; S.drag = { kind: h.kind, l: h.l, k: h.k }; keyEd(); }
       else if (h.kind === "clip" || h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut") {
         var c = L(h.l).clips[h.c]; S.clip = { l: h.l, c: h.c }; S.key = null; keyEd();
         S.drag = { kind: h.kind, l: h.l, c: h.c, dx: tAt(p.x) - c.start };
-      } else { S.clip = null; S.key = null; keyEd(); seek(T.snap(tAt(p.x), bpm(), TLD.snap)); }
+      } else { S.clip = null; S.key = null; keyEd(); seek(snapT(tAt(p.x), TLD.snap)); }
       heads(); draw();
     });
     cv.addEventListener("pointermove", function (e) {
@@ -303,32 +317,42 @@
       if (!d) { var h = hit(p.x, p.y); cv.style.cursor = !h ? "default" : h.kind === "trimA" || h.kind === "trimB" || h.kind === "fadeIn" || h.kind === "fadeOut" ? "ew-resize" : h.kind === "clip" ? "grab" : h.kind === "keyA" ? "move" : h.kind === "keyB" ? "ns-resize" : "default"; return; }
       var t = tAt(p.x);
       if (d.kind === "ruler") { seek(t); return; }
-      if (d.kind === "range") { var rb = T.snap(t, bpm(), TLD.snap && !e.shiftKey); TLD.loop.a = Math.min(d.a, rb); TLD.loop.b = Math.max(d.a, rb); paintRecBar(); draw(); return; }
-      if (d.kind === "comp") { d.b = T.snap(t, bpm(), TLD.snap && !e.shiftKey); draw(); return; }
-      if (d.kind === "tgroup") { var nl = L(d.l), cur = T.span(nl, d.grp)[0]; T.moveGroup(nl, d.grp, T.snap(t - d.dx, bpm(), TLD.snap && !e.shiftKey) - cur); draw(); return; }
+      if (d.kind === "range") { var rb = snapT(t, TLD.snap && !e.shiftKey); TLD.loop.a = Math.min(d.a, rb); TLD.loop.b = Math.max(d.a, rb); paintRecBar(); draw(); return; }
+      if (d.kind === "tpt") {   // 2.961.0: up / down = its BPM, left / right = when (to the beat; not the first)
+        var tq = TLD.tempo[d.p], dx = p.x - d.x0, dy = d.y0 - p.y;
+        if (!d.axis && Math.abs(dx) + Math.abs(dy) > 4) d.axis = Math.abs(dy) >= Math.abs(dx) || d.p === 0 ? "y" : "x";
+        if (d.axis === "y") tq.bpm = Math.max(20, Math.min(300, Math.round((d.bpm0 + dy * (e.shiftKey ? 0.1 : 0.5)) * 10) / 10));
+        if (d.axis === "x") {
+          var before = TLD.tempo.slice(0, d.p), lo3 = TLD.tempo[d.p - 1].t + 0.05, hi3 = d.p + 1 < TLD.tempo.length ? TLD.tempo[d.p + 1].t - 0.05 : 3600;
+          tq.t = Math.max(lo3, Math.min(hi3, T.snapBeat(before, t, TLD.snap && !e.shiftKey, 1)));
+        }
+        keyEd(); draw(); msg("♩ " + tq.bpm + " BPM at " + T.fmt(tq.t)); return;
+      }
+      if (d.kind === "comp") { d.b = snapT(t, TLD.snap && !e.shiftKey); draw(); return; }
+      if (d.kind === "tgroup") { var nl = L(d.l), cur = T.span(nl, d.grp)[0]; T.moveGroup(nl, d.grp, snapT(t - d.dx, TLD.snap && !e.shiftKey) - cur); draw(); return; }
       if (d.kind === "apt") {   // 2.959.0: an automation point - when (between its neighbours) and its value
         var pl = L(d.l).auto[d.k], P2 = pl[d.p], tp = laneTop(d.l) + 16, bt = laneTop(d.l) + LH - 5;
         var lo2 = d.p > 0 ? pl[d.p - 1].t + 0.005 : 0, hi2 = d.p + 1 < pl.length ? pl[d.p + 1].t - 0.005 : 3600;
-        P2.t = Math.max(lo2, Math.min(hi2, T.snap(t, bpm(), TLD.snap && !e.shiftKey))); P2.v = Math.round(Math.max(0, Math.min(1, (bt - p.y) / (bt - tp))) * 1000) / 1000;
+        P2.t = Math.max(lo2, Math.min(hi2, snapT(t, TLD.snap && !e.shiftKey))); P2.v = Math.round(Math.max(0, Math.min(1, (bt - p.y) / (bt - tp))) * 1000) / 1000;
         msg(autoText(d.k, P2.v) + " at " + T.fmt(P2.t)); draw(); return;
       }
       if (d.kind === "keyA" || d.kind === "keyB") {
         var l = L(d.l), K = l.keys[d.k], top = laneTop(d.l) + 16, bot = laneTop(d.l) + LH - 5, v = Math.round(Math.max(0, Math.min(1, (bot - p.y) / (bot - top))) * 100) / 100;
         if (d.kind === "keyA") {
           var lo = d.k > 0 ? l.keys[d.k - 1].t + 0.01 : 0, hiT = d.k + 1 < l.keys.length ? l.keys[d.k + 1].t - 0.01 : 3600;
-          K.t = Math.max(lo, Math.min(hiT, T.snap(t, bpm(), TLD.snap && !e.shiftKey))); K.a = v;
+          K.t = Math.max(lo, Math.min(hiT, snapT(t, TLD.snap && !e.shiftKey))); K.a = v;
         } else K.b = v;
         keyEd(); draw(); return;
       }
       var c = L(d.l).clips[d.c]; if (!c) return;
       if (d.kind === "clip") {
-        T.moveClip(c, T.snap(t - d.dx, bpm(), TLD.snap && !e.shiftKey));
+        T.moveClip(c, snapT(t - d.dx, TLD.snap && !e.shiftKey));
         var li = Math.max(0, Math.min(TLD.layers.length - 1, Math.floor((p.y - RULER) / LH)));
         if (li !== d.l) { L(d.l).clips.splice(d.c, 1); L(li).clips.push(c); d.l = li; d.c = L(li).clips.length - 1; S.clip = { l: li, c: d.c }; S.sel = li; heads(); }
       } else if (d.kind === "fadeIn") c.fi = Math.max(0, Math.min(c.len - (c.fo || 0), t - c.start));
       else if (d.kind === "fadeOut") c.fo = Math.max(0, Math.min(c.len - (c.fi || 0), T.clipEnd(c) - t));
-      else if (d.kind === "trimA") T.trimStart(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey));
-      else T.trimEnd(c, T.snap(t, bpm(), TLD.snap && !e.shiftKey), c.kind === "notes" ? 3600 : dur[c.src]);
+      else if (d.kind === "trimA") T.trimStart(c, snapT(t, TLD.snap && !e.shiftKey));
+      else T.trimEnd(c, snapT(t, TLD.snap && !e.shiftKey), c.kind === "notes" ? 3600 : dur[c.src]);
       if (d.kind !== "clip") keyEd();
       draw();
     });
@@ -341,6 +365,7 @@
     cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
     cv.addEventListener("contextmenu", function (e) {   // 2.958.0: right-click a marker = gone
       var p = pos(e);
+      if (p.y >= R0 && p.y < RULER) { var hq = hit(p.x, p.y); e.preventDefault(); if (hq && hq.kind === "tpt") delTempo(hq.p); return; }   // 2.961.0
       if (p.y >= RULER) { var ht = hit(p.x, p.y); if (ht && ht.kind === "take") { e.preventDefault(); T.dropTake(L(ht.l), ht.c); S.clip = null; keyEd(); changed(); draw(); msg("Take " + (ht.ti + 1) + " removed"); return; } }   // 2.960.0
       if (p.y >= RULER) { var ha = hit(p.x, p.y); if (ha && ha.kind === "apt") { e.preventDefault(); L(ha.l).auto[ha.k].splice(ha.p, 1); S.apt = null; changed(); heads(); draw(); msg("point removed"); } return; }   // 2.959.0
       var mk = markerAt(p.x); if (mk < 0) return;
@@ -348,21 +373,27 @@
     });
     cv.addEventListener("dblclick", function (e) {
       var pr = pos(e);
+      if (pr.y >= R0 && pr.y < RULER) {   // 2.961.0: a tempo change here (to the beat), at the tempo playing there
+        var tm2 = tmap(), tt = T.snapBeat(tm2, tAt(pr.x), TLD.snap, 1), nb = Math.round(T.bpmAt(tm2, tt) * 10) / 10;
+        if (TLD.tempo.some(function (q) { return Math.abs(q.t - tt) < 0.02; })) return;
+        TLD.tempo.push({ t: tt, bpm: nb, ramp: false }); TLD.tempo = T.cleanTempo(TLD.tempo); S.tpt = TLD.tempo.findIndex(function (q) { return Math.abs(q.t - tt) < 1e-6; });
+        keyEd(); changed(); draw(); msg("♩ A tempo change at " + T.fmt(tt) + " - drag it up / down for its BPM, sideways to move it"); return;
+      }
       if (pr.y < RULER) {   // 2.958.0: double-click a marker = rename it; the ruler elsewhere = a marker there
         var mk = markerAt(pr.x);
-        if (mk < 0) { addMarker(T.snap(tAt(pr.x), bpm(), TLD.snap)); return; }
+        if (mk < 0) { addMarker(snapT(tAt(pr.x), TLD.snap)); return; }
         if (root.H3SynthFile) root.H3SynthFile.nameDialog({ title: "Rename the marker", value: TLD.markers[mk].name }).then(function (n) { if (!n) return; TLD.markers[mk].name = n.replace(/\.sfx$/i, "").slice(0, 32); changed(); draw(); });
         return;
       }
       var p = pos(e), h = hit(p.x, p.y); if (!h || h.kind === "ruler" || h.kind === "keyA" || h.kind === "keyB" || h.kind === "apt" || h.kind === "take" || h.kind === "tgroup") return;
       if (view(h.l) !== "vol") {   // 2.959.0: a point on the automation lane in view
         var k3 = view(h.l), la = L(h.l); la.auto = la.auto || T.cleanAuto(null);
-        var tp3 = laneTop(h.l) + 16, bt3 = laneTop(h.l) + LH - 5, pt = { t: T.snap(tAt(p.x), bpm(), TLD.snap), v: Math.round(Math.max(0, Math.min(1, (bt3 - p.y) / (bt3 - tp3))) * 1000) / 1000 };
+        var tp3 = laneTop(h.l) + 16, bt3 = laneTop(h.l) + LH - 5, pt = { t: snapT(tAt(p.x), TLD.snap), v: Math.round(Math.max(0, Math.min(1, (bt3 - p.y) / (bt3 - tp3))) * 1000) / 1000 };
         la.auto[k3].push(pt); la.auto[k3].sort(function (a, b) { return a.t - b.t; }); S.apt = { l: h.l, p: la.auto[k3].indexOf(pt), k: k3 }; S.sel = h.l; changed(); heads(); draw();
         msg("● " + autoText(k3, pt.v) + " at " + T.fmt(pt.t) + " - drag it, right-click / Delete removes it"); return;
       }
       if (h.c != null && L(h.l).clips[h.c].kind === "notes") { openRoll(h.l, h.c); return; }   // 2.957.0: a note clip -> the piano roll
-      var l = L(h.l), k = T.addKey(l, T.snap(tAt(p.x), bpm(), TLD.snap), T.end(TLD)); if (k < 0) return;
+      var l = L(h.l), k = T.addKey(l, snapT(tAt(p.x), TLD.snap), T.end(TLD)); if (k < 0) return;
       S.sel = h.l; S.key = { l: h.l, k: k }; S.clip = null; keyEd(); changed(); heads(); draw();
       msg("◆ a keyframe on " + l.name + " - drag the ◆ for when and its start volume, the ● for its end volume");
     });
@@ -379,7 +410,7 @@
     cv.addEventListener("dragover", function (e) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = "copy"; });
     cv.addEventListener("drop", function (e) {
       e.preventDefault(); e.stopPropagation();
-      var p = pos(e), li = Math.max(0, Math.min(TLD.layers.length - 1, Math.floor((p.y - RULER) / LH))), t = T.snap(tAt(p.x), bpm(), TLD.snap);
+      var p = pos(e), li = Math.max(0, Math.min(TLD.layers.length - 1, Math.floor((p.y - RULER) / LH))), t = snapT(tAt(p.x), TLD.snap);
       var got = dropped(e);
       if (!got.srcs.length && !got.files.length) { msg("Only sounds go on the timeline (audio from the gallery, the assets, the references, ＋ Sound or a file)", true); return; }
       var name = got.srcs.length ? got.srcs[0].replace(/^\w+:/, "") + (got.srcs.length > 1 ? " + " + (got.srcs.length - 1) : "") : got.files[0].name + (got.files.length > 1 ? " + " + (got.files.length - 1) : "");
@@ -446,14 +477,14 @@
   /** 2.957.0: a note clip -> layer li (null = a new layer named `name`) at t; notes [{m, t, d, v}] from the clip's start */
   function addNotes(notes, name, patch, li, t, len) {
     var ns = T.cleanNotes(notes), end = ns.reduce(function (a, n) { return Math.max(a, n.t + n.d); }, 0);
-    var c = { kind: "notes", name: name || "Notes", start: T.snap(t == null ? S.ph : t, bpm(), TLD.snap), off: 0, len: Math.max(len || 0, end, 60 / bpm() * 4), notes: ns, patch: patch || (O.patch ? O.patch() : null), gain: 1, fi: 0, fo: 0 };
+    var c = { kind: "notes", name: name || "Notes", start: snapT(t == null ? S.ph : t, TLD.snap), off: 0, len: Math.max(len || 0, end, 60 / bpm() * 4), notes: ns, patch: patch || (O.patch ? O.patch() : null), gain: 1, fi: 0, fo: 0 };
     var put = function (i) { L(i).clips.push(c); S.sel = i; S.clip = { l: i, c: L(i).clips.length - 1 }; S.key = null; keyEd(); changed(); heads(); draw(); return c; };
     if (li == null) return newLayer(name).then(put); return Promise.resolve(put(Math.max(0, Math.min(TLD.layers.length - 1, li))));
   }
   function openRoll(li, ci) {
     var l = L(li), c = l && l.clips[ci]; if (!c || c.kind !== "notes" || !root.H3SynthRoll) return false;
     S.sel = li; S.clip = { l: li, c: ci }; keyEd(); heads(); draw();
-    root.H3SynthRoll.open(c, { bpm: bpm(), color: hue(li), changed: function () { c.len = Math.max(c.len, c.notes.reduce(function (a, n) { return Math.max(a, n.t + n.d); }, 0)); changed(); draw(); keyEd(); },
+    root.H3SynthRoll.open(c, { bpm: T.bpmAt(tmap(), c.start), color: hue(li), changed: function () { c.len = Math.max(c.len, c.notes.reduce(function (a, n) { return Math.max(a, n.t + n.d); }, 0)); changed(); draw(); keyEd(); },
       play: function (m, v) { if (O.preview) O.preview(m, v, c.patch); } });
     return true;
   }
@@ -502,10 +533,10 @@
   function drawLoop(x, w, h) {
     var lp = TLD.loop; if (!lp || lp.b - lp.a < 0.02) return;
     var a = px(lp.a), b = px(lp.b), col = lp.on ? "#5dff8a" : lp.punch ? "#ff5a5a" : "#6c7688";
-    x.save(); x.fillStyle = col; x.globalAlpha = lp.on || lp.punch ? 0.32 : 0.18; x.fillRect(a, 0, b - a, RULER);
+    x.save(); x.fillStyle = col; x.globalAlpha = lp.on || lp.punch ? 0.32 : 0.18; x.fillRect(a, 0, b - a, R0);
     x.globalAlpha = lp.on || lp.punch ? 0.06 : 0.03; x.fillRect(a, RULER, b - a, h - RULER);
-    x.globalAlpha = 1; x.fillRect(a, 0, 2, RULER); x.fillRect(b - 2, 0, 2, RULER);
-    x.font = "700 9px system-ui, sans-serif"; x.textAlign = "left"; if (b - a > 40) x.fillText(lp.on ? "⟳ LOOP" : lp.punch ? "PUNCH" : "range", a + 5, RULER - 4);
+    x.globalAlpha = 1; x.fillRect(a, 0, 2, R0); x.fillRect(b - 2, 0, 2, R0);
+    x.font = "700 9px system-ui, sans-serif"; x.textAlign = "left"; if (b - a > 40) x.fillText(lp.on ? "⟳ LOOP" : lp.punch ? "PUNCH" : "range", a + 5, R0 - 4);
     x.restore();
   }
   /** which take group / take row is under (mx, my) on layer i -> hit or null */
@@ -537,7 +568,7 @@
   function setLoop(o) { TLD.loop = T.cleanLoop(Object.assign({}, TLD.loop, o)); paintRecBar(); changed(); draw(); }
   function toggleLoop(k) {
     var lp = TLD.loop || T.cleanLoop(null);
-    if (lp.b - lp.a < 0.02) { var bar = 4 * 60 / bpm(), a = Math.floor(S.ph / bar) * bar; lp = { on: false, punch: false, a: a, b: a + 2 * bar }; TLD.loop = T.cleanLoop(lp); }
+    if (lp.b - lp.a < 0.02) { var tm3 = tmap(), b0 = Math.floor(T.beatAt(tm3, S.ph) / 4 + 1e-9) * 4, a = T.timeAt(tm3, b0); lp = { on: false, punch: false, a: a, b: T.timeAt(tm3, b0 + 8) }; TLD.loop = T.cleanLoop(lp); }
     var o = {}; o[k] = !TLD.loop[k]; if (k === "on" && o.on) o.punch = false; if (k === "punch" && o.punch) o.on = false;
     setLoop(o); msg(k === "on" ? (TLD.loop.on ? "⟳ Loop " + T.fmt(TLD.loop.a) + " - " + T.fmt(TLD.loop.b) + " (Shift+drag the ruler to change it)" : "⟳ Loop off") : (TLD.loop.punch ? "Punch: ● Rec keeps only " + T.fmt(TLD.loop.a) + " - " + T.fmt(TLD.loop.b) : "Punch off"));
   }
@@ -623,7 +654,40 @@
       .then(function (c) { if (c) { l.mute = true; liveMix(); changed(); heads(); draw(); msg("⤓ " + l.name + " bounced to a new layer (the original is muted - unmute it to go back)"); } return c; })
       .catch(function (e) { msg(e.message || String(e), true); return null; });
   }
+  function delTempo(i) {
+    if (!(i > 0) || !TLD.tempo[i]) { msg("The first tempo stays - change its BPM instead", true); return false; }
+    TLD.tempo.splice(i, 1); TLD.tempo = T.cleanTempo(TLD.tempo); S.tpt = null; keyEd(); changed(); draw(); msg("♩ tempo change removed"); return true;
+  }
+  /** ♩ Tempo: the tempo strip under the ruler (its first tempo = the looper's BPM) */
+  function toggleTempo(on) {
+    TLD.tempoOn = on == null ? !TLD.tempoOn : !!on;
+    if (TLD.tempoOn && !TLD.tempo.length) TLD.tempo = [{ t: 0, bpm: bpm(), ramp: false }];
+    if (!TLD.tempoOn) S.tpt = null;
+    layout(); paintTempoBtn(); keyEd(); heads(); changed(); draw();
+    msg(TLD.tempoOn ? "♩ The tempo track: double-click its strip for a tempo change; the grid, ⌗ snap and 🕒 click follow it" : "♩ Tempo track off - the looper's BPM again");
+  }
+  function paintTempoBtn() { var b = $("syTTempo"); if (b) { b.classList.toggle("on", !!TLD.tempoOn); b.setAttribute("aria-pressed", TLD.tempoOn ? "true" : "false"); } }
+  function drawTempo(x, w) {
+    var mp = TLD.tempo, lo = Infinity, hi = -Infinity; mp.forEach(function (q) { lo = Math.min(lo, q.bpm); hi = Math.max(hi, q.bpm); });
+    lo -= 10; hi += 10; var top = R0 + 3, bot = RULER - 3, Y = function (v) { return bot - (bot - top) * (v - lo) / (hi - lo); };
+    x.save(); x.fillStyle = "#0e1117"; x.fillRect(0, R0, w, TS); x.fillStyle = "#262b35"; x.fillRect(0, RULER - 1, w, 1);
+    x.strokeStyle = "#ffae3a"; x.lineWidth = 1.5; x.beginPath();
+    mp.forEach(function (q, j) {
+      var nx = j + 1 < mp.length ? mp[j + 1] : null, x0 = px(q.t), x1 = nx ? px(nx.t) : w + 10;
+      if (j === 0) x.moveTo(x0, Y(q.bpm)); else x.lineTo(x0, Y(q.bpm));
+      x.lineTo(x1, Y(q.ramp && nx ? nx.bpm : q.bpm));
+    });
+    x.stroke();
+    x.font = "600 9px system-ui, sans-serif"; x.textAlign = "left";
+    mp.forEach(function (q, j) {
+      var qx = px(q.t); if (qx < -60 || qx > w) return;
+      x.fillStyle = S.tpt === j ? "#f4f1e8" : "#ffae3a"; x.fillRect(qx - 3, Y(q.bpm) - 3, 6, 6);
+      x.fillStyle = "#ffcf8a"; x.fillText((q.ramp ? "↗" : "") + (Math.round(q.bpm * 10) / 10), qx + 5, R0 + 10);
+    });
+    x.restore();
+  }
   function del() {
+    if (S.tpt != null) return delTempo(S.tpt);
     if (S.apt) { var la = L(S.apt.l); if (la && la.auto && la.auto[S.apt.k]) la.auto[S.apt.k].splice(S.apt.p, 1); S.apt = null; changed(); heads(); draw(); msg("point removed"); return true; }
     if (S.key) { var l = L(S.key.l); l.keys.splice(S.key.k, 1); S.key = null; keyEd(); changed(); draw(); msg("◆ keyframe removed"); return true; }
     if (S.clip) { var lc = L(S.clip.l), cc = lc.clips[S.clip.c], tk = cc && cc.grp; T.dropTake(lc, S.clip.c); S.clip = null; keyEd(); changed(); draw(); msg(tk ? "Take " + (cc.ti + 1) + " removed" : "Clip removed"); return true; }
@@ -655,9 +719,22 @@
     if (c.kind === "notes") btn("🎹 Piano roll", "Edit its notes (or double-click the clip)", function () { openRoll(S.clip.l, S.clip.c); }, "syTRollBtn");
     btn("🗑", "Remove it (Delete)", del);
   }
+  function tempoEd(box) {   // 2.961.0
+    var q = TLD.tempo[S.tpt]; if (!q) { box.classList.remove("on"); return; }
+    var bb = T.barBeat(TLD.tempo, q.t), b = doc.createElement("b"); b.style.color = "#ffae3a"; b.textContent = "♩ Tempo · " + T.fmt(q.t) + " · bar " + bb.bar + "." + bb.beat; box.appendChild(b);
+    var lab = doc.createElement("label"); lab.textContent = " BPM "; var inp = doc.createElement("input"); inp.type = "number"; inp.min = 20; inp.max = 300; inp.step = 0.1; inp.value = q.bpm; inp.id = "syTBpm"; inp.style.width = "64px";
+    inp.addEventListener("keydown", function (e) { e.stopPropagation(); }); inp.onchange = function () { q.bpm = Math.max(20, Math.min(300, Math.round((+inp.value || q.bpm) * 10) / 10)); inp.value = q.bpm; changed(); draw(); };
+    lab.appendChild(inp); box.appendChild(lab);
+    if (S.tpt + 1 < TLD.tempo.length) {
+      var rl = doc.createElement("label"), rc = doc.createElement("input"); rc.type = "checkbox"; rc.id = "syTRamp"; rc.checked = !!q.ramp; rc.onchange = function () { q.ramp = rc.checked; changed(); draw(); };
+      rl.appendChild(rc); rl.appendChild(doc.createTextNode(" Ramp to the next")); rl.title = "↗ The tempo moves evenly to the next change (an accelerando / ritardando) instead of jumping"; box.appendChild(rl);
+    }
+    if (S.tpt > 0) { var x = doc.createElement("button"); x.type = "button"; x.className = "ghost"; x.textContent = "🗑"; x.title = "Remove this tempo change (Delete)"; x.onclick = function () { delTempo(S.tpt); }; box.appendChild(x); }
+  }
   function keyEd() {
     var box = $("syTKeyEd"); if (!box) return;
-    box.innerHTML = ""; box.classList.toggle("on", !!S.key || !!S.clip);
+    box.innerHTML = ""; box.classList.toggle("on", !!S.key || !!S.clip || S.tpt != null);
+    if (S.tpt != null) { tempoEd(box); return; }
     if (!S.key) { if (S.clip) clipEd(box); return; }
     var l = L(S.key.l), K = l && l.keys[S.key.k]; if (!K) { box.classList.remove("on"); return; }
     var col = hue(S.key.l), b = doc.createElement("b"); b.style.color = col; b.textContent = "◆ " + l.name + " · " + T.fmt(K.t); box.appendChild(b);
@@ -791,7 +868,7 @@
   /** 2.960.0: the beats' clicks from `from` to `until`, starting at `at` -> a canceller */
   function clickFor(ctx, from, until, at) {
     if (!(O.clickOn && O.clickOn() && root.H3SynthClick)) return null;
-    return root.H3SynthClick.play(ctx, O.dest(), root.H3SynthClick.times(bpm(), from, until, 4).map(function (c) { return { t: c.t - from, accent: c.accent }; }), at);
+    return root.H3SynthClick.play(ctx, O.dest(), T.beatTimes(tmap(), from, until, 4).map(function (c) { return { t: c.t - from, accent: c.accent }; }), at);
   }
   function play() {
     if (S.playing) return stop();
@@ -901,6 +978,7 @@
     on("syTPlay", function () { O.ctx(); toggle(); });
     on("syTRec", function () { O.ctx(); startRec(); });   // 2.960.0
     on("syTLoop", function () { toggleLoop("on"); });
+    on("syTTempo", function () { toggleTempo(); });   // 2.961.0
     on("syTPunch", function () { toggleLoop("punch"); });
     on("syTStart", function () { if (S.rec) { msg("● Recording - ■ stop it first", true); return; } var p = S.playing; stop(); S.ph = 0; var sc = $("syTScroll"); if (sc) sc.scrollLeft = 0; draw(); if (p) play(); });
     on("syTAddBtn", function () { var b = $("syTPick"); b.classList.toggle("on"); if (b.classList.contains("on") && O.refresh) O.refresh(); });
@@ -919,12 +997,12 @@
   }
   function paintSnap() { var b = $("syTSnap"); if (b) { b.classList.toggle("on", TLD.snap); b.setAttribute("aria-pressed", TLD.snap ? "true" : "false"); } }
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
-  function init(o) { O = o; TLD = T.cleanTL(o.saved); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); draw(); root.setTimeout(warm, 600); }
+  function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
-    tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
+    tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
     info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
-      clip: S.clip, key: S.key, apt: S.apt, arm: armed(), loop: TLD.loop, looping: !!S.loopAB, takes: TLD.layers.map(function (l) { var g = T.groups(l); return Object.keys(g).map(function (k) { return k + ":" + g[k].length; }).join(); }), views: TLD.layers.map(function (l, i) { return view(i); }), ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
+      clip: S.clip, key: S.key, apt: S.apt, tpt: S.tpt == null ? null : S.tpt, tempoOn: !!TLD.tempoOn, tempo: TLD.tempo, bpmNow: T.bpmAt(tmap(), S.ph), arm: armed(), loop: TLD.loop, looping: !!S.loopAB, takes: TLD.layers.map(function (l) { var g = T.groups(l); return Object.keys(g).map(function (k) { return k + ":" + g[k].length; }).join(); }), views: TLD.layers.map(function (l, i) { return view(i); }), ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
 })(typeof window !== "undefined" ? window : globalThis);
