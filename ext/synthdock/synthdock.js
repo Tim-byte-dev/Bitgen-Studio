@@ -230,40 +230,84 @@
   function setOct(o) { G.oct = Math.max(0, Math.min(7, o)); LS.set("oct", G.oct); var b = $("syOct"); if (b) b.textContent = "C" + G.oct; piano(); }
 
   /* ---------------- the keyboard on screen ---------------- */
-  var KB = { n: 36, geo: null };
+  // 2.953.1 (Tim: "can u make the keyboard look a little more like a keyboard"): drawn like a real one - a felt strip
+  // under the case's lip, ivory keys with rounded fronts and a lip, black keys with a top face, a sloped front and a
+  // shadow on the white keys; a pressed key goes down (shorter, its front lip hidden) with an amber glow
+  var KB = { n: 36, geo: null, felt: 7 };
   function pianoGeo(w, h) {
-    var lo = base(), whites = [], blacks = [];
+    var lo = base(), whites = [], blacks = [], F = KB.felt;
     for (var m = lo; m < lo + KB.n + 1; m++) if (!C.isBlack(m)) whites.push(m);
-    var ww = w / whites.length, bw = ww * 0.62, bh = h * 0.6, keys = [];
-    whites.forEach(function (m, i) { keys.push({ m: m, x: i * ww, y: 0, w: ww, h: h, black: false }); });
-    whites.forEach(function (m, i) { if (C.isBlack(m + 1) && m + 1 < lo + KB.n + 1) blacks.push({ m: m + 1, x: (i + 1) * ww - bw / 2, y: 0, w: bw, h: bh, black: true }); });
-    return { keys: keys.concat(blacks), blacks: blacks, whites: keys, w: w, h: h };
+    var ww = w / whites.length, bw = ww * 0.58, bh = (h - F) * 0.62, keys = [];
+    whites.forEach(function (m, i) { keys.push({ m: m, x: i * ww, y: F, w: ww, h: h - F, black: false }); });
+    whites.forEach(function (m, i) { if (C.isBlack(m + 1) && m + 1 < lo + KB.n + 1) blacks.push({ m: m + 1, x: (i + 1) * ww - bw / 2, y: F, w: bw, h: bh, black: true }); });
+    return { keys: keys.concat(blacks), blacks: blacks, whites: keys, w: w, h: h, F: F };
+  }
+  /** a rectangle with rounded BOTTOM corners (the front of a key) */
+  function keyPath(x, X, Y, W, H, r) {
+    r = Math.min(r, W / 2, H / 2);
+    x.beginPath(); x.moveTo(X, Y); x.lineTo(X + W, Y); x.lineTo(X + W, Y + H - r); x.quadraticCurveTo(X + W, Y + H, X + W - r, Y + H);
+    x.lineTo(X + r, Y + H); x.quadraticCurveTo(X, Y + H, X, Y + H - r); x.closePath();
   }
   function piano() {
     var cv = $("syPiano"); if (!cv) return;
-    var w = cv.clientWidth || 600, h = cv.clientHeight || 104, dpr = Math.min(2, root.devicePixelRatio || 1);
+    var w = cv.clientWidth || 600, h = cv.clientHeight || 130, dpr = Math.min(2, root.devicePixelRatio || 1);
     if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
     var x = cv.getContext("2d"); if (!x) return; x.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var g = KB.geo = pianoGeo(w, h);
-    x.fillStyle = "#05060a"; x.fillRect(0, 0, w, h);
+    var g = KB.geo = pianoGeo(w, h), F = g.F;
+    // the bed under the keys (shows in the gaps) and the felt strip
+    x.fillStyle = "#0b0c0f"; x.fillRect(0, 0, w, h);
+    var fe = x.createLinearGradient(0, 0, 0, F);
+    fe.addColorStop(0, "#1c0709"); fe.addColorStop(0.45, "#6a1a22"); fe.addColorStop(1, "#2c0b0f");
+    x.fillStyle = fe; x.fillRect(0, 0, w, F);
+    // white keys
     g.whites.forEach(function (k) {
-      var on = !!G.down[k.m], gr = x.createLinearGradient(0, 0, 0, h);
-      gr.addColorStop(0, on ? "#ffd9a0" : "#d8dbe2"); gr.addColorStop(1, on ? "#ffae3a" : "#f4f5f8");
-      x.fillStyle = gr; x.fillRect(k.x + 1, 0, k.w - 2, h - 1);
-      if (on) { x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 12; x.fillStyle = "#ffae3a"; x.fillRect(k.x + 3, h - 7, k.w - 6, 4); x.restore(); }
-      if (k.m % 12 === 0) { x.fillStyle = "#6b7280"; x.font = "9px system-ui, sans-serif"; x.textAlign = "center"; x.fillText(C.noteName(k.m), k.x + k.w / 2, h - 10); }
+      var on = !!G.down[k.m], X = k.x + 0.6, W = k.w - 1.2, top = F, H = h - F - (on ? 3 : 1), lip = on ? 3 : 7;
+      var gr = x.createLinearGradient(0, top, 0, top + H);
+      gr.addColorStop(0, on ? "#b9b2a3" : "#c8c3b8");
+      gr.addColorStop(0.07, on ? "#e6dfd0" : "#f1eee6");
+      gr.addColorStop(0.8, on ? "#efe8da" : "#fcfbf7");
+      gr.addColorStop(1, on ? "#ddd4c3" : "#ebe7de");
+      keyPath(x, X, top, W, H, 4); x.fillStyle = gr; x.fill();
+      // the front lip
+      var lg = x.createLinearGradient(0, top + H - lip, 0, top + H);
+      lg.addColorStop(0, "rgba(0,0,0,0.10)"); lg.addColorStop(0.25, "rgba(255,255,255,0.55)"); lg.addColorStop(1, "rgba(150,140,120,0.35)");
+      keyPath(x, X, top + H - lip, W, lip, 4); x.fillStyle = lg; x.fill();
+      // its sides
+      x.fillStyle = "rgba(0,0,0,0.10)"; x.fillRect(X + W - 1, top, 1, H - 4);
+      x.fillStyle = "rgba(255,255,255,0.7)"; x.fillRect(X, top, 1, H - 4);
+      if (on) {
+        x.fillStyle = "rgba(255,174,58,0.28)"; keyPath(x, X, top, W, H, 4); x.fill();
+        x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 12; x.fillStyle = "#ffb347"; x.fillRect(X + 4, top + H - 9, W - 8, 2.5); x.restore();
+      }
+      if (k.m % 12 === 0) { x.fillStyle = on ? "#7a5a2a" : "#8d877a"; x.font = "600 9px system-ui, sans-serif"; x.textAlign = "center"; x.fillText(C.noteName(k.m), X + W / 2, top + H - lip - 5); }
     });
+    // the shadow the case's lip throws on the keys
+    var sh = x.createLinearGradient(0, F, 0, F + 10);
+    sh.addColorStop(0, "rgba(0,0,0,0.45)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+    x.fillStyle = sh; x.fillRect(0, F, w, 10);
+    // black keys: a shadow on the whites, the body, the top face, the sloped front
     g.blacks.forEach(function (k) {
-      var on = !!G.down[k.m], gr = x.createLinearGradient(0, 0, 0, k.h);
-      gr.addColorStop(0, on ? "#ffae3a" : "#2a2e37"); gr.addColorStop(1, on ? "#a8601a" : "#0b0c10");
-      x.fillStyle = gr; x.fillRect(k.x, 0, k.w, k.h);
-      if (on) { x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 10; x.fillStyle = "#ffcf8a"; x.fillRect(k.x + 2, k.h - 6, k.w - 4, 3); x.restore(); }
+      var on = !!G.down[k.m], X = k.x, W = k.w, top = F, H = k.h - (on ? 2 : 0), front = on ? 4 : 10;
+      x.save(); x.shadowColor = "rgba(0,0,0,0.55)"; x.shadowBlur = 6; x.shadowOffsetX = 2; x.shadowOffsetY = on ? 1 : 3;
+      keyPath(x, X, top, W, H, 2.5); x.fillStyle = "#08090b"; x.fill(); x.restore();
+      var bd = x.createLinearGradient(X, 0, X + W, 0);
+      bd.addColorStop(0, "#050607"); bd.addColorStop(0.5, "#202228"); bd.addColorStop(1, "#050607");
+      keyPath(x, X, top, W, H, 2.5); x.fillStyle = bd; x.fill();
+      var tf = x.createLinearGradient(0, top, 0, top + H - front);
+      tf.addColorStop(0, on ? "#4a3420" : "#2b2d33"); tf.addColorStop(1, on ? "#2a1a0c" : "#121317");
+      x.fillStyle = tf; x.fillRect(X + 2, top, W - 4, H - front);
+      var ff = x.createLinearGradient(0, top + H - front, 0, top + H);
+      ff.addColorStop(0, on ? "#5a3d1e" : "#3a3c43"); ff.addColorStop(1, "#0a0a0c");
+      keyPath(x, X + 1, top + H - front, W - 2, front, 2); x.fillStyle = ff; x.fill();
+      x.fillStyle = "rgba(255,255,255,0.10)"; x.fillRect(X + 3, top + 2, 1.2, H - front - 4);
+      if (on) { x.save(); x.shadowColor = "#ffae3a"; x.shadowBlur = 10; x.fillStyle = "#ffcf8a"; x.fillRect(X + 3, top + H - front - 3, W - 6, 2); x.restore(); }
     });
   }
   function keyAt(px, py) {
     var g = KB.geo; if (!g) return null;
-    for (var i = 0; i < g.blacks.length; i++) { var b = g.blacks[i]; if (px >= b.x && px < b.x + b.w && py < b.h) return { m: b.m, vel: 0.35 + 0.65 * Math.min(1, py / b.h) }; }
-    for (var j = 0; j < g.whites.length; j++) { var k = g.whites[j]; if (px >= k.x && px < k.x + k.w) return { m: k.m, vel: 0.35 + 0.65 * Math.min(1, py / k.h) }; }
+    var y = Math.max(0, py - g.F);
+    for (var i = 0; i < g.blacks.length; i++) { var b = g.blacks[i]; if (px >= b.x && px < b.x + b.w && y < b.h) return { m: b.m, vel: 0.35 + 0.65 * Math.min(1, y / b.h) }; }
+    for (var j = 0; j < g.whites.length; j++) { var k = g.whites[j]; if (px >= k.x && px < k.x + k.w) return { m: k.m, vel: 0.35 + 0.65 * Math.min(1, y / k.h) }; }
     return null;
   }
   function wirePiano() {
@@ -288,7 +332,7 @@
   function wheel(id, bipolar, apply) {
     var el = $(id); if (!el) return;
     var val = bipolar ? 0 : 0, knobEl = el.querySelector("b");
-    function draw() { var hh = el.clientHeight || 96, n = bipolar ? (val + 1) / 2 : val; knobEl.style.top = Math.round((1 - n) * (hh - 14) + 1) + "px"; el.setAttribute("aria-valuenow", String(Math.round(val * 100))); }
+    function draw() { var hh = el.clientHeight || 96, n = bipolar ? (val + 1) / 2 : val; knobEl.style.top = Math.round((1 - n) * (hh - 8) + 2) + "px"; el.setAttribute("aria-valuenow", String(Math.round(val * 100))); }
     function put(v) { val = Math.max(bipolar ? -1 : 0, Math.min(1, v)); draw(); apply(val); }
     var drag = null;
     el.addEventListener("pointerdown", function (e) { e.preventDefault(); drag = { y: e.clientY, v: val }; try { el.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } ctx(); });

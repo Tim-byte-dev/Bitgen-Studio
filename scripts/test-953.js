@@ -126,6 +126,9 @@ const call = (k, req) => new Promise((ok) => routes[k](req, res(ok)));
     && /LS\.set\("user", JSON\.stringify\(G\.user\)\)/.test(JS) && /LS\.set\("loop", JSON\.stringify\(LP\.loop\(\)\)\)/.test(JS) && !/window\.prompt|root\.prompt\(/.test(JS));
   check("synthloop.js: a look-ahead clock on the AudioContext (the screen follows it), a row's sound from the kit / /api/synth/samples/file / /api/sfx/file, a file dropped on a row",
     /setInterval\(tick, 25\)/.test(LJ) && /ctx\.currentTime \+ 0\.14/.test(LJ) && /"\/api\/synth\/samples\/file\/"/.test(LJ) && /"\/api\/sfx\/file\/"/.test(LJ) && /addEventListener\("drop"/.test(LJ) && /new OAC\(2,/.test(LJ));
+  check("2.953.1 (Tim: \"can u make the keyboard look a little more like a keyboard\"): a case with a nameplate, the wheels in a well, a felt strip, ivory keys with a front lip, black keys with a top face + sloped front + a shadow, a pressed key goes down",
+    /class="sykeyhead"/.test(DH) && /class="sykeyrow"/.test(DH) && /\.sywheels \{[^}]*inset 0 2px 6px #000/.test(DH) && /var KB = \{ n: 36, geo: null, felt: 7 \}/.test(JS) && /function keyPath\(x, X, Y, W, H, r\)/.test(JS)
+    && /\/\/ the front lip/.test(JS) && /x\.shadowOffsetY = on \? 1 : 3;/.test(JS) && /H = h - F - \(on \? 3 : 1\)/.test(JS) && /var y = Math\.max\(0, py - g\.F\);/.test(JS));
   check("routes/index.js mounts routes/synth.js; server.js untouched", /require\("\.\/synth"\)\.mount\(app\)/.test(src("routes/index.js")) && !/synth/i.test(src("misc/server.js")));
   check("synth_samples/ is this PC's: .gitignore, misc/_gitignore, make_zips.sh", /^synth_samples\/$/m.test(src(".gitignore")) && /^synth_samples\/$/m.test(src("misc/_gitignore")) && /! -path "\.\/synth_samples\/\*"/.test(src("scripts/make_zips.sh")));
   console.log(`\nRESULT: ${P} passed, ${F} failed`);

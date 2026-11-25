@@ -52,16 +52,29 @@
           .syscreen { flex: 1 1 220px; min-width: 180px; padding: 4px; position: relative; background: #05070a; }
           #syScope { width: 100%; height: 100%; min-height: 110px; display: block; border-radius: 6px; }
           #syScreenTxt { position: absolute; left: 8px; top: 6px; padding: 1px 5px; border-radius: 4px; background: #05070acc; font: 600 10px/1.3 ui-monospace, Consolas, monospace; color: #38e1ffcc; pointer-events: none; text-shadow: 0 0 6px #38e1ff88; }
-          .sykeys { display: flex; gap: 6px; align-items: stretch; }
-          .sywheels { display: flex; gap: 4px; padding-bottom: 14px; }
-          .sywheel { width: 18px; min-height: 96px; border-radius: 6px; background: linear-gradient(90deg, #0a0c10, #1c2029, #0a0c10); border: 1px solid #2a2f3a; position: relative; cursor: ns-resize; touch-action: none; }
-          .sywheel b { position: absolute; left: 2px; right: 2px; height: 12px; border-radius: 3px; background: #38e1ff; box-shadow: 0 0 8px #38e1ff; }
+          /* 2.953.1: the keyboard as an instrument - a case with a nameplate, the wheels in a well, an octave display */
+          .sykeys { background: linear-gradient(180deg, #2a2d35 0%, #1b1d22 40%, #131418 100%); border: 1px solid #30343e; border-radius: 12px;
+                    padding: 6px 10px 10px; box-shadow: inset 0 1px 0 #ffffff14, inset 0 -2px 0 #00000066, 0 6px 16px #00000088; display: flex; flex-direction: column; gap: 6px; }
+          .sykeyhead { display: flex; align-items: center; gap: 8px; font: 700 9px/1 system-ui, sans-serif; letter-spacing: .28em; color: #7f8899; padding: 0 2px; }
+          .sykeyhead i { width: 6px; height: 6px; border-radius: 50%; background: #5dff8a; box-shadow: 0 0 6px #5dff8a; }
+          .sykeyhead span { margin-left: auto; letter-spacing: .12em; font-weight: 600; color: #5d6575; }
+          .sykeyhead .grille { flex: 0 0 90px; height: 8px; border-radius: 3px; background: repeating-linear-gradient(90deg, #0b0c0f 0 2px, #2a2d35 2px 4px); }
+          .sykeyrow { display: flex; gap: 8px; align-items: stretch; }
+          .sywheels { display: flex; gap: 6px; padding: 6px 7px 18px; background: #0b0c0f; border-radius: 8px; box-shadow: inset 0 2px 6px #000, 0 1px 0 #ffffff10; }
+          .sywheel { width: 20px; min-height: 104px; border-radius: 5px; position: relative; cursor: ns-resize; touch-action: none; outline: none;
+                     background: linear-gradient(90deg, rgba(0,0,0,.75), rgba(0,0,0,0) 32%, rgba(255,255,255,.06) 50%, rgba(0,0,0,0) 68%, rgba(0,0,0,.75)),
+                                 repeating-linear-gradient(0deg, #34373f 0 2px, #1a1c21 2px 5px); border: 1px solid #000; }
+          .sywheel:focus-visible { box-shadow: 0 0 0 1px #ffae3a; }
+          .sywheel b { position: absolute; left: 1px; right: 1px; height: 4px; border-radius: 2px; background: #38e1ff; box-shadow: 0 0 8px #38e1ff; }
           .sywheel#syMod b { background: #ff4fd8; box-shadow: 0 0 8px #ff4fd8; }
-          .sywheel span { position: absolute; bottom: -14px; left: -6px; right: -6px; text-align: center; font-size: 9px; color: #8b95a7; }
-          .syoct { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 44px; }
-          .syoct b { font: 700 12px/1 ui-monospace, Consolas, monospace; color: #ffae3a; text-shadow: 0 0 6px #ffae3a88; }
+          .sywheel span { position: absolute; bottom: -15px; left: -6px; right: -6px; text-align: center; font-size: 9px; color: #8b95a7; letter-spacing: .06em; }
+          .syoct { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 46px; }
+          .syoct b { font: 700 12px/1 ui-monospace, Consolas, monospace; color: #ffae3a; text-shadow: 0 0 6px #ffae3a88; background: #07080a; border: 1px solid #000;
+                     border-radius: 4px; padding: 4px 6px; box-shadow: inset 0 1px 3px #000; min-width: 30px; text-align: center; }
+          .syoct small { font-size: 8.5px; color: #6c7688; letter-spacing: .14em; }
           .syoct button { padding: 0 8px !important; }
-          #syPiano { flex: 1; min-width: 300px; height: 104px; display: block; border-radius: 6px; cursor: pointer; touch-action: none; outline: none; background: #05060a; }
+          #syPiano { flex: 1; min-width: 300px; height: 130px; display: block; border-radius: 3px 3px 7px 7px; cursor: pointer; touch-action: none; outline: none; background: #0b0c0f;
+                     box-shadow: 0 0 0 1px #000, 0 2px 0 #ffffff0d; }
           #syPiano:focus-visible { box-shadow: 0 0 0 1px #ffae3a; }
           .syloop { background: linear-gradient(180deg, #171a21, #101217); border: 1px solid #262b35; border-radius: 9px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
           .sylbar h4 { margin: 0 6px 0 0; font: 700 10px/1 system-ui, sans-serif; letter-spacing: .18em; color: #ffd23a; text-shadow: 0 0 6px #ffd23a; }
@@ -122,6 +135,8 @@
           <div class="sypanel syscreen"><canvas id="syScope" aria-label="The sound's wave"></canvas><div id="syScreenTxt"></div></div>
         </div>
         <div class="sykeys">
+          <div class="sykeyhead"><i></i>SYNTH<b style="color:#38e1ff">STATION</b><div class="grille"></div><span>37 KEYS · VELOCITY · MIDI</span></div>
+          <div class="sykeyrow">
           <div class="sywheels">
             <div class="sywheel" id="syBend" role="slider" tabindex="0" aria-label="Pitch bend" title="Pitch bend - drag up / down, it springs back"><b></b><span>Bend</span></div>
             <div class="sywheel" id="syMod" role="slider" tabindex="0" aria-label="Mod wheel" title="Mod wheel - adds to the LFO's depth"><b></b><span>Mod</span></div>
@@ -130,8 +145,10 @@
             <button class="ghost" id="syOctUp" type="button" title="An octave up (↑)">＋</button>
             <b id="syOct">C3</b>
             <button class="ghost" id="syOctDn" type="button" title="An octave down (↓)">－</button>
+            <small>OCTAVE</small>
           </div>
           <canvas id="syPiano" tabindex="0" aria-label="Keyboard - click or drag; the computer keys Z to / and Q to ] play it too"></canvas>
+          </div>
         </div>
         <div class="syloop">
           <div class="sylbar">

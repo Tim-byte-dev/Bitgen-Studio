@@ -1626,7 +1626,9 @@ as you left them come back next time.
 focused type on the computer: the **Z** row is the octave shown (Z = C, S = C#, X = D ...), the **Q** row the octave above,
 **↑ / ↓** change the octave (or **＋ / －** beside the keys). **Bend** springs back to the middle; **Mod** adds to the LFO's
 depth. A **MIDI keyboard** plugged in plays it too (pick the input, or All inputs): velocity, pitch bend, the mod wheel,
-the sustain pedal and the volume slider. **⏹ All off** silences every note.
+the sustain pedal and the volume slider. **⏹ All off** silences every note. Since 2.953.1 the keyboard is drawn like an
+instrument: a case with the wheels in a well and an octave display, a felt strip, ivory keys and black keys that go down
+when played.
 
 **The looper.** 8 rows x 16 steps, 8 patterns **A-H** (A, B and C come with a beat to start from). Click a pad to put a
 step on or off; **Shift-click** or **right-click** gives it an **accent** (louder); drag across pads to paint. Each row: its
