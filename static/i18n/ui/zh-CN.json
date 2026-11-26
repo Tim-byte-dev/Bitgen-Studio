@@ -12169,9 +12169,7 @@
   "＋ 📤 Invoice we sent": "＋ 📤 已开发票",
   "＋ 📥 Bill to pay": "＋ 📥 待付账单",
   "＋ 🧾 Receipt": "＋ 🧾 收据",
-  "－ Figure Smaller": "－ 图缩小",
-  "🧱 Picture → 3D scene": "🧱 图片 → 3D 场景",
-  "🧱 Picture → 3D scene: a picture's objects made 3D and put where they stood, its surroundings as a 360° panorama round you, a sound for the place and each object - one scene .glb, all on this computer": "🧱 图片 → 3D 场景：把图片中的物体做成 3D 并放回原位，周围用 360° 全景包围，为场景和每个物体配上声音——一个场景 .glb，全部在这台电脑上完成"
+  "－ Figure Smaller": "－ 图缩小"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",
