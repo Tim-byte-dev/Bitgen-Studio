@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.981.0** — 📷 A Daz Body From a Photo, Two Ways - A Fit the Figure's Own Body Dials to the Photo's Proportions, B a 3D Scan of the Photo With the Figure Wrapped Onto It - the Photo / the Scan Painted Into the Figure's Own UVs; Each Try a New Character: Try Both, Keep the Better One
 - **2.980.0** — 🧬 DAZ Tools on the Top Menu Bar: the 📚 DAZ Library as a Left Docker, the 🧭 DAZ Explorer (Characters and Their Components) and 🎚 Shape Controls as a Right Docker - Shown When On, Hidden When Off; Build, Pose, Open and Save From the Explorer
 - **2.979.0** — 🧍 Pose a Daz Character in 3D With Its Own Skeleton (Click the Body to Pick a Bone, the Figure's Own Limits, Mirrored Sides, 💾 Kept Poses) and 💪 Its Own Muscle Reactions Live: the JCM Formulas From Your Daz Content (Our Own Flex When a Figure Has None); a Character's Dial Formulas (ERCs) Applied When It Is Built - Still Not a Replacement for Daz Studio (Light Tasks)
 - **2.978.0** — 🧱 Picture → 3D Scene Checks Every Model It Needs First (One Download Box: the Edit Models, the 360 LoRA, the 3D Engine, the Sound Models), a Failed Step Says Why and ↻ Try Again Carries On; One Picture Picker for 🧱 Picture → 3D Scene and the Daz Library's Face Photo: 🖼 Gallery, 🗂 Assets, 📌 References, 📁 a Folder or 📄 a File of This Computer; 💾 Save / 📂 Load a Daz Character

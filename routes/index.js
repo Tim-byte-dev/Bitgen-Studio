@@ -246,6 +246,7 @@ function mount(app) {
   require("./picScene").mount(app);    // 2.975.0: 🧱 Picture → 3D scene (the Sketcher) - lib/picScene.js
   require("./rig").mount(app);         // 2.976.0: 🦴 Rig it - UniRig skeleton + skin weights for a 3D model (lib/rigAddon.js)
   require("./dazLibrary").mount(app);  // 2.977.0: 📚 the Daz library read by bitGen itself (lib/dazLib.js) - not a replacement for Daz Studio
+  require("./dazBody").mount(app);     // 2.981.0: 📷 a Daz body from a photo - A fit the dials / B scan + wrap (lib/dazBodyFit.js)
   require("./segment").mount(app);     // 2.390.0: Segment Anything (SAM + CLIPSeg) for the image editor - select / mask / layers
   require("./psd").mount(app);         // 2.390.0: the image editor's PSD files kept in the project (projects/<p>/psd)
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)

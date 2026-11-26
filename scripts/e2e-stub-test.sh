@@ -15247,6 +15247,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui979-ui.js > /tmp/ui979.log 2>&
 node scripts/test-980.js > /tmp/t980.log 2>&1 && ok "2.980.0 units: 🧬 DAZ Tools (groups, characters, wear, the kept scene, the grid template, the wiring)" || { bad "2.980.0 units"; grep -a "^FAIL" -A1 /tmp/t980.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui980-ui.js > /tmp/ui980.log 2>&1 && ok "2.980.0 browser test: 🧬 DAZ Tools - the left / right dockers, a character + its components, a dial, build, pose, save / load, kept, off" || { bad "2.980.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui980.log | head -8; }
 
+node scripts/test-981.js > /tmp/t981.log 2>&1 && ok "2.981.0 units: 📷 a Daz body from a photo - the body points, the doll's marks, A's dial fit, B's scan read / align / wrap, the project's morphs" || { bad "2.981.0 units"; grep -a "^FAIL" -A1 /tmp/t981.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui981-ui.js > /tmp/ui981.log 2>&1 && ok "2.981.0 browser test: 📷 both ways through the real routes - A fit + the photo painted, B scan + wrap + the scan baked, keep the better one" || { bad "2.981.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui981.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

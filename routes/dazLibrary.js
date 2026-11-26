@@ -68,7 +68,15 @@ function mount(app) {
         if (!lm) return res.status(422).json({ error: "the Vision model found no face in that photo (is a Vision model chosen in the prompt docker?)" });
         face = { photo: pic, landmarks: lm };
       }
-      const r = await D.build({ root: b.root, rel: b.rel, dials: b.dials, wear: b.wear, drape: b.drape || false, face, maxTex: b.maxTex, muscles: b.muscles !== false });
+      // 2.981.0: 📷 paint {mode "photo" | "face", photos [{picture, where, points, side}]} | {mode "scan", scan, align}; custom = the project's own morphs
+      let paint = null; const pt = b.paint || null;
+      if (pt && pt.mode === "scan" && pt.scan) paint = { scan: path.join(require("../lib/m3d").dir(), path.basename(String(pt.scan))), align: pt.align };
+      else if (pt && pt.photos && pt.photos.length) {
+        const photos = pt.photos.map((x) => ({ file: require("./sceneAI").pictureOf(x.picture, x.where), points: x.points, side: x.side === "back" ? "back" : "front" })).filter((x) => x.file && x.points);
+        if (pt.mode === "face") { const f0 = photos.find((x) => x.side === "front"); if (f0 && f0.points.left_eye && f0.points.right_eye && f0.points.chin && !face) face = { photo: f0.file, landmarks: { left_eye: f0.points.left_eye, right_eye: f0.points.right_eye, mouth: f0.points.mouth, chin: f0.points.chin } }; }
+        else if (photos.length) paint = { photos };
+      }
+      const r = await D.build({ root: b.root, rel: b.rel, dials: b.dials, wear: b.wear, drape: b.drape || false, face, maxTex: b.maxTex, muscles: b.muscles !== false, paint, custom: Array.isArray(b.custom) ? b.custom.slice(0, 8) : [] });
       const stem = String(b.name || path.basename(String(b.rel || "character")).replace(/\.duf$/i, "")).replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 50) || "character";
       const m3d = require("../lib/m3d"); let name = stem + "_daz.glb";
       for (let i = 2; fs.existsSync(path.join(m3d.dir(), name)); i++) name = `${stem}_daz_${i}.glb`;

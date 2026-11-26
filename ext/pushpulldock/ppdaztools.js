@@ -41,10 +41,17 @@
       id: String(c.id || ("c" + (uid++))), name: String(c.name || c.fig.name || "Character").slice(0, 60), fig: { root: c.fig.root, rel: c.fig.rel, name: c.fig.name || "", kind: c.fig.kind || "figure" },
       wear: (Array.isArray(c.wear) ? c.wear : []).filter((w) => w && w.rel).slice(0, 60), dials: c.dials && typeof c.dials === "object" ? Object.fromEntries(Object.entries(c.dials).filter(([, v]) => isFinite(+v) && +v)) : {},
       drape: { kinds: (c.drape && Array.isArray(c.drape.kinds) ? c.drape.kinds : []).filter((k) => /^(clothing|hair|other)$/.test(k)), frames: Math.max(5, Math.min(240, +(c.drape && c.drape.frames) || 45)) },
-      muscles: c.muscles !== false, last: typeof c.last === "string" ? c.last : "" }));
+      muscles: c.muscles !== false, last: typeof c.last === "string" ? c.last : "",
+      custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "" }));
     return { chars, sel: chars.some((c) => c.id === s.sel) ? s.sel : (chars[0] ? chars[0].id : "") };
   }
-  const pure = { NOTE, KINDS, TEMPLATE, groupDials, newChar, wearToggle, cleanScene };
+  /** 2.981.0: a copy of a character for a 📷 try (its figure, what it wears, its physics; dials / morphs / paint from the try) */
+  function tryChar(base, route, n) {
+    const c = newChar(base.fig, 1); c.name = base.name + " · 📷 " + route + (n > 1 ? " " + n : ""); c.wear = base.wear.map((w) => Object.assign({}, w));
+    c.drape = { kinds: base.drape.kinds.slice(), frames: base.drape.frames }; c.muscles = base.muscles; c.dials = Object.assign({}, base.dials); c.custom = (base.custom || []).slice(); c.from = route; return c;
+  }
+  const ROUTES = { A: "Fit the dials (fast - the figure's own body dials)", B: "Scan + wrap (closer - a 3D shape from the photo, the figure wrapped onto it)" };
+  const pure = { NOTE, KINDS, TEMPLATE, ROUTES, groupDials, newChar, wearToggle, cleanScene, tryChar };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -80,6 +87,7 @@
       + ".dzhs{height:7px;cursor:row-resize;flex:none;background:var(--line,#3a352d)}.dzhs:hover,.dzhs.drag{background:var(--tiger-deep,#a8601a)}"
       + "#dzDials{flex:1;overflow:auto;padding:2px 6px}#dzDials details{border-bottom:1px solid #ffffff12}#dzDials summary{cursor:pointer;padding:3px 0;opacity:.85}"
       + ".dzdial{display:flex;gap:5px;align-items:center;padding:1px 0}.dzdial span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dzdial input[type=range]{width:42%}.dzdial output{width:38px;text-align:right;font-variant-numeric:tabular-nums}.dzdial.set span{color:#38e1ff}"
+      + "#dzPhoto{border-top:1px solid var(--line,#3a352d);padding:3px 6px}#dzPhoto summary{cursor:pointer;font-weight:600}.dzph{display:flex;flex-direction:column;gap:4px;padding:4px 0}.dzrow{display:flex;gap:6px;align-items:center}.dzrow select,.dzrow input{flex:1;min-width:0}"
       + "#dzMsg{padding:4px 6px;border-top:1px solid var(--line,#3a352d);min-height:22px;font-size:11px;opacity:.9}"
       + ".dzsplit{cursor:col-resize}";
     doc.head.appendChild(s);
@@ -112,6 +120,14 @@
       + '<div id="dzTree" role="tree" aria-label="Characters and their components"></div>'
       + '<div class="dzopts" id="dzOpts"><label title="Our own cloth - a light drape, not dForce"><input type="checkbox" data-drape="clothing"> 💨 Clothing</label><label><input type="checkbox" data-drape="hair"> Hair</label><label><input type="checkbox" data-drape="other"> Other</label>'
       + '<label title="Settle frames">frames <input type="number" id="dzFrames" min="5" max="240" value="45"></label><label title="The figure\'s own JCMs (or our own flex) - 🕺 Pose plays them"><input type="checkbox" id="dzMuscle" checked> 💪 Muscles</label></div>'
+      + '<details id="dzPhoto"><summary title="Make this character\'s body from a photo - pick a way, ▶ Try; each try is a new character: try both, keep the better one">📷 Body from a photo</summary><div class="dzph">'
+      + '<div id="dzPhotoPick"></div><label><input type="checkbox" id="dzBackOn"> ＋ a back photo (paints the back)</label><div id="dzBackPick" hidden></div>'
+      + '<label class="dzrow">Way <select id="dzRoute">' + Object.entries(ROUTES).map(([k, v]) => '<option value="' + k + '">' + k + " - " + v + "</option>").join("") + "</select></label>"
+      + '<label class="dzrow" title="Optional - the person\'s real height makes the fit exact in size">Height <input type="number" id="dzHeight" min="50" max="250" placeholder="cm"></label>'
+      + '<label class="dzrow">Paint <select id="dzPaint"><option value="body">the photo into the whole body\'s textures</option><option value="face">the face only</option><option value="none">nothing (shape only)</option></select></label>'
+      + '<div id="dzBOpts" hidden><label class="dzrow">3D engine <select id="dzEngine"><option value="auto">auto</option><option value="hunyuan">Hunyuan3D 2.1</option><option value="trellis">TRELLIS.2</option></select></label><label><input type="checkbox" id="dzTurn"> the scan faces away (turn it)</label></div>'
+      + '<div class="hint">Light, not exact: a standing person, head to feet, facing the camera; loose clothing reads as body. The photo\'s clothes are painted too.</div>'
+      + '<button type="button" class="primary" id="dzTry">▶ Try it</button></div></details>'
       + '<div class="dzbtns"><button type="button" class="primary" id="dzBuild">🧍 Build</button><button type="button" class="ghost" id="dzPose" disabled>🕺 Pose</button><button type="button" class="ghost" id="dzOpen" disabled title="Into the Sketcher model (plain faces)">⤒ Open</button><button type="button" class="ghost" id="dzSave">💾 Save</button></div></div>'
       + '<div class="dzhs" id="dzHSplit" role="separator" aria-orientation="horizontal" title="Drag to share the height"></div>'
       + '<div id="dzShape"><div class="dzhead"><b>🎚 Shape controls</b><label style="font-weight:400" title="Only the dials that are not 0"><input type="checkbox" id="dzChanged"> changed</label><button type="button" class="ghost dzx" id="dzReset" title="Every dial of this character back to 0">↺</button></div>'
@@ -157,6 +173,12 @@
     $("dzBuild").onclick = buildChar; $("dzPose").onclick = pose; $("dzOpen").onclick = openIt; $("dzSave").onclick = saveChar;
     $("dzChars").onchange = () => { const v = $("dzChars").value; $("dzChars").value = ""; if (v) loadChar(v); };
     $("dzChanged").onchange = () => { st.changedOnly = $("dzChanged").checked; dialsPaint(); };
+    // 2.981.0: 📷 a body from a photo
+    $("dzPhoto").addEventListener("toggle", () => { if ($("dzPhoto").open && !st.pick && root.H3PicPick) st.pick = root.H3PicPick.mount($("dzPhotoPick"), { title: "The photo (a person standing, head to feet)", onPick: (it) => { st.photo = it; say("📷 " + it.name + " - ▶ Try it"); } }); });
+    $("dzBackOn").onchange = () => { $("dzBackPick").hidden = !$("dzBackOn").checked; if ($("dzBackOn").checked && !st.backPick && root.H3PicPick) st.backPick = root.H3PicPick.mount($("dzBackPick"), { title: "The back photo", onPick: (it) => { st.back = it; } }); };
+    $("dzRoute").onchange = () => { $("dzBOpts").hidden = $("dzRoute").value !== "B"; LS.set("route", $("dzRoute").value); };
+    $("dzRoute").value = LS.get("route", "A") === "B" ? "B" : "A"; $("dzBOpts").hidden = $("dzRoute").value !== "B";
+    $("dzTry").onclick = () => tryIt($("dzRoute").value);
     $("dzReset").onclick = () => { const c = cur(); if (!c) return; c.dials = {}; keep(); dialsPaint(); say("↺ every dial of " + c.name + " back to 0"); };
   }
   /* ---------------- 📚 the library */
@@ -224,12 +246,60 @@
     st.busy = true; tree(); say("🧍 building " + c.name + "…");
     try {
       const j = await jpost("/api/dazlib/build", { root: c.fig.root, rel: c.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })),
-        wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name });
+        wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim(),
+        custom: c.custom || [], paint: c.paint || null });
       c.last = j.model; keep();
       const mu = j.info.muscles || {};
       say("✔ " + j.model + " - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (mu.kind === "jcm" ? ", 💪 " + mu.shapes + " JCMs" : mu.kind === "flex" ? ", 💪 our flex" : "") + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
     } catch (e) { say("⚠ " + e.message); }
     st.busy = false; tree();
+  }
+  /* ---------------- 📷 a body from a photo: A fit the dials / B scan + wrap (lib/dazBodyFit.js) - each try = a new character */
+  const sleep = (ms) => new Promise((r) => root.setTimeout(r, ms));
+  async function tryIt(route) {
+    const base = cur(); if (!base) { say("pick a character first - its figure is the one shaped (click a figure in the 📚 DAZ Library)"); return; }
+    if (!st.photo) { say("📷 pick the photo first (🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder, 📄 a file)"); return; }
+    if (st.busy) return; st.busy = true; tree(); $("dzTry").disabled = true;
+    const paint = $("dzPaint").value, PP = root.H3PicPick;
+    try {
+      say("📷 putting the photo into the project…");
+      const ph = await PP.toProject(st.photo), bk = $("dzBackOn").checked && st.back ? await PP.toProject(st.back) : null;
+      const markOf = async (p, side) => { say("📷 finding the body in the " + side + " photo (the Vision model)…"); const m = await jpost("/api/dazlib/body/marks", { picture: p.name, where: p.where }); return { picture: p.name, where: p.where, points: m.points, w: m.w, h: m.h, side }; };
+      const dialsNow = Object.keys(base.dials).filter((u) => +base.dials[u]).map((u) => ({ url: u, value: +base.dials[u] }));
+      const n = st.scene.chars.filter((x) => x.name.indexOf(base.name + " · 📷 " + route) === 0).length + 1, c = tryChar(base, route, n);
+      let front = null, back = null;
+      if (route === "A" || paint === "face") front = await markOf(ph, "front");       // B paints the body from its scan
+      if (route === "A" && bk && paint === "body") back = await markOf(bk, "back");
+      let report = "";
+      if (route === "A") {
+        say("📷 A: fitting " + base.name + "'s body dials to the photo…");
+        const f = await jpost("/api/dazlib/body/fit", { root: base.fig.root, rel: base.fig.rel, dials: dialsNow, points: front.points, w: front.w, h: front.h, height_cm: +$("dzHeight").value || 0 });
+        c.dials = {}; f.dials.forEach((d) => { c.dials[d.url] = d.value; });
+        report = "A: " + f.changed.length + " dial(s) moved, the proportions off by " + Math.round(f.error.before * 100) + "% -> " + Math.round(f.error.after * 100) + "%";
+        if (paint === "body") c.paint = { mode: "photo", photos: [front].concat(back ? [back] : []) }; else if (paint === "face") c.paint = { mode: "face", photos: [front] };
+      } else {
+        const engine = $("dzEngine").value, MF = root.H3ModelsFound;
+        if (MF) { say("📷 B: checking the 3D engine's models…"); let need = null; try { need = await jget("/api/picscene/needs?engine=" + encodeURIComponent(engine) + "&sound=0"); } catch (e) { need = null; } if (need && need.files && need.files.length && !(await MF.ensure({ files: need.files, from: "Body from a photo" }))) throw new Error("not started - the 3D engine's models are missing (⬇ Download them, then ▶ Try again)"); }
+        const sj = await jpost("/api/dazlib/body/scan", { picture: ph.name, where: ph.where, engine, name: base.name });
+        for (let t = 0; ; t++) {
+          let j = null; try { j = await jget("/api/jobs/" + encodeURIComponent(sj.job)); } catch (e) { j = null; }
+          if (j && j.status === "done") break;
+          if (j && /failed|cancel/.test(j.status)) throw new Error("the 3D shape did not come (the job " + sj.job + " " + j.status + (j.error ? ": " + j.error : "") + ")");
+          say("📷 B: making the 3D shape from the photo (" + ((j && j.status) || "queued") + ", " + t * 2 + " s)…"); await sleep(2000);
+        }
+        say("📷 B: wrapping " + base.name + " onto the 3D shape…");
+        const w = await jpost("/api/dazlib/body/wrap", { root: base.fig.root, rel: base.fig.rel, dials: dialsNow, scan: sj.model, turn: $("dzTurn").checked, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim() });
+        c.custom = (c.custom || []).concat([w.custom]);
+        report = "B: " + w.moved_vertices + " vertices moved (" + w.moved_mm + " mm on average) - your morph \"" + w.custom + "\"";
+        if (paint === "body") c.paint = { mode: "scan", scan: sj.model, align: w.align }; else if (paint === "face" && front) c.paint = { mode: "face", photos: [front] };
+      }
+      st.scene.chars.push(c); st.scene.sel = c.id; keep(); st.busy = false; tree(); dialsLoad(); list();
+      say("📷 " + report + " - building…");
+      await buildChar();
+      say("📷 " + c.name + " - " + report + ". Compare it with the other try (🕺 Pose), ✕ the one you don't keep. " + ($("dzMsg").textContent.indexOf("⚠") >= 0 ? $("dzMsg").textContent : ""));
+      st.lastTry = { route, name: c.name, report };
+    } catch (e) { say("⚠ 📷 " + e.message); }
+    st.busy = false; $("dzTry").disabled = false; tree();
   }
   function pose() { const c = cur(); if (c && c.last && root.H3DazPose) root.H3DazPose.open(c.last); }
   async function openIt() {
@@ -304,6 +374,6 @@
     root.setTimeout(button, 1500);   // after the app strip has built itself
     if (LS.get("on", false)) toggle(true);
   }
-  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
+  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1266,6 +1266,24 @@ right of it. Press it again to hide both (it remembers on / off, the widths and 
   moved, ↺ puts them all back to 0, double-click a slider for 0. 🧍 Build makes the new shape.
 - Drag the dockers' inner edges to size them, and the bar between the explorer and the shape controls to share the height.
 
+**📷 Body from a photo (2.981.0)** - in the 🧭 DAZ Explorer: shape the picked character to a photo of a person. It stays your
+own Daz figure, so its UVs, rig, muscle shapes and clothing fit come with it, and the photo is painted into those UVs.
+Pick the photo (a person standing, head to feet, facing the camera), pick the **way**, press **▶ Try it**. Each try is a NEW
+character in the explorer (\"Doll · 📷 A\", \"Doll · 📷 B\"), built straight away: try both, compare them (🕺 Pose), ✕ the
+one you don't keep.
+- **A - Fit the dials (fast)**: the Vision model (the one picked in the prompt docker) marks the body - head, shoulders,
+  elbows, wrists, hips, knees, ankles and the outline at the chest, waist and hips - and bitGen fits the figure's own
+  body dials (height, weight, proportions… whatever your library has, through their formulas) to those proportions.
+  Type the person's **height** to make the size exact too. The shape stays inside what the dials can make.
+- **B - Scan + wrap (closer)**: the photo becomes a 3D shape with the 3D engine (Hunyuan3D 2.1 or TRELLIS.2 - their models
+  are checked first, ⬇ Download if missing), then the figure is wrapped onto it: each part pulled to the scan's surface,
+  smoothed, hands / feet / face held back. The result is a morph of your own (`<project>/dazmorphs/<name>.json`) on the
+  new character. If the body comes out back to front, tick **the scan faces away** and try again.
+- **Paint**: *the whole body* (A: the front photo, + a back photo if you add one, projected into every skin texture;
+  B: the scan's own colours baked in all round), *the face only*, or *nothing*.
+- Light, not exact: loose clothing reads as body, and the photo's clothes are painted onto the skin too - a photo in
+  fitted clothes works best. Daz Studio (Face Transfer, its shaping) does far more.
+
 > **This is not a replacement for Daz Studio** - it is made for light tasks. Daz Studio is a very powerful character
 > creator (full shaping with its formulas, HD detail, Iray, dForce, posing): use it for real character work.
 
