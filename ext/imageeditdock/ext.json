@@ -110,6 +110,7 @@
     "pcdtpout.js",
     "pcflow.js",
     "pclaser.js",
+    "pcpano.js",
     "pczones.js",
     "pcpending.js",
     "imageedit.js",

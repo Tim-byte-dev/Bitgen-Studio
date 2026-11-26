@@ -405,6 +405,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 
 - **VR World** — a performer inside a 360 or 180-degree picture: aim the camera, add the performer's pictures, sound and prompt, render with VR metadata. *Where:* the StoryBoard's VR World button
 - **Lock the background** — outside the performer both eyes show the picture itself. *Where:* VR World
+- **🌐 360 panorama from your pictures** — place one or more pictures on a sphere (drag them round, the mouse wheel sets how much of the view each covers); everything else is filled into one seamless 360° picture by Qwen Image 2.1 with a community 360 outpaint LoRA (research licence: non-commercial). It opens as a new picture; ↔ Fix the seam fills the left / right join again, 🌐 Look round shows it from the inside, 🥽 Use in VR World makes it VR World's world. *Where:* the image editor - Image ▸ 🌐 360 Panorama…. *Since:* 2.971.0
 
 ### Upscaling and enhancing
 

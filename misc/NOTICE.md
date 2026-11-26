@@ -326,3 +326,13 @@ MiniMax H3's files (the MiniMax H3 Community License: its Applicable Territory e
 the Ultralytics YOLOv8 face / person detectors from [Bingsu/adetailer](https://huggingface.co/Bingsu/adetailer) (AGPL-3.0) and
 SAM ViT-B (Apache-2.0); H3-FaceRefine fetches InsightFace's buffalo_l on first use, which is licensed for NON-COMMERCIAL
 RESEARCH ONLY. bitGen ships none of these weights.
+
+## 🌐 360 panorama (2.971.0)
+
+No code from [nomadoor/ComfyUI-Panorama-Stickers](https://github.com/nomadoor/ComfyUI-Panorama-Stickers) (MIT, nomadoor) is
+shipped or installed: the image editor's Image ▸ 🌐 360 Panorama builds the pack's green equirectangular canvas itself
+(ext/imageeditdock/pcpano.js), and comfy_workflows/img_qwen21_pano360.json follows the pack's example workflow using only
+ComfyUI's own nodes. The models check downloads
+[nomadoor/qwen-image-2.1-360-panorama-outpaint-lora](https://huggingface.co/nomadoor/qwen-image-2.1-360-panorama-outpaint-lora)
+(v0.1) into comfy/loras when it is missing; like Qwen Image 2.1 itself it is under the Qwen Research License -
+NON-COMMERCIAL use. bitGen ships none of these weights.

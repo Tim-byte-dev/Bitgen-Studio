@@ -3108,6 +3108,7 @@
     if (win.PCCreate && win.PCCreate.install) win.PCCreate.install(E);
     if (win.PCBizInfo && win.PCBizInfo.install) win.PCBizInfo.install(E);   // 2.875.0: the business details dialog for cards / letterheads / flyers / posters (pcbizinfo.js)
     if (win.PCPropsAuto && win.PCPropsAuto.install) win.PCPropsAuto.install(E);   // 2.875.0: a drawing or text picked = the Properties docker shown (pcpropsauto.js) - after PCTabDock (reveal)
+    if (win.PCPano && win.PCPano.install) win.PCPano.install(E);   // 2.971.0: Image ▸ 🌐 360 Panorama… - pictures on a 2:1 green sphere, Qwen 2.1 + the 360 LoRA fills it (pcpano.js, /api/pano360)
     if (win.PCWebAi && win.PCWebAi.install) win.PCWebAi.install(E);       // 2.852.0: 🌐 Build Me a Website - the whole site from one ask     // 2.849.0: ✨ Create With the AI - documents, stories, flyers, brochures, business cards, websites, invoices (pccreate.js)
     if (win.PCQuickBar && win.PCQuickBar.install) win.PCQuickBar.install(E);   // 2.849.0: the icon toolbar under the menus + 🔍 Print Preview (pcquickbar.js)
     if (win.PCCardSheet && win.PCCardSheet.install) win.PCCardSheet.install(E);   // 2.884.0: 📇 File ▸ Business Card Sheet… - cards many-up with cut marks as a PDF (pccardsheet.js)

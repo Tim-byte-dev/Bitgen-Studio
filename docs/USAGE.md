@@ -1142,6 +1142,43 @@ Good to know:
 - **Best results:** a static camera (added to the prompt for you), the performer framed with some margin, a
   View ° of 50–80, and a ✎ first frame.
 
+## 🌐 A 360° panorama from your pictures (the image editor, 2.971.0)
+
+The image editor's **Image ▸ 🌐 360 Panorama…** turns one or more pictures into a full 360° picture - a world for
+🥽 VR World (above) or any 360 viewer. You place your pictures where they belong on a sphere; everything else is pure
+green, and Qwen Image 2.1 with a community **360 panorama outpaint LoRA** fills the green into one seamless picture.
+
+1. **Open a picture** in the image editor and choose **Image ▸ 🌐 360 Panorama…**. The picture is already on the
+   canvas, in the middle (FRONT). The canvas is the whole sphere unrolled: the middle is in front of you, a quarter
+   across is your left / right, and both edges meet BEHIND you. Green is what the model will fill.
+2. **Place it:** drag it where it should be, or use **Turn** and **Tilt**. The mouse wheel (or **Size**) sets how
+   much of your view it covers - a wide photo about 90°, a close-up less.
+3. **More pictures:** **＋ This picture** (all its layers), **＋ Active layer** (only that layer - its transparent parts
+   stay green, so a cut-out sits alone) or **＋ From a file…**. Several pictures = several views of the same place;
+   the last one is on top. ✕ takes one off.
+4. **Describe the place:** what fills the green - where it is, what is round it, where the light comes from. The
+   LoRA's own trigger sentence goes in front for you.
+5. **Size:** 2048 × 1024 (the best - the LoRA's own size) or 1408 × 704 (faster). **Seed** empty = random.
+6. **▶ Make the 360 panorama.** If the LoRA or the Qwen Image 2.1 models are missing you get the usual
+   Download / Cancel box. The panorama opens as a **new picture** ("… 360") - your own picture is left alone.
+
+After it is made:
+
+- **↔ Fix the seam** - the LoRA is an early version (v0.1), so the left / right join can show. This turns the
+  panorama half way round (the join now in the middle), paints a green strip over it, has the same model fill it
+  and turns it back. It opens as another new picture ("… 360 (seam)"); the first one stays open.
+- **🌐 Look round** - look out from the middle of the panorama: drag to turn, the mouse wheel to zoom. It also works
+  before you make it, to check where your pictures are.
+- **🥽 Use in VR World** - the panorama becomes VR World's world and VR World opens: aim, add the performer, render.
+
+Good to know:
+
+- **Licence:** Qwen Image 2.1 and the 360 LoRA are under the Qwen Research License - **non-commercial use only**.
+- Best with scenery and places; people inside a placed picture can come out stretched.
+- Each run is an ordinary image job - it is in the job list and the log like any other render.
+- The way of placing pictures comes from ComfyUI-Panorama-Stickers (nomadoor, MIT). bitGen builds the green canvas
+  itself, so that custom node pack is not needed - only ComfyUI's own nodes and the LoRA.
+
 ## Character swap
 
 Put a new person into existing footage — the performance, camera, background

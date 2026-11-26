@@ -861,6 +861,16 @@
       "for": "Qwen Image Edit + every Krea 2 image style + the Anima image styles"
     },
     {
+      "id": "qwen21_pano360",
+      "group": "edit",
+      "label": "Qwen Image 2.1 360 panorama outpaint LoRA",
+      "repo": "nomadoor/qwen-image-2.1-360-panorama-outpaint-lora",
+      "file": "qwen_image_2_1_360_panorama_outpaint_lora_v0_1.safetensors",
+      "dest": "comfy/loras",
+      "size": 159000000,
+      "for": "the image editor's Image ▸ 🌐 360 Panorama - fills the green of a 2:1 canvas into a seamless 360° equirectangular picture (non-commercial licence - the Qwen Research License)"
+    },
+    {
       "id": "qwen21_turbo8",
       "group": "edit",
       "label": "Qwen Image 2.1 Turbo8 LoRA (8 steps)",

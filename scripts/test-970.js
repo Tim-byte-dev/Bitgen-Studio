@@ -39,6 +39,6 @@ check("the column: a slim tab with no screens, a grid when wide (minmax 200px), 
   /#tlScreens\[data-empty="1"\] \{ width: 26px;/.test(CSS) && /grid-template-columns: repeat\(auto-fill, minmax\(200px, 1fr\)\)/.test(CSS) && /Math\.max\(180, Math\.min\(max, \+px \|\| 300\)\)/.test(JS) && /stage\.clientWidth \* 0\.7/.test(JS));
 check("screens keep the picture's shape (--tsc-ar from the canvas's W / H); a screen's drawing never breaks the master (try / catch)",
   /aspect-ratio: var\(--tsc-ar, 16 \/ 9\)/.test(CSS) && /col\.style\.setProperty\("--tsc-ar", \(c\.state\.W \|\| 16\) \+ " \/ " \+ \(c\.state\.H \|\| 9\)\)/.test(JS) && /catch \(e\) \{ \/\* a screen never breaks the master \*\/ \}/.test(JS));
-check("nothing added to misc/server.js; the version is 2.970.0", !/tlscreens|TlScreens/.test(src("misc/server.js")) && require("../package.json").version === "2.970.0");
+check("nothing added to misc/server.js; the version is 2.970.0 or later", !/tlscreens|TlScreens/.test(src("misc/server.js")) && require("../package.json").version >= "2.970.0");
 console.log(`\nRESULT: ${P} passed, ${F} failed`);
 process.exit(F ? 1 : 0);

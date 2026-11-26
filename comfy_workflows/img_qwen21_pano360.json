@@ -1,0 +1,164 @@
+{
+  "_comment": {
+    "about": "2.971.0 360 PANORAMA (the image editor's Image > 360 Panorama): Qwen Image 2.1 + the community 360 panorama outpaint LoRA (nomadoor/qwen-image-2.1-360-panorama-outpaint-lora, qwen_image_2_1_360_panorama_outpaint_lora_v0_1.safetensors, strength 0.8 - node 11, LoraLoaderModelOnly as in nomadoor's example, a LoRA slot the job's style fills; Qwen Research License: non-commercial). LoadImage 21 = the 2:1 equirectangular canvas bitGen builds (ext/imageeditdock/pcpano.js): the pictures where they were placed, PURE GREEN #00FF00 everywhere else; the model fills the green. Its card: 2048 x 1024, 25 steps, cfg 1, the prompt begins with the trigger sentence. The same graph as ComfyUI-Panorama-Stickers' example (nomadoor, MIT) with Panorama Studio replaced by bitGen's own canvas, so no custom node pack is needed.",
+    "credits": "https://github.com/nomadoor/ComfyUI-Panorama-Stickers (MIT) - example_workflows/qwen-image-2.1-360-erp-outpaint.json, commit 732146a"
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Qwen Image 2.1"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen3-VL 8B text encoder"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+    },
+    "_meta": {
+      "title": "Qwen Image 2.1 VAE"
+    }
+  },
+  "9": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {
+      "value": "Fill the green areas to complete a seamless 360° equirectangular panorama."
+    },
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImage21",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "prompt": [
+        "9",
+        0
+      ],
+      "negative_prompt": "",
+      "resolution": 0,
+      "images.image_1": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Qwen Image 2.1 - the green canvas"
+    }
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "qwen_image_2_1_360_panorama_outpaint_lora_v0_1.safetensors",
+      "strength_model": 0.8
+    },
+    "_meta": {
+      "title": "LoRA 1 - the 360 panorama outpaint LoRA (model only, as nomadoor's workflow)"
+    }
+  },
+  "12": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 2048,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "The panorama's size (2:1)"
+    }
+  },
+  "13": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "10",
+        1
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "seed": 0,
+      "steps": 25,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    },
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "14": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "14",
+        0
+      ],
+      "filename_prefix": "pano360"
+    },
+    "_meta": {
+      "title": "Save"
+    }
+  },
+  "21": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    },
+    "_meta": {
+      "title": "The 2:1 canvas (pictures + green)"
+    }
+  }
+}
