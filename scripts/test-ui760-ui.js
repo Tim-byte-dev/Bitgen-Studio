@@ -63,7 +63,7 @@ const listen = (srv, port) => new Promise((ok, bad) => { srv.once("error", bad);
     let s = await st();
     check("Audio shows the Audio docker - one of its three, the button lit", s.on.length === 1 && s.lit, s);
     const head = await ev((id) => { const h = document.querySelector("#" + id + " .bhead"); return { text: [...h.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim(), tabs: [...h.querySelectorAll("[data-autab]")].map((x) => x.textContent) }; }, s.on[0]);
-    check("…its title bar: Audio with the tabs 🎵 Music · 💥 SFX · 🎹 Synth (2.953.0; Stems retired in 2.966.0)", /^▾ Audio$/.test(head.text) && head.tabs.join("|") === "🎵 Music|💥 SFX|🎹 Synth", head);
+    check("…its title bar: Audio with the tabs 🎵 Music · 💥 SFX · 🎹 Edit Booth (2.953.0; Stems retired in 2.966.0; renamed 2.972.0)", /^▾ Audio$/.test(head.text) && head.tabs.join("|") === "🎵 Music|💥 SFX|🎹 Edit Booth" /* 2.972.0 */, head);
     await ev((id) => document.querySelector("#" + id + ' [data-autab="synthdock"]').click(), s.on[0]); await sleep(500);   // (a DOM click: the sandbox's floating prompt can sit over the tabs)
     s = await st();
     check("the Synth tab: Synth on screen, the others put away, its tab lit", s.on.join() === "synthdock" && s.lit && (await ev(() => document.querySelector('#synthdock [data-autab="synthdock"]').classList.contains("on"))), s);

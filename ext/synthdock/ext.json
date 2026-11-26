@@ -1,9 +1,10 @@
 {
   "id": "synthdock",
-  "name": "Synth",
+  "name": "Edit Booth",
   "order": 67,
   "html": "dock.html",
   "scripts": [
+    "synthinst.js",
     "synthcore.js",
     "synthkit.js",
     "synthvoice.js",

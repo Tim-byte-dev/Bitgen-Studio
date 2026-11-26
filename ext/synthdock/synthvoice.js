@@ -7,11 +7,20 @@
  *   LFO        one for the synth: cutoff / pitch / amp / pan; the mod wheel adds to its depth
  *   noteOn(midi, vel 0..1, when) / noteOff(midi, when) / allOff() / sustain(on) / bend(-1..1) / mod(0..1) / set(id, v) / setAll(p)
  *   poly (10 voices, the oldest gives way) or mono (one voice; Glide slides from the last note)
+ * 2.972.0 - the keyboard's instruments (synthinst.js; the hidden "tone" of a patch):
+ *   fm      a sine modulator (fmR x the note, depth fmI falling over fmD to fmS) on osc A's frequency
+ *   organ   osc A plays the drawbars' PeriodicWave an octave down (bars) + a key click (click)
+ *   pluck / strike   a made string note per zone of 3 keys (zoneBuf - kept for every engine at that sample rate, the 48
+ *           newest), played from an AudioBufferSource through the voice's filter and amp; warm(lo, hi) makes them ahead
+ *   fVel    a soft note is darker (the filter follows the velocity)
  */
 (function (root) {
   "use strict";
   var C = root.H3SynthCore;
   var MAXV = 10, BEND = 200;   // ± cents a full bend
+  var ZB = new Map(), ZMAX = 48;  // 2.972.0: the made string notes, shared by every engine (the timeline's clips make engines of their own)
+  function I() { return root.H3SynthInst; }
+  function bufTone(p) { return p.tone === "pluck" || p.tone === "strike"; }
   function wave(w) { return w === "saw" ? "sawtooth" : w; }
   function Engine(ctx, opt) {
     opt = opt || {};
@@ -105,8 +114,9 @@
     if (this.bendSrc) try { this.bendSrc.offset.setTargetAtTime(this.bendV * BEND, this.now(), 0.01); } catch (e) { this.bendSrc.offset.value = this.bendV * BEND; }
   };
   /** the filter's resting cutoff for a note (key tracking) and its peak (the envelope) */
-  Engine.prototype.cutFor = function (m) {
+  Engine.prototype.cutFor = function (m, vel) {
     var p = this.p, base = p.cut * Math.pow(C.freq(m) / 261.63, p.kTrack);
+    if (p.fVel > 0 && vel != null) base *= Math.pow(0.15 + 0.85 * vel, p.fVel * 2.5);   // 2.972.0: soft = darker
     base = Math.max(30, Math.min(20000, base));
     return { base: base, peak: Math.max(30, Math.min(20000, base * Math.pow(2, p.fEnv * 7))), sus: Math.max(30, Math.min(20000, base * Math.pow(2, p.fEnv * 7 * p.fS))) };
   };
@@ -117,11 +127,11 @@
       if (v.dead) return;
       if (id === "fType") v.f.type = p.fType;
       else if (id === "res") v.f.Q.setTargetAtTime(p.res, t, 0.02);
-      else if (id === "cut" || id === "kTrack" || id === "fEnv" || id === "fS") { if (!v.rel) v.f.frequency.setTargetAtTime(E.cutFor(v.m).sus, t, 0.03); }
-      else if (id === "aWave" || id === "bWave") v.o.forEach(function (o) { if (o.which === id.charAt(0)) o.n.type = wave(p[id]); });
+      else if (id === "cut" || id === "kTrack" || id === "fEnv" || id === "fS" || id === "fVel") { if (!v.rel) v.f.frequency.setTargetAtTime(E.cutFor(v.m, v.vel).sus, t, 0.03); }
+      else if (id === "aWave" || id === "bWave") v.o.forEach(function (o) { if (o.which === id.charAt(0) && !o.pw) o.n.type = wave(p[id]); });
       else if (id === "aLvl" || id === "bLvl" || id === "sub" || id === "noise") {
-        v.o.forEach(function (o) { var lv = o.which === "a" ? p.aLvl / Math.sqrt(o.u) : o.which === "b" ? p.bLvl / Math.sqrt(o.u) : o.which === "s" ? p.sub : p.noise * 0.5; o.g.gain.setTargetAtTime(lv, t, 0.02); });
-      } else if (id === "aOct" || id === "aDet" || id === "bSemi" || id === "bDet" || id === "spread") v.o.forEach(function (o) { if (o.n.detune) o.n.detune.setTargetAtTime(E.cents(o), t, 0.02); });
+        v.o.forEach(function (o) { if (!/^[absn]$/.test(o.which)) return; var lv = o.which === "a" ? p.aLvl / Math.sqrt(o.u) : o.which === "b" ? p.bLvl / Math.sqrt(o.u) : o.which === "s" ? p.sub : p.noise * 0.5; o.g.gain.setTargetAtTime(lv, t, 0.02); });
+      } else if (id === "aOct" || id === "aDet" || id === "bSemi" || id === "bDet" || id === "spread") v.o.forEach(function (o) { if (o.n.detune && /^[abs]$/.test(o.which)) o.n.detune.setTargetAtTime(E.cents(o), t, 0.02); });
     });
   };
   Engine.prototype.cents = function (o) {
@@ -140,22 +150,47 @@
     v.f.type = p.fType; v.f.Q.value = p.res;
     v.mix.connect(v.f); v.f.connect(v.vca); v.vca.connect(E.voiceIn);
     E.lfoCut.connect(v.f.detune);
-    var add = function (which, type, u, k, freq, lvl) {
-      var n = ctx.createOscillator(), gn = ctx.createGain(), o = { which: which, n: n, g: gn, u: u, k: k };
-      n.type = type; n.frequency.value = freq; n.detune.value = E.cents(o); gn.gain.value = lvl;
+    var tone = p.tone, pw = tone === "organ" ? E.organWave() : null;
+    var add = function (which, type, u, k, freq, lvl, wv) {
+      var n = ctx.createOscillator(), gn = ctx.createGain(), o = { which: which, n: n, g: gn, u: u, k: k, mul: freq / f, pw: !!wv };
+      if (wv) n.setPeriodicWave(wv); else n.type = type;
+      n.frequency.value = freq; n.detune.value = E.cents(o); gn.gain.value = lvl;
       E.lfoPitch.connect(n.detune); if (E.bendSrc) E.bendSrc.connect(n.detune);
       n.connect(gn); gn.connect(v.mix); n.start(t); v.o.push(o);
     };
     var uni = Math.max(1, p.uni);
-    if (p.aLvl > 0.001) for (var i = 0; i < uni; i++) add("a", wave(p.aWave), uni, i, f, p.aLvl / Math.sqrt(uni));
+    // osc A: the organ's drawbars play an octave down (the 16' bar is the note's own octave below)
+    if (p.aLvl > 0.001) for (var i = 0; i < uni; i++) add("a", wave(p.aWave), uni, i, pw ? f / 2 : f, p.aLvl / Math.sqrt(uni), pw);
+    if (tone === "fm" && p.aLvl > 0.001) {
+      // 2.972.0 FM: one sine modulator on every osc A copy's frequency; its depth falls from fmI to fmI x fmS over fmD
+      var mo = ctx.createOscillator(), mg = ctx.createGain(), mmul = p.fmR * Math.pow(2, p.aOct), mf = f * mmul, dev = p.fmI * mf * (0.4 + 0.6 * vel);
+      mo.type = "sine"; mo.frequency.value = mf;
+      E.lfoPitch.connect(mo.detune); if (E.bendSrc) E.bendSrc.connect(mo.detune);
+      mg.gain.setValueAtTime(dev, t); mg.gain.setTargetAtTime(dev * p.fmS, t + 0.002, Math.max(0.003, p.fmD / 3));
+      mo.connect(mg); v.o.forEach(function (o) { if (o.which === "a") mg.connect(o.n.frequency); });
+      mo.start(t); v.o.push({ which: "m", n: mo, g: mg, u: 1, k: 0, mul: mmul });
+    }
     if (p.bLvl > 0.001) for (var j = 0; j < uni; j++) add("b", wave(p.bWave), uni, j, f, p.bLvl / Math.sqrt(uni));
     if (p.sub > 0.001) add("s", "sine", 1, 0, f / 2, p.sub);
     if (p.noise > 0.001) {
       var ns = ctx.createBufferSource(), ng = ctx.createGain(); ns.buffer = E.noiseBuf(); ns.loop = true; ng.gain.value = p.noise * 0.5;
       ns.connect(ng); ng.connect(v.mix); ns.start(t, Math.random() * 1.5); v.o.push({ which: "n", n: ns, g: ng, u: 1, k: 0 });
     }
+    if (bufTone(p) && I()) {
+      // 2.972.0: the made string note of this zone, played a semitone up / down to this key (+ Oct A)
+      var mm = m + 12 * p.aOct, zb = E.zoneBuf(mm), bs = ctx.createBufferSource(), bg = ctx.createGain();
+      bs.buffer = zb.buf; bs.playbackRate.value = Math.pow(2, (mm - zb.root) / 12); bg.gain.value = 1;
+      if (bs.detune) { E.lfoPitch.connect(bs.detune); if (E.bendSrc) E.bendSrc.connect(bs.detune); }
+      bs.connect(bg); bg.connect(v.mix); bs.start(t); v.o.push({ which: "x", n: bs, g: bg, u: 1, k: 0, mul: 1 });
+    }
+    if (tone === "organ" && p.click > 0.001) {
+      // the key click: a 4 ms tick of noise
+      var cs = ctx.createBufferSource(), cg = ctx.createGain(); cs.buffer = E.noiseBuf();
+      cg.gain.setValueAtTime(p.click * 0.5, t); cg.gain.setTargetAtTime(0, t + 0.001, 0.004);
+      cs.connect(cg); cg.connect(v.mix); cs.start(t, Math.random()); cs.stop(t + 0.06); v.o.push({ which: "c", n: cs, g: cg, u: 1, k: 0, mul: 1 });
+    }
     // the envelopes
-    var cf = E.cutFor(m), A = p.fA, amp = 0.32 * (0.35 + 0.65 * vel);
+    var cf = E.cutFor(m, vel), A = p.fA, amp = 0.32 * (0.35 + 0.65 * vel);
     v.f.frequency.setValueAtTime(cf.base, t);
     v.f.frequency.exponentialRampToValueAtTime(cf.peak, t + A);
     v.f.frequency.setTargetAtTime(cf.sus, t + A, p.fD / 3);
@@ -173,10 +208,10 @@
     if (v.rel) return; v.rel = true;
     var E = this, p = E.p, R = fast ? 0.02 : p.aR, FR = fast ? 0.02 : p.fR;
     hold(v.vca.gain, t); v.vca.gain.setTargetAtTime(0, t, R / 4);
-    hold(v.f.frequency, t); v.f.frequency.setTargetAtTime(Math.max(30, E.cutFor(v.m).base), t, FR / 4);
+    hold(v.f.frequency, t); v.f.frequency.setTargetAtTime(Math.max(30, E.cutFor(v.m, v.vel).base), t, FR / 4);
     var end = t + R * 1.6 + 0.05;
     v.o.forEach(function (o) { try { o.n.stop(end); } catch (e) { /* stopped */ } });
-    var first = v.o[0] && v.o[0].n;
+    var lasting = v.o.filter(function (o) { return o.which !== "c"; })[0], first = lasting && lasting.n;
     var bye = function () { if (v.dead) return; v.dead = true; try { v.vca.disconnect(); v.mix.disconnect(); v.f.disconnect(); } catch (e) { /* gone */ } E.voices = E.voices.filter(function (x) { return x !== v; }); };
     if (first) first.onended = bye; else bye();
   };
@@ -186,11 +221,12 @@
     E.held[m] = true; delete E.susHeld[m];
     if (p.mode === "mono") {
       var cur = E.voices.filter(function (x) { return !x.rel; })[0];
+      if (cur && bufTone(p)) { E.release(cur, t, true); cur = null; }   // 2.972.0: a string note cannot slide - a new pluck
       if (cur) {
         // slide (Glide) or jump to the new note - the envelopes carry on (legato)
         var f = C.freq(m), gt = Math.max(0.001, p.glide / 3);
-        cur.o.forEach(function (o) { if (o.which === "n") return; var to = o.which === "s" ? f / 2 : f; if (p.glide > 0.001) { hold(o.n.frequency, t); o.n.frequency.setTargetAtTime(to, t, gt); } else o.n.frequency.setValueAtTime(to, t); });
-        var cf = E.cutFor(m); cur.f.frequency.setTargetAtTime(cf.sus, t, 0.03);
+        cur.o.forEach(function (o) { if (o.which === "n" || o.which === "c") return; var to = o.which === "s" ? f / 2 : f * (o.mul || 1); if (p.glide > 0.001) { hold(o.n.frequency, t); o.n.frequency.setTargetAtTime(to, t, gt); } else o.n.frequency.setValueAtTime(to, t); });
+        var cf = E.cutFor(m, cur.vel); cur.f.frequency.setTargetAtTime(cf.sus, t, 0.03);
         cur.m = m; E.last = m; return cur;
       }
     } else {
@@ -223,6 +259,36 @@
     var E = this, t = E.now(); E.held = {}; E.susHeld = {}; E.sus = false;
     E.voices.slice().forEach(function (v) { E.release(v, t, true); });
   };
+  /** 2.972.0: the drawbars as a PeriodicWave (kept per setting) */
+  Engine.prototype.organWave = function () {
+    var p = this.p;
+    if (this._pw && this._pwKey === p.bars) return this._pw;
+    var d = I() ? I().drawbars(p.bars) : { real: new Float32Array(3), imag: new Float32Array([0, 1, 0]) };
+    this._pw = this.ctx.createPeriodicWave(d.real, d.imag); this._pwKey = p.bars;
+    return this._pw;
+  };
+  function zoneKey(p, root, sr) { return [p.tone, root, sr, p.kDamp, p.kSus, p.stB, p.stHam, p.stDet].join("|"); }
+  /** 2.972.0: the string note for a key: {buf, root} - made at the zone's key (every 3rd), kept (the 48 newest) */
+  Engine.prototype.zoneBuf = function (m) {
+    var p = this.p, ctx = this.ctx, sr = ctx.sampleRate, rootK = I().zone(m), key = zoneKey(p, rootK, sr);
+    var b = ZB.get(key);
+    if (b) { ZB.delete(key); ZB.set(key, b); return { buf: b, root: rootK }; }
+    var f = C.freq(rootK), o = { damp: p.kDamp, sus: p.kSus, B: p.stB, ham: p.stHam, det: p.stDet, seed: 1000 + rootK };
+    var data = p.tone === "strike" ? I().strike(f, sr, o) : I().pluck(f, sr, o);
+    b = ctx.createBuffer(1, data.length, sr); b.getChannelData(0).set(data);
+    ZB.set(key, b); while (ZB.size > ZMAX) ZB.delete(ZB.keys().next().value);
+    return { buf: b, root: rootK };
+  };
+  /** 2.972.0: make the string notes of keys lo..hi ahead, one zone a tick (no wait on the first press); a new call stops the old */
+  Engine.prototype.warm = function (lo, hi) {
+    var E = this, p = E.p; E._warmId = (E._warmId || 0) + 1;
+    if (!bufTone(p) || !I()) return 0;
+    var id = E._warmId, list = [], sh = 12 * p.aOct;
+    for (var m = I().zone(lo + sh); m <= hi + sh; m += 3) list.push(m);
+    var step = function () { if (id !== E._warmId || !list.length || !bufTone(E.p)) return; try { E.zoneBuf(list.shift()); } catch (e) { return; } (root.setTimeout || setTimeout)(step, 0); };
+    (root.setTimeout || setTimeout)(step, 0);
+    return list.length;
+  };
   Engine.prototype.sounding = function () { return this.voices.filter(function (v) { return !v.rel; }).length; };
 
   /** 🎙 Sample it: one note of this patch played into an OfflineAudioContext -> {chans, sampleRate, seconds} */
@@ -234,5 +300,5 @@
     E.setAll(p); E.noteOn(m, 0.9, 0.01); E.noteOff(m, 0.01 + holdSec);
     return ctx.startRendering().then(function (b) { return { chans: [b.getChannelData(0), b.getChannelData(1)], sampleRate: sr, seconds: secs }; });
   }
-  root.H3SynthVoice = { Engine: Engine, sampleNote: sampleNote, MAXV: MAXV };
+  root.H3SynthVoice = { Engine: Engine, sampleNote: sampleNote, MAXV: MAXV, zoneCache: function () { return ZB.size; } };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -9,6 +9,10 @@
  *                keyboard (Web MIDI: notes, velocity, pitch bend, mod wheel CC1, sustain CC64, volume CC7)
  *   🎙 Sample it one note of the patch -> a new sample in 📂 My samples (routes/synth.js, lib/synthSamples.js) -> pick it in a looper row
  *   ⏺ Rec        what you play (synth + loop) -> ⏹ = into this project's SFX
+ *   2.972.0 VOICE the keyboard's instruments (synthinst.js - pianos, mallets, organs, guitars, basses, strings, choir, brass,
+ *                reeds, pipes, leads, pads, world + our synth patches): a bank button a bank on the deck (again = the next
+ *                voice of that bank), the patch list grouped by bank, MIDI program change picks the n-th patch.
+ *                The tab is called "Edit Booth" (Tim, 2026-11-26: "change synth tab name in audio docker to Edit Booth").
  *   The looper   synthloop.js (H3SynthLoop); ⬇ WAV / → 💥 SFX / → 🔊 Sound
  *   ⛶            maximized = the whole window; 🗗, Esc or leaving the browser's full screen = back to the docker
  *   Kind to work the sound engine starts on the first click (the browser's rule); hiding / folding the tab stops the loop and
@@ -40,7 +44,7 @@
       if (!AC) throw new Error("this browser has no Web Audio");
       G.ctx = new AC({ latencyHint: "interactive" });
       G.E = new V.Engine(G.ctx);
-      G.E.setAll(G.p);
+      G.E.setAll(G.p); warm();
       G.ctx.onstatechange = asleep;
     }
     if (G.ctx.state === "suspended") { try { G.ctx.resume().then(asleep, asleep); } catch (e) { /* fine */ } }
@@ -70,7 +74,7 @@
   }
   function applyPatch(p, name) {
     G.p = C.cleanPatch(p); G.preset = name; G.dirty = false;
-    if (G.E) G.E.setAll(G.p);
+    if (G.E) { G.E.setAll(G.p); warm(); }
     Object.keys(G.knobs).forEach(function (id) { G.knobs[id].draw(); }); if (G.dkVol) G.dkVol.draw();
     envDraw(); presetList(); keep(); drawIdle();
   }
@@ -84,8 +88,12 @@
   function presetList() {
     var sel = $("syPreset"); if (!sel) return;
     sel.innerHTML = "";
-    var g1 = doc.createElement("optgroup"); g1.label = "Our patches"; sel.appendChild(g1);
-    C.PRESETS.forEach(function (x) { var o = doc.createElement("option"); o.value = "o:" + x.name; o.textContent = x.name; g1.appendChild(o); });
+    // 2.972.0: one group a bank - the keyboard's instruments, then our synth patches
+    (C.CATS || [["Synth", "SYNTH", "🎛"]]).forEach(function (c) {
+      var list = C.bank ? C.bank(c[0]) : C.PRESETS; if (!list.length) return;
+      var g1 = doc.createElement("optgroup"); g1.label = c[2] + " " + c[0]; sel.appendChild(g1);
+      list.forEach(function (x) { var o = doc.createElement("option"); o.value = "o:" + x.name; o.textContent = x.name; g1.appendChild(o); });
+    });
     if (G.user.length) {
       var g2 = doc.createElement("optgroup"); g2.label = "My patches"; sel.appendChild(g2);
       G.user.forEach(function (x) { var o = doc.createElement("option"); o.value = "u:" + x.name; o.textContent = x.name; g2.appendChild(o); });
@@ -94,8 +102,36 @@
     sel.value = G.preset;
     if (G.dirty) { var cur = sel.options[sel.selectedIndex]; if (cur) cur.textContent = cur.textContent + " *"; }
     $("syDelPreset").disabled = !/^u:/.test(G.preset);
-    screenText();
+    voiceLit(); screenText();
   }
+  /* ---------------- 2.972.0: the VOICE buttons - a bank each ---------------- */
+  function curCat() { var m = /^o:(.*)$/.exec(G.preset || ""); return m && C.catOf ? C.catOf(m[1]) : null; }
+  /** a bank's button: its first voice; pressed again while in that bank = its next voice (round) */
+  function voiceBank(cat) {
+    var list = C.bank ? C.bank(cat) : []; if (!list.length) return false;
+    var m = /^o:(.*)$/.exec(G.preset || ""), i = -1;
+    if (m && curCat() === cat) for (var k = 0; k < list.length; k++) if (list[k].name === m[1]) i = k;
+    var x = list[(i + 1) % list.length];
+    pickPreset("o:" + x.name); msg((C.CATS.filter(function (c) { return c[0] === cat; })[0] || [cat, cat, ""])[2] + " " + x.name + "  (" + ((i + 1) % list.length + 1) + " of " + list.length + " " + cat + ")");
+    return x.name;
+  }
+  function voiceButtons() {
+    var g = $("syVoiceGrid"); if (!g || !C.CATS) return;
+    g.innerHTML = "";
+    C.CATS.forEach(function (c) {
+      var b = doc.createElement("button"); b.type = "button"; b.className = "sydk syvb"; b.dataset.cat = c[0]; b.textContent = c[1];
+      b.title = c[2] + " " + c[0] + ": " + C.bank(c[0]).map(function (x) { return x.name; }).join(", ") + " - press again for the next";
+      b.onclick = function () { voiceBank(c[0]); };
+      g.appendChild(b);
+    });
+    voiceLit();
+  }
+  function voiceLit() {
+    var c = curCat(); doc.querySelectorAll("#syVoiceGrid .syvb").forEach(function (b) { b.classList.toggle("on", b.dataset.cat === c); });
+    var n = $("syVoiceName"); if (n) n.textContent = (G.preset || "").replace(/^[ou]:/, "") + (G.dirty ? " *" : "");
+  }
+  /** make the string notes of the keys on screen ahead (pianos, guitars...) - the first press does not wait */
+  function warm() { if (G.E && G.E.warm) G.E.warm(base() - 12, base() + 48 + 12); }
   function pickPreset(v) { var p = presetOf(v); if (!p) return false; applyPatch(p, v); msg(""); return true; }
   function stepPreset(d) { var all = allPresets(), i = all.indexOf(G.preset); pickPreset(all[(i + d + all.length) % all.length]); }
   function savePreset() {
@@ -212,7 +248,8 @@
   function wake() { if (!G.raf && G.E && shown()) { G.idle = 0; G.raf = root.requestAnimationFrame(drawLive); } }
   function screenText() {
     var t = $("syScreenTxt"); if (!t) return;
-    var name = (G.preset || "").replace(/^[ou]:/, "") + (G.dirty ? " *" : "");
+    var cc = curCat(), ic = cc && C.CATS ? (C.CATS.filter(function (c) { return c[0] === cc; })[0] || [])[2] : "";
+    var name = (ic ? ic + " " : "") + (G.preset || "").replace(/^[ou]:/, "") + (G.dirty ? " *" : "");
     t.textContent = name + (G.last != null ? "  ·  " + C.noteName(G.last) : "") + (G.E ? "  ·  " + G.E.sounding() + " voice" + (G.E.sounding() === 1 ? "" : "s") : "");
   }
 
@@ -232,7 +269,7 @@
   }
   function allOff() { G.down = {}; G.keys = {}; G.ptr = {}; if (G.E) G.E.allOff(); piano(); screenText(); }
   function base() { return 12 * (G.oct + 1); }
-  function setOct(o) { G.oct = Math.max(0, Math.min(5, o)); LS.set("oct", G.oct); var b = $("syOct"); if (b) b.textContent = "C" + G.oct; piano(); }
+  function setOct(o) { G.oct = Math.max(0, Math.min(5, o)); LS.set("oct", G.oct); var b = $("syOct"); if (b) b.textContent = "C" + G.oct; piano(); warm(); }
 
   /* ---------------- the keyboard on screen ---------------- */
   // 2.954.0 (Tim: "make the keyboard narrower and taller so the keys look more natural"): 660 x 172 px - a white key about
@@ -404,7 +441,8 @@
       else if (a === 64) engine().sustain(b >= 64);
       else if (a === 7) setParam("vol", b / 127);
       else if (a === 123 || a === 120) allOff();
-    } else if (st === 0xe0) { var v = ((b << 7) | a) - 8192; engine().bend(v / 8192); if (W.bend) W.bend.set(v / 8192); }
+    } else if (st === 0xc0) { var all = allPresets(); if (a < all.length) pickPreset(all[a]); }   // 2.972.0: program change = the n-th patch
+    else if (st === 0xe0) { var v = ((b << 7) | a) - 8192; engine().bend(v / 8192); if (W.bend) W.bend.set(v / 8192); }
   }
 
   /* ---------------- the samples library, the project ---------------- */
@@ -656,7 +694,7 @@
     var d = $("synthdock"); if (!d) return;
     try { if (root.localStorage.getItem("h3.g.synthdock") === "1") d.classList.add("dockgone"); } catch (e) { /* fine */ }
     G.p = C.cleanPatch(jget("patch", null) || presetOf(G.preset) || C.defaults());
-    rack(); presetList(); setOct(G.oct); sections();
+    rack(); presetList(); voiceButtons(); setOct(G.oct); sections();
     LP.init({ ctx: ctx, dest: function () { return engine().mix; }, msg: msg, send: sendTake, onTake: function (t) { autoSave("loop", t, { loop: JSON.parse(JSON.stringify(LP.loop())) }); }, changed: function () { touch(); root.clearTimeout(G.lt); G.lt = root.setTimeout(function () { LS.set("loop", JSON.stringify(LP.loop())); }, 300); },
               upload: upload, pick: function (r) { G.pickRow = r; $("syFile").click(); } });
     var saved = jget("loop", null); if (saved) LP.setLoop(saved);
@@ -746,12 +784,12 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, exitFull: exitFull, sendTake: sendTake, fold: setFold, countIn: countIn, clickOn: function () { return G.click; }, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, voice: voiceBank, exitFull: exitFull, sendTake: sendTake, fold: setFold, countIn: countIn, clickOn: function () { return G.click; }, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),
                loop: LP.info(), guide: Object.keys(G.guide).map(Number), keys: KB.n + 1,
-               pads: PD ? PD.info() : null, folded: SECS.filter(function (x) { var e = $("sySec_" + x[0]); return e && e.classList.contains("folded"); }).map(function (x) { return x[0]; }), score: SC ? SC.info() : null, tl: TL ? TL.info() : null };
+               pads: PD ? PD.info() : null, bank: curCat(), banks: C.CATS ? C.CATS.map(function (c) { return c[0]; }) : [], folded: SECS.filter(function (x) { var e = $("sySec_" + x[0]); return e && e.classList.contains("folded"); }).map(function (x) { return x[0]; }), score: SC ? SC.info() : null, tl: TL ? TL.info() : null };
     },
   };
 })(window);

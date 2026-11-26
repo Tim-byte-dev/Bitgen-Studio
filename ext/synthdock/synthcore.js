@@ -67,6 +67,20 @@
     { id: "mode", sec: "master", label: "Voices", ch: ["poly", "mono"], def: "poly" },
     { id: "glide", sec: "master", label: "Glide", min: 0, max: 1, def: 0, unit: "s" },
     { id: "vol", sec: "master", label: "Volume", min: 0, max: 1, def: 0.7 },
+    // 2.972.0: the INSTRUMENTS' engines (synthinst.js) - hidden: no knob, the instrument presets set them; kept in every patch
+    { id: "tone", sec: "osc", hide: true, label: "Engine", ch: ["synth", "fm", "organ", "pluck", "strike"], def: "synth" },
+    { id: "fmR", sec: "osc", hide: true, label: "FM ratio", min: 0.25, max: 16, def: 1 },
+    { id: "fmI", sec: "osc", hide: true, label: "FM depth", min: 0, max: 15, def: 2 },
+    { id: "fmD", sec: "osc", hide: true, label: "FM fall", min: 0.01, max: 5, def: 0.6, c: "exp", unit: "s" },
+    { id: "fmS", sec: "osc", hide: true, label: "FM hold", min: 0, max: 1, def: 0.2 },
+    { id: "bars", sec: "osc", hide: true, label: "Drawbars", re: /^[0-8]{9}$/, def: "888000000" },
+    { id: "click", sec: "osc", hide: true, label: "Key click", min: 0, max: 1, def: 0 },
+    { id: "kDamp", sec: "osc", hide: true, label: "String brightness", min: 0, max: 1, def: 0.5 },
+    { id: "kSus", sec: "osc", hide: true, label: "String ring", min: 0.1, max: 12, def: 2, c: "exp", unit: "s" },
+    { id: "stB", sec: "osc", hide: true, label: "Stiffness", min: 0, max: 0.01, def: 0.0004 },
+    { id: "stHam", sec: "osc", hide: true, label: "Hammer", min: 0, max: 1, def: 0.3 },
+    { id: "stDet", sec: "osc", hide: true, label: "Strings apart", min: 0, max: 6, def: 1.2, unit: "ct" },
+    { id: "fVel", sec: "filter", hide: true, label: "Vel > bright", min: 0, max: 1, def: 0 },
   ];
   var BY = {}; PARAMS.forEach(function (p) { BY[p.id] = p; });
   // the panels, left to right, and their glow
@@ -80,6 +94,7 @@
   function toNorm(id, v) {
     var p = BY[id]; if (!p) return 0;
     if (p.ch) { var i = p.ch.indexOf(v); return p.ch.length > 1 ? Math.max(0, i) / (p.ch.length - 1) : 0; }
+    if (p.re) return 0;
     v = clamp(Number(v), p.min, p.max);
     if (p.c === "exp") return Math.log(v / p.min) / Math.log(p.max / p.min);
     return (v - p.min) / (p.max - p.min);
@@ -89,6 +104,7 @@
     var p = BY[id]; if (!p) return 0;
     n = clamp(Number(n) || 0, 0, 1);
     if (p.ch) return p.ch[Math.round(n * (p.ch.length - 1))];
+    if (p.re) return p.def;
     var v = p.c === "exp" ? p.min * Math.pow(p.max / p.min, n) : p.min + n * (p.max - p.min);
     if (p.c === "int") return Math.round(v);
     return Math.round(v * 10000) / 10000;
@@ -97,6 +113,7 @@
   function cleanValue(id, v) {
     var p = BY[id]; if (!p) return undefined;
     if (p.ch) return p.ch.indexOf(v) >= 0 ? v : p.def;
+    if (p.re) return typeof v === "string" && p.re.test(v) ? v : p.def;
     var n = Number(v);
     if (!Number.isFinite(n)) return p.def;
     n = clamp(n, p.min, p.max);
@@ -111,7 +128,7 @@
   }
   function show(id, v) {
     var p = BY[id]; if (!p) return String(v);
-    if (p.ch) return String(v);
+    if (p.ch || p.re) return String(v);
     if (p.unit === "Hz") return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 1 : 2) + " kHz" : (v < 10 ? v.toFixed(2) : Math.round(v)) + " Hz";
     if (p.unit === "s") return v < 1 ? Math.round(v * 1000) + " ms" : v.toFixed(2) + " s";
     if (p.unit === "ct") return Math.round(v) + " ct";
@@ -139,6 +156,18 @@
     { name: "Chip Lead", p: { aWave: "square", bWave: "square", bSemi: 12, bDet: 0, bLvl: 0.2, cut: 9000, res: 0, fEnv: 0, aA: 0.001, aD: 0.1, aS: 0.8, aR: 0.05, mode: "mono", glide: 0.02, lTarget: "pitch", lRate: 7, lDepth: 0.06, chorus: 0, rMix: 0.08, dMix: 0.12, dTime: 0.18 } },
     { name: "Noise Sweep", p: { aLvl: 0.2, bLvl: 0, noise: 0.9, fType: "bandpass", cut: 300, res: 10, fEnv: 0.9, fA: 1.5, fD: 2, fS: 0.2, aA: 0.6, aD: 1.5, aS: 0.6, aR: 1.8, rSize: 5, rMix: 0.5, dMix: 0.2 } },
   ];
+  // 2.972.0: every patch has its bank (cat): ours above = SYNTH; then the keyboard's instruments (synthinst.js), bank by bank
+  var INST = root.H3SynthInst || (typeof require === "function" ? (function () { try { return require("./synthinst.js"); } catch (e) { return null; } })() : null);
+  var CATS = INST ? INST.CATS : [["Synth", "SYNTH", "🎛"]];
+  PRESETS.forEach(function (x) { x.cat = "Synth"; });
+  if (INST) {
+    var ord = CATS.map(function (c) { return c[0]; });
+    var inst = INST.INSTRUMENTS.slice().sort(function (a, b) { return ord.indexOf(a.cat) - ord.indexOf(b.cat); });
+    PRESETS.splice.apply(PRESETS, [1, 0].concat(inst));   // Init first, then the instruments, then our synth patches
+  }
+  /** the patches of a bank, in order */
+  function bank(cat) { return PRESETS.filter(function (x) { return x.cat === cat; }); }
+  function catOf(name) { for (var i = 0; i < PRESETS.length; i++) if (PRESETS[i].name === name) return PRESETS[i].cat; return null; }
   function patch(name) {
     for (var i = 0; i < PRESETS.length; i++) if (PRESETS[i].name === name) { var o = cleanPatch(PRESETS[i].p); return o; }
     return null;
@@ -238,7 +267,7 @@
   }
 
   var api = { NAMES: NAMES, freq: freq, noteName: noteName, isBlack: isBlack, KEYS: KEYS, WAVES: WAVES, PARAMS: PARAMS, BY: BY, SECTIONS: SECTIONS,
-              toNorm: toNorm, fromNorm: fromNorm, cleanValue: cleanValue, defaults: defaults, cleanPatch: cleanPatch, show: show, PRESETS: PRESETS, patch: patch,
+              toNorm: toNorm, fromNorm: fromNorm, cleanValue: cleanValue, defaults: defaults, cleanPatch: cleanPatch, show: show, PRESETS: PRESETS, patch: patch, CATS: CATS, bank: bank, catOf: catOf, INST: INST,
               STEPS: STEPS, NPAT: NPAT, NROWS: NROWS, PAT_NAMES: PAT_NAMES, KIT: KIT, ROWS: ROWS, newLoop: newLoop, cleanLoop: cleanLoop, okSnd: okSnd, toggle: toggle,
               audible: audible, stepDur: stepDur, stepTime: stepTime, hasSteps: hasSteps, order: order, events: events, wav: wav, clamp: clamp };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

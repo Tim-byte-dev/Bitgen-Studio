@@ -21,21 +21,21 @@ check("the computer keys: Z = the octave's C, S = C#, , = the next C, Q = the ne
 
 /* ---- the knobs */
 const ids = C.PARAMS.map((p) => p.id);
-check("39 controls on 7 panels (oscillators, filter, the two envelopes, LFO, effects, master), every one on a known panel, no id twice",
-  C.PARAMS.length === 39 && C.SECTIONS.length === 7 && new Set(ids).size === ids.length && C.PARAMS.every((p) => C.SECTIONS.some((s) => s.id === p.sec)), C.PARAMS.length);
-check("every default sits in its range / is one of its choices", C.PARAMS.every((p) => p.ch ? p.ch.includes(p.def) : p.def >= p.min && p.def <= p.max));
+check("39 controls on 7 panels (oscillators, filter, the two envelopes, LFO, effects, master) + 13 hidden instrument settings (2.972.0), every one on a known panel, no id twice",
+  C.PARAMS.filter((p) => !p.hide).length === 39 && C.PARAMS.filter((p) => p.hide).length === 13 && C.SECTIONS.length === 7 && new Set(ids).size === ids.length && C.PARAMS.every((p) => C.SECTIONS.some((s) => s.id === p.sec)), C.PARAMS.length);
+check("every default sits in its range / is one of its choices", C.PARAMS.every((p) => p.ch ? p.ch.includes(p.def) : p.re ? p.re.test(p.def) : p.def >= p.min && p.def <= p.max));
 check("a knob's position and its value agree both ways (linear, exp - Cutoff 40 Hz..18 kHz, whole numbers)",
-  C.PARAMS.filter((p) => !p.ch).every((p) => { const v = C.fromNorm(p.id, C.toNorm(p.id, p.def)); return Math.abs(v - p.def) <= Math.max(1e-3, Math.abs(p.def) * 1e-3) + (p.c === "int" ? 0 : 0); })
+  C.PARAMS.filter((p) => !p.ch && !p.re).every((p) => { const v = C.fromNorm(p.id, C.toNorm(p.id, p.def)); return Math.abs(v - p.def) <= Math.max(1e-3, Math.abs(p.def) * 1e-3) + (p.c === "int" ? 0 : 0); })
   && C.fromNorm("cut", 0) === 40 && C.fromNorm("cut", 1) === 18000 && Math.abs(C.fromNorm("cut", 0.5) - Math.sqrt(40 * 18000)) < 1 && C.fromNorm("uni", 0.5) === 4 && Number.isInteger(C.fromNorm("bSemi", 0.37)));
 check("a choice: its index over 0..1 (Wave A: saw / square / triangle / sine)", C.toNorm("aWave", "saw") === 0 && C.toNorm("aWave", "sine") === 1 && C.fromNorm("aWave", 0.4) === "square" && C.fromNorm("fType", 1) === "bandpass");
 check("cleanPatch: out of range clamped, junk = the default, unknown keys dropped, a choice must be known",
-  (() => { const p = C.cleanPatch({ cut: 99999, res: "x", aWave: "laser", uni: 3.6, evil: "<script>", vol: -1 }); return p.cut === 18000 && p.res === C.BY.res.def && p.aWave === "saw" && p.uni === 4 && !("evil" in p) && p.vol === 0 && Object.keys(p).length === 39; })());
+  (() => { const p = C.cleanPatch({ cut: 99999, res: "x", aWave: "laser", uni: 3.6, evil: "<script>", vol: -1 }); return p.cut === 18000 && p.res === C.BY.res.def && p.aWave === "saw" && p.uni === 4 && !("evil" in p) && p.vol === 0 && Object.keys(p).length === C.PARAMS.length; })());
 check("the readout in words: Hz / kHz, ms / s, cents, semitones, percent, ± for the two-way knobs",
   C.show("cut", 2400) === "2.40 kHz" && C.show("cut", 440) === "440 Hz" && C.show("aA", 0.004) === "4 ms" && C.show("aR", 2.6) === "2.60 s" && C.show("bSemi", 12) === "+12 st"
   && C.show("aDet", -7) === "-7 ct" && C.show("aLvl", 0.8) === "80%" && C.show("fEnv", 0.35) === "+35%" && C.show("aWave", "saw") === "saw", [C.show("cut", 2400), C.show("fEnv", 0.35)]);
 const names = C.PRESETS.map((x) => x.name);
-check("our own patches (14, our names - nobody else's), each a safe patch; Init = the defaults",
-  C.PRESETS.length === 14 && new Set(names).size === 14 && names[0] === "Init" && JSON.stringify(C.patch("Init")) === JSON.stringify(C.defaults())
+check("our own patches (14 in the SYNTH bank + 2.972.0's instruments, our names - nobody else's), each a safe patch; Init = the defaults",
+  C.bank("Synth").length === 14 && C.PRESETS.length > 80 && new Set(names).size === names.length && names[0] === "Init" && JSON.stringify(C.patch("Init")) === JSON.stringify(C.defaults())
   && C.PRESETS.every((x) => Object.keys(x.p).every((k) => C.BY[k]) && JSON.stringify(C.cleanPatch(x.p)) === JSON.stringify(C.patch(x.name))) && C.patch("Deep Sub Bass").mode === "mono" && C.patch("nope") === null, names);
 check("…no brand's product names in the station", !/tachyon|luxon|pulsar|kabayun|serum|massive|sylenth|hammerhead|rebirth/i.test(names.join(" ") + src("ext/synthdock/dock.html").replace(/<!--[\s\S]*?-->/g, "")));
 
@@ -106,13 +106,13 @@ const call = (k, req) => new Promise((ok) => routes[k](req, res(ok)));
   /* ---- the wiring */
   const EJ = JSON.parse(src("ext/synthdock/ext.json")), DH = src("ext/synthdock/dock.html"), JS = src("ext/synthdock/synthdock.js"), LJ = src("ext/synthdock/synthloop.js"), AU = src("static/audiodock.js"), IX = src("static/index.html");
   check("ext/synthdock: ext.json (Synth, column 67 - next to SFX, the rules first, the station last; no server part - the routes are core, like SFX's)",
-    EJ.id === "synthdock" && EJ.name === "Synth" && EJ.order === 67 && EJ.scripts.join() === "synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthclick.js,synthrec.js,synthloop.js,synthpads.js,synthscore.js,synthtlcore.js,synthtl.js,synthsing.js,synthroll.js,synthmix.js,synthsteps.js,synthundo.js,synthfile.js,synthdock.js" /* 2.954.0: + pads, the score, the timeline */ && !EJ.server
+    EJ.id === "synthdock" && EJ.name === "Edit Booth" /* 2.972.0 */ && EJ.order === 67 && EJ.scripts.join() === "synthinst.js,synthcore.js,synthkit.js,synthvoice.js,synthknob.js,synthclick.js,synthrec.js,synthloop.js,synthpads.js,synthscore.js,synthtlcore.js,synthtl.js,synthsing.js,synthroll.js,synthmix.js,synthsteps.js,synthundo.js,synthfile.js,synthdock.js" /* 2.954.0: + pads, the score, the timeline */ && !EJ.server
     && EJ.scripts.every((s) => fs.existsSync(path.join(ROOT, "ext/synthdock", s))));
   check("the Audio docker: 🎹 Synth is its 4th tab; the shell has its marker after SFX; no statusbar button of its own (tSy in GONE_DOCKS); Audio's tip says so",
-    require("../static/audiodock.js").IDS.join() === "musicdock,sfxdock,synthdock" /* 2.966.0: Stems gone */ && require("../static/audiodock.js").TABS.synthdock.icon === "🎹" && require("../static/audiodock.js").TABS.synthdock.name === "Synth"
-    && /<!-- ext:dock sfxdock -->\s*<!-- ext:dock synthdock -->/.test(IX) && /tSy: "synthdock"/.test(IX) && /title="Audio docker - Music, SFX and Synth as its tabs"/.test(IX) && /2\.953\.0/.test(AU));
+    require("../static/audiodock.js").IDS.join() === "musicdock,sfxdock,synthdock" /* 2.966.0: Stems gone */ && require("../static/audiodock.js").TABS.synthdock.icon === "🎹" && require("../static/audiodock.js").TABS.synthdock.name === "Edit Booth" /* 2.972.0 */
+    && /<!-- ext:dock sfxdock -->\s*<!-- ext:dock synthdock -->/.test(IX) && /tSy: "synthdock"/.test(IX) && /title="Audio docker - Music, SFX and Edit Booth as its tabs"/.test(IX) && /2\.953\.0/.test(AU));
   check("dock.html: ▾ Synth (Audio's tabs dress it), ⛶, the focusable station, its own Space, the rack, the screen, the wheels, the keyboard, the looper, the library, the file box",
-    /▾ Synth<button class="maxbtn" data-max="synthdock"/.test(DH) && /id="syBody" tabindex="0"/.test(DH) && /data-own-space="1"/.test(DH)
+    /▾ Edit Booth<button class="maxbtn" data-max="synthdock"/.test(DH) && /id="syBody" tabindex="0"/.test(DH) && /data-own-space="1"/.test(DH)
     && ["syPreset", "sySave", "sySample", "syRec", "syPanic", "syMidiIn", "syRack", "syScope", "syBend", "syMod", "syOct", "syPiano", "syPlay", "syBpm", "syPats", "syChain", "syCopy", "syClear", "syPasses", "syWav", "syToSfx", "syToSound", "syLibBtn", "syLib", "syDrop", "syRows", "syFile", "syMsg"].every((id) => DH.includes('id="' + id + '"')));
   check("synthdock.js: hidden the first time; the sound wakes on a click (the browser's rule); keys only while the station has the focus, never passed on; ⛶ = the whole window, Esc back",
     /localStorage\.getItem\("h3\.g\.synthdock"\) == null\) root\.localStorage\.setItem\("h3\.g\.synthdock", "1"\)/.test(JS) && /body\.addEventListener\("keydown", onKey\)/.test(JS) && /e\.preventDefault\(\); e\.stopPropagation\(\);/.test(JS)

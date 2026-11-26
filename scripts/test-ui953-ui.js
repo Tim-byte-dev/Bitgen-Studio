@@ -41,7 +41,7 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     await ev(() => window.H3Audio.toggle(true)); await sleep(300);
     const shownTab = await ev(() => window.H3Audio.IDS.filter((i) => !document.getElementById(i).classList.contains("dockgone"))[0]);
     const tabs = await ev((id) => [...document.querySelectorAll("#" + id + " .bhead [data-autab]")].map((x) => x.textContent).join("|"), shownTab);
-    check("the Audio docker's tabs: 🎵 Music · 💥 SFX · 🎹 Synth (Stems retired in 2.966.0)", tabs === "🎵 Music|💥 SFX|🎹 Synth", tabs);
+    check("the Audio docker's tabs: 🎵 Music · 💥 SFX · 🎹 Edit Booth (Stems retired in 2.966.0; renamed 2.972.0)", tabs === "🎵 Music|💥 SFX|🎹 Edit Booth" /* 2.972.0 */, tabs);
     await p.click("#" + shownTab + ' [data-autab="synthdock"]'); await sleep(500);
     const on = await ev(() => window.H3Audio.IDS.filter((i) => !document.getElementById(i).classList.contains("dockgone")));
     const head = await ev(() => [...document.querySelector("#synthdock > .bhead").childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim());
@@ -53,8 +53,8 @@ const tone = (hz, sec) => { const n = Math.round(48000 * sec), x = new Float32Ar
     /* ---- the rack */
     const rack = await ev(() => ({ panels: [...document.querySelectorAll("#syRack .sypanel h4")].map((h) => h.textContent), knobs: document.querySelectorAll("#syRack [data-p]").length,
       sliders: document.querySelectorAll('#syRack [role="slider"]').length, presets: document.querySelectorAll("#syPreset option").length, sel: document.getElementById("syPreset").value }));
-    check("the rack: Oscillators · Filter · Filter env · Amp env · LFO · Effects · Master + the screen; 39 controls (33 knobs as sliders, 6 switches); 14 patches, Neon Lead to start",
-      rack.panels.join("|") === "Oscillators|Filter|Filter env|Amp env|LFO|Effects|Master" && rack.knobs === 39 && rack.sliders === 33 && rack.presets === 14 && rack.sel === "o:Neon Lead", rack);
+    check("the rack: Oscillators · Filter · Filter env · Amp env · LFO · Effects · Master + the screen; 39 controls (33 knobs as sliders, 6 switches); 14 patches + the instruments (2.972.0), Neon Lead to start",
+      rack.panels.join("|") === "Oscillators|Filter|Filter env|Amp env|LFO|Effects|Master" && rack.knobs === 39 && rack.sliders === 33 && rack.presets === (await ev(() => window.H3SynthCore.PRESETS.length)) && rack.presets > 80 && rack.sel === "o:Neon Lead", rack);
     // a knob dragged up: the cutoff rises, the patch is marked changed
     const cut0 = (await info()).p.cut, kb = await p.locator('#syRack [data-p="cut"] canvas').boundingBox();
     await p.mouse.move(kb.x + kb.width / 2, kb.y + kb.height / 2); await p.mouse.down(); await p.mouse.move(kb.x + kb.width / 2, kb.y - 40, { steps: 6 }); await p.mouse.up();

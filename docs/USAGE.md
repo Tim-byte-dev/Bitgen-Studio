@@ -1636,10 +1636,10 @@ as `Anna.happy` (Anna recorded happy) is used for Anna's happy lines, and the so
 The file carries its own **metadata**: the title, the date and time it was made, the description, the whole text and
 the voices (WAV: the INFO list; MP3: ID3 - the text as its lyrics).
 
-## The 🎹 Synth tab (Audio ▸ 🎹 Synth)
+## The 🎹 Edit Booth tab (Audio ▸ 🎹 Edit Booth)
 
-Since 2.953.0 the Audio docker has a fourth tab, **🎹 Synth**: a synth you play from a keyboard, and a step looper under it
-for beats made of rows of sounds - your own samples too. Click **Audio** in the statusbar, then **🎹 Synth**; **⛶** gives it
+Since 2.953.0 the Audio docker has a fourth tab, **🎹 Edit Booth** (called 🎹 Synth until 2.972.0): a synth you play from a keyboard, and a step looper under it
+for beats made of rows of sounds - your own samples too. Click **Audio** in the statusbar, then **🎹 Edit Booth**; **⛶** gives it
 the whole window (the rack needs the room) and **Esc** or **🗗** brings it back to the docker. The sound starts on your first
 click in it (the browser's rule - **🔈 Sound on** shows if it is still asleep). Switching to another tab, folding or hiding it
 stops the loop and every note.
@@ -1654,10 +1654,32 @@ when it has the focus; a **double-click** puts it back to its default. A wave or
 next, right-click for the one before. The screen shows the sound's wave as it plays (a drawing of the patch while it is
 quiet), the patch, the last note and how many voices sound.
 
-**Patches.** ◀ ▶ or the list: 14 patches of ours (Neon Lead, Glass Pad, Deep Sub Bass, Silver Pluck, Acid Line, Warm
+**Patches.** ◀ ▶ or the list: 14 synth patches of ours (the **SYNTH** bank since 2.972.0) (Neon Lead, Glass Pad, Deep Sub Bass, Silver Pluck, Acid Line, Warm
 Strings, Bell Keys, Wobble Bass, Brass Stab, Soft Organ, Dream Choir, Chip Lead, Noise Sweep, Init). A knob turned marks
 the patch with *; **💾** names it and keeps it under **My patches** (in this browser), **🗑** deletes one of yours. The knobs
 as you left them come back next time.
+
+**Instruments - the VOICE buttons (2.972.0).** Like a home keyboard, the row of **VOICE** buttons just above the keys picks
+an instrument by its bank: **PIANO · MALLET · ORGAN · GUITAR · BASS · STRINGS · CHOIR · BRASS · REED · PIPE · LEAD · PAD ·
+WORLD · SYNTH**. A button gives that bank's first voice; press it again for the next one (it goes round). The little screen at
+the end of the row shows the voice playing; **◀ ▶ PATCH** steps through every voice, bank after bank, and the patch list at
+the top is grouped by bank. A MIDI keyboard's **program change** picks a voice too (program 1 = Grand Piano, in the list's
+order). There are over 70: grand, bright, mellow, honky-tonk and electric grand pianos, electric pianos, harpsichord and clav;
+vibraphone, marimba, xylophone, glockenspiel, celesta, music box, tubular bells, steel drum and timpani; drawbar, jazz, rock,
+gospel, church and reed organs, accordion and harmonica; nylon, steel, 12-string, jazz, clean, muted, overdrive and distortion
+guitars; acoustic, finger, pick, slap, fretless and rubber basses; string ensemble, slow strings, violin, cello, pizzicato and
+harp; choir aahs and voice oohs; trumpet, trombone, French horn, brass section and tuba; saxophones, clarinet, oboe and
+bassoon; flute, piccolo, recorder, pan flute and ocarina; leads and pads; koto, banjo and kalimba - plus the 14 synth patches
+under **SYNTH**.
+
+Every one is made by the station itself - there are no recordings or sample files. The pianos are struck strings (dozens
+of partials, slightly sharp as they go up like a real string, two strings a few cents apart, the hammer's thump, low notes
+ringing longer than high ones); the guitars, basses, harp and harpsichord are plucked strings; the electric pianos, mallets
+and bells are FM (one wave bending another); the organs are nine drawbars with a key click; the rest are the synth itself.
+A soft note on the pianos is darker than a hard one. The knobs still work on every voice (the filter, the envelopes, the
+effects); the instrument's own settings (its drawbars, how its strings ring) come with the voice and have no knob - **💾**
+keeps them in your own patch. The first notes of a piano or guitar are made as you choose it, a few keys at a time, so the
+keys play at once. They are close to the real instruments, not copies of them - think of a good home keyboard's voices.
 
 **Playing.** Click the keyboard (lower on a key = louder; drag along it to glide over the keys), or with the station
 focused type on the computer: the **Z** row is the octave shown (Z = C, S = C#, X = D ...), the **Q** row the octave above,
@@ -1726,7 +1748,7 @@ layer ("Loop take"). Takes are saved as WAVs in 📂 My samples.
 whether it goes **on that layer** (where you dropped it) or on **a new layer** of its own (✕ cancels). Pictures and videos
 are not taken. **📂 Open → new layer** opens sound files and puts each on a new layer named after it, at the playhead.
 
-**Synth files (.sfx, 2.956.0).** The Synth tab keeps its work as **.sfx files in the project** (the project's `synth` folder).
+**Synth files (.sfx, 2.956.0).** The Edit Booth tab keeps its work as **.sfx files in the project** (the project's `synth` folder).
 A take is **saved the moment you stop recording**: ■ after ● on the keyboard saves `_key_<random name>.sfx` (the sheet
 music, the patch and the take), ⏺ again in the looper saves `_loop_<random name>.sfx` (the loop as it was and the take);
 the sound of each take is a WAV with the same name in 📂 My samples. **🗂 Load** (on the keyboard, in the looper, in the
@@ -1751,7 +1773,7 @@ velocity lane under it: drag a note's bar up or down. **Grid** 1/4 to 1/32, **�
 handle at its top-left and top-right corners: drag them for the fades (the faded part is shaded). Where two clips on a
 layer overlap, they **crossfade** by themselves over the overlap.
 
-**Undo / redo (2.957.0).** **↶** and **↷** in the Synth tab's bar (or **Ctrl+Z**, **Ctrl+Y** / **Ctrl+Shift+Z** with the
+**Undo / redo (2.957.0).** **↶** and **↷** in the Edit Booth tab's bar (or **Ctrl+Z**, **Ctrl+Y** / **Ctrl+Shift+Z** with the
 focus in the tab) step back and forward through your changes to the timeline, the loop, the knobs and the pads - a knob
 turned or a clip dragged is one step.
 
@@ -1760,7 +1782,7 @@ turned or a clip dragged is one step.
 **EQ** (**Low** shelf at 200 Hz, **Mid** at 1 kHz, **High** shelf at 4.5 kHz, ± 15 dB), **Comp** (how hard the layer's
 compressor squeezes - the level made up after it), **Rev** (how much goes to the shared reverb) and **M / S**; the master
 strip has its own level. Every knob works while it plays and is kept in the timeline (and its .sfx file); ↶ undoes it.
-**🕒 Click** in the Synth tab's bar clicks every beat (the looper's BPM, the first of the bar higher) while the timeline
+**🕒 Click** in the Edit Booth tab's bar clicks every beat (the looper's BPM, the first of the bar higher) while the timeline
 plays and while you record - the click is never in the take. **Count-in** (off, 1 or 2 bars) clicks before ● on the
 keyboard or ⏺ in the looper starts recording. **⚑ Marker** (or **M** on the timeline) puts a marker at the playhead; click
 a marker on the ruler to go there, double-click it to rename it (double-click the ruler elsewhere for a new one),
@@ -1983,7 +2005,7 @@ place each take straight after the previous one instead, untick "Place each rend
 
 ## The timeline's look (2.968.0)
 
-The Timeline docker has the **technical** look of the 🎹 Synth tab: dark panels, glowing labels (EDIT on the menu bar,
+The Timeline docker has the **technical** look of the 🎹 Edit Booth tab: dark panels, glowing labels (EDIT on the menu bar,
 LAYERS over the layer headers), LCD-style time readouts, clips as dark glass with a name bar and a glow in their layer's
 colour, and a faint time grid behind the layers that follows the zoom (a line at each of the ruler's steps, a fainter one
 every fifth of that). 🧰 Tools & Properties wears it too. Only colours, light and type change - every button, clip and
@@ -3291,7 +3313,7 @@ internet.
 
 - **Music** docker — a song from lyrics and a style (MiniMax Music3 through
   ComfyUI, or YuE2), covers and sheet music.
-- **Separating a song** — its vocals and instrumental with the 🎹 Synth tab's ✂ Separate vocals, or vocals / drums / bass /
+- **Separating a song** — its vocals and instrumental with the 🎹 Edit Booth tab's ✂ Separate vocals, or vocals / drums / bass /
   other in Sheet music (demucs). (The Stems tab did this until 2.966.0.)
 - **Voices** — clone a voice from a short clip or a waveform region, then
   speak text with it (OmniVoice); transcribe speech with faster-whisper;
@@ -8655,8 +8677,8 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   reads **Audio** with the tabs **🎵 Music · 🎚 Stems · 💥 SFX**: a tab shows that one and puts the others away. Each tab
   keeps its own height, ▾ fold, ⛶ maximize and ⇱ float. Anything that opens one of them - a workspace, a saved docker
   layout, voice chat - opens it as the Audio docker's tab. A tab whose extension is turned off is not offered.
-  **2.966.0:** the Stems tab is gone - the tabs are **🎵 Music · 💥 SFX · 🎹 Synth**. Splitting a song into its vocals and
-  instrumental is the 🎹 Synth tab's **✂ Separate vocals** (on the picked layer, two new layers); a music video's song
+  **2.966.0:** the Stems tab is gone - the tabs are **🎵 Music · 💥 SFX · 🎹 Edit Booth**. Splitting a song into its vocals and
+  instrumental is the 🎹 Edit Booth tab's **✂ Separate vocals** (on the picked layer, two new layers); a music video's song
   segments are on the StoryBoard's song strip (Load audio). An older install's Stems folder is left alone and never loaded.
 - **Currency** (Settings ▸ General): RunPod, OpenRouter and the other services list their prices in US dollars. Pick your
   currency (AUD, USD, EUR, GBP, CNY, JPY …) and bitGen shows them in it: the PODS docker's GPUs, the price an hour and
@@ -9187,7 +9209,7 @@ RunPod pod, like pictures, video and songs.
 - **Tick them when you make the pod.** 🖥 PODS ▸ Create pod… has an **Audio** row:
   - **Text to speech** - OmniVoice: speech, your cloned and designed voices, 🗣 Speech & dialog;
   - **Speech to text** - faster-whisper: transcripts, lyric timing, a new clone's words, ✨ Create's lyrics;
-  - **Song separation** - demucs: ✂ Split into layers, the 🎹 Synth tab's ✂ Separate vocals, the sheet music's song layers.
+  - **Song separation** - demucs: ✂ Split into layers, the 🎹 Edit Booth tab's ✂ Separate vocals, the sheet music's song layers.
   bitGen installs the ticked ones on the pod when it is set up, under /workspace/bitgen-audio. That folder is kept
   while the pod is stopped. They reuse the pod's PyTorch, so it is a few minutes the first time.
 - **Or tick them on a pod you have.** Open the pod in 🖥 PODS ▸ My pods. The **🔊 Audio** row is under "what it is
@@ -10792,7 +10814,7 @@ become a video of that person saying (or singing) it, lip-synced, **as long as t
    have them). **Restart ComfyUI once** so it loads the new nodes. Pressing Generate without them opens the same download.
 2. Pick the **LongCat Avatar 1.6** video style in the prompt docker (an **ⓘ LongCat** hint sits beside it).
 3. Put the **speech** in the References docker's sounds - clean speech works best; for a song, ✂ Separate vocals in the
-   🎹 Synth tab (Audio docker) and use the vocals layer. The video is as long as this sound.
+   🎹 Edit Booth tab (Audio docker) and use the vocals layer. The video is as long as this sound.
 4. Put the **person** in the References docker's pictures (the one typed **First frame** is used first, else the first
    picture), framed as you want the video - chest up works well. No picture = the person is made from the prompt alone.
 5. Describe the person, how they move and where they are in the prompt (longer, detailed prompts work best) and press

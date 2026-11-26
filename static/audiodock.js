@@ -19,7 +19,7 @@
   var IDS = ["musicdock", "sfxdock", "synthdock"], TITLE = "Audio";   // 2.953.0: + 🎹 Synth; 2.966.0: - Stems (Tim: "remove the stems tab. i think the synth tab covers it now")
   var TABS = { musicdock: { icon: "🎵", name: "Music", tip: "Songs - lyrics, a music style, cover, sheet music" },
                sfxdock: { icon: "💥", name: "SFX", tip: "Sound effects - add audio or video, trim, keep a part" },
-               synthdock: { icon: "🎹", name: "Synth", tip: "Synth - a synth with knobs, a 49-key keyboard with drum pads and a sheet music screen, a step looper with your own samples, a timeline" } };
+               synthdock: { icon: "🎹", name: "Edit Booth", tip: "Edit Booth - a synth with knobs, a 49-key keyboard with its instruments (pianos, organs, guitars, strings, brass...), drum pads and a sheet music screen, a step looper with your own samples, a timeline" } };   // 2.972.0: Tim "change synth tab name in audio docker to Edit Booth"
   /** which of the three stays on screen: `now` = the ids showing, `before` = those that showed last time. One showing -> it;
    *  several -> one that has just come up (the active tab when it is among them, else the first), else the active one,
    *  else the first. None -> null. */
