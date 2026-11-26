@@ -1736,6 +1736,17 @@ scales the whole line. Drag a keyframe's **◆** sideways for when and up / down
 the end of its line for its end volume, or click it for **Start vol / End vol** knobs. **▶ Play** plays from the playhead
 (click the ruler to move it); **⬇ WAV**, **→ 💥 SFX** and **→ 🔊** mix the whole timeline down.
 
+**▶ All or one layer, a sound that is missing, the looper's volume (2.973.0).** Left of the timeline's **▶ Play** a dropdown
+says what plays: **All** (every layer, as their **M**ute and **S**olo say) or **Layer** - only the layer you picked (click its
+name or anywhere in its lane), heard even if it is muted. With no layer picked, **Layer** plays them all (the dropdown says
+"none picked = all"). The keyboard and the looper are never stopped by ▶ or ■ - play the keys or run a loop over the timeline;
+the keyboard has its **VOLUME** knob on the deck and the looper now has its own **Vol** knob in its bar (its rows and the drum
+pads, kept in this browser). **Space** plays the timeline while the timeline has the focus (click in it first), and the
+looper everywhere else in the tab. If a clip's sound file is gone (a deleted sample or take), ▶ still plays everything
+else: the message names what is missing and the clip is drawn struck through with **⚠ missing** - delete it or drop the
+file on the timeline again. (Before 2.973.0 one missing file stopped ▶ altogether - the message said it "is not there any
+more".)
+
 **Folding the parts, sending takes (2.955.0).** The tab's four parts - **🎛 Synth** (the knobs), **🎹 Keyboard**, **🥁 Looper**
 and **🎞 Timeline** - are dockers of their own: click a title bar to fold it away or bring it back (kept for next time).
 **● on the keyboard** records the sound of what you play beside the sheet music (the silence before your first note is cut);

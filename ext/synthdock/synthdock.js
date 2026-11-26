@@ -400,7 +400,8 @@
   function onKey(e) {
     if (e.ctrlKey || e.metaKey || e.altKey || typing(e.target)) return;
     var dn = e.type === "keydown";
-    if (e.code === "Space") { e.preventDefault(); e.stopPropagation(); if (dn && !e.repeat) { ctx(); LP.play(); wake(); } return; }
+    // Space: the looper - or the timeline when the timeline has the focus (2.973.0)
+    if (e.code === "Space") { e.preventDefault(); e.stopPropagation(); if (dn && !e.repeat) { ctx(); if (TL && e.target.closest && e.target.closest("#syTL")) TL.toggle(); else LP.play(); wake(); } return; }
     if (dn && (e.key === "ArrowUp" || e.key === "ArrowDown") && !(e.target.closest && e.target.closest(".sykn, .sywheel"))) { e.preventDefault(); e.stopPropagation(); allKeysOff(); setOct(G.oct + (e.key === "ArrowUp" ? 1 : -1)); return; }
     var semi = C.KEYS[e.code]; if (semi == null) return;
     e.preventDefault(); e.stopPropagation();

@@ -28,7 +28,21 @@
   var $ = function (id) { return doc.getElementById(id); };
   var R0 = 22, TS = 22, RULER = 22, LH = 64, HUES = ["#38e1ff", "#ff4fd8", "#ffae3a", "#5dff8a", "#b78cff", "#ffd23a", "#4f9dff", "#ff5a5a"];
   var O = null, TLD = T.newTL(), sources = [], peaks = {}, dur = {};
-  var S = { tpt: null, view: {}, apt: null, sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0 };
+  var S = { tpt: null, view: {}, apt: null, sel: 0, clip: null, key: null, ph: 0, playing: false, nodes: null, raf: 0, drag: null, scroll: 0, at: 0, from: 0,
+            picked: false, only: null, missing: {} };   // 2.973.0: picked = a layer the user clicked; only = what ▶ plays; missing = sounds not found
+  /* 2.973.0 (Tim: "the play button doesn't work for edit booth timeline, but add a dropdown to the left of the play button All and
+     layer so either play all or only the selected layer, if no layer is selected play all. if keyboard and looper are playing let
+     them play"). WHY ▶ did nothing: one clip whose sound file is gone (a deleted sample / take) made the whole start fail
+     ("... is not there any more") - now the clips that can be played play, the missing ones are drawn struck through and named.
+     ▶ never touches the keyboard or the looper - they go on under the timeline. */
+  function playWhat() { var w = $("syTWhat"); return w && w.value === "layer" ? "layer" : "all"; }
+  /** what ▶ plays: null = every layer (as mute / solo say), or the picked layer alone (heard even if muted or another is soloed) */
+  function playOnly() { return playWhat() === "layer" && S.picked && S.sel >= 0 && S.sel < TLD.layers.length ? S.sel : null; }
+  function paintWhat() {
+    var w = $("syTWhat"); if (!w) return;
+    var o = w.querySelector('option[value="layer"]'), t = S.picked && L(S.sel) ? "Layer: " + L(S.sel).name : "Layer (none picked = all)";
+    if (o && o.textContent !== t) o.textContent = t;
+  }
   function hue(i) { return HUES[i % HUES.length]; }
   function msg(t, bad) { if (O && O.msg) O.msg(t, bad); }
   function changed() { if (O && O.save) O.save(TLD); }
@@ -111,7 +125,7 @@
       var kp = KN.knob({ label: "Pan", size: 30, color: hue(i), def: 0.5, bipolar: true, get: function () { return (l.pan + 1) / 2; }, set: function (n) { l.pan = Math.round((n * 2 - 1) * 100) / 100; liveMix(); changed(); }, text: function () { return Math.abs(l.pan) < 0.02 ? "C" : (l.pan < 0 ? "L" : "R") + Math.round(Math.abs(l.pan) * 100); } });
       kv.el.setAttribute("aria-label", l.name + " volume"); kp.el.setAttribute("aria-label", l.name + " pan"); kv.el.dataset.vol = i;
       k2.appendChild(kv.el); k2.appendChild(kp.el); k2.appendChild(lane);
-      h.addEventListener("pointerdown", function (e) { if (e.target.closest("button, select, .sykn")) return; var was = S.sel; S.sel = i; S.clip = null; S.key = null; S.tpt = null; S.apt = null; keyEd();
+      h.addEventListener("pointerdown", function (e) { if (e.target.closest("button, select, .sykn")) return; var was = S.sel; S.sel = i; S.picked = true; paintWhat(); S.clip = null; S.key = null; S.tpt = null; S.apt = null; keyEd();
         if (was !== i) { if (e.target.closest("input")) box.querySelectorAll(".sytlhead").forEach(function (x) { x.classList.toggle("sel", x === h); }); else heads(); }   // typing a name: keep its box
         draw(); });   // 2.963.0: the panel edits this layer
       box.appendChild(h);
@@ -205,7 +219,10 @@
         if (sel || W > 30) { x.fillStyle = sel ? "#f4f1e8" : col; x.fillRect(X0 + fd.fi * TLD.zoom - 3, Y, 6, 6); x.fillRect(X0 + W - fd.fo * TLD.zoom - 3, Y, 6, 6); }
         x.fillStyle = "#e9eef6"; x.font = "600 10px system-ui, sans-serif"; x.textAlign = "left";
         var gl = (c.gain != null && Math.abs(c.gain - 1) > 0.005) ? "  " + (c.gain > 0 ? (20 * Math.log10(c.gain) >= 0 ? "+" : "") + (20 * Math.log10(c.gain)).toFixed(1) + " dB" : "-∞ dB") : "";
-        x.save(); rr(x, X0, Y, W, H, 5); x.clip(); x.fillText((c.kind === "notes" ? "♪ " : c.kind === "steps" ? "▦ " : "") + c.name + gl, Math.max(X0, 0) + 9, Y + 11); x.restore();
+        var gone = !c.kind && S.missing[c.src];   // 2.973.0: its sound file is not there - struck through, red
+        x.save(); rr(x, X0, Y, W, H, 5); x.clip(); x.fillText((c.kind === "notes" ? "♪ " : c.kind === "steps" ? "▦ " : "") + (gone ? "⚠ missing: " : "") + c.name + gl, Math.max(X0, 0) + 9, Y + 11);
+        if (gone) { x.strokeStyle = "#ff4d5e"; x.lineWidth = 2; x.beginPath(); x.moveTo(X0, Y + H); x.lineTo(X0 + W, Y); x.moveTo(X0, Y); x.lineTo(X0 + W, Y + H); x.stroke(); }
+        x.restore();
         x.restore();
       });
     });
@@ -302,6 +319,7 @@
       if (e.button !== 0) return;
       var p = pos(e), h = hit(p.x, p.y); if (!h) return;
       cv.focus({ preventScroll: true }); e.preventDefault();
+      if (h.l != null && h.l >= 0) { S.picked = true; root.setTimeout(paintWhat, 0); }   // 2.973.0: a click in a layer picks it for ▶ Layer
       try { cv.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
       if (h.kind === "tpt") { S.tpt = h.p; S.clip = null; S.key = null; S.apt = null; keyEd(); var q0 = TLD.tempo[h.p]; S.drag = { kind: "tpt", p: h.p, x0: p.x, y0: p.y, bpm0: q0.bpm, t0: q0.t, axis: null }; draw(); return; }
       if (h.kind === "tstrip") { S.tpt = null; keyEd(); seek(tAt(p.x)); S.drag = { kind: "ruler" }; return; }
@@ -882,7 +900,7 @@
       });
     });
   }
-  function mixInto(ctx, dest, from, at, bufs, only) {
+  function mixInto(ctx, dest, from, at, bufs, only, force) {
     var endT = T.end(TLD), nodes = [], srcs = [];
     // 2.958.0: master (its own level + a meter) and one reverb for every layer's send
     var master = ctx.createGain(); master.gain.value = TLD.master == null ? 1 : TLD.master; master.connect(dest);
@@ -894,7 +912,7 @@
       lo.type = "lowshelf"; lo.frequency.value = 200; mid.type = "peaking"; mid.frequency.value = 1000; mid.Q.value = 0.8; hi.type = "highshelf"; hi.frequency.value = 4500;
       var flt = ctx.createBiquadFilter(); flt.type = "lowpass"; flt.Q.value = 0.7;   // 2.959.0: the layer's filter (Filter knob / lane)
       comp.knee.value = 6; comp.attack.value = 0.005; comp.release.value = 0.15; meter.fftSize = 1024;
-      var on = only == null ? T.audible(TLD, i) : ([].concat(only).indexOf(i) >= 0 && !l.mute);   // 2.967.0: only = a layer or a list
+      var on = only == null ? T.audible(TLD, i) : ([].concat(only).indexOf(i) >= 0 && (!l.mute || force));   // 2.967.0: only = a layer or a list; 2.973.0: force = heard even if muted
       vol.gain.value = on ? l.vol : 0; if (pan.pan) pan.pan.value = l.pan;
       // vol -> EQ low / mid / high -> compressor (+ make-up) -> pan -> the keyframe line -> master (+ the reverb send)
       vol.connect(lo); lo.connect(mid); mid.connect(hi); hi.connect(flt); flt.connect(comp); comp.connect(make); make.connect(pan); pan.connect(ev);
@@ -908,7 +926,7 @@
     });
     var gains = [];
     var fl = TLD.layers.map(function (l) { return T.fades(T.playable(l).map(function (p) { return p.c; })); }), engines = [];   // 2.960.0: takes as their comp
-    T.schedule(TLD, from).forEach(function (s) {
+    T.schedule(TLD, from, force ? only : null).forEach(function (s) {
       if (s.dur <= 0 || !nodes[s.layer].on) return;
       var c = s.c || L(s.layer).clips[s.clip], f = fl[s.layer][s.pi == null ? s.clip : s.pi], g = ctx.createGain(), t0 = at + s.when;
       // 2.957.0: the clip's gain line - its gain, fade in / out (longer where it overlaps a neighbour: a crossfade), 5 ms at
@@ -943,10 +961,15 @@
     });
     return { nodes: nodes, srcs: srcs, engines: engines, end: endT, master: master, mMeter: mMeter, gains: gains };
   }
-  function buffersFor(from) {
-    var need = {}; T.schedule(TLD, from || 0).forEach(function (s) { if (s.kind === "steps") (s.c.rows || []).forEach(function (r) { need[r.src] = 1; }); else if (s.kind !== "notes") need[s.src] = 1; });
+  function buffersFor(from, force) {
+    var need = {}; T.schedule(TLD, from || 0, force == null ? null : force).forEach(function (s) { if (s.kind === "steps") (s.c.rows || []).forEach(function (r) { need[r.src] = 1; }); else if (s.kind !== "notes") need[s.src] = 1; });
     var names = Object.keys(need);
-    return Promise.all(names.map(function (n) { return load(n).then(function (b) { return [n, b]; }); })).then(function (pairs) { var o = {}; pairs.forEach(function (p) { o[p[0]] = p[1]; }); return o; });
+    // 2.973.0: a sound that cannot be read no longer stops everything - the rest plays, the missing ones are said and marked
+    return Promise.all(names.map(function (n) { return load(n).then(function (b) { delete S.missing[n]; return [n, b]; }, function () { S.missing[n] = true; return [n, null]; }); })).then(function (pairs) {
+      var o = {}, gone = []; pairs.forEach(function (p) { if (p[1]) o[p[0]] = p[1]; else gone.push(p[0].replace(/^\w+:/, "")); });
+      if (gone.length) msg("⚠ " + gone.length + " sound" + (gone.length === 1 ? " is" : "s are") + " not there any more - skipped (drawn struck through): " + gone.slice(0, 3).join(", ") + (gone.length > 3 ? "…" : "") + " - delete the clip or drop the file again", true);
+      draw(); return o;
+    });
   }
   /** 2.960.0: the beats' clicks from `from` to `until`, starting at `at` -> a canceller */
   function clickFor(ctx, from, until, at) {
@@ -958,10 +981,10 @@
     var ctx = O.ctx(), lp = TLD.loop || {}, looping = !!lp.on && lp.b - lp.a >= 0.02;
     var from = S.rec ? S.ph : (S.ph >= T.end(TLD) && !looping ? 0 : S.ph);
     if (looping && (from >= lp.b || (S.rec && S.rec.loop))) from = lp.a;
-    S.playing = true; S.loopAB = looping ? { a: lp.a, b: lp.b } : null; paintPlay();
-    return buffersFor(looping ? Math.min(from, lp.a) : from).then(function (bufs) {
+    S.playing = true; S.loopAB = looping ? { a: lp.a, b: lp.b } : null; S.only = S.rec ? null : playOnly(); paintPlay();
+    return buffersFor(looping ? Math.min(from, lp.a) : from, S.only).then(function (bufs) {
       if (!S.playing) return;
-      var at = ctx.currentTime + 0.08, m = mixInto(ctx, O.dest(), from, at, bufs);
+      var at = ctx.currentTime + 0.08, m = mixInto(ctx, O.dest(), from, at, bufs, S.only, S.only != null);
       S.nodes = m.nodes; S.srcs = m.srcs; S.engines = m.engines; S.gains = m.gains; S.at = at; S.from = from; S.master = m.master; S.mMeter = m.mMeter; S.bufs = bufs;
       if (S.rec && S.rec.at == null) { S.rec.at = at; S.rec.from = from; }
       if (S.rec && S.rec.loop) S.rec.passes.push(at + (S.loopAB.a - from));
@@ -982,7 +1005,7 @@
   }
   /** the loop's next pass, mixed to start the moment this one ends (at2); this pass's clips fade out there */
   function nextPass(ctx, AB) {
-    var at2 = S.at + (AB.b - S.from), m2 = mixInto(ctx, O.dest(), AB.a, at2, S.bufs);
+    var at2 = S.at + (AB.b - S.from), m2 = mixInto(ctx, O.dest(), AB.a, at2, S.bufs, S.only, S.only != null);
     (S.gains || []).forEach(function (g) { try { g.gain.cancelScheduledValues(at2 - 0.004); g.gain.setTargetAtTime(0, at2 - 0.004, 0.0012); } catch (e) { /* gone */ } });
     S.next = { at: at2, m: m2, click: clickFor(ctx, AB.a, AB.b, at2) };
     if (S.rec && S.rec.loop) S.rec.passes.push(at2);
@@ -1059,6 +1082,9 @@
   function wire() {
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
     on("syTPlay", function () { O.ctx(); toggle(); });
+    var wh = $("syTWhat");   // 2.973.0: ▶ plays All or the picked Layer (kept in this browser)
+    if (wh) { try { wh.value = root.localStorage.getItem("h3.synth.tl.what") === "layer" ? "layer" : "all"; } catch (e) { /* fine */ }
+      wh.onchange = function () { try { root.localStorage.setItem("h3.synth.tl.what", wh.value); } catch (e) { /* fine */ } if (S.playing) { stop(); play(); } paintWhat(); }; paintWhat(); }
     on("syTRec", function () { O.ctx(); startRec(); });   // 2.960.0
     on("syTLoop", function () { toggleLoop("on"); });
     on("syTTempo", function () { toggleTempo(); });   // 2.961.0
@@ -1084,9 +1110,9 @@
   function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
   root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
-    meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
-    tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
+    meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.picked = l != null && l >= 0; paintWhat(); S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
+    tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; S.picked = false; S.missing = {}; root.setTimeout(paintWhat, 0); layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },
-    info: function () { return { layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
+    info: function () { return { picked: S.picked, what: playWhat(), only: S.only, missing: Object.keys(S.missing), layers: TLD.layers.length, clips: TLD.layers.map(function (l) { return l.clips.length; }), keys: TLD.layers.map(function (l) { return l.keys.length; }), sel: S.sel,
       clip: S.clip, key: S.key, apt: S.apt, tpt: S.tpt == null ? null : S.tpt, tempoOn: !!TLD.tempoOn, tempo: TLD.tempo, bpmNow: T.bpmAt(tmap(), S.ph), arm: armed(), loop: TLD.loop, looping: !!S.loopAB, takes: TLD.layers.map(function (l) { var g = T.groups(l); return Object.keys(g).map(function (k) { return k + ":" + g[k].length; }).join(); }), views: TLD.layers.map(function (l, i) { return view(i); }), ph: S.ph, markers: (TLD.markers || []).map(function (m) { return m.name + "@" + m.t; }), clicking: !!S.click, playing: S.playing, end: T.end(TLD), snap: TLD.snap, zoom: TLD.zoom, waves: Object.keys(peaks).length }; } };
 })(typeof window !== "undefined" ? window : globalThis);

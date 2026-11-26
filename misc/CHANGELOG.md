@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.973.0** — The Edit Booth Timeline's ▶ Plays Again When a Clip's Sound Is Missing (Skipped and Struck Through); ▶ All or One Layer; the Looper's Own Volume; Space Plays the Timeline When It Has the Focus; 4:00.0 Not 3:60.0
 - **2.972.0** — The 🎹 Synth Tab Is Now the 🎹 Edit Booth + the Keyboard's Instruments: 70+ Voices in 14 Banks Like a Home Keyboard (Struck and Plucked Strings, FM, Drawbar Organs), a VOICE Row Over the Keys, MIDI Program Change
 - **2.971.0** — 🌐 360 Panoramas in the Image Editor: Place Your Pictures on a Sphere, the Rest Pure Green, Qwen Image 2.1 With a 360 Outpaint LoRA Fills It Into a Seamless 360° Picture; ↔ Fix the Seam, 🌐 Look Round, 🥽 Use It as VR World's World
 - **2.970.0** — The Timeline Preview Keeps Its Room Again + Screens: Extra Screens Each Play One Layer in Step With the Master (the Final Picture); Right-Click ▸ ⇄ Swap With the Master

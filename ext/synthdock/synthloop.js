@@ -84,7 +84,15 @@
   function bar() { return 16 * C.stepDur(L.bpm); }
   /** 2.955.0: the looper's own bus (its rows and every drum pad) -> the mix; ⏺ Rec records it */
   var bus = null;
-  function out() { var ctx = O.ctx(); if (!bus || bus.context !== ctx) { bus = ctx.createGain(); bus.connect(O.dest()); } return bus; }
+  // 2.973.0: the looper's own volume (its rows + the drum pads) - h3.synth.lvol, 0..150 %; the keyboard has its VOLUME knob
+  var lvol = (function () { try { var v = parseFloat(root.localStorage.getItem("h3.synth.lvol")); return Number.isFinite(v) ? Math.max(0, Math.min(1.5, v)) : 1; } catch (e) { return 1; } })();
+  function out() { var ctx = O.ctx(); if (!bus || bus.context !== ctx) { bus = ctx.createGain(); bus.gain.value = lvol; bus.connect(O.dest()); } return bus; }
+  function setVol(v) {
+    lvol = Math.max(0, Math.min(1.5, +v || 0));
+    try { root.localStorage.setItem("h3.synth.lvol", String(lvol)); } catch (e) { /* fine */ }
+    if (bus) { try { bus.gain.setTargetAtTime(lvol, bus.context.currentTime, 0.02); } catch (e) { bus.gain.value = lvol; } }
+    return lvol;
+  }
   /** 2.955.0 (Tim: "add a record button to looper and send button to send last recorded piece to timeline"): ⏺ Rec records the
    *  looper (the loop and the pads) from the loop's start; ⏺ again or ■ Stop ends the take; → 🎞 puts the last take on a new
    *  timeline layer */
@@ -267,6 +275,9 @@
       rows.appendChild(el);
     });
     var sw = $("sySwingK");
+    var lv = $("syLVolK");   // 2.973.0
+    if (lv) { lv.innerHTML = ""; K.lvol = KN.knob({ label: "Vol", size: 28, color: "#38e1ff", def: 1 / 1.5, get: function () { return lvol / 1.5; }, set: function (n) { setVol(Math.round(n * 150) / 100); }, text: function () { return Math.round(lvol * 100) + "%"; } });
+      K.lvol.el.title = "The looper's volume - its rows and the drum pads (the keyboard has its own VOLUME knob)"; K.lvol.el.setAttribute("aria-label", "Looper volume"); lv.appendChild(K.lvol.el); }
     if (sw) { sw.innerHTML = ""; K.swing = KN.knob({ label: "Swing", size: 28, color: "#ffd23a", def: 0, get: function () { return L.swing / 0.5; }, set: function (n) { L.swing = Math.round(n * 50) / 100; changed(); }, text: function () { return Math.round(L.swing * 200) + "%"; } }); sw.appendChild(K.swing.el); }
     paintPads();
   }
@@ -323,5 +334,5 @@
              on: L.pats[L.pat].map(function (row) { return row.join(""); }) };
   }
   root.H3SynthLoop = { init: init, play: play, playing: function () { return S.playing; }, render: render, buffer: buffer, forget: forget, setLists: setLists,
-                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, bus: out, rec: rec, endRec: endRec, take: function () { return R.take; }, setTake: function (t) { R.take = t || null; paintRec(); }, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
+                       loop: function () { return L; }, setLoop: setLoop, assign: assign, audition: audition, hit: hit, recordHit: recordHit, flash: flash, changed: changed, bus: out, vol: function () { return lvol; }, setVol: function (v) { var r = setVol(v); if (K.lvol) K.lvol.draw(); return r; }, rec: rec, endRec: endRec, take: function () { return R.take; }, setTake: function (t) { R.take = t || null; paintRec(); }, info: info, paint: paintPads, sndName: sndName, HUES: HUES };
 })(typeof window !== "undefined" ? window : globalThis);

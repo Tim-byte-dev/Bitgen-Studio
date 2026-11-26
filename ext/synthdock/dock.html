@@ -391,6 +391,7 @@
             <button class="ghost" id="syLSend" type="button" title="→ 🎞 Put the last looper take on a new timeline layer (at the playhead)" disabled>→ 🎞 Timeline</button>
             <label title="Beats a minute">BPM <input type="number" id="syBpm" min="40" max="240" step="1" value="120"></label>
             <span id="sySwingK"></span>
+            <span id="syLVolK"></span>
             <span class="sypats" id="syPats" role="group" aria-label="Patterns"></span>
             <button class="ghost" id="syChain" type="button" title="⛓ Chain: play every pattern with a step on, A to H, one after another">⛓</button>
             <button class="ghost" id="syCopy" type="button" title="Copy this pattern to the next one">⧉</button>
@@ -443,7 +444,8 @@
           </div>
           <div class="sytlbar">
             <h4>TIMELINE</h4>
-            <button class="ghost" id="syTPlay" type="button" title="Play the timeline from the playhead (click the ruler to move it)">▶ Play</button>
+            <select id="syTWhat" title="What ▶ plays: All the layers, or only the layer you picked (click its name or a clip on it - heard even if muted). No layer picked = all. The keyboard and the looper keep playing either way."><option value="all">All</option><option value="layer">Layer</option></select>
+            <button class="ghost" id="syTPlay" type="button" title="Play the timeline from the playhead (click the ruler to move it) - Space while the timeline has the focus">▶ Play</button>
             <button class="ghost" id="syTStart" type="button" title="Back to the start">⏮</button>
             <span class="sytlpos" id="syTPos">0:00.0</span>
             <button class="ghost" id="syTAddBtn" type="button" title="＋ Sound: the loop, the kit, your samples, the project's SFX, the Sound assets (stems), songs and the gallery's audio, a file">＋ Sound</button>

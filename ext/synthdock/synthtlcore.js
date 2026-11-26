@@ -405,10 +405,11 @@
     return ops;
   }
   /** what plays from `from` on: [{layer, clip (index), when (s after from), off (s into the sound), dur}] - audible layers only */
-  function schedule(tl, from) {
-    var out = [];
+  // 2.973.0: force = a layer index (or a list) played whatever its mute / solo say (the timeline's ▶ Layer)
+  function schedule(tl, from, force) {
+    var out = [], fl = force == null ? null : [].concat(force);
     tl.layers.forEach(function (l, i) {
-      if (!audible(tl, i)) return;
+      if (fl ? fl.indexOf(i) < 0 : !audible(tl, i)) return;
       playable(l).forEach(function (p, pi) {   // 2.960.0: take groups as their comp
         var c = p.c, ci = p.ci;
         if (clipEnd(c) <= from) return;
@@ -443,7 +444,8 @@
     }
     return out;
   }
-  function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
+  // 2.973.0: rounded to tenths FIRST - 239.97 s was "3:60.0"
+  function fmt(t) { var d = Math.round(Math.max(0, +t || 0) * 10), m = Math.floor(d / 600), s = (d - m * 600) / 10; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
   var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
               ROLES: ROLES, schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, newSteps: newSteps, stepEvents: stepEvents, cleanStepRows: cleanStepRows, DIVS: DIVS, MAXROWS: MAXROWS, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

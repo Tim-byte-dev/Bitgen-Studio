@@ -11,7 +11,7 @@ const src = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 const TJ = src("ext/synthdock/synthtl.js"), DH = src("ext/synthdock/dock.html");
 check("the panel: top left above the layers, always shown, one height (the lanes never move)", /\.sytlkey \{ display: flex; flex-wrap: nowrap;[^}]*align-self: flex-start; height: 62px/.test(DH) && !/\.sytlkey \{[^}]*position: absolute/.test(DH)
   && DH.indexOf('id="syTKeyEd"') < DH.indexOf('class="sytlbody"'));
-check("nothing picked on a layer = the layer (name + Vol / Pan / Filter); a click on a head picks the layer for it", /function layerEd\(box\)/.test(TJ) && /else layerEd\(box\)/.test(TJ) && /id = "syTLName"/.test(TJ) && /dataset\.lay = key/.test(TJ) && /S\.sel = i; S\.clip = null; S\.key = null; S\.tpt = null; S\.apt = null; keyEd\(\)/.test(TJ));
+check("nothing picked on a layer = the layer (name + Vol / Pan / Filter); a click on a head picks the layer for it", /function layerEd\(box\)/.test(TJ) && /else layerEd\(box\)/.test(TJ) && /id = "syTLName"/.test(TJ) && /dataset\.lay = key/.test(TJ) && /S\.sel = i; (S\.picked = true; paintWhat\(\); )?S\.clip = null; S\.key = null; S\.tpt = null; S\.apt = null; keyEd\(\)/ /* 2.973.0 */.test(TJ));
 check("rename: the panel's name box and the head's (the other follows)", /l\.name = inp\.value\.replace\(\/\[<>\]\/g, ""\)\.trim\(\)\.slice\(0, 32\) \|\| "Layer " \+ \(li \+ 1\); inp\.value = l\.name; changed\(\); heads\(\)/.test(TJ) && /inp\.value = l\.name; changed\(\); keyEd\(\); draw\(\)/.test(TJ));
 check("server.js untouched", !/synth/i.test(src("misc/server.js")));
 console.log(`\nRESULT: ${P} passed, ${F} failed`);
