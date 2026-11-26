@@ -336,3 +336,21 @@ ComfyUI's own nodes. The models check downloads
 [nomadoor/qwen-image-2.1-360-panorama-outpaint-lora](https://huggingface.co/nomadoor/qwen-image-2.1-360-panorama-outpaint-lora)
 (v0.1) into comfy/loras when it is missing; like Qwen Image 2.1 itself it is under the Qwen Research License -
 NON-COMMERCIAL use. bitGen ships none of these weights.
+
+## 🧱 Picture → 3D scene (2.975.0)
+
+The idea of [neilsonnn/image-blaster](https://github.com/neilsonnn/image-blaster) (one picture -> a 3D scene with its objects,
+surroundings and sounds) is rebuilt with bitGen's own local parts; none of its code is shipped and none of the online services
+it calls are used. The Sketcher's 🧱 Picture → 3D scene (lib/picScene.js, lib/glbMerge.js, ext/pushpulldock/ppscene.js) runs
+Qwen Image 2.1 edit and the 360 panorama outpaint LoRA (both Qwen Research License - NON-COMMERCIAL), Hunyuan3D 2.1 (Tencent
+Hunyuan 3D 2.1 Community License - it excludes the EU, the UK and South Korea) or TRELLIS.2 (its own licence), and for its
+sounds downloads, when missing, [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) as
+[Comfy-Org's repackaged checkpoint](https://huggingface.co/Comfy-Org/stable-audio-open-1.0_repackaged) (Stability AI
+Community License - free for non-commercial use and for organisations under US$1M annual revenue; above that an enterprise
+licence from Stability AI) and the [T5 base](https://huggingface.co/google-t5/t5-base) text encoder (Apache-2.0). It runs
+on ComfyUI's own nodes. bitGen ships none of these weights.
+The optional 🌍 Walk-in world is its own add-on (Settings ▸ Add-ons ▸ HunyuanWorld 1.0, lib/hyworldAddon.js): it fetches
+[Tencent-Hunyuan/HunyuanWorld-1.0](https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0) (Tencent HunyuanWorld 1.0 Community
+License - it does NOT apply in the European Union, the United Kingdom or South Korea), Real-ESRGAN (BSD-3-Clause), ZIM Anything
+(naver-ai - under its own licence; read it before commercial use) and downloads tencent/HunyuanWorld-1 and black-forest-labs/FLUX.1-Fill-dev (FLUX.1 [dev]
+Non-Commercial License, gated) into the Hugging Face cache. bitGen ships none of it.

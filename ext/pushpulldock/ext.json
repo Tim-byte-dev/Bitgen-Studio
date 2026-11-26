@@ -35,6 +35,7 @@
     "ppimport.js",
     "ppframe.js",
     "ppoutline.js",
+    "ppscene.js",
     "ppreal.js",
     "ppsheetsdlg.js"
   ]

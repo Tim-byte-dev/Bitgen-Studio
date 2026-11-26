@@ -1179,6 +1179,53 @@ Good to know:
 - The way of placing pictures comes from ComfyUI-Panorama-Stickers (nomadoor, MIT). bitGen builds the green canvas
   itself, so that custom node pack is not needed - only ComfyUI's own nodes and the LoRA.
 
+## 🧱 Picture → 3D scene (the Sketcher, 2.975.0)
+
+The Sketcher's **🧱 Picture → 3D scene** turns one picture into a 3D scene: the things in it as 3D models standing
+where they stood, the place round them as a 360° panorama, and a sound for the place and for each thing. It all runs
+on this computer, as ordinary jobs in the job list - no accounts, nothing sent anywhere.
+
+1. **Open the Sketcher** and click **🧱 Picture → 3D scene** (beside ⤒ Import).
+2. **Pick the picture** - one from the gallery, or **📁 From this computer…**. A photo of a room, a street or a
+   yard works best: a few clear objects standing on the ground.
+3. **Objects (at most)** - how many things to make in 3D (1-8; each takes a few minutes). **The lens** - how wide
+   the picture is (a phone photo is "normal"); it sets how far away and how big each thing is.
+   **3D engine** - Hunyuan3D 2.1 (the shape) or TRELLIS.2 (shape and colours), Auto picks the one you have.
+4. Tick **The 360° surroundings** and **Sounds** if you want them, then **🧱 Make the scene**. Missing models get the
+   usual Download / Cancel box (for the sounds: Stable Audio Open 1.0 and its text encoder, about 5.7 GB; Cancel there
+   = this scene without sounds).
+5. The steps tick off as they finish: **find** (the Vision model names the objects and describes the place - pick a
+   Vision model in the prompt docker), **cut** (each object alone on white + the **clean plate**, the picture with the
+   objects taken out), **pano** (the plate grown into the 360° surroundings), **mesh** (a 3D model each), **sound**,
+   **scene**. Close the dialog any time - it keeps going; **Made before** opens it again. **■ Stop** stops it.
+
+When it is done, `<picture>_scene.glb` is in the project's 3D models:
+
+- **⤒ Open in the Sketcher** - the objects come into your model as a group (the panorama stays out - it is the view,
+  not a shape). Very detailed models can be over the Sketcher's 40 000-triangle limit; the other buttons still work.
+- **👁 Look round in 3D** - stand where the camera stood: drag to look round, the wheel to step back.
+- **▶ the sounds** - the place's ambience (20 s, made to loop) and each object's effect (5 s), in the project too.
+- **⤓ Download .glb** - Blender, Unity, Unreal and Godot open it; the timeline's 3D layers too.
+- **🌍 Walk-in world** (step 7, an add-on) - the panorama becomes a layered 3D mesh world you can walk into
+  (HunyuanWorld 1.0: the sky, the background and the objects each a layer, the parts they hid filled in), saved as
+  `<picture>_world.glb`; **👁 The world** walks round it, **⤓ World .glb** downloads it. Tick it before you start, or
+  click it on a finished scene. It is its own add-on (**Settings ▸ Add-ons ▸ HunyuanWorld 1.0**): about 45 GB of
+  models, an NVIDIA card with 24 GB, and a Hugging Face token with FLUX.1 Fill [dev]'s licence accepted - not
+  installed, the button opens its Install / Cancel box. Its licence does **not** allow use in the EU, the UK or
+  South Korea, and FLUX.1 Fill [dev] is **non-commercial**.
+
+Good to know:
+
+- The placing is a good guess, not a measurement: an object's direction comes from where it is across the picture,
+  its distance from how far below the horizon its bottom edge is (the camera taken at eye height, 1.6 m), its size
+  from how tall it is in the picture. Move things in the Sketcher if they are off.
+- **Licences:** Qwen Image 2.1 and the 360 LoRA - Qwen Research License (non-commercial); Hunyuan3D 2.1 - Tencent
+  Hunyuan Community License; TRELLIS.2 - its own licence; Stable Audio Open 1.0 - Stability AI Community License
+  (free for non-commercial use and for businesses under US$1M a year); HunyuanWorld 1.0 - Tencent HunyuanWorld 1.0
+  Community License (not the EU / UK / South Korea) with FLUX.1 Fill [dev] (non-commercial).
+- The idea comes from image-blaster (neilsonnn), which does the same with paid online services; bitGen does it with
+  its own local models.
+
 ## Character swap
 
 Put a new person into existing footage — the performance, camera, background

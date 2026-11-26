@@ -15232,6 +15232,8 @@ node scripts/test-973.js > /tmp/t973.log 2>&1 && ok "2.973.0 units: the Edit Boo
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui973-ui.js > /tmp/ui973.log 2>&1 && ok "2.973.0 browser test: ▶ plays with a missing clip, All / Layer by each layer's meter (Layer = even muted, none picked = all), looper + keys go on, the looper's Vol, Space" || { bad "2.973.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui973.log | head -8; }
 node scripts/test-974.js > /tmp/t974.log 2>&1 && ok "2.974.0 units: 🧬 clone a voice (the waveform, the markers, the part saved + picked), the read file in the gallery, the Edit Booth's part heights" || { bad "2.974.0 units"; grep -a "^FAIL" -A1 /tmp/t974.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui974-ui.js > /tmp/ui974.log 2>&1 && ok "2.974.0 browser test: the Edit Booth's grips (drag, ↑, kept, double-click) + SFX 🧬 Clone a voice (a file, START / END dragged, the part moved, ← →, typed, ▶, saved ~4 s and picked)" || { bad "2.974.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui974.log | head -8; }
+node scripts/test-975.js > /tmp/t975.log 2>&1 && ok "2.975.0 units: 🧱 Picture → 3D scene (glbMerge, the objects found + placed, the run with stub jobs, the sounds graph, the 🌍 HunyuanWorld add-on)" || { bad "2.975.0 units"; grep -a "^FAIL" -A1 /tmp/t975.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui975-ui.js > /tmp/ui975.log 2>&1 && ok "2.975.0 browser test: 🧱 Picture → 3D scene in the Sketcher (the models checked, the steps, ⤒ Open without the panorama, 👁 Look round, 🌍 the add-on box)" || { bad "2.975.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui975.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

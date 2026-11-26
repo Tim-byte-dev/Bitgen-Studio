@@ -14,6 +14,7 @@
 //        /api/generate would run them. The ⬇ Download is POST /api/setup/download (routes/setup.js) with source.id.
 //        2.806.0: a render on a RunPod pod -> {place: "pod", pod_id, pod_name, missing [{..., here}]} (what the pod lacks);
 //        here, a file not in the download list -> {online: {from, size, model}} when found online (lib/modelsWhere.js)
+//        2.975.0: {files: [{name, cat}]} = just those files (a feature's own models: 🧱 Picture → 3D scene's sound models)
 //   POST /api/models/pod-send {pod_id, items: [{name, cat}]} / GET ?pod_id=   ⬆ Send to <pod> and its progress
 //   POST /api/models/fetch {items: [{name, cat}]} / GET                         ⬇ a file found online, into models/<folder> here
 "use strict";
@@ -119,6 +120,11 @@ function mount(app) {
       const job = require("../lib/core").jobs.get(String(b.job_id));
       if (!job) return res.json(skip("that job is no longer in the queue"));
       return res.json(Object.assign({ kind: "job", job_id: job.id }, MF.check(MF.jobNeeds(job))));
+    }
+    // 2.975.0: {files: [{name, cat}]} = named model files (🧱 Picture → 3D scene's sound models) - the box checks them again
+    if (Array.isArray(b.files)) {
+      const rows = b.files.filter((x) => x && x.name && x.cat).slice(0, 40).map((x) => ({ name: path.basename(String(x.name)), cat: String(x.cat), from: String(b.from || "files") }));
+      return res.json(Object.assign({ kind: "files" }, MF.check(rows)));
     }
     const p = plan(b);
     if (p.skip) return res.json(skip(p.skip));

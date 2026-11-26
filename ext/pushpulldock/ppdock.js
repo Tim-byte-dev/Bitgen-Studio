@@ -223,7 +223,7 @@
       menu(anc(at, "ppImport"), [{ head: L.length ? "The project's 3D models" : "No 3D models in this project" }].concat(L.map((x) => ({ label: x.name, run: () => guard("Import", () => importModel(x.name)) }))));
     }).catch((e) => msg(e.message));
   }
-  async function importModel(name, blobUrl) {
+  async function importModel(name, blobUrl, opt) {   // 2.975.0: opt.skip = a RegExp of mesh names left out (🧱 a scene's panorama sphere)
     const T = S.V.T, url = blobUrl || "/api/tlcanvas/model/" + encodeURIComponent(name);
     msg("reading " + name + "…");
     const obj = await new Promise((ok, no) => {
@@ -235,6 +235,7 @@
     const tris = [];
     obj.traverse((o) => {
       if (!o.isMesh || !o.geometry) return;
+      if (opt && opt.skip && (opt.skip.test(o.name || "") || (o.parent && opt.skip.test(o.parent.name || "")))) return;
       const geo = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry, pos = geo.attributes.position; if (!pos) return;
       const col = o.material && o.material.color ? "#" + o.material.color.getHexString() : null, v = new T.Vector3();
       for (let i = 0; i + 2 < pos.count; i += 3) {
@@ -447,6 +448,7 @@
     $("ppShadow").onchange = (e) => S.V && S.V.shadows(e.target.checked);
     $("ppGroup").onclick = () => S.M && groupBtn();
     $("ppSend").onclick = () => sendMenu(); $("ppExport").onclick = () => exportMenu(); $("ppImport").onclick = () => S.V && importMenu();
+    if ($("ppScene")) $("ppScene").onclick = () => (root.H3PicScene ? root.H3PicScene.open() : msg("🧱 Picture → 3D scene did not load (ppscene.js)"));   // 2.975.0
     $("ppCol").oninput = (e) => setColor(e.target.value);
     $("ppName").addEventListener("change", () => { const was = S.name; S.name = nameNow(); if (S.name !== was && S.M) save(false); });
     $("ppVcb").addEventListener("keydown", (e) => {

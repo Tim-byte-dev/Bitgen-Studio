@@ -1386,6 +1386,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Sketcher 採用 bitGen 的配色；雙擊空白處 = Orbit** — 面板及其 3D 檢視使用主題顏色；雙擊空白處會取消所有選取並進入環繞。 *Where:* Sketcher。 *Since:* 2.624.0
 - **Sketcher 的獨立視窗和 File 選單** — ⛶ 讓它充滿標題欄與狀態列之間的整個 bitGen 視窗（之後 ⇲ Dock 將其放回，2.624.0），✕ 將其關閉；☰ File：新建、開啟、儲存、另存新檔、重新命名、匯入、匯出、傳送、刪除、關閉；🖼 → Image editor 和 🎞 → Timeline 按鈕；⌂ Cut-away。 *Where:* Sketcher 的標題欄和工具條。 *Since:* 2.620.0
 - **📷 讓相機在房屋中漫遊** — 在平面圖上拖曳相機，3D 檢視會透過它觀察；方向鍵使其轉向和俯仰，Shift / Alt 使其升高和降低。 *Where:* 🏠 House. *Since:* 2.532.0
+- **🧱 圖片 → 3D 場景** — 放入一張圖片：Vision 模型找出其中的主要物體，Qwen Image 2.1 edit 把每個物體去背並做出乾淨背景（物體去掉後的畫面），360 outpaint LoRA 把背景擴展成 360° 環境，Hunyuan3D 2.1 / TRELLIS.2 為每個物體產生 3D 模型，Stable Audio Open 1.0 為場景和每個物體產生聲音——最後在專案的 3D 模型裡得到一個場景 .glb：物體放在圖片中的位置（方向、地面上的距離、高度），全景包圍相機。⤒ 在 Sketcher 中開啟、👁 3D 環視、▶ 聲音、⤓ 下載。全部在這台電腦上執行（各模型的授權：Qwen Research 僅限非商業；Stability AI Community 年營收低於 100 萬美元免費）。🌍 Walk-in world（附加元件：HunyuanWorld 1.0——不可在歐盟、英國、韓國使用，FLUX.1 Fill 僅限非商業，需 24 GB 顯示記憶體）把全景變成可以走進去的分層 3D 世界。*位置：* Sketcher ▸ 🧱 Picture → 3D scene。*版本：* 2.975.0
 
 ### 雷射切割和雕刻
 

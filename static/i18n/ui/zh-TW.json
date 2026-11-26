@@ -12169,7 +12169,9 @@
   "🧾 Taxes": "🧾 稅務",
   "🧾 Taxes…": "🧾 稅務…",
   "🪧 Poster": "🪧 海報",
-  "🪧 Poster - your business details": "🪧 海報——你的業務資訊"
+  "🪧 Poster - your business details": "🪧 海報——你的業務資訊",
+  "🧱 Picture → 3D scene": "🧱 圖片 → 3D 場景",
+  "🧱 Picture → 3D scene: a picture's objects made 3D and put where they stood, its surroundings as a 360° panorama round you, a sound for the place and each object - one scene .glb, all on this computer": "🧱 圖片 → 3D 場景：把圖片中的物體做成 3D 並放回原位，周圍用 360° 全景包圍，為場景和每個物體配上聲音——一個場景 .glb，全部在這台電腦上完成"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 對 - 此任務從中學習（{0}）",

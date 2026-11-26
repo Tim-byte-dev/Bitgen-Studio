@@ -1295,6 +1295,27 @@
       "for": "TRELLIS.2"
     },
     {
+      "id": "stable_audio_open",
+      "group": "models3d",
+      "label": "Stable Audio Open 1.0 (sounds from words)",
+      "repo": "Comfy-Org/stable-audio-open-1.0_repackaged",
+      "file": "stable-audio-open-1.0.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 4850000000,
+      "for": "the Sketcher's 🧱 Picture → 3D scene - the ambience of the place + a sound effect per object (Stability AI Community License: free for non-commercial use and for businesses under US$1M a year)"
+    },
+    {
+      "id": "t5_base",
+      "group": "models3d",
+      "label": "T5 base text encoder (for Stable Audio Open)",
+      "repo": "google-t5/t5-base",
+      "file": "model.safetensors",
+      "as": "t5_base.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 892000000,
+      "for": "Stable Audio Open 1.0's text encoder (🧱 Picture → 3D scene's sounds) - Apache 2.0"
+    },
+    {
       "id": "fooocus_head",
       "group": "inpaint",
       "label": "Fooocus inpaint head",

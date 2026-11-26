@@ -12169,7 +12169,9 @@
   "＋ 📤 Invoice we sent": "＋ 📤 送った請求書",
   "＋ 📥 Bill to pay": "＋ 📥 支払う請求書",
   "＋ 🧾 Receipt": "＋ 🧾 領収書",
-  "－ Figure Smaller": "－ 図を小さく"
+  "－ Figure Smaller": "－ 図を小さく",
+  "🧱 Picture → 3D scene": "🧱 写真 → 3D シーン",
+  "🧱 Picture → 3D scene: a picture's objects made 3D and put where they stood, its surroundings as a 360° panorama round you, a sound for the place and each object - one scene .glb, all on this computer": "🧱 写真 → 3D シーン：写真の物体を 3D にして元の位置に置き、周囲を 360° パノラマで囲み、場所と各物体の音を付ける - 1 つのシーン .glb、すべてこのコンピューター上で"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",
