@@ -361,3 +361,13 @@ Settings ▸ Add-ons ▸ 🦴 Rig it fetches [VAST-AI-Research/UniRig](https://g
 and contributors) and its checkpoints ([VAST-AI/UniRig](https://huggingface.co/VAST-AI/UniRig)) into <app>/unirig, with its own
 Python 3.11 and packages (Blender's bpy module - GPL; spconv - Apache-2.0; PyG's torch_scatter / torch_cluster - MIT; flash-attn -
 BSD-3-Clause). misc/rig_worker.py runs UniRig's own Python steps (its bash scripts are not used). bitGen ships none of it.
+
+## 📚 The Daz library (2.977.0)
+
+The Sketcher's 📚 Daz library (lib/dazLib.js, lib/clothSim.js, lib/dazFace.js - bitGen's own code, no third-party importer)
+reads DSON files (.duf / .dsf) from the user's OWN Daz content folders on their computer.
+It is not a replacement for Daz Studio - it is made for light tasks; Daz Studio is a very powerful character creator. bitGen ships no Daz content and no Daz
+software. Daz 3D's End User License Agreement covers the content: renders and animations made with it may be published; the
+3D models themselves may not be shared or distributed (that needs Daz's Interactive License). Encrypted Daz Connect files
+are not read. Daz, Daz Studio, Genesis and dForce are names of Daz Productions, Inc.; bitGen's cloth is its own and is not
+dForce.

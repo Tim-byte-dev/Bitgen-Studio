@@ -1246,6 +1246,35 @@ Good to know:
 - The installer makes its own Python 3.11 (its Blender module needs exactly 3.11) and fetches flash-attn: on Windows a
   ready-made wheel is looked up on GitHub; if none fits your PyTorch, the log says so.
 
+## 📚 The Daz library (the Sketcher, 2.977.0)
+
+> **This is not a replacement for Daz Studio** - it is made for light tasks. Daz Studio is a very powerful character
+> creator (full shaping with its formulas, HD detail, Iray, dForce, posing): use it for real character work.
+
+bitGen reads your Daz content folders itself - no Daz Studio running, nothing else to install. Click **📚 Daz library** in
+the Sketcher.
+
+1. **📁 Folders…** - bitGen finds the usual library folders itself; add others one a line (your Install Manager / manual
+   library). Daz Connect's **encrypted** items (`.duf.enc`) can only be read by Daz Studio - they are counted and skipped.
+2. **Pick a figure or a character** (🧍 Figures / 🎭 Characters - thumbnails as in Daz). A character brings its own dial
+   settings.
+3. **Shape dials** - search (height, nose, ...) and drag; they are kept in the model as shape keys too.
+4. **Wearing** - click clothing, hair or anatomy to add it; it uses the figure's own skeleton (its eyes and mouth come with
+   the figure).
+5. **💨 Physics** - bitGen's own cloth (a light drape - not Daz's dForce): clothing settles under gravity and is pushed out
+   where the dialled body grew; hair hangs, held at the roots; "Other pieces" drapes the rest.
+6. **📷 A face from a photo** - pick a gallery photo: the Vision model finds the eyes and chin, the face's proportions follow
+   and the photo is blended into the face texture (light - Daz Studio's Face Transfer does far more).
+7. **🧍 Build the character** -> `<name>_daz.glb` in the project's 3D models, with the skeleton and skin weights; ⤒ Open in
+   the Sketcher, or use it on the timeline / in Blender.
+
+Good to know:
+
+- **Your own content, on this computer.** Daz's licence lets you publish renders and videos; the 3D files must not be
+  shared - keep `*_daz.glb` out of the render farm's shared projects and the Community. bitGen ships no Daz content.
+- Light, not exact: a character's joint adjustments and dial formulas (what Daz Studio computes) are not applied, so a
+  heavily shaped character can bend a little differently; materials are the base-colour pictures only.
+
 ## Character swap
 
 Put a new person into existing footage — the performance, camera, background

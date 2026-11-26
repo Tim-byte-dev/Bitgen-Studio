@@ -448,6 +448,7 @@
     $("ppShadow").onchange = (e) => S.V && S.V.shadows(e.target.checked);
     $("ppGroup").onclick = () => S.M && groupBtn();
     $("ppSend").onclick = () => sendMenu(); $("ppExport").onclick = () => exportMenu(); $("ppImport").onclick = () => S.V && importMenu();
+    if ($("ppDazLib")) $("ppDazLib").onclick = () => (root.H3DazLib ? root.H3DazLib.open() : msg("📚 the Daz library did not load (ppdazlib.js)"));   // 2.977.0
     if ($("ppRig")) $("ppRig").onclick = (e) => (root.H3Rig ? root.H3Rig.menu(e.currentTarget) : msg("🦴 Rig it did not load (pprig.js)"));   // 2.976.0
     if ($("ppScene")) $("ppScene").onclick = () => (root.H3PicScene ? root.H3PicScene.open() : msg("🧱 Picture → 3D scene did not load (ppscene.js)"));   // 2.975.0
     $("ppCol").oninput = (e) => setColor(e.target.value);

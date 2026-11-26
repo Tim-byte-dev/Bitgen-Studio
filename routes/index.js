@@ -15,6 +15,7 @@
 //   /api/pano360  2.971.0: 🌐 a 360 panorama from pictures placed on a green 2:1 canvas (routes/pano360.js)
 //   /api/picscene 2.975.0: 🧱 Picture → 3D scene - one picture -> its objects in 3D + the 360° surroundings + sounds (routes/picScene.js)
 //   /api/rig      2.976.0: 🦴 Rig it - a skeleton + skin weights for a project 3D model (routes/rig.js, UniRig)
+//   /api/dazlib   2.977.0: 📚 the Daz library - browse, dials, a character -> .glb, our own cloth drape, a face from a photo (routes/dazLibrary.js)
 //   GET /api/about                  the version + the credits (routes/about.js, lib/credits.json)
 //   GET/POST /api/basic-settings/styles  Basic Settings per style - misc/basic_settings.tmp (routes/basicTmp.js)
 //   POST /api/timeline/join         a cut clip's parts joined into one file (routes/tlJoin.js, lib/tlJoin.js)
@@ -244,6 +245,7 @@ function mount(app) {
   require("./pano360").mount(app);     // 2.971.0: 🌐 360 panoramas from pictures (the image editor's Image ▸ 360 Panorama)
   require("./picScene").mount(app);    // 2.975.0: 🧱 Picture → 3D scene (the Sketcher) - lib/picScene.js
   require("./rig").mount(app);         // 2.976.0: 🦴 Rig it - UniRig skeleton + skin weights for a 3D model (lib/rigAddon.js)
+  require("./dazLibrary").mount(app);  // 2.977.0: 📚 the Daz library read by bitGen itself (lib/dazLib.js) - not a replacement for Daz Studio
   require("./segment").mount(app);     // 2.390.0: Segment Anything (SAM + CLIPSeg) for the image editor - select / mask / layers
   require("./psd").mount(app);         // 2.390.0: the image editor's PSD files kept in the project (projects/<p>/psd)
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)
