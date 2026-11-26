@@ -1955,6 +1955,29 @@ layer stays exactly where it was.
 - **⚙ Timeline settings ▸ Look** - **Technical** (the default) or **Classic** (the warm look of the rest of the app).
   Saved in the settings file, so every browser and the desktop app show the same.
 
+## The 🎛 deck (2.969.0)
+
+Beside the layers sits a **deck** - a hardware-style controller, and every part of it works:
+
+- **The LCD** shows the position (hours:minutes:seconds:frames), whether it plays (▶ 2× …, ◀ backwards) and the zoom.
+- **The keys** ⏮ ◀◀ ■ ▶ ▶▶ ⏭ - the same as the canvas transport (◀◀ / ▶▶ are J / L: press again for 2×, 4×, 8×).
+- **JOG** - turn the middle of the big wheel: a frame per notch (15°), clockwise on, anticlockwise back. The mouse wheel
+  over it or ← / → (when it has focus) move a frame too; with Shift, 10.
+- **SHUTTLE** - hold the wheel's outer ring and turn it right to play forwards, left to play backwards: just past the top
+  is 1×, then 2×, 4× and 8× the further you go. Let go and it springs back and stops.
+- **ZOOM wheel** - roll it up to zoom the timeline in, down to zoom out (double-click: back to 30).
+- **SPEED wheel** - a notch at a time through 0.125× … 8×: the speed ▶ and Space play at (the transport's speed picker
+  follows). Double-click: 1×.
+- **The picked layer** (click a layer to pick it - its name shows on the deck): **OPACITY**, **FADE IN** and **FADE OUT**
+  knobs and a **VOLUME** fader. Drag up / down (Shift: fine), roll the mouse wheel, or use the arrow keys; double-click
+  puts a knob back (100%, or a cut for the fades). The fades are the layer's in / out transitions: turned all the way down
+  is a cut; turned up on a layer that had none, it gets a fade. A fader at the bottom mutes the layer. Audio layers have no
+  opacity and image layers no volume - those controls go dark. It is the same setting as the layer header's ◐, 🔊, ⇥ and
+  ⇤, saved when you let go.
+- **The DECK tab** at the layers' left edge hides and shows it (remembered).
+- In a short docker the deck's three parts go side by side instead of one under the other, but never wider than 40% of
+  the timeline. When there is no room at all (a very short or narrow timeline), the deck steps aside until there is.
+
 ## Override style and the StoryBoard
 
 With **Override style** ticked in Basic Settings, the StoryBoard's renders use Basic Settings' **Steps** and

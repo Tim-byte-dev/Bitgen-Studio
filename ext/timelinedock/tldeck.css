@@ -1,0 +1,80 @@
+/* bitGen Studio 2.969.0 — the Timeline docker's 🎛 DECK (tldeck.js): a hardware-style controller beside the layers.
+ * Tim: "can you add knobs and sliders and slide wheels like and jog wheels? for a cool aesthetic?"
+ * It is a piece of kit, so it looks the same in both of the timeline's looks (Technical and Classic) - like the Synth. */
+
+/* basis 0, like #tlscroll had: the row takes what is left. The deck is ABSOLUTELY placed in it, so its height never counts
+   toward the docker's (a docker sized by its contents would grow); #tlDeckSpace keeps its width free beside the layers */
+#tlDeckRow { position: relative; display: flex; flex: 1 1 0%; min-height: 0; gap: 6px; }
+#tlDeckRow > #tlscroll { flex: 1 1 auto; min-width: 0; }
+#tlDeckSpace { flex: 0 0 auto; width: 0; margin-left: -6px; }
+#tlDeck {
+  position: absolute; left: 24px; top: 0; bottom: 0; z-index: 3; display: grid; grid-template-columns: 236px; grid-auto-rows: min-content; gap: 6px; align-content: start;
+  overflow: auto; min-height: 0; padding: 6px; box-sizing: border-box;
+  background: linear-gradient(180deg, #30333b 0%, #23262d 30%, #1a1c21 100%); border: 1px solid #3a3e48; border-radius: 12px;
+  box-shadow: inset 0 1px 0 #ffffff1a, inset 0 -3px 0 #00000066, 0 6px 16px #00000088;
+  color: #d9dee8; font: 12px/1.3 system-ui, sans-serif; user-select: none;
+}
+#tlDeck[hidden], #tlDeck[data-squeezed="1"] { display: none; }
+#tlDeck:not([hidden]):not([data-squeezed="1"]) ~ #tlDeckSpace { margin-left: 0; }
+/* a short docker: the sections side by side instead of a scroll (tldeck.js sets data-cols from the deck's height) */
+#tlDeck[data-cols="2"] { grid-template-columns: 236px 236px; grid-template-areas: "a b" "c b"; }
+#tlDeck[data-cols="3"] { grid-template-columns: 236px 236px 236px; grid-template-areas: "a b c"; }
+#tlDeck[data-cols="2"] .tdk-a, #tlDeck[data-cols="3"] .tdk-a { grid-area: a; }
+#tlDeck[data-cols="2"] .tdk-b, #tlDeck[data-cols="3"] .tdk-b { grid-area: b; }
+#tlDeck[data-cols="2"] .tdk-c, #tlDeck[data-cols="3"] .tdk-c { grid-area: c; }
+.tdk-sec { background: #0b0c0f; border-radius: 9px; padding: 6px 7px; box-shadow: inset 0 2px 6px #000, 0 1px 0 #ffffff10; display: flex; flex-direction: column; gap: 6px; }
+.tdk-head { display: flex; align-items: center; justify-content: space-between; }
+.tdk-head span { font: 700 10px/1 system-ui, sans-serif; letter-spacing: .22em; color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
+/* the DECK tab at the layers' left edge: shows / hides the deck */
+.tdk-tab { flex: 0 0 18px; width: 18px; padding: 8px 0; margin: 0; align-self: stretch; border-radius: 7px; cursor: pointer;
+           background: linear-gradient(90deg, #23262d, #30333b 50%, #1a1c21); border: 1px solid #3a3e48; color: #6c7688;
+           box-shadow: inset 0 1px 0 #ffffff14, 0 2px 6px #00000077; display: flex; align-items: flex-start; justify-content: center; }
+.tdk-tab span { writing-mode: vertical-rl; font: 700 9px/1 system-ui, sans-serif; letter-spacing: .2em; white-space: nowrap; }
+.tdk-tab:hover { color: #fff; }
+.tdk-tab.on { color: #38e1ff; text-shadow: 0 0 6px #38e1ff; }
+.tdk-tab.squeezed { opacity: .5; }
+/* the LCD */
+.tdk-lcd { background: linear-gradient(180deg, #06141a, #031015); border: 1px solid #12323b; border-radius: 6px; padding: 4px 8px 3px;
+           box-shadow: inset 0 2px 8px #000, 0 0 12px #38e1ff14; }
+.tdk-tc { font: 700 22px/1.1 ui-monospace, Consolas, "Cascadia Mono", monospace; color: #6ff0ff; letter-spacing: .04em; text-shadow: 0 0 8px #38e1ffaa; text-align: center; }
+.tdk-sub { display: flex; justify-content: space-between; font: 600 9.5px/1.4 ui-monospace, Consolas, monospace; color: #38e1ff99; letter-spacing: .08em; }
+.tdk-sub .play { color: #5dff8a; text-shadow: 0 0 6px #5dff8a; }
+.tdk-sub .back { color: #ffa63d; text-shadow: 0 0 6px #ffa63d; }
+/* the transport keys: rubber pads */
+.tdk-keys { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.tdk-keys button { height: 26px; padding: 0; border-radius: 6px; border: 1px solid #000; color: #c9d2e3; font-size: 11px; cursor: pointer;
+                   background: linear-gradient(180deg, #3a3e48, #24272e); box-shadow: inset 0 1px 0 #ffffff22, 0 2px 0 #000, 0 3px 6px #00000088; }
+.tdk-keys button:hover { color: #fff; }
+.tdk-keys button:active, .tdk-keys button.on { transform: translateY(1px); box-shadow: inset 0 1px 3px #000, 0 1px 0 #000; }
+.tdk-keys button.on { color: #5dff8a; text-shadow: 0 0 6px #5dff8a; }
+.tdk-keys .tdk-play { color: #5dff8a; }
+/* the jog wheel and the slide wheels */
+.tdk-b { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+.tdk-jogcol, .tdk-wheel { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+#tlDeckJog { width: 132px; height: 132px; cursor: grab; touch-action: none; border-radius: 50%; outline: none; }
+#tlDeckJog:active { cursor: grabbing; }
+#tlDeckJog:focus-visible, .tdk-wheel canvas:focus-visible, .tdk-knob canvas:focus-visible, .tdk-fader:focus-visible { box-shadow: 0 0 0 1px #38e1ff99; }
+.tdk-wheel { padding: 8px 4px 0; }
+.tdk-wheel canvas { width: 26px; height: 112px; border-radius: 6px; cursor: ns-resize; touch-action: none; outline: none; box-shadow: inset 0 2px 6px #000, 0 1px 0 #ffffff10; }
+.tdk-lab { font: 700 9px/1 system-ui, sans-serif; letter-spacing: .14em; color: #9aa4b6; white-space: nowrap; text-align: center; }
+.tdk-val { font: 600 9.5px/1 ui-monospace, Consolas, monospace; color: #6c7688; text-align: center; height: 11px; white-space: nowrap; }
+/* the picked layer's strip */
+.tdk-layer { font: 700 10px/1.5 ui-monospace, Consolas, monospace; color: #c8f6ff; background: #031015; border: 1px solid #12323b; border-radius: 4px;
+             padding: 1px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 6px #38e1ff66;
+             box-shadow: inset 3px 0 0 var(--tdk-lc, #38e1ff); }
+.tdk-layer.none { color: #6c7688; text-shadow: none; box-shadow: inset 3px 0 0 #2a2f3a; }
+.tdk-strip { display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; }
+.tdk-knobs { display: flex; gap: 2px; }
+.tdk-knob { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 50px; }
+.tdk-knob .tdk-lab { letter-spacing: .04em; font-size: 8.5px; }
+.tdk-knob canvas { width: 48px; height: 48px; cursor: ns-resize; touch-action: none; border-radius: 50%; outline: none; }
+.tdk-knob.off, .tdk-fader.off { opacity: .35; pointer-events: none; }
+.tdk-fader { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 46px; outline: none; border-radius: 6px; cursor: ns-resize; touch-action: none; }
+.tdk-slot { position: relative; width: 8px; height: 86px; margin: 0 19px; border-radius: 4px; background: #000; box-shadow: inset 0 1px 3px #000, 0 1px 0 #ffffff14; }
+.tdk-slot::before { content: ""; position: absolute; left: -12px; right: -12px; top: 0; bottom: 0;
+                    background: repeating-linear-gradient(180deg, #3a404c 0 1px, transparent 1px 10.75px); -webkit-mask: linear-gradient(90deg, #000 6px, transparent 6px, transparent 26px, #000 26px); mask: linear-gradient(90deg, #000 6px, transparent 6px, transparent 26px, #000 26px); }
+.tdk-fill { position: absolute; left: 2px; right: 2px; bottom: 2px; border-radius: 2px; background: linear-gradient(0deg, #38e1ff, #5dff8a); box-shadow: 0 0 8px #38e1ffaa; }
+.tdk-cap { position: absolute; left: -13px; width: 34px; height: 16px; margin-top: -8px; border-radius: 3px;
+           background: linear-gradient(180deg, #e9ecf2 0%, #b9bfca 45%, #8d939e 55%, #c9ced7 100%); box-shadow: 0 2px 4px #000, inset 0 1px 0 #fff;
+           border: 1px solid #000; box-sizing: border-box; }
+.tdk-cap::after { content: ""; position: absolute; left: 3px; right: 3px; top: 7px; height: 1px; background: #222; }

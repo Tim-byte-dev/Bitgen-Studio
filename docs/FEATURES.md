@@ -875,6 +875,7 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **The timeline's CAD toolbar** — a ribbon over the preview row with Create, 3D, Sketch, Solid and Unreal tabs (see CAD and 3D). *Where:* the timeline. *Since:* 2.470.0
 - **Timeline settings** — nudge, song time, karaoke style and grids. *Where:* the settings button at the right of the timeline menu bar. *Since:* 2.376.0
 - **The timeline's technical look** — the Synth tab's style on the Timeline docker: dark panels, glowing EDIT / LAYERS labels, LCD time readouts, clips as dark glass with a name bar and a glow in their layer's colour, a time grid that follows the zoom; 🧰 Tools & Properties too. Nothing moves - only colour, light and type. Classic is one click away. *Where:* ⚙ Timeline settings ▸ Look. *Since:* 2.968.0
+- **🎛 The timeline's deck** — a hardware-style controller beside the layers where every part works: an LCD timecode, transport keys, a JOG wheel (a frame per notch) with a SHUTTLE ring (hold it: 1x … 8x either way, let go to stop), ZOOM and SPEED slide wheels, and the picked layer's OPACITY / FADE IN / FADE OUT knobs and VOLUME fader. Spreads into columns in a short docker, steps aside when there is no room. *Where:* the Timeline docker - the DECK tab at the layers' left edge. *Since:* 2.969.0
 
 ## The image editor
 

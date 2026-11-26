@@ -1,6 +1,7 @@
     <!-- 2.968.0 (Tim: "is it possible to make the timeline docker look technical like you did with the synth tab?"): the
          technical look - tltech.css, scoped to #timelinedock.tl-tech (tltech.js; ⚙ Timeline settings ▸ Look ▸ Classic) -->
     <link rel="stylesheet" href="/ext/timelinedock/tltech.css">
+    <link rel="stylesheet" href="/ext/timelinedock/tldeck.css">
     <div class="bdock" id="timelinedock">
       <div class="bhead" data-collapse="timelinedock">▾ Timeline<button class="maxbtn" data-max="timelinedock" title="Maximize">⛶</button></div>
       <div class="bbody">
@@ -96,7 +97,57 @@
           <button class="ghost" id="tlSettings" type="button" title="Timeline settings"
                   aria-label="Timeline settings" aria-haspopup="dialog">⚙</button>
         </div>
-        <div id="tlscroll"><div id="tlinner"></div></div>
+        <!-- 2.969.0 (Tim: "can you add knobs and sliders and slide wheels like and jog wheels? for a cool aesthetic?"): the
+             🎛 DECK beside the layers - a hardware-style controller where every control works (tldeck.js / tldeck.css):
+             an LCD, transport keys, a JOG wheel (frames) with a SHUTTLE ring (-8x .. 8x, springs back), ZOOM and SPEED
+             slide wheels, and the picked layer's OPACITY / FADE IN / FADE OUT knobs and VOLUME fader. The DECK tab at the
+             layers' left edge shows / hides it (not a menu-bar button: one more there can wrap the bar onto another row and
+             push the layers down); a short docker spreads it into 2 or 3 columns instead of making it scroll -->
+        <div id="tlDeckRow">
+          <button type="button" id="tlDeckTog" class="tdk-tab on" aria-pressed="true" title="Deck - the jog wheel, the shuttle, zoom and speed wheels, and the picked layer's knobs and fader: show / hide"><span>🎛 DECK</span></button>
+          <div id="tlDeck" role="group" aria-label="Timeline deck">
+            <div class="tdk-sec tdk-a">
+              <div class="tdk-head"><span>DECK</span></div>
+              <div class="tdk-lcd" id="tlDeckLcd" aria-live="off">
+                <div class="tdk-tc" id="tlDeckTc">0:00:00:00</div>
+                <div class="tdk-sub"><span id="tlDeckState">■ STOP</span><span id="tlDeckZoomV">ZOOM 30</span></div>
+              </div>
+              <div class="tdk-keys" role="group" aria-label="Transport">
+                <button type="button" id="tlDeckStart" title="To the start" aria-label="To the start">⏮</button>
+                <button type="button" id="tlDeckRew" title="Shuttle backwards (J) - again for 2x, 4x, 8x" aria-label="Backwards">◀◀</button>
+                <button type="button" id="tlDeckStop" title="Stop - back to the start of the range" aria-label="Stop">■</button>
+                <button type="button" id="tlDeckPlay" class="tdk-play" title="Play / pause (Space)" aria-label="Play">▶</button>
+                <button type="button" id="tlDeckFwd" title="Shuttle forwards (L) - again for 2x, 4x, 8x" aria-label="Forwards">▶▶</button>
+                <button type="button" id="tlDeckEnd" title="To the end" aria-label="To the end">⏭</button>
+              </div>
+            </div>
+            <div class="tdk-sec tdk-b">
+              <div class="tdk-jogcol">
+                <canvas id="tlDeckJog" width="132" height="132" tabindex="0" role="slider" aria-label="Jog wheel: turn the middle to move a frame at a time; the outer ring shuttles (hold it, let go to stop)"
+                        title="JOG - turn the middle: a frame per notch (mouse wheel too, Shift = 10). SHUTTLE - hold the outer ring left or right: 1x, 2x, 4x, 8x; let go and it springs back to stop"></canvas>
+                <div class="tdk-lab">JOG · SHUTTLE</div>
+              </div>
+              <div class="tdk-wheel"><canvas id="tlDeckZoom" width="26" height="112" tabindex="0" role="slider" aria-label="Zoom wheel" title="ZOOM - roll it up to zoom in, down to zoom out (double-click: back to 30)"></canvas><div class="tdk-lab">ZOOM</div></div>
+              <div class="tdk-wheel"><canvas id="tlDeckSpeed" width="26" height="112" tabindex="0" role="slider" aria-label="Speed wheel" title="SPEED - roll it a notch at a time: 0.125x .. 8x, what ▶ and Space play at (double-click: 1x)"></canvas><div class="tdk-lab" id="tlDeckSpeedV">1×</div></div>
+            </div>
+            <div class="tdk-sec tdk-c">
+              <div class="tdk-layer" id="tlDeckLayer">no layer picked</div>
+              <div class="tdk-strip">
+                <div class="tdk-knobs">
+                  <div class="tdk-knob" data-k="opacity"><canvas width="48" height="48" tabindex="0" role="slider" aria-label="Opacity" title="OPACITY of the picked layer - drag up / down (Shift: fine), wheel, arrows; double-click: 100%"></canvas><div class="tdk-lab">OPACITY</div><div class="tdk-val"></div></div>
+                  <div class="tdk-knob" data-k="fin"><canvas width="48" height="48" tabindex="0" role="slider" aria-label="Fade in" title="FADE IN of the picked layer: how long its transition in takes (all the way down = a cut); double-click: a cut"></canvas><div class="tdk-lab">FADE IN</div><div class="tdk-val"></div></div>
+                  <div class="tdk-knob" data-k="fout"><canvas width="48" height="48" tabindex="0" role="slider" aria-label="Fade out" title="FADE OUT of the picked layer: how long its transition out takes (all the way down = a cut); double-click: a cut"></canvas><div class="tdk-lab">FADE OUT</div><div class="tdk-val"></div></div>
+                </div>
+                <div class="tdk-fader" data-k="volume" tabindex="0" role="slider" aria-label="Volume" aria-orientation="vertical" title="VOLUME of the picked layer - drag the cap (Shift: fine), wheel, arrows; double-click: 100%">
+                  <div class="tdk-slot"><div class="tdk-fill"></div><div class="tdk-cap"></div></div>
+                  <div class="tdk-lab">VOLUME</div><div class="tdk-val"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="tlDeckSpace" aria-hidden="true"></div>
+          <div id="tlscroll"><div id="tlinner"></div></div>
+        </div>
         <input type="file" id="audiopick" accept="audio/*,.m4a,.aac,.opus,.flac,.ogg" class="hidden">
         <input type="file" id="imagepick" accept="image/*" class="hidden">
       </div>

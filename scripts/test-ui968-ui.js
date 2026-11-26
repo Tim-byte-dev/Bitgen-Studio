@@ -33,7 +33,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       tl.video = [{ name: "ui968_a.mp4", start: 0, in: 0, out: 6 }, { name: "ui968_b.mp4", start: 6, in: 0, out: 5 }];
       tl.audio = [{ name: "Music", clips: [{ name: "ui968.wav", start: 1, in: 0, out: 9, src: "sound" }] }];
       tl.images = [{ name: "Logo", clips: [{ name: "ui968.png", start: 2, len: 4, opacity: 0.8 }] }];
-      renderTimeline(); });
+      renderTimeline(); window.toggleMax("timelinedock", true); });          // maximized: whatever size an earlier run left it at
     await sleep(500);
     const geo = () => ev(() => { const r = (e) => { const b = e.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)].join(); };
       return { clips: [...document.querySelectorAll("#tlinner .clip")].map(r), heads: [...document.querySelectorAll("#tlinner .tlab")].map(r), ruler: r(document.querySelector("#tlinner .tlruler")),
@@ -49,8 +49,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check("each layer keeps its colour: the audio clip's edge is its layer's colour (not the old #4a6e8a)", t1.audioBorder && t1.audioBorder !== "rgb(74, 110, 138)", t1.audioBorder);
     check("🧰 Tools & Properties (the timeline's own panel) wears it too: a cyan title", t1.float === "rgb(56, 225, 255)", t1.float);
     const hitSplit = await ev(() => { const sp = document.getElementById("tlStageSplit"); if (!sp || !sp.getClientRects().length) return "hidden";
+      if (window.TlFloat && TlFloat.show) TlFloat.show(false);              // 🧰 floats wherever it was left - it may sit over the bar
       const r = sp.getBoundingClientRect(), xs = [r.left + 20, r.left + r.width / 2, r.right - 20], ys = [r.top + 0.5, r.top + r.height / 2, r.bottom - 0.5];
       const bad = []; xs.forEach((x) => ys.forEach((y) => { const e = document.elementFromPoint(x, y); if (e !== sp) bad.push(Math.round(x) + "," + y.toFixed(1) + " " + (e ? (e.id || e.className || e.tagName) : "none")); }));
+      if (window.TlFloat && TlFloat.show) TlFloat.show(true);
       return bad.length ? bad : true; });
     check("the preview's resize bar above the menu bar still gets the mouse everywhere (the EDIT label is click-through, the bar does not reach up)", hitSplit === true || hitSplit === "hidden", hitSplit);
     // the grid follows the zoom
@@ -91,7 +93,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e && e.stack || e)); }
   finally {
     try {
-      await ev((o) => { if (window.__tl968) { Object.assign(tl, window.__tl968); renderTimeline(); }
+      await ev((o) => { window.toggleMax("timelinedock", false); if (window.__tl968) { Object.assign(tl, window.__tl968); renderTimeline(); }
         return fetch("/api/config", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ui: { tl_look: o || "tech" } }) }); }, orig);
       await sleep(900);
     } catch (e) { /* gone */ }

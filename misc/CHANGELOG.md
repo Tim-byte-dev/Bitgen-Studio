@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.969.0** — 🎛 The Timeline's Deck: a Hardware-Style Controller Beside the Layers - LCD, Transport Keys, a Jog Wheel With a Shuttle Ring, Zoom and Speed Slide Wheels, the Picked Layer's Opacity / Fade In / Fade Out Knobs and Volume Fader (Every Control Works)
 - **2.968.0** — The Timeline Docker's Technical Look (the 🎹 Synth Tab's Style: Dark Panels, Glowing Labels, LCD Readouts, Neon Clips on a Time Grid That Follows the Zoom; Nothing Moves) - ⚙ Timeline Settings ▸ Look ▸ Technical / Classic
 - **2.967.0** — 🎤 Synth Tab: ■ Stop a Running Sing / Separate / Train (Its Whole Process Tree), Key ▸ Auto (Seed-VC / SoulX-Singer Fit the Song to Your Clip), ⧉ Mix (Your Voice Over the Instrumental as You Hear Them - a Layer, My Samples and the Sound Assets), 🎧 Hear Yourself While Recording a Clip
 - **2.966.0** — 🎚 The Stems Tab Removed From the Audio Docker - the 🎹 Synth Tab's ✂ Separate Vocals Does Its Job (Music, SFX and Synth Are the Tabs); an Older Install's Stems Folder Is Never Loaded; ✂ Asks to Download the Song Separation Before Anything Is Rendered
