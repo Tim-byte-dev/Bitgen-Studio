@@ -123,7 +123,10 @@ function mount(app) {
     }
     // 2.975.0: {files: [{name, cat}]} = named model files (🧱 Picture → 3D scene's sound models) - the box checks them again
     if (Array.isArray(b.files)) {
-      const rows = b.files.filter((x) => x && x.name && x.cat).slice(0, 40).map((x) => ({ name: path.basename(String(x.name)), cat: String(x.cat), from: String(b.from || "files") }));
+      let rows = b.files.filter((x) => x && x.name && x.cat).slice(0, 40).map((x) => ({ name: path.basename(String(x.name)), cat: String(x.cat), from: String(b.from || "files") }));
+      // 2.978.0: {kind, style_id, extra_loras, files} = a style's files AND these, in ONE box (🧱 Picture → 3D scene: the edit
+      // style + the 360 LoRA + the 3D engine + the sound models - everything a run needs, downloaded before it starts)
+      if (b.kind) { const p = plan(b); if (!p.skip && Array.isArray(p.rows)) rows = p.rows.concat(rows.filter((r) => !p.rows.some((q) => q.name === r.name))); }
       return res.json(Object.assign({ kind: "files" }, MF.check(rows)));
     }
     const p = plan(b);

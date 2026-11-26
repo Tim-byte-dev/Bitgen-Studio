@@ -162,6 +162,13 @@ function box(G, w, h, d, y0) {
     const b1 = S.read(s1.id);
     check("a failed job: the scene failed, the step that broke says why; the panorama / the sounds switched off say so",
       b1.status === "failed" && b1.steps.mesh.state === "fail" && /out of memory/.test(b1.steps.mesh.msg) && b1.steps.pano.state === "skip" && b1.steps.cut.state === "done", b1.steps);
+    // 2.978.0 ↻ Try again: the 3D step again (a model downloaded), the find / cut steps kept (no new edit jobs)
+    const imgJobs0 = made.filter((pp) => pp.mode === "image").length;
+    S.deps.to3d = (pc, o) => { const id = "m" + (++n); fs.writeFileSync(path.join(m3d, o.model_name + ".glb"), box(G, 0.8, 1.2, 0.5)); jobs.set(id, { id, status: "done", output: null }); return { id, model: o.model_name + ".glb" }; };
+    S.retry(s1.id);
+    for (let i = 0; i < 200 && S.read(s1.id).status === "running"; i++) await new Promise((r2) => setTimeout(r2, 20));
+    const b2 = S.read(s1.id);
+    check("↻ retry(): carries on from the failed 3D step - done, no new cut-out / plate jobs, the scene .glb made", b2.status === "done" && b2.steps.mesh.state === "done" && made.filter((pp) => pp.mode === "image").length === imgJobs0 && b2.sceneGlb && fs.existsSync(b2.sceneGlb), { st: b2.steps, imgJobs0 });
     // stop
     S.deps.job = (id) => (/^j/.test(id) ? { status: "running" } : jobs.get(id));
     const s2 = S.create(pic, {});

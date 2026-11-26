@@ -2,13 +2,15 @@
 // server.js). The work is lib/picScene.js; it runs in the server, so the page can close and come back.
 //
 //   GET  /api/picscene              {scenes: [{id, name, status, created, objects, sceneGlb}]}  (the project's, newest first)
-//   GET  /api/picscene/needs        the sound models (Stable Audio Open 1.0 + the T5 base encoder) - lib/modelsFound's check
+//   GET  /api/picscene/needs?engine=&sound=   2.978.0: every file the run needs besides the edit style (the 3D engine's +
+//                                   Stable Audio Open's) {files, checked, missing} - lib/modelsFound's check
 //                                   {checked, missing:[{name, cat, folder, source}]} for the Download / Cancel box
 //   POST /api/picscene              JSON {name (a project picture: Gallery / images), where, max, sound, pano, engine, hfov}
 //                                   or raw picture bytes with ?name=&max=&sound=&pano=&engine= -> the scene {id, steps, ...}
 //   GET  /api/picscene/:id          the scene: {status, msg, steps{find, cut, pano, mesh, sound, scene}, objects[...], ...}
 //   GET  /api/picscene/:id/file?f=  a file of the scene (a cut-out, the plate, the panorama, a sound, the .glb) - only its own
 //   POST /api/picscene/:id/cancel   stop it
+//   POST /api/picscene/:id/retry    2.978.0: ↻ Try again - carry on from the step that failed (what was made is kept)
 //   GET  /api/picscene/world        the 🌍 walk-in world's add-on (HunyuanWorld 1.0): {installed, note, missing}
 //   POST /api/picscene/:id/world    🌍 on a finished scene: its panorama -> the walk-in world (HunyuanWorld 1.0 job)
 "use strict";
@@ -37,12 +39,21 @@ function mount(app) {
   const J = express.json({ limit: "1mb" });
   const RAW = express.raw({ type: (r) => !/json/i.test(r.headers["content-type"] || ""), limit: 64 * 1024 * 1024 });
   app.get("/api/picscene", (_req, res) => { try { res.json({ scenes: S.list() }); } catch (e) { fail(res, e); } });
-  app.get("/api/picscene/needs", (_req, res) => {
-    try { res.json(require("../lib/modelsFound").check(S.SFX_NEEDS)); } catch (e) { res.json({ checked: false, missing: [], error: String(e.message || e) }); }
+  app.get("/api/picscene/needs", (req, res) => {
+    const q = req.query || {};
+    // 2.978.0: ?engine=&sound= -> files (everything the run needs besides the style) + the check of them
+    try {
+      const MF = require("../lib/modelsFound");
+      let files = S.runFiles({ engine: q.engine, sound: q.sound });
+      // auto: TRELLIS.2 already here and Hunyuan3D not -> TRELLIS.2's files (auto would use it), nothing asked for
+      if (!q.engine || q.engine === "auto") { const t = S.runFiles({ engine: "trellis", sound: q.sound }), ct = MF.check(t), ch = MF.check(files); if (ct.checked && !ct.missing.length && ch.missing.length) files = t; }
+      res.json(Object.assign({ files }, MF.check(files)));
+    } catch (e) { res.json({ checked: false, files: [], missing: [], error: String(e.message || e) }); }
   });
   app.get("/api/picscene/world", (_req, res) => {
     try { const A = require("../lib/hyworldAddon"); res.json(Object.assign({ missing: A.missing() }, A.status())); } catch (e) { fail(res, e); }
   });
+  app.post("/api/picscene/:id/retry", (req, res) => { try { res.json(brief(S.retry(req.params.id))); } catch (e) { fail(res, e); } });   // 2.978.0 ↻
   app.post("/api/picscene/:id/world", (req, res) => { try { res.json(brief(S.world(req.params.id))); } catch (e) { fail(res, e); } });
   app.post("/api/picscene", J, RAW, (req, res) => {
     try {

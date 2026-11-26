@@ -1186,14 +1186,18 @@ where they stood, the place round them as a 360° panorama, and a sound for the 
 on this computer, as ordinary jobs in the job list - no accounts, nothing sent anywhere.
 
 1. **Open the Sketcher** and click **🧱 Picture → 3D scene** (beside ⤒ Import).
-2. **Pick the picture** - one from the gallery, or **📁 From this computer…**. A photo of a room, a street or a
-   yard works best: a few clear objects standing on the ground.
+2. **Pick the picture** - from **🖼 Gallery**, **🗂 Assets**, **📌 References** (the References docker's pictures),
+   **📁 Folder…** (a folder of this computer - its pictures are shown to pick from) or **📄 File…** (2.978.0). A photo of a
+   room, a street or a yard works best: a few clear objects standing on the ground.
 3. **Objects (at most)** - how many things to make in 3D (1-8; each takes a few minutes). **The lens** - how wide
    the picture is (a phone photo is "normal"); it sets how far away and how big each thing is.
    **3D engine** - Hunyuan3D 2.1 (the shape) or TRELLIS.2 (shape and colours), Auto picks the one you have.
-4. Tick **The 360° surroundings** and **Sounds** if you want them, then **🧱 Make the scene**. Missing models get the
-   usual Download / Cancel box (for the sounds: Stable Audio Open 1.0 and its text encoder, about 5.7 GB; Cancel there
-   = this scene without sounds).
+4. Tick **The 360° surroundings** and **Sounds** if you want them, then **🧱 Make the scene**. Every model the run
+   needs is checked FIRST (2.978.0) - the Qwen Image 2.1 edit models, the 360 LoRA, the 3D engine (Hunyuan3D 2.1, or
+   TRELLIS.2 when that is the one you have / picked) and, with sounds, Stable Audio Open 1.0 + its text encoder - and the
+   ones not on your drive are in ONE Download / Cancel box; the run starts once they are there.
+   If a step still fails, its line says why (a model ComfyUI did not find, out of memory ...) and **↻ Try again**
+   carries on from that step - what was already made is kept.
 5. The steps tick off as they finish: **find** (the Vision model names the objects and describes the place - pick a
    Vision model in the prompt docker), **cut** (each object alone on white + the **clean plate**, the picture with the
    objects taken out), **pano** (the plate grown into the 360° surroundings), **mesh** (a 3D model each), **sound**,
@@ -1263,9 +1267,12 @@ the Sketcher.
    the figure).
 5. **💨 Physics** - bitGen's own cloth (a light drape - not Daz's dForce): clothing settles under gravity and is pushed out
    where the dialled body grew; hair hangs, held at the roots; "Other pieces" drapes the rest.
-6. **📷 A face from a photo** - pick a gallery photo: the Vision model finds the eyes and chin, the face's proportions follow
+6. **📷 A face from a photo** - tick *use a photo* and pick it from 🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder or
+   📄 a file: the Vision model finds the eyes and chin, the face's proportions follow
    and the photo is blended into the face texture (light - Daz Studio's Face Transfer does far more).
-7. **🧍 Build the character** -> `<name>_daz.glb` in the project's 3D models, with the skeleton and skin weights; ⤒ Open in
+7. **💾 Save** keeps the character (figure, dials, what it wears, physics) in the project; **📂 Load a saved one…** brings
+   it back to change and build again (2.978.0).
+8. **🧍 Build the character** -> `<name>_daz.glb` in the project's 3D models, with the skeleton and skin weights; ⤒ Open in
    the Sketcher, or use it on the timeline / in Blender.
 
 Good to know:

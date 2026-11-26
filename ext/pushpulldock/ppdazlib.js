@@ -16,7 +16,7 @@
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const st = { kind: "figure", fig: null, wear: [], dials: {}, dialList: [], last: null };
+  const st = { kind: "figure", fig: null, wear: [], dials: {}, dialList: [], last: null, face: null, facePicker: null };
   async function jget(u) { const r = await fetch(u); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; }
   const say = (t) => { const m = $("pdlMsg"); if (m) m.textContent = t || ""; };
   function css() {
@@ -48,8 +48,9 @@
       + '<fieldset><legend>Wearing</legend><div id="pdlWear" class="hint">click clothing, hair or anatomy to add it</div></fieldset>'
       + '<fieldset><legend>💨 Physics (our own cloth - a light drape, not Daz\'s dForce)</legend><label><input type="checkbox" id="pdlDrapeC"> Clothing</label><label><input type="checkbox" id="pdlDrapeH"> Hair (held at the roots)</label><label><input type="checkbox" id="pdlDrapeO"> Other pieces</label>'
       + '<label class="pdl-dial"><span>Settle frames</span><input type="number" id="pdlFrames" min="5" max="240" value="45"></label></fieldset>'
-      + '<fieldset><legend>📷 A face from a photo (light - Daz Studio\'s Face Transfer does far more)</legend><select id="pdlFace"><option value="">no photo</option></select></fieldset>'
-      + '<label class="pdl-dial"><span>Name</span><input type="text" id="pdlName" placeholder="character" style="width:160px"></label></div></div>'
+      + '<fieldset><legend>📷 A face from a photo (light - Daz Studio\'s Face Transfer does far more)</legend><label><input type="checkbox" id="pdlFaceOn"> use a photo</label><div id="pdlFacePick" hidden></div></fieldset>'
+      + '<label class="pdl-dial"><span>Name</span><input type="text" id="pdlName" placeholder="character" style="width:160px"></label>'
+      + '<div class="pdl-dial"><button type="button" class="ghost" id="pdlSave" title="Keep this character (figure, dials, what it wears, physics) in the project - build it again later">💾 Save</button><select id="pdlChars" title="A saved character"><option value="">📂 Load a saved one…</option></select></div></div></div>'
       + '<div class="pdl-foot"><span class="hint" id="pdlMsg" role="status"></span><button type="button" class="ghost" id="pdlOpen" hidden>⤒ Open in the Sketcher</button><button type="button" class="primary" id="pdlBuild">🧍 Build the character</button></div></div>';
     doc.body.appendChild(d);
     $("pdlX").onclick = () => d.close();
@@ -59,6 +60,8 @@
     $("pdlFolders").onclick = folders; $("pdlFolderSave").onclick = saveFolders;
     $("pdlBuild").onclick = buildIt;
     $("pdlOpen").onclick = openIt;
+    $("pdlSave").onclick = saveChar; $("pdlChars").onchange = () => { const v = $("pdlChars").value; if (v) loadChar(v); };
+    $("pdlFaceOn").onchange = () => { $("pdlFacePick").hidden = !$("pdlFaceOn").checked; if ($("pdlFaceOn").checked && !st.facePicker && root.H3PicPick) st.facePicker = root.H3PicPick.mount($("pdlFacePick"), { title: "The face photo", onPick: (it) => { st.face = it; say("📷 " + it.name); } }); };
     return d;
   }
   async function info() { try { const j = await jget("/api/dazlib"); $("pdlRoots").textContent = j.roots.length ? j.roots.join(" · ") : "no Daz library found - 📁 Folders…"; return j; } catch (e) { say("⚠ " + e.message); return null; } }
@@ -103,12 +106,15 @@
       });
     } catch (e) { box.textContent = "⚠ " + e.message; }
   }
-  async function faces() { try { const L = await jget("/api/outputs?kind=images"); $("pdlFace").innerHTML = '<option value="">no photo</option>' + (Array.isArray(L) ? L : []).slice(0, 200).map((f) => '<option>' + esc(f.name) + "</option>").join(""); } catch (e) { /* fine */ } }
   async function buildIt() {
     if (!st.fig) { say("pick a figure or a character first"); return; }
     const kinds = [["pdlDrapeC", "clothing"], ["pdlDrapeH", "hair"], ["pdlDrapeO", "other"]].filter(([id]) => $(id).checked).map(([, k]) => k);
     const body = { root: st.fig.root, rel: st.fig.rel, dials: dialsToSend(st.dials), wear: st.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: kinds.length ? { kinds, frames: +$("pdlFrames").value || 45 } : false,
-      face: $("pdlFace").value ? { picture: $("pdlFace").value } : null, name: $("pdlName").value || st.fig.name };
+      face: null, name: $("pdlName").value || st.fig.name };
+    if ($("pdlFaceOn").checked) {
+      if (!st.face) { say("📷 pick the face photo (🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder, 📄 a file) or untick it"); return; }
+      try { const ph = await root.H3PicPick.toProject(st.face); body.face = { picture: ph.name, where: ph.where }; } catch (e) { say("⚠ " + e.message); return; }
+    }
     $("pdlBuild").disabled = true; say("🧍 building " + body.name + (kinds.length ? " + 💨 physics" : "") + (body.face ? " + 📷 the face" : "") + "…");
     try {
       const r = await fetch("/api/dazlib/build", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -118,10 +124,30 @@
     } catch (e) { say("⚠ " + e.message); }
     $("pdlBuild").disabled = false;
   }
+  function specNow() {
+    const kinds = [["pdlDrapeC", "clothing"], ["pdlDrapeH", "hair"], ["pdlDrapeO", "other"]].filter(([id]) => $(id).checked).map(([, k]) => k);
+    return { root: st.fig && st.fig.root, rel: st.fig && st.fig.rel, figName: st.fig && st.fig.name, dials: dialsToSend(st.dials), wear: st.wear.map((w) => ({ root: w.root, rel: w.rel, name: w.name })), drape: kinds.length ? { kinds, frames: +$("pdlFrames").value || 45 } : false };
+  }
+  async function chars() { try { const j = await jget("/api/dazlib/chars"); $("pdlChars").innerHTML = '<option value="">📂 Load a saved one…</option>' + j.chars.map((c) => "<option>" + esc(c.name) + "</option>").join(""); } catch (e) { /* fine */ } }
+  async function saveChar() {
+    if (!st.fig) { say("pick a figure first"); return; }
+    const name = $("pdlName").value || st.fig.name;
+    try { const r = await fetch("/api/dazlib/chars", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, spec: specNow() }) }); const j = await r.json(); if (!r.ok) throw new Error(j.error); say("💾 " + j.name + " saved - 📂 to load it again"); chars(); } catch (e) { say("⚠ " + e.message); }
+  }
+  async function loadChar(name) {
+    try {
+      const c = await jget("/api/dazlib/chars/" + encodeURIComponent(name));
+      st.fig = { root: c.root, rel: c.rel, name: c.figName || name, kind: "figure" }; st.dials = {}; (c.dials || []).forEach((d) => { st.dials[d.url] = +d.value; });
+      st.wear = (c.wear || []).map((w) => ({ root: w.root, rel: w.rel, name: w.name || w.rel.split("/").pop().replace(/\.duf$/i, "") }));
+      $("pdlFig").textContent = st.fig.name; $("pdlName").value = name; $("pdlWear").textContent = st.wear.length ? st.wear.map((w) => w.name).join(", ") : "click clothing, hair or anatomy to add it";
+      const k = (c.drape && c.drape.kinds) || []; $("pdlDrapeC").checked = k.includes("clothing"); $("pdlDrapeH").checked = k.includes("hair"); $("pdlDrapeO").checked = k.includes("other"); if (c.drape && c.drape.frames) $("pdlFrames").value = c.drape.frames;
+      dialsLoad(); list(); say("📂 " + name + " loaded - 🧍 Build to make it");
+    } catch (e) { say("⚠ " + e.message); }
+  }
   async function openIt() {
     const P = root.H3PushPull; if (!st.last || !P || !P.importModel) return;
     try { await P.importModel(st.last.model); $("pdlDlg").close(); } catch (e) { say("⚠ " + e.message + " - the .glb is in the 3D models (Blender, the timeline)"); }
   }
-  function open() { const d = ensure(); if (!d.open) d.showModal(); info(); list(); faces(); }
-  root.H3DazLib = Object.assign({ open, list, buildIt, state: st }, pure);
+  function open() { const d = ensure(); if (!d.open) d.showModal(); info(); list(); chars(); if (st.facePicker) st.facePicker.refresh(); }
+  root.H3DazLib = Object.assign({ open, list, buildIt, saveChar, loadChar, state: st }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -15238,6 +15238,8 @@ node scripts/test-976.js > /tmp/t976.log 2>&1 && ok "2.976.0 units: 🦴 Rig it 
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui976-ui.js > /tmp/ui976.log 2>&1 && ok "2.976.0 browser test: 🦴 Rig ▾ in the Sketcher (the models listed, the add-on's Install box, the job queued)" || { bad "2.976.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui976.log | head -8; }
 node scripts/test-977.js > /tmp/t977.log 2>&1 && ok "2.977.0 units: 📚 the Daz library (DSON plain / gzipped / encrypted, dials, wear, our cloth + hair drape, a face from a photo, the not-a-replacement words)" || { bad "2.977.0 units"; grep -a "^FAIL" -A1 /tmp/t977.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui977-ui.js > /tmp/ui977.log 2>&1 && ok "2.977.0 browser test: 📚 Daz library in the Sketcher (a made-up library: pick, dial, wear, physics, build, open)" || { bad "2.977.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui977.log | head -8; }
+node scripts/test-978.js > /tmp/t978.log 2>&1 && ok "2.978.0 units: the Sketcher's picture picker (Gallery / Assets / References / Folder / File) + 💾 Daz characters" || { bad "2.978.0 units"; grep -a "^FAIL" -A1 /tmp/t978.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui978-ui.js > /tmp/ui978.log 2>&1 && ok "2.978.0 browser test: the picker's five sources in 🧱 + the 📚 face photo, 💾 Save / 📂 Load a character" || { bad "2.978.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui978.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

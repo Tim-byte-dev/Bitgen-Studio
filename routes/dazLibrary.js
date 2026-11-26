@@ -6,6 +6,10 @@
 //   GET  /api/dazlib/scan?kind=&q=&root=   {items [{root, rel, name, kind, thumb}], encrypted, roots, note}
 //   GET  /api/dazlib/thumb?root=&rel=      a thumbnail (.png) inside a library folder
 //   GET  /api/dazlib/dials?root=&rel=&q=   the figure's shape dials [{url, label, group, min, max}]
+//   POST /api/dazlib/photo?name=     raw picture bytes (a reference / a file of this computer) -> the project's images ->
+//                                    {name} (2.978.0: the shared picture picker, ext/pushpulldock/pppicpick.js)
+//   GET  /api/dazlib/chars           the saved characters {chars: [{name, mtime}]};  GET /api/dazlib/chars/:name -> the spec
+//   POST /api/dazlib/chars           {name, spec} -> saved as <project>/dazchars/<name>.json (2.978.0: build again later)
 //   POST /api/dazlib/build           {root, rel, dials [{url, value}], wear [{root, rel}], drape {kinds, frames} | false,
 //                                     face {picture (a project picture)} | null, name, maxTex}
 //                                    -> {model: "<name>.glb" in models3d, info}
@@ -34,6 +38,23 @@ function mount(app) {
       if (!sc.fig) return res.json({ dials: [] });
       res.json({ figure: sc.fig.url, dials: D.morphsFor(sc.fig.url, { q: req.query.q || "", limit: req.query.limit }) });
     } catch (e) { fail(res, e); }
+  });
+  app.post("/api/dazlib/photo", require("express").raw({ type: () => true, limit: 64 * 1024 * 1024 }), (req, res) => {
+    try { const f = require("../lib/to3d").savePicture(req.body, (req.query || {}).name || "picture"); res.json({ name: path.basename(f), where: "images" }); } catch (e) { fail(res, e); }
+  });
+  const charDir = () => { const d = core.pDir("dazchars"); fs.mkdirSync(d, { recursive: true }); return d; };
+  const charName = (n) => String(n || "").replace(/[^A-Za-z0-9 _-]+/g, "_").trim().slice(0, 60);
+  app.get("/api/dazlib/chars", (_req, res) => {
+    try { res.json({ chars: fs.readdirSync(charDir()).filter((f) => /\.json$/.test(f)).map((f) => ({ name: f.replace(/\.json$/, ""), mtime: fs.statSync(path.join(charDir(), f)).mtimeMs })).sort((a, b) => b.mtime - a.mtime) }); } catch (e) { fail(res, e); }
+  });
+  app.get("/api/dazlib/chars/:name", (req, res) => {
+    const f = path.join(charDir(), charName(req.params.name) + ".json"); if (!fs.existsSync(f)) return res.status(404).json({ error: "no such character" });
+    try { res.json(JSON.parse(fs.readFileSync(f, "utf8"))); } catch (e) { fail(res, e); }
+  });
+  app.post("/api/dazlib/chars", J, (req, res) => {
+    const b = req.body || {}, n = charName(b.name); if (!n) return res.status(400).json({ error: "give the character a name" });
+    const sp = b.spec || {}, keep = { name: n, root: sp.root, rel: sp.rel, figName: sp.figName, dials: Array.isArray(sp.dials) ? sp.dials.slice(0, 400) : [], wear: Array.isArray(sp.wear) ? sp.wear.slice(0, 60) : [], drape: sp.drape || false, saved: Date.now() };
+    fs.writeFileSync(path.join(charDir(), n + ".json"), JSON.stringify(keep, null, 1)); res.json({ ok: true, name: n });
   });
   app.post("/api/dazlib/build", J, async (req, res) => {
     const b = req.body || {};

@@ -62,7 +62,7 @@ function boxGlb(G) {
     await p.route(/\/api\/outputs\?kind=images/, (r) => r.fulfill({ json: [{ name: "ui975.png", mtime: 2 }] }));
     await p.route(/\/outputs\/ui975\.png/, (r) => r.fulfill({ body: png, contentType: "image/png" }));
     await p.route(/\/api\/pano360$/, (r) => r.fulfill({ json: { ok: true, style_id: "st_ui975" } }));
-    await p.route(/\/api\/picscene\/needs/, (r) => r.fulfill({ json: { checked: true, missing: [{ name: "t5_base.safetensors", cat: "text_encoders", folder: "models/text_encoders", source: { id: "t5_base", size: 892000000 } }] } }));
+    await p.route(/\/api\/picscene\/needs/, (r) => r.fulfill({ json: { files: [{ name: "hunyuan_3d_v2.1.safetensors", cat: "checkpoints" }, { name: "t5_base.safetensors", cat: "text_encoders" }], checked: true, missing: [{ name: "t5_base.safetensors", cat: "text_encoders", folder: "models/text_encoders", source: { id: "t5_base", size: 892000000 } }] } }));
     await p.route(/\/api\/picscene(\?.*)?$/, (r) => { if (r.request().method() === "POST") { posted.push(r.request().postDataJSON()); return r.fulfill({ json: running }); } return r.fulfill({ json: { scenes: [] } }); });
     await p.route(/\/api\/picscene\/sc_ui975$/, (r) => { polls++; r.fulfill({ json: polls < 2 ? running : done }); });
     await p.route(/\/api\/picscene\/sc_ui975\/file/, (r) => { const f = new URL(r.request().url()).searchParams.get("f"); return /png$/.test(f) ? r.fulfill({ body: png, contentType: "image/png" }) : r.fulfill({ body: Buffer.alloc(0), contentType: "audio/flac" }); });
@@ -77,18 +77,18 @@ function boxGlb(G) {
     await ev(() => { window.__mf = []; H3ModelsFound.ensure = (q) => { window.__mf.push(["ensure", q]); return Promise.resolve(true); }; H3ModelsFound.box = (r, q) => { window.__mf.push(["box", q, r.missing.length]); return Promise.resolve(true); }; });
     check("the Sketcher's bar: 🧱 Picture → 3D scene", await p.locator("#ppScene").isVisible());
     await p.click("#ppScene");
-    await p.waitForSelector("#pscDlg[open] .psc-pics img", { timeout: 8000 });
-    check("🧱 opens the dialog - the gallery's pictures, the options, the licences said", await ev(() => !!document.getElementById("pscDlg").open && document.querySelectorAll("#pscPics img").length === 1
+    await p.waitForSelector("#pscDlg[open] #pscPicker .ppp-t img", { timeout: 8000 });
+    check("🧱 opens the dialog - the gallery's pictures, the options, the licences said", await ev(() => !!document.getElementById("pscDlg").open && document.querySelectorAll("#pscPicker .ppp-t").length === 1
       && /Stability AI Community/.test(document.querySelector("#pscDlg .psc-note").textContent)));
     await p.click("#pscGo");
     check("🧱 Make the scene with no picture: it says pick one, nothing sent", /pick a picture/.test(await p.textContent("#pscMsg")) && posted.length === 0);
-    await p.click("#pscPics img");
+    await p.click("#pscPicker .ppp-t");
     await p.fill("#pscMax", "3"); await p.selectOption("#pscLens", "80");
     await p.click("#pscGo");
     await p.waitForFunction(() => /◐/.test(document.getElementById("pscMsg").textContent), null, { timeout: 8000 });
     const mf = await ev(() => window.__mf);
-    check("the models first: the edit style (ensure), then the sound models (the Download / Cancel box with just those files)",
-      mf.length === 2 && mf[0][0] === "ensure" && mf[0][1].style_id === "st_ui975" && mf[1][0] === "box" && mf[1][1].files.length === 2 && mf[1][2] === 1, mf);
+    check("the models first - ONE check (2.978.0): the edit style + the 360 LoRA + the 3D engine + the sound files, all in one Download box",
+      mf.length === 1 && mf[0][0] === "ensure" && mf[0][1].style_id === "st_ui975" && mf[0][1].files.length === 2 && mf[0][1].files[0].name === "hunyuan_3d_v2.1.safetensors", mf);
     check("POST /api/picscene: the picture + the options", posted.length === 1 && posted[0].name === "ui975.png" && posted[0].max === 3 && posted[0].hfov === 80 && posted[0].pano === true && posted[0].sound === true, posted);
     check("running: the steps - find running, ■ Stop shown", await ev(() => document.querySelector(".psc-step.run") && /Find the objects/.test(document.querySelector(".psc-step.run").textContent) && !document.getElementById("pscStop").hidden));
     await p.waitForFunction(() => /✔/.test(document.getElementById("pscMsg").textContent), null, { timeout: 10000 });

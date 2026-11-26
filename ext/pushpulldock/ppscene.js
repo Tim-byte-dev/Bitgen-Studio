@@ -30,7 +30,7 @@
 
   const LS = { get: (k, d) => { try { const v = root.localStorage.getItem("h3.picscene." + k); return v == null ? d : v; } catch (e) { return d; } },
     set: (k, v) => { try { root.localStorage.setItem("h3.picscene." + k, String(v)); } catch (e) { /* private mode */ } } };
-  const st = { pic: null, file: null, id: null, timer: 0, scene: null, view: null };
+  const st = { pick: null, picker: null, id: null, timer: 0, scene: null, view: null };
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   async function jget(u) { const r = await fetch(u); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; }
   const fileUrl = (f) => "/api/picscene/" + encodeURIComponent(st.id) + "/file?f=" + encodeURIComponent(f);
@@ -61,8 +61,7 @@
     d.innerHTML = '<div class="psc">'
       + '<div class="psc-bar" data-dlg-drag title="Drag to move"><b>🧱 Picture → 3D scene</b><button type="button" class="ghost" id="pscX" title="Close (Esc) - a scene being made keeps going">✕</button></div>'
       + '<div class="psc-body"><div class="psc-side">'
-      + '<div class="psc-row"><span>The picture</span><button type="button" class="ghost" id="pscLocal" title="A picture from this computer">📁 From this computer…</button><input type="file" id="pscFile" accept="image/png,image/jpeg,image/webp" hidden></div>'
-      + '<div class="psc-pics" id="pscPics" aria-label="The gallery\'s pictures"></div>'
+      + '<div class="psc-row"><span>The picture</span></div><div id="pscPicker"></div>'
       + '<label class="psc-row"><span>Objects (at most)</span><input type="number" id="pscMax" min="1" max="8" step="1"></label>'
       + '<label class="psc-row"><span>The lens</span><select id="pscLens">' + LENS.map((l) => '<option value="' + l.id + '">' + esc(l.label) + "</option>").join("") + "</select></label>"
       + '<label class="psc-row"><span>3D engine</span><select id="pscEngine"><option value="auto">Auto</option><option value="hunyuan">Hunyuan3D 2.1 (shape)</option><option value="trellis">TRELLIS.2 (shape + colours)</option></select></label>'
@@ -86,17 +85,18 @@
       + '<button type="button" class="ghost" id="pscWorldGo" hidden title="🌍 The panorama -> a layered 3D world you can walk into (HunyuanWorld 1.0 add-on)">🌍 Walk-in world</button>'
       + '<button type="button" class="ghost" id="pscWorldLook" hidden title="Walk round the world (drag to look, the wheel to move)">👁 The world</button>'
       + '<a class="ghost gbtn" id="pscWorldDl" hidden download>⤓ World .glb</a>'
+      + '<button type="button" class="ghost" id="pscRetry" hidden title="Carry on from the step that failed - what was made is kept (download a missing model first)">↻ Try again</button>'
       + '<button type="button" class="primary" id="pscGo">🧱 Make the scene</button></div></div>';
     doc.body.appendChild(d);
     $("pscX").onclick = () => close();
     d.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
     $("pscMax").value = LS.get("max", "5"); $("pscLens").value = lensOf(LS.get("lens", "65")); $("pscEngine").value = LS.get("engine", "auto");
     $("pscPano").checked = LS.get("pano", "1") === "1"; $("pscSound").checked = LS.get("sound", "1") === "1"; $("pscWorld").checked = LS.get("world", "0") === "1";
-    $("pscLocal").onclick = () => $("pscFile").click();
-    $("pscFile").onchange = () => { const f = $("pscFile").files[0]; if (!f) return; st.file = f; st.pic = null; doc.querySelectorAll("#pscPics img").forEach((x) => x.classList.remove("sel")); say("📁 " + f.name); };
+    st.picker = root.H3PicPick ? root.H3PicPick.mount($("pscPicker"), { title: "The picture", onPick: (it) => { st.pick = it; say("🖼 " + it.name); } }) : null;
     $("pscGo").onclick = () => start();
     $("pscStop").onclick = () => { if (st.id) fetch("/api/picscene/" + encodeURIComponent(st.id) + "/cancel", { method: "POST" }).then(() => say("■ stopping after the job that is running…")); };
     $("pscOpen").onclick = () => toSketcher();
+    $("pscRetry").onclick = () => retryIt();
     $("pscLook").onclick = () => look();
     $("pscWorldLook").onclick = () => look(true);
     $("pscWorldGo").onclick = () => worldGo();
@@ -104,50 +104,41 @@
     return d;
   }
   function close() { const d = $("pscDlg"); if (d && d.open) d.close(); clearTimeout(st.timer); stopView(); }
-  async function pictures() {
-    const box = $("pscPics"); box.textContent = "";
-    let L = []; try { L = await jget("/api/outputs?kind=images"); } catch (e) { L = []; }
-    L = (Array.isArray(L) ? L : []).sort((a, b) => (b.mtime || 0) - (a.mtime || 0)).slice(0, 80);
-    if (!L.length) { box.innerHTML = '<span class="psc-note">No pictures in the gallery - pick one from this computer.</span>'; return; }
-    L.forEach((f) => {
-      const im = doc.createElement("img"); im.loading = "lazy"; im.alt = f.name; im.title = f.name; im.src = "/outputs/" + encodeURIComponent(f.name);
-      im.onclick = () => { st.pic = f.name; st.file = null; box.querySelectorAll("img").forEach((x) => x.classList.toggle("sel", x === im)); say("🖼 " + f.name); };
-      box.appendChild(im);
-    });
-  }
   async function oldScenes() {
     const s = $("pscOld"); if (!s) return;
     try { const j = await jget("/api/picscene"); s.innerHTML = '<option value="">' + ((j.scenes || []).length ? "…" : "(none yet)") + "</option>" + (j.scenes || []).map((x) => '<option value="' + esc(x.id) + '">' + esc(x.name + " - " + x.status + " (" + x.objects + ")") + "</option>").join(""); } catch (e) { /* fine */ }
   }
   function open() {
     const d = ensure(); if (!d.open) d.showModal();
-    pictures(); oldScenes();
+    if (st.picker) st.picker.refresh(); oldScenes();
     if (st.id) follow(st.id);
   }
 
   /* ---- start: the models first, then the run ---- */
   async function start() {
-    if (!st.pic && !st.file) { say("pick a picture first - the gallery or 📁 From this computer"); return; }
+    const pk = st.pick;
+    if (!pk) { say("pick a picture first - 🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder or 📄 a file"); return; }
     const o = { max: Math.max(1, Math.min(8, +$("pscMax").value || 5)), hfov: +$("pscLens").value || 65, engine: $("pscEngine").value, pano: $("pscPano").checked, sound: $("pscSound").checked, world: $("pscWorld").checked };
     LS.set("max", o.max); LS.set("lens", o.hfov); LS.set("engine", o.engine); LS.set("pano", o.pano ? "1" : "0"); LS.set("sound", o.sound ? "1" : "0"); LS.set("world", o.world ? "1" : "0");
     if (o.world && o.pano && !(await worldReady())) o.world = false;
     const MF = root.H3ModelsFound;
     if (MF) {
-      say("checking the models…");
-      let sid = null; try { sid = (await jget("/api/pano360")).style_id; } catch (e) { sid = null; }
-      if (!sid) { say("⚠ the Qwen Image 2.1 edit style is not there - Settings ▸ Styles ▸ restore the starter styles"); return; }
-      if (!(await MF.ensure({ kind: "image", style_id: sid }))) { say("not started - the edit models are not there"); return; }
-      if (o.sound) {
-        let r = null; try { r = await jget("/api/picscene/needs"); } catch (e) { r = null; }
-        if (r && r.checked && (r.missing || []).length && !(await MF.box(r, { files: SFX_FILES, from: "Picture → 3D scene" }))) { o.sound = false; say("going on without the sounds"); }
-      }
+      // 2.978.0 (Tim: "if the models are not on the local drive then download all missing models before starting the job"):
+      // ONE check - the edit style, the 360 LoRA, the 3D engine, the sound models - the Download box gets them all, then it runs
+      say("checking every model the run needs…");
+      let info = null; try { info = await jget("/api/pano360"); } catch (e) { info = null; }
+      if (!info || !info.style_id) { say("⚠ the Qwen Image 2.1 edit style is not there - Settings ▸ Styles ▸ restore the starter styles"); return; }
+      let need = null; try { need = await jget("/api/picscene/needs?engine=" + encodeURIComponent(o.engine) + "&sound=" + (o.sound ? "1" : "0")); } catch (e) { need = null; }
+      const req = { kind: "image", style_id: info.style_id, extra_loras: o.pano && info.lora ? [{ path: info.lora, weight: info.lora_weight }] : [], files: (need && need.files) || [], from: "Picture → 3D scene" };
+      if (!(await MF.ensure(req))) { say("not started - models are missing (⬇ Download them, then 🧱 Make the scene)"); return; }
     }
     try {
       let r;
-      if (st.file) {
-        const q = new URLSearchParams({ name: st.file.name, max: o.max, hfov: o.hfov, engine: o.engine, pano: o.pano ? "1" : "0", sound: o.sound ? "1" : "0", world: o.world ? "1" : "0" });
-        r = await fetch("/api/picscene?" + q, { method: "POST", headers: { "Content-Type": st.file.type || "application/octet-stream" }, body: st.file });
-      } else r = await fetch("/api/picscene", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ name: st.pic }, o)) });
+      if (!pk.where) {
+        const blob = pk.blob || await fetch(pk.url).then((x) => x.blob());
+        const q = new URLSearchParams({ name: pk.name, max: o.max, hfov: o.hfov, engine: o.engine, pano: o.pano ? "1" : "0", sound: o.sound ? "1" : "0", world: o.world ? "1" : "0" });
+        r = await fetch("/api/picscene?" + q, { method: "POST", headers: { "Content-Type": blob.type || "application/octet-stream" }, body: blob });
+      } else r = await fetch("/api/picscene", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ name: pk.name, where: pk.where }, o)) });
       const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText);
       follow(j.id, j);
     } catch (e) { say("⚠ " + e.message); }
@@ -174,6 +165,7 @@
     $("pscObjs").querySelectorAll("[data-rig]").forEach((b) => { b.onclick = () => (root.H3Rig ? root.H3Rig.rig(b.dataset.rig).then((j) => { if (j) say("🦴 " + j.model + " is being made - the job list"); }) : say("🦴 Rig it did not load")); });
     $("pscSounds").innerHTML = s.ambient ? '<span>The place</span><audio controls loop preload="none" src="' + esc(fileUrl(s.ambient)) + '"></audio>' : "";
     const done = s.status === "done" && s.sceneGlb;
+    $("pscRetry").hidden = !["failed", "cancelled"].includes(s.status);
     $("pscStop").hidden = s.status !== "running"; $("pscGo").disabled = s.status === "running";
     ["pscOpen", "pscLook"].forEach((k) => { $(k).hidden = !done; });
     const wd = s.status !== "running" && !!s.worldGlb, wdl = $("pscWorldDl");
@@ -183,6 +175,16 @@
     say(s.status === "running" ? "◐ " + (s.msg || "working…") + " - it keeps going if you close this" : s.status === "done" ? "✔ " + s.sceneGlb + (s.worldGlb ? " + 🌍 " + s.worldGlb : "") + " in the project's 3D models" + (s.steps && s.steps.world && s.steps.world.state === "fail" ? " (🌍 " + s.steps.world.msg + ")" : "") : s.status === "failed" ? "⚠ " + (s.error || s.msg) : s.status === "cancelled" ? "■ stopped" : s.msg);
   }
 
+  async function retryIt() {
+    const s = st.scene; if (!s) return;
+    const MF = root.H3ModelsFound;
+    if (MF) {   // the models again first (a failed 3D / sound job is most often a missing model)
+      let info = null, need = null; try { info = await jget("/api/pano360"); need = await jget("/api/picscene/needs?engine=" + encodeURIComponent((s.opts || {}).engine || "") + "&sound=" + ((s.opts || {}).sound ? "1" : "0")); } catch (e) { /* checked by the jobs */ }
+      if (info && info.style_id && !(await MF.ensure({ kind: "image", style_id: info.style_id, extra_loras: (s.opts || {}).pano && info.lora ? [{ path: info.lora, weight: info.lora_weight }] : [], files: (need && need.files) || [], from: "Picture → 3D scene" }))) { say("not started - models are missing"); return; }
+    }
+    try { const r = await fetch("/api/picscene/" + encodeURIComponent(s.id) + "/retry", { method: "POST" }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); follow(j.id, j); }
+    catch (e) { say("⚠ " + e.message); }
+  }
   /* ---- the result ---- */
   async function toSketcher() {
     const s = st.scene, P = root.H3PushPull; if (!s || !s.sceneGlb) return;
