@@ -497,7 +497,10 @@
     ctx.fillStyle = "#0b0a08"; ctx.fillRect(0, 0, vw.w, vw.h);
     ctx.save();
     ctx.translate(S.view.ox, S.view.oy); ctx.scale(S.view.z, S.view.z);
-    paintComp(ctx, t);
+    // 2.970.0: a screen swapped with the master (tlscreens.js) - the master VIEW shows that one layer; only here, so the
+    // compile, snapshots and every other caller of paintComp still get the whole picture
+    ONLY = S.only || null;
+    try { paintComp(ctx, t); } finally { ONLY = null; }
     ctx.restore();
     // the picture's edge
     ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1;
@@ -621,13 +624,14 @@
     stack().forEach(function (Ly) { (Ly.clips || []).forEach(function (c) { if (c.kf && c.kf.length && A.has(c)) undo.push(A.apply(c, t - (c.start || 0), KF)); }); });
     return function () { for (var i = undo.length - 1; i >= 0; i--) undo[i](); };
   }
+  var ONLY = null;   // 2.970.0: set by draw() only - the one layer the master view shows (a swapped screen)
   function paintComp(g, t) { var u = anyKeys(t); try { return paintComp0(g, t); } finally { u(); } }
   function paintComp0(g, t) {
     g.fillStyle = "#000"; g.fillRect(0, 0, S.W, S.H);
     g.save(); g.beginPath(); g.rect(0, 0, S.W, S.H); g.clip();
     // 2.418.0: ⚡ a RENDERED stretch while playing - the preview file (the compile's own picture, captions and all) is
     // drawn instead of building the picture layer by layer (ext/timelinedock/tlrender.js)
-    var rv = S.playing && window.TlRender ? TlRender.frame(t) : null;
+    var rv = S.playing && !ONLY && window.TlRender ? TlRender.frame(t) : null;
     if (rv) { try { g.drawImage(rv, 0, 0, S.W, S.H); g.restore(); return; } catch (e) { /* draw it live */ } }
     // 2.409.0: an ADJUSTMENT LAYER (a picture-layer clip marked adjust) works on everything drawn under it - so while
     // one is on, the layers are drawn into an off-screen picture first, the adjustment is applied to it at its place
@@ -635,7 +639,7 @@
     // 2.420.0: while PLAYING the frame is put together on the GPU (static/glcomp.js) - one textured draw per clip, a
     // grade-only clip graded in that draw; null = something this pass does not do (a transition, an adjustment layer)
     var blendOn = stack().some(function (Ly) { return Ly.L && Ly.kind !== "v1" && ((Ly.L.blend && BLENDS[Ly.L.blend]) || (Ly.L.matte && MATTES[Ly.L.matte]) || (Ly.clips || []).some(function (c) { return (c.masks && c.masks.length) || c.pin || c.tm || c.dist || c.gen || c.rays || c.warp || c.d3; })); });   // 2.491.0 (2.498.0: + masks - the 2D path draws them)
-    if (S.playing && !adjOn && !blendOn && tl.glComp !== false && window.H3GLComp) {
+    if (S.playing && !ONLY && !adjOn && !blendOn && tl.glComp !== false && window.H3GLComp) {
       var gc = compGL(t);
       if (gc) {
         try { g.drawImage(gc, 0, 0, S.W, S.H); } catch (e) { /* drawn below */ }
@@ -659,8 +663,9 @@
     var st0 = stack(), usedAsMatte = {};
     st0.forEach(function (Ly, k) { if (Ly.L && Ly.L.matte && MATTES[Ly.L.matte] && st0[k + 1]) usedAsMatte[k + 1] = true; });
     st0.forEach(function (Ly, k) {
+      if (ONLY && Ly.lk !== ONLY) return;                                     // 2.970.0: a swapped screen's layer alone
       if (usedAsMatte[k]) return;
-      if (!liveL(Ly.L)) return;
+      if (!liveL(Ly.L) && !ONLY) return;
       var special = Ly.L && Ly.kind !== "v1" && ((Ly.L.blend && BLENDS[Ly.L.blend]) || (Ly.L.matte && MATTES[Ly.L.matte] && st0[k + 1]));
       if (!special) { drawLayer(pg, Ly, t); return; }
       var lc = offC("L"), lg = lc.getContext("2d"); lg.setTransform(1, 0, 0, 1, 0, 0); lg.globalAlpha = 1; lg.globalCompositeOperation = "source-over"; lg.clearRect(0, 0, S.W, S.H);
@@ -672,7 +677,7 @@
       pg.restore();
     });
     if (adjOn) { try { g.drawImage(PC, 0, 0, S.W, S.H); } catch (e) { /* fine */ } }
-    compHooks.forEach(function (fn) { try { fn(g, t, { W: S.W, H: S.H }); } catch (e) { /* a hook never breaks the picture */ } });
+    if (!ONLY) compHooks.forEach(function (fn) { try { fn(g, t, { W: S.W, H: S.H }); } catch (e) { /* a hook never breaks the picture */ } });
     g.restore();
   }
   var PC = null;

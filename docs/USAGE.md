@@ -1975,6 +1975,25 @@ Beside the layers sits a **deck** - a hardware-style controller, and every part 
   opacity and image layers no volume - those controls go dark. It is the same setting as the layer header's ◐, 🔊, ⇥ and
   ⇤, saved when you let go.
 - **The DECK tab** at the layers' left edge hides and shows it (remembered).
+
+## Screens: watch layers side by side (2.970.0)
+
+The timeline's preview always keeps room now - at least 190 px, however short the docker (drag the bar under it for more).
+Beside it is the **SCREENS** column: the big preview stays the **master** (the final picture, everything in it), and each
+extra screen plays **one layer** on its own, in step with the master - handy to watch a layer that is covered by others,
+or two layers at once.
+
+- **＋** (the SCREENS tab) adds a screen - it takes the picked layer, else one no screen shows yet. Up to 8. Pick its layer
+  in the dropdown at its top (any picture layer: V1, V2…, picture and text layers). Screens are numbered 2, 3, … (the master
+  is 1).
+- **Right-click a screen**: **⇄ Swap with the master** - its layer fills the big preview on its own, and that screen shows
+  the master (marked MASTER, in amber). A badge on the big preview says which screen is there; click it, or right-click the
+  screen ▸ **⇄ Put the master back**, to swap back. Swapping another screen moves the master there. Also in the menu:
+  **▣ Show another layer**, **＋ Add a screen**, **✕ Remove**. A double-click on a screen swaps too.
+- Drag the column's left edge to make it wider - the screens then sit side by side.
+- The swap only changes what the big preview SHOWS: ⚙ Compile, snapshots and renders always use the whole picture.
+- Your screens are kept in this browser, and follow their layer when you reorder the layers.
+
 - In a short docker the deck's three parts go side by side instead of one under the other, but never wider than 40% of
   the timeline. When there is no room at all (a very short or narrow timeline), the deck steps aside until there is.
 

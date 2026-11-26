@@ -2,6 +2,7 @@
          technical look - tltech.css, scoped to #timelinedock.tl-tech (tltech.js; ⚙ Timeline settings ▸ Look ▸ Classic) -->
     <link rel="stylesheet" href="/ext/timelinedock/tltech.css">
     <link rel="stylesheet" href="/ext/timelinedock/tldeck.css">
+    <link rel="stylesheet" href="/ext/timelinedock/tlscreens.css">
     <div class="bdock" id="timelinedock">
       <div class="bhead" data-collapse="timelinedock">▾ Timeline<button class="maxbtn" data-max="timelinedock" title="Maximize">⛶</button></div>
       <div class="bbody">
@@ -37,6 +38,17 @@
               <button class="ghost" id="tlCZoomFit" type="button" title="Fit (click to fit the picture)" aria-label="Zoom"><span id="tlCZoom">100%</span></button>
               <span id="tlCInfo"></span>
             </div>
+          </div>
+          <!-- 2.970.0 (Tim: "put the preview back please, but this time let user add additional screens so different layers
+               can play at the same time ... keep a master preview for the final . each screen will have the ability to
+               switch positions with the master screen (right click context menu)"): tlscreens.js / tlscreens.css -->
+          <div id="tlScreens" aria-label="Screens" data-empty="1">
+            <div class="tsc-grip" id="tlScrGrip" title="Drag to make the screens column wider (several screens side by side) or narrower" aria-hidden="true"></div>
+            <div class="tsc-head">
+              <span class="tsc-title">SCREENS</span>
+              <button type="button" id="tlScrAdd" title="Add a screen: it plays one layer of your choice, in step with the master" aria-label="Add a screen">＋</button>
+            </div>
+            <div class="tsc-list" id="tlScrList" role="list"></div>
           </div>
           <div id="tlLayersPanel" aria-label="Layers">
             <div class="tll-head">Layers</div>

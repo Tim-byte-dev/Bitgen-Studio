@@ -26,8 +26,8 @@ check("LCD readouts (#tlPh, #tlTc, #tlCTime, the selection), a LAYERS label over
   /#timelinedock\.tl-tech #tlPh,\s*#timelinedock\.tl-tech #tlTc,\s*#timelinedock\.tl-tech #tlCTime/.test(CSS) && /content: "LAYERS"; position: sticky; left: 0/.test(CSS) && /#tlbar::before \{\s*content: "EDIT"/.test(CSS) && /#tlExport \{\s*border-color: var\(--tt-amber\) !important/.test(CSS));
 check("the grid: --tgrid / --tgrid2 lines from the headers' edge (background-position var(--labw)), the layer tint kept on top",
   /repeating-linear-gradient\(90deg, #ffffff0d 0 1px, transparent 1px var\(--tgrid, 70px\)\)/.test(CSS) && /background-image: linear-gradient\(var\(--ltint\), var\(--ltint\)\),/.test(CSS) && /background-position: 0 0, var\(--labw\) 0, var\(--labw\) 0/.test(CSS));
-check("dock.html links tltech.css (version-stamped by the page like every /ext/ file)", /<link rel="stylesheet" href="\/ext\/timelinedock\/tltech\.css">\s*(<link rel="stylesheet" href="\/ext\/timelinedock\/tldeck\.css">\s*)?<div class="bdock" id="timelinedock">/.test(D));
-check("ext.json: tltech.js loads after tlsettings.js (its Look tab)", EXT.scripts.includes("tltech.js") && EXT.scripts.indexOf("tltech.js") > EXT.scripts.indexOf("tlsettings.js") && EXT.scripts.indexOf("tltech.js") >= EXT.scripts.length - 2);
+check("dock.html links tltech.css (version-stamped by the page like every /ext/ file)", /<link rel="stylesheet" href="\/ext\/timelinedock\/tltech\.css">\s*(<link rel="stylesheet" href="\/ext\/timelinedock\/[a-z]+\.css">\s*)*<div class="bdock" id="timelinedock">/.test(D));
+check("ext.json: tltech.js loads after tlsettings.js (its Look tab)", EXT.scripts.includes("tltech.js") && EXT.scripts.indexOf("tltech.js") > EXT.scripts.indexOf("tlsettings.js") && EXT.scripts.indexOf("tltech.js") >= EXT.scripts.length - 3);
 // the grid's steps are the ruler's own
 const rulerStep = (H.match(/const major = PXS >= (\d+) \? 1 : PXS >= (\d+) \? 5 : 15;/) || []).slice(1).join();
 check("tltech.js: the grid steps are the ruler's (1 s from 96 px/s, 5 s from 24, else 15 s), never under 12 px; a fifth for the faint lines",

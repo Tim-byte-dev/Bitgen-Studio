@@ -87,6 +87,7 @@
     "tlranges.js",
     "tlmocap.js",
     "tltech.js",
-    "tldeck.js"
+    "tldeck.js",
+    "tlscreens.js"
   ]
 }

@@ -21,8 +21,9 @@ check("the shader: premultiplied textures, the grade's 3D LUT in the same draw (
   /UNPACK_PREMULTIPLY_ALPHA_WEBGL, true/.test(GJ) && /clamp\(c\.rgb \/ c\.a, 0\., 1\.\) \* \(\(n - 1\.\) \/ n\) \+ 0\.5 \/ n/.test(GJ) && /o = c \* alpha;/.test(GJ) && /gl\.blendFunc\(gl\.ONE, gl\.ONE_MINUS_SRC_ALPHA\)/.test(GJ)
   && /X\.buildLut\(fx, user, N\)/.test(GJ));
 check("canvas.js: the GPU frame only while PLAYING, not with an adjustment layer, not when switched off (tl.glComp); a transition drawing now / anything it cannot do -> the 2D path",
-  // 2.519.0: 2.491.0 added a second 2D-only case (blend modes / track mattes / masks: !blendOn) to the same gate
-  /if \(S\.playing && !adjOn && !blendOn && tl\.glComp !== false && window\.H3GLComp\)/.test(CV) && /var gc = compGL\(t\);/.test(CV) && /ok = false; return; \}   \/\/ a wipe now: 2D/.test(CV)
+  // 2.519.0: 2.491.0 added a second 2D-only case (blend modes / track mattes / masks: !blendOn) to the same gate;
+  // 2.970.0: and a third - a screen swapped with the master (!ONLY: the master view shows one layer, drawn in 2D)
+  /if \(S\.playing && (!ONLY && )?!adjOn && !blendOn && tl\.glComp !== false && window\.H3GLComp\)/.test(CV) && /var gc = compGL\(t\);/.test(CV) && /ok = false; return; \}   \/\/ a wipe now: 2D/.test(CV)
   && /S\.lastGL = true;/.test(CV) && /S\.lastGL = false;/.test(CV));
 check("...a grade-only clip is graded in the compositor's draw; a clip with effects / a mask keeps its look pass; captions still drawn into the frame",
   /if \(fx && !sp\[0\] && !sp\[1\] && !fx\.mask && b\.src\.tagName !== "CANVAS" && G\.gradeReady\(fx\)\) \{ if \(!G\.draw\(b\.src, b, a, fx\)\) ok = false; return; \}/.test(CV)

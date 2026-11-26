@@ -16,7 +16,7 @@ check("dock.html: the deck beside the layers - its tab, LCD, six transport keys,
   ids.every((id) => D.includes('id="' + id + '"')) && /<div id="tlDeckRow">\s*<button type="button" id="tlDeckTog"[\s\S]*<div id="tlDeck"[\s\S]*<div id="tlDeckSpace" aria-hidden="true"><\/div>\s*<div id="tlscroll"><div id="tlinner"><\/div><\/div>\s*<\/div>/.test(D)
   && (D.match(/class="tdk-knob" data-k="(opacity|fin|fout)"/g) || []).length === 3 && /class="tdk-fader" data-k="volume"/.test(D), ids.filter((id) => !D.includes('id="' + id + '"')));
 check("every control can be reached and read: role=slider + aria-label on the jog, the wheels, the knobs and the fader", (D.match(/role="slider"/g) || []).length === 7 && /id="tlDeckJog"[^>]*tabindex="0"/.test(D));
-check("dock.html links tldeck.css; ext.json loads tldeck.js last (after tltech.js)", /<link rel="stylesheet" href="\/ext\/timelinedock\/tldeck\.css">/.test(D) && EXT.scripts[EXT.scripts.length - 1] === "tldeck.js" && EXT.scripts.indexOf("tltech.js") === EXT.scripts.length - 2);
+check("dock.html links tldeck.css; ext.json loads tldeck.js after tltech.js, at the end", /<link rel="stylesheet" href="\/ext\/timelinedock\/tldeck\.css">/.test(D) && EXT.scripts.indexOf("tldeck.js") > EXT.scripts.indexOf("tltech.js") && EXT.scripts.indexOf("tldeck.js") >= EXT.scripts.length - 2);
 check("no menu-bar button (one more there can wrap #tlbar onto another row and push the layers down): the DECK tab at the layers' edge",
   !/getElementById\("tlbar"\)|\$\("tlbar"\)|insertBefore\(b, after/.test(JS) && /\$\("tlDeckTog"\)\.addEventListener\("click", function \(\) \{ show\(\); \}\)/.test(JS));
 check("the deck adds no height: absolutely placed in a basis-0 row, #tlDeckSpace keeps its width (a content-sized docker would grow)",
@@ -46,6 +46,6 @@ check("JOG: a frame per 15° notch; the mouse wheel / ← → a frame (Shift 10)
   /var notch = Math\.PI \/ 12;/.test(JS) && /\(e\.shiftKey \? 10 : 1\)/.test(JS) && /deck\.addEventListener\("keydown", function \(e\) \{ if \(\/\^\(Arrow\|Home\|End\)\/\.test\(e\.key\) && e\.target !== deck\) e\.stopPropagation\(\); \}\)/.test(JS));
 check("the LCD repaints ~15 times a second and only while it can be seen", /if \(n - G\.last < 66\) return;/.test(JS) && /if \(deck\.hidden \|\| !deck\.offsetParent\) return;/.test(JS));
 check("shown / hidden is remembered (h3.tl.deck; shown at first)", /var LSK = "h3\.tl\.deck";/.test(JS) && /var keep = "1"; try \{ keep = localStorage\.getItem\(LSK\) \|\| "1"; \}/.test(JS) && /show\(keep !== "0"\);/.test(JS));
-check("nothing added to misc/server.js; the version is 2.969.0", !/tldeck|TlDeck/.test(src("misc/server.js")) && require("../package.json").version === "2.969.0");
+check("nothing added to misc/server.js; the version is 2.969.0", !/tldeck|TlDeck/.test(src("misc/server.js")) && require("../package.json").version >= "2.969.0");
 console.log(`\nRESULT: ${P} passed, ${F} failed`);
 process.exit(F ? 1 : 0);
