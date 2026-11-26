@@ -648,8 +648,41 @@
       body.className = "sysecbody";
       el.parentNode.insertBefore(sec, el); sec.appendChild(h); sec.appendChild(body); body.appendChild(el);
       h.onclick = function () { setFold(x[0], !sec.classList.contains("folded")); };
+      grip(sec, body, x);
       setFold(x[0], !!fold[x[0]], true);
     });
+    var hs = jget("secH", {}) || {}; Object.keys(hs).forEach(function (k) { setSecH(k, hs[k], true); });
+  }
+  /* ---------------- 2.974.0: every part's height (Tim: "in audio docker edith booth, allow me to resize all the panels heights
+     individually") - a grip under each part: drag it, ↑ ↓ (Shift = bigger steps), double-click / Enter = back to its own height.
+     A sized part scrolls inside when its content is taller; the synth's panels and its screen stretch to fill. h3.synth.secH ---- */
+  var SEC_MIN = 60, SEC_MAX = 2400;
+  function grip(sec, body, x) {
+    var g = doc.createElement("div"); g.className = "sysecgrip"; g.id = "sySecG_" + x[0]; g.tabIndex = 0;
+    g.setAttribute("role", "separator"); g.setAttribute("aria-orientation", "horizontal"); g.setAttribute("aria-label", "Height of " + x[2].replace(/^\S+ /, ""));
+    g.title = "Drag to make " + x[2].replace(/^\S+ /, "") + " taller or shorter - ↑ ↓ too; double-click = its own height";
+    sec.appendChild(g);
+    var d = null;
+    g.addEventListener("pointerdown", function (e) { if (e.button !== 0) return; e.preventDefault(); g.setPointerCapture(e.pointerId); d = { y: e.clientY, h: body.getBoundingClientRect().height }; g.classList.add("drag"); });
+    g.addEventListener("pointermove", function (e) { if (!d) return; setSecH(x[0], d.h + (e.clientY - d.y), true); });
+    var end = function () { if (!d) return; d = null; g.classList.remove("drag"); setSecH(x[0], secH(x[0])); };
+    g.addEventListener("pointerup", end); g.addEventListener("pointercancel", end);
+    g.addEventListener("dblclick", function () { setSecH(x[0], null); });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); var st = e.shiftKey ? 80 : 20; setSecH(x[0], body.getBoundingClientRect().height + (e.key === "ArrowUp" ? -st : st)); }
+      else if (e.key === "Enter" || e.key === "Home") { e.preventDefault(); e.stopPropagation(); setSecH(x[0], null); }
+    });
+  }
+  function secH(id) { var b = doc.querySelector("#sySec_" + id + " > .sysecbody"); return b && b.style.height ? parseFloat(b.style.height) : null; }
+  /** a part's height in px (null = its own); quiet = do not keep it yet (while dragging) */
+  function setSecH(id, px, quiet) {
+    var sec = $("sySec_" + id), b = sec && sec.querySelector(":scope > .sysecbody"); if (!b) return null;
+    var v = px == null || !isFinite(+px) ? null : Math.round(Math.max(SEC_MIN, Math.min(SEC_MAX, +px)));
+    b.style.height = v == null ? "" : v + "px"; sec.classList.toggle("sized", v != null);
+    var g = $("sySecG_" + id); if (g) { g.setAttribute("aria-valuenow", String(Math.round(b.getBoundingClientRect().height))); g.setAttribute("aria-valuemin", String(SEC_MIN)); g.setAttribute("aria-valuemax", String(SEC_MAX)); }
+    if (!quiet) { var all = jget("secH", {}) || {}; if (v == null) delete all[id]; else all[id] = v; LS.set("secH", JSON.stringify(all)); }
+    root.setTimeout(function () { envDraw(); drawIdle(); if (id === "keys") piano(); if (TL) TL.draw(); }, 30);
+    return v;
   }
   function setFold(id, on, quiet) {
     var sec = $("sySec_" + id); if (!sec) return;
@@ -785,7 +818,7 @@
 
   root.H3Synth = {
     noteOn: noteOn, noteOff: noteOff, allOff: allOff, set: function (id, v) { setParam(id, v); return G.p[id]; }, preset: function (name) { return pickPreset(/^[ou]:/.test(name) ? name : "o:" + name); },
-    engine: engine, ctx: ctx, refresh: refresh, voice: voiceBank, exitFull: exitFull, sendTake: sendTake, fold: setFold, countIn: countIn, clickOn: function () { return G.click; }, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
+    engine: engine, ctx: ctx, refresh: refresh, voice: voiceBank, height: setSecH, heights: function () { return jget("secH", {}) || {}; }, exitFull: exitFull, sendTake: sendTake, fold: setFold, countIn: countIn, clickOn: function () { return G.click; }, undo: undo, redo: redo, history: function () { return G.U ? G.U.size() : null; }, commit: function () { return G.U ? G.U.commit() : false; }, saveTL: saveTL, load: load, applyFile: applyFile, tlFile: function () { return G.tlFile; }, sample: sample, exportLoop: exportLoop, upload: upload, midi: midiMsg, octave: setOct, rec: rec,
     info: function () {
       return { shown: shown(), preset: G.preset, dirty: G.dirty, oct: G.oct, down: Object.keys(G.down).map(Number), last: G.last, p: G.p, state: G.ctx ? G.ctx.state : "none",
                voices: G.E ? G.E.sounding() : 0, knobs: Object.keys(G.knobs).length, my: G.my.slice(), sfx: G.sfx.slice(), recording: !!G.rec, midi: !!G.midi, user: G.user.map(function (x) { return x.name; }),

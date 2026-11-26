@@ -1611,6 +1611,24 @@ means every cut is sample-exact and cutting again never loses quality.
 - **→ 🔊** copies the sound effect into the Sound assets, where the timeline and the references can use
   it. **🗑** deletes the file.
 
+### 🧬 Clone a voice (2.974.0)
+
+Just above 🗣 Speech & dialog in the **SFX** tab, **🧬 Clone a voice** makes a voice from a few seconds of someone speaking:
+
+1. **The sound:** **📂 Open a file…** (any audio or video file - or drop it on the box), **🎙 Record** (talk for 10-20 s, then
+   ■ Stop), or **🎵 a sound of this project** (the Audio assets, the gallery's Audio tab, My samples).
+2. **The part:** its waveform appears with a green **START** and a red **END** marker (at first the first 10 s). Drag a marker,
+   or drag the shaded part between them to move both; click a marker and use ← → (0.1 s; Shift = 1 s), or type the seconds
+   in **Start** / **End**. **▶ Play the part** plays only that. Pick a part with only that one voice - no music, no other
+   people. The line beside it says if the length is good: OmniVoice clones best from 3-10 s, under 3 s is unreliable.
+3. **Voice name** (letters, numbers, . _ -; a voice recorded happy saved as *Anna.happy* is used for Anna's happy lines) and,
+   if you like, **the words** spoken in the part - **✍ Write the words** listens to it for you. The words help the clone.
+4. **🧬 Save voice** - the part is cut and kept in the voice store (the same voices as Settings ▸ Audio ▸ Voices and the chat)
+   and it is **picked as the Voice** in 🗣 Speech & dialog below: write or paste the text and **🗣 Read & save**.
+
+The read file goes into the project's **Audio assets** and, since 2.974.0, into the **gallery's Audio tab** too (as
+*speech_<name>*), which opens by itself.
+
 ### 🗣 Speech & dialog (2.621.0)
 
 Under the sound effects, the SFX dock reads text aloud - one voice, or a dialog with a voice per speaker - with emotion,
@@ -1746,6 +1764,11 @@ looper everywhere else in the tab. If a clip's sound file is gone (a deleted sam
 else: the message names what is missing and the clip is drawn struck through with **⚠ missing** - delete it or drop the
 file on the timeline again. (Before 2.973.0 one missing file stopped ▶ altogether - the message said it "is not there any
 more".)
+
+**Each part's height (2.974.0).** Under every part of the Edit Booth (🎛 Synth, 🎹 Keyboard, 🥁 Looper, 🎞 Timeline) there is
+a thin grip: drag it up or down to make that part shorter or taller, or click it and use ↑ ↓ (Shift = bigger steps).
+Double-click it (or Enter) for the part's own height again. A taller Synth part stretches its panels and its screen; a part
+made shorter than its contents scrolls inside. The heights are kept in this browser.
 
 **Folding the parts, sending takes (2.955.0).** The tab's four parts - **🎛 Synth** (the knobs), **🎹 Keyboard**, **🥁 Looper**
 and **🎞 Timeline** - are dockers of their own: click a title bar to fold it away or bring it back (kept for next time).

@@ -34,6 +34,12 @@
     const E = (S.info && S.info.emotions) || Object.keys(EMO_LABEL);
     return (blank ? '<option value="">' + esc(blank) + "</option>" : "") + E.map((e) => '<option value="' + e + '"' + (e === val ? " selected" : "") + ">" + esc(EMO_LABEL[e] || e) + "</option>").join("");
   }
+  /** 2.974.0: show the gallery's Audio tab (the read file is there as speech_<name>) */
+  function showInGallery() {
+    const ab = doc.querySelector('.gtabs button[data-gtab="audio"]');
+    if (ab && !ab.classList.contains("active") && typeof ab.onclick === "function") { try { ab.onclick(); } catch (e) { /* fine */ } return; }
+    if (typeof root.refreshGallery === "function") { try { root.refreshGallery(); } catch (e) { /* fine */ } }
+  }
   function load() {
     S.loadedAt = Date.now();
     return api("/api/speech").then((j) => {
@@ -93,7 +99,8 @@
     const job = { name, text, description: $("spDesc").value.trim(), engine: $("spEngine").value, format: $("spFmt").value, mode: $("spMode").value,
       voice: $("spVoice").value, emotion: $("spEmo").value, cast: castNow(), pause: parseFloat($("spPause").value) };
     return api("/api/speech/speak", job).then((j) => {
-      say("🗣 " + j.name + " saved in the Audio assets - " + j.lines + " line" + (j.lines > 1 ? "s" : "") + ", " + (j.duration ? j.duration.toFixed(1) + " s" : "") + " (" + j.engine + ")");
+      if (j.gallery) showInGallery();   // 2.974.0: the file is in the gallery's Audio tab too (output/speech_<name>)
+      say("🗣 " + j.name + " saved in the Audio assets" + (j.gallery ? " and the gallery (" + j.gallery + ")" : "") + " - " + j.lines + " line" + (j.lines > 1 ? "s" : "") + ", " + (j.duration ? j.duration.toFixed(1) + " s" : "") + " (" + j.engine + ")");
       const a = $("spPlay"); a.src = "/passets/sound/" + encodeURIComponent(j.name) + "?t=" + Date.now(); a.style.display = "block";
       $("spMeta").textContent = "In the file: " + j.meta.title + " · " + j.meta.date.replace("T", " ") + (j.meta.description ? " · " + j.meta.description : "") + " · voices: " + j.meta.voices;
       if (typeof root.refreshAssets === "function") { try { root.refreshAssets(); } catch (e) { /* fine */ } }

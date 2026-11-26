@@ -15230,6 +15230,8 @@ node scripts/test-972.js > /tmp/t972.log 2>&1 && ok "2.972.0 units: the Edit Boo
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui972-ui.js > /tmp/ui972.log 2>&1 && ok "2.972.0 browser test: 🎹 Edit Booth - the VOICE row (banks, again = next), every voice rendered and measured (sounds, in tune), piano dies / organ holds, velocity darker, live from the keys" || { bad "2.972.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui972.log | head -8; }
 node scripts/test-973.js > /tmp/t973.log 2>&1 && ok "2.973.0 units: the Edit Booth timeline's ▶ - a missing sound skipped (not a stop), All / Layer, the looper's Vol, Space, 4:00.0" || { bad "2.973.0 units"; grep -a "^FAIL" -A1 /tmp/t973.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui973-ui.js > /tmp/ui973.log 2>&1 && ok "2.973.0 browser test: ▶ plays with a missing clip, All / Layer by each layer's meter (Layer = even muted, none picked = all), looper + keys go on, the looper's Vol, Space" || { bad "2.973.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui973.log | head -8; }
+node scripts/test-974.js > /tmp/t974.log 2>&1 && ok "2.974.0 units: 🧬 clone a voice (the waveform, the markers, the part saved + picked), the read file in the gallery, the Edit Booth's part heights" || { bad "2.974.0 units"; grep -a "^FAIL" -A1 /tmp/t974.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui974-ui.js > /tmp/ui974.log 2>&1 && ok "2.974.0 browser test: the Edit Booth's grips (drag, ↑, kept, double-click) + SFX 🧬 Clone a voice (a file, START / END dragged, the part moved, ← →, typed, ▶, saved ~4 s and picked)" || { bad "2.974.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui974.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

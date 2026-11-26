@@ -260,6 +260,14 @@
           .sysec.folded .sysecbody { display: none; }
           .sysec.folded .sysechead { border-radius: 10px !important; border-bottom: 0 !important; }
           .sysecbody { display: flex; flex-direction: column; padding: 6px; min-width: 0; }
+          /* 2.974.0: each part's height - the grip under it; a sized part scrolls inside, its content stretches to fill */
+          .sysecgrip { height: 9px; flex: 0 0 9px; cursor: ns-resize; position: relative; border-radius: 0 0 10px 10px; touch-action: none; }
+          .sysecgrip::after { content: ""; position: absolute; left: 50%; top: 3px; width: 46px; height: 3px; margin-left: -23px; border-radius: 2px; background: #2b313d; }
+          .sysecgrip:hover::after, .sysecgrip:focus-visible::after, .sysecgrip.drag::after { background: #38e1ff; box-shadow: 0 0 6px #38e1ff88; }
+          .sysecgrip:focus-visible { outline: 1px solid #38e1ff55; }
+          .sysec.folded .sysecgrip { display: none; }
+          .sysec.sized > .sysecbody { overflow: auto; }
+          .sysec.sized > .sysecbody > * { flex: 1 0 auto; }
           .sysecbody > .syloop, .sysecbody > .sytl { border: 0; background: transparent; padding: 0; }
           .sysecbody .sylbar h4, .sysecbody .sytlbar h4 { display: none; }
           /* 2.956.0: the .sfx dialogs */

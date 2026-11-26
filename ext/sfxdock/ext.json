@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "sfxdock.js",
+    "sfxclone.js",
     "sfxspeech.js"
   ]
 }

@@ -44,7 +44,7 @@ const SD = require(path.join(R, "lib", "speechDialog.js"));
 
   /* the read, with a stand-in engine (ffmpeg tones) */
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sp621_")), snd = path.join(dir, "sound"); fs.mkdirSync(snd);
-  const realP = core.pDir; core.pDir = (k) => (k === "sound" ? snd : realP(k));
+  const realP = core.pDir, outd = path.join(dir, "output"); core.pDir = (k) => (k === "sound" ? snd : k === "output" ? outd : realP(k));   // 2.974.0: + the gallery's folder
   const realRt = tts.engineRuntime, realRead = tts.readVoice, realCfg = tts.cfg;
   const ref = path.join(dir, "anna.wav"); execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "sine=frequency=300:duration=1", ref]);
   tts.cfg = () => Object.assign(realCfg(), { engine: "omnivoice" });
@@ -108,7 +108,7 @@ const SD = require(path.join(R, "lib", "speechDialog.js"));
   check("the SFX docker: the file name ABOVE the text, the description BELOW it; 📋 Paste, ✨ Write, ＋ tags, Engine, Voice, Emotion, WAV / MP3, the cast, 🗣 Read & save",
     iName > 0 && iName < iText && iText < iDesc && ["spPaste", "spWrite", "spBrief", "spTag", "spMode", "spEngine", "spVoice", "spEmo", "spFmt", "spPause", "spCast", "spGo", "spPlay"].every((id) => DH.includes('id="' + id + '"')) && /<option value="mp3">MP3<\/option>/.test(DH));
   check("its script loads after the SFX docker's; routes /api/speech[/parse|/speak|/progress|/write|/meta] mounted from routes/index.js",
-    EJ.scripts.join() === "sfxdock.js,sfxspeech.js" && ["\"/api/speech\"", "\"/api/speech/parse\"", "\"/api/speech/speak\"", "\"/api/speech/progress\"", "\"/api/speech/write\"", "\"/api/speech/meta\""].every((u) => RT.includes(u)) && /require\("\.\/speechDialog"\)\.mount\(app\)/.test(RI)
+    /^sfxdock\.js,(sfxclone\.js,)?sfxspeech\.js$/.test(EJ.scripts.join()) /* 2.974.0: + sfxclone.js */ && ["\"/api/speech\"", "\"/api/speech/parse\"", "\"/api/speech/speak\"", "\"/api/speech/progress\"", "\"/api/speech/write\"", "\"/api/speech/meta\""].every((u) => RT.includes(u)) && /require\("\.\/speechDialog"\)\.mount\(app\)/.test(RI)
     && /navigator\.clipboard\.readText/.test(JS) && /\/passets\/sound\//.test(JS) && /refreshAssets/.test(JS));
   check("the stand-in engine (the gate) answers a batch", /if job\.get\("op"\) == "batch":/.test(read("scripts/stub-venv.py")));
   check("server.js untouched by this release", !/speechDialog|\/api\/speech/.test(read("misc/server.js")));

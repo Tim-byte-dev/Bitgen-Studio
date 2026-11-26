@@ -63,6 +63,55 @@
           #spCast select { font-size: 11px; }
           #spMeta { white-space: pre-wrap; font-size: 11px; margin-top: 4px; }
         </style>
+        <!-- 2.974.0 (Tim: "in the sfx tab add clone voice, then add that voice to read the text. add the saved file to the gallery.
+             the clone voice will show a wave form and the user will be able to select a region of the waveform with a draggable start
+             marker and a draggable end marker to use as the sample"): ext/sfxdock/sfxclone.js -> POST /api/tts/voices -->
+        <style>
+          #vcBox { margin-top: 10px; border-top: 1px solid var(--line, #444); padding-top: 6px; }
+          #vcBox summary { cursor: pointer; font-weight: 600; margin-bottom: 6px; }
+          #vcBox .brow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 4px 0; }
+          #vcBox label.sp { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+          #vcProj { max-width: 260px; }
+          #vcRec.on { color: #ff4d5e; border-color: #ff4d5e; }
+          #vcWave { position: relative; margin: 6px 0 2px; user-select: none; touch-action: none; cursor: crosshair; outline-offset: 2px; }
+          #vcCanvas { display: block; width: 100%; height: 110px; border: 1px solid #262b35; border-radius: 6px; }
+          #vcWave .vcmark { position: absolute; top: 0; width: 18px; height: 20px; margin-left: -9px; cursor: ew-resize; border-radius: 3px; background: transparent; outline-offset: 1px; }
+          #vcWave .vcmark:focus-visible { outline: 2px solid #fff; }
+          #vcLen { font: 11px var(--mono, monospace); }
+          #vcLen[data-level="good"] { color: #6fe39a; } #vcLen[data-level="short"], #vcLen[data-level="long"] { color: #ffb84d; }
+          #vcText { width: 100%; min-height: 44px; resize: vertical; box-sizing: border-box; font: 12px/1.4 system-ui; }
+          #vcA, #vcB { width: 74px; }
+          #vcMsg.bad { color: #ff9b8b; }
+        </style>
+        <details id="vcBox" open>
+          <summary title="Clone a voice from a few seconds of someone speaking - then 🗣 Speech &amp; dialog reads your text in it">🧬 Clone a voice</summary>
+          <div class="brow">
+            <button class="ghost gbtn" id="vcOpen" type="button" title="An audio or video file with the voice (or drop it on this box)">📂 Open a file…</button>
+            <input type="file" id="vcFile" accept="audio/*,video/*" hidden>
+            <button class="ghost gbtn" id="vcRec" type="button" title="Record the voice with your microphone (10-20 s of talking)">🎙 Record</button>
+            <select id="vcProj" aria-label="A sound of this project" title="A sound already in this project - the Audio assets, the gallery's Audio tab, My samples"><option value="">🎵 a sound of this project…</option></select>
+          </div>
+          <div id="vcWave" hidden tabindex="-1" aria-label="The waveform - drag the START and END markers, or the shaded part to move both">
+            <canvas id="vcCanvas" aria-hidden="true"></canvas>
+            <div class="vcmark" id="vcMA" data-m="a" tabindex="0" role="slider" aria-label="Start of the part (seconds)" aria-valuemin="0" title="START - drag it, or ← → (Shift = 1 s)"></div>
+            <div class="vcmark" id="vcMB" data-m="b" tabindex="0" role="slider" aria-label="End of the part (seconds)" aria-valuemin="0" title="END - drag it, or ← → (Shift = 1 s)"></div>
+          </div>
+          <div id="vcEdit" hidden>
+            <div class="brow">
+              <label class="sp">Start (s) <input type="number" id="vcA" min="0" step="0.05"></label>
+              <label class="sp">End (s) <input type="number" id="vcB" min="0" step="0.05"></label>
+              <button class="ghost gbtn" id="vcPlay" type="button" title="Hear only the part between the markers">▶ Play the part</button>
+              <span id="vcLen" aria-live="polite"></span>
+            </div>
+            <div class="brow">
+              <label class="sp" style="flex:0 0 200px">Voice name <input type="text" id="vcName" maxlength="48" placeholder="e.g. Anna" title="1-48 letters, numbers, . _ - (no spaces). Save one as Anna.happy (recorded happy) and OmniVoice uses it for Anna's happy lines"></label>
+              <label class="sp" style="flex:1;min-width:200px">The words in the part (optional - helps the clone) <textarea id="vcText" placeholder="What is said between the markers"></textarea></label>
+              <button class="ghost gbtn" id="vcWords" type="button" title="Write the words spoken in the part (the speech-to-text model)">✍ Write the words</button>
+            </div>
+            <div class="brow"><button id="vcSave" type="button" title="Keep the part as a voice - then it is picked in 🗣 Speech &amp; dialog below to read your text">🧬 Save voice</button></div>
+          </div>
+          <div class="hint" id="vcMsg">Pick a sound with one person speaking - a file, a recording or a sound of this project.</div>
+        </details>
         <details id="spBox" open>
           <summary title="Text read aloud with emotion by OmniVoice or Ming-3.0 TTS - one voice or a cast - saved into the Audio assets">🗣 Speech &amp; dialog</summary>
           <label class="sp">File name
