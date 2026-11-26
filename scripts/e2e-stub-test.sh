@@ -15244,6 +15244,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui978-ui.js > /tmp/ui978.log 2>&
 node scripts/test-979.js > /tmp/t979.log 2>&1 && ok "2.979.0 units: 💪 the Daz formulas (DSON stack, splines incl. TCB, sum / mult stages, ERCs at rest, JCMs that follow the bones, sparse targets, our flex) + 🧍 Pose's pure parts" || { bad "2.979.0 units"; grep -a "^FAIL" -A1 /tmp/t979.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui979-ui.js > /tmp/ui979.log 2>&1 && ok "2.979.0 browser test: 🧍 Pose - the elbow bent -> the JCMs on the three.js meshes, the hand moves (skinned), mirror, a click picks the bone, 💾 Keep" || { bad "2.979.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui979.log | head -8; }
 
+node scripts/test-980.js > /tmp/t980.log 2>&1 && ok "2.980.0 units: 🧬 DAZ Tools (groups, characters, wear, the kept scene, the grid template, the wiring)" || { bad "2.980.0 units"; grep -a "^FAIL" -A1 /tmp/t980.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui980-ui.js > /tmp/ui980.log 2>&1 && ok "2.980.0 browser test: 🧬 DAZ Tools - the left / right dockers, a character + its components, a dial, build, pose, save / load, kept, off" || { bad "2.980.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui980.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

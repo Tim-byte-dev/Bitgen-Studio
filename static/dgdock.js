@@ -43,8 +43,8 @@
   const wants = (d) => !!d && typeof d === "object" && ((d.mode === "dock" && typeof d.to === "string" && ID.test(d.to) && SIDES.includes(d.side))
     || (d.mode === "col" && (d.before === "" || d.before == null || (typeof d.before === "string" && ID.test(d.before)))));
   /* 2.561.0: #app's columns - the track each child takes (the stylesheet's own vars, so its no-left / no-refs … still work) */
-  const COLV = { ldock: "var(--c1)", refsdock: "var(--c2)", assetsdock: "var(--c3)", maincol: "minmax(200px, 1fr)", qdock: "var(--c4)", rdock: "var(--c5)" };
-  const SPLV = { ldock: "var(--s1)", refs: "var(--s2)", assets: "var(--s3)", qdock: "var(--s5)", rdock: "var(--s4)" };
+  const COLV = { ldock: "var(--c1)", refsdock: "var(--c2)", assetsdock: "var(--c3)", maincol: "minmax(200px, 1fr)", qdock: "var(--c4)", rdock: "var(--c5)", dzLeft: "var(--dzl)", dzRight: "var(--dzr)" };   // 2.980.0: 🧬 DAZ Tools' columns
+  const SPLV = { ldock: "var(--s1)", refs: "var(--s2)", assets: "var(--s3)", qdock: "var(--s5)", rdock: "var(--s4)", dzl: "5px", dzr: "5px" };
   /** kids [{kind: col | split | dgcol | dgsplit | other, id, key, w, hidden}] -> grid-template-columns (hidden ones take none) */
   function template(kids) {
     return (kids || []).filter((k) => k && !k.hidden).map((k) => (k.kind === "col" ? COLV[k.id] || "auto" : k.kind === "split" ? SPLV[k.key] || "5px"

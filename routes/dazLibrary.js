@@ -68,7 +68,7 @@ function mount(app) {
         if (!lm) return res.status(422).json({ error: "the Vision model found no face in that photo (is a Vision model chosen in the prompt docker?)" });
         face = { photo: pic, landmarks: lm };
       }
-      const r = await D.build({ root: b.root, rel: b.rel, dials: b.dials, wear: b.wear, drape: b.drape || false, face, maxTex: b.maxTex });
+      const r = await D.build({ root: b.root, rel: b.rel, dials: b.dials, wear: b.wear, drape: b.drape || false, face, maxTex: b.maxTex, muscles: b.muscles !== false });
       const stem = String(b.name || path.basename(String(b.rel || "character")).replace(/\.duf$/i, "")).replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 50) || "character";
       const m3d = require("../lib/m3d"); let name = stem + "_daz.glb";
       for (let i = 2; fs.existsSync(path.join(m3d.dir(), name)); i++) name = `${stem}_daz_${i}.glb`;

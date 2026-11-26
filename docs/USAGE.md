@@ -1252,6 +1252,20 @@ Good to know:
 
 ## 📚 The Daz library (the Sketcher, 2.977.0)
 
+**🧬 DAZ Tools (2.980.0)** - the same library as dockers: press **🧬 DAZ Tools** on the top menu bar. The **📚 DAZ
+Library** opens as a docker left of the main column; the **🧭 DAZ Explorer** and **🎚 Shape controls** open as a docker
+right of it. Press it again to hide both (it remembers on / off, the widths and your characters).
+- **📚 DAZ Library**: the kinds, the search and the thumbnails. Click a **figure or character** = a new character in the
+  explorer; click **clothing, hair or anatomy** = the picked character wears it (click again to take it off). 📁 sets the
+  content folders.
+- **🧭 DAZ Explorer**: each character with its components (🦴 the figure, 👕 clothing, 💇 hair, 🫀 anatomy - ✕ takes one
+  off). Click a character to pick it, double-click to rename it. Below: 💨 physics (clothing / hair / other, frames) and
+  💪 muscles, then **🧍 Build**, **🕺 Pose** (the 🧍 Pose view), **⤒ Open** (into the Sketcher model) and **💾 Save**;
+  **📂 Saved…** brings a saved character back.
+- **🎚 Shape controls**: the picked character's dials by group - search them, tick *changed* to see only the ones you
+  moved, ↺ puts them all back to 0, double-click a slider for 0. 🧍 Build makes the new shape.
+- Drag the dockers' inner edges to size them, and the bar between the explorer and the shape controls to share the height.
+
 > **This is not a replacement for Daz Studio** - it is made for light tasks. Daz Studio is a very powerful character
 > creator (full shaping with its formulas, HD detail, Iray, dForce, posing): use it for real character work.
 
