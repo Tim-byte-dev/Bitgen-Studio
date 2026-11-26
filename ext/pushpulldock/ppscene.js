@@ -170,7 +170,8 @@
     const pi = $("pscPanoImg"); if (s.pano) { const u = fileUrl(s.pano); if (pi.dataset.u !== u) { pi.src = u; pi.dataset.u = u; } pi.hidden = false; } else pi.hidden = true;
     $("pscObjs").innerHTML = (s.objects || []).map((o) => '<div class="psc-obj">' + (o.cut ? '<img alt="" src="' + esc(fileUrl(o.cut)) + '">' : "") + "<b>" + esc(o.name) + "</b>"
       + (o.place ? '<span class="psc-note">' + o.place.dist.toFixed(1) + " m away, " + o.place.height.toFixed(1) + " m high</span>" : "")
-      + (o.glb ? '<span class="psc-note">🧊 ' + esc(o.glb) + "</span>" : "") + (o.sfx ? '<audio controls preload="none" src="' + esc(fileUrl(o.sfx)) + '"></audio>' : "") + "</div>").join("");
+      + (o.glb ? '<span class="psc-note">🧊 ' + esc(o.glb) + "</span>" : "") + (o.glb ? '<button type="button" class="ghost" data-rig="' + esc(o.glb) + '" title="🦴 A skeleton + skin weights for this model (UniRig add-on)">🦴 Rig</button>' : "") + (o.sfx ? '<audio controls preload="none" src="' + esc(fileUrl(o.sfx)) + '"></audio>' : "") + "</div>").join("");
+    $("pscObjs").querySelectorAll("[data-rig]").forEach((b) => { b.onclick = () => (root.H3Rig ? root.H3Rig.rig(b.dataset.rig).then((j) => { if (j) say("🦴 " + j.model + " is being made - the job list"); }) : say("🦴 Rig it did not load")); });
     $("pscSounds").innerHTML = s.ambient ? '<span>The place</span><audio controls loop preload="none" src="' + esc(fileUrl(s.ambient)) + '"></audio>' : "";
     const done = s.status === "done" && s.sceneGlb;
     $("pscStop").hidden = s.status !== "running"; $("pscGo").disabled = s.status === "running";

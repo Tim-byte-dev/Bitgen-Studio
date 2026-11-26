@@ -354,3 +354,10 @@ The optional 🌍 Walk-in world is its own add-on (Settings ▸ Add-ons ▸ Huny
 License - it does NOT apply in the European Union, the United Kingdom or South Korea), Real-ESRGAN (BSD-3-Clause), ZIM Anything
 (naver-ai - under its own licence; read it before commercial use) and downloads tencent/HunyuanWorld-1 and black-forest-labs/FLUX.1-Fill-dev (FLUX.1 [dev]
 Non-Commercial License, gated) into the Hugging Face cache. bitGen ships none of it.
+
+## 🦴 Rig it (2.976.0)
+
+Settings ▸ Add-ons ▸ 🦴 Rig it fetches [VAST-AI-Research/UniRig](https://github.com/VAST-AI-Research/UniRig) (MIT, VAST-AI-Research
+and contributors) and its checkpoints ([VAST-AI/UniRig](https://huggingface.co/VAST-AI/UniRig)) into <app>/unirig, with its own
+Python 3.11 and packages (Blender's bpy module - GPL; spconv - Apache-2.0; PyG's torch_scatter / torch_cluster - MIT; flash-attn -
+BSD-3-Clause). misc/rig_worker.py runs UniRig's own Python steps (its bash scripts are not used). bitGen ships none of it.

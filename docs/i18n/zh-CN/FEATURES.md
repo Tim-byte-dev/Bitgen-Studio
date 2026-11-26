@@ -1387,6 +1387,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Sketcher 的独立窗口和 File 菜单** — ⛶ 让它充满标题栏与状态栏之间的整个 bitGen 窗口（之后 ⇲ Dock 将其放回，2.624.0），✕ 将其关闭；☰ File：新建、打开、保存、另存为、重命名、导入、导出、发送、删除、关闭；🖼 → Image editor 和 🎞 → Timeline 按钮；⌂ Cut-away。 *Where:* Sketcher 的标题栏和工具条。 *Since:* 2.620.0
 - **📷 让相机在房屋中漫游** — 在平面图上拖动相机，3D 视图会透过它观察；方向键使其转向和俯仰，Shift / Alt 使其升高和降低。 *Where:* 🏠 House. *Since:* 2.532.0
 - **🧱 图片 → 3D 场景** — 放入一张图片：Vision 模型找出其中的主要物体，Qwen Image 2.1 edit 把每个物体抠出来并做出干净背景（物体去掉后的画面），360 outpaint LoRA 把背景扩展成 360° 环境，Hunyuan3D 2.1 / TRELLIS.2 为每个物体生成 3D 模型，Stable Audio Open 1.0 为场景和每个物体生成声音——最后在项目的 3D 模型里得到一个场景 .glb：物体放在图片中的位置（方向、地面上的距离、高度），全景包围相机。⤒ 在 Sketcher 中打开、👁 3D 环视、▶ 声音、⤓ 下载。全部在这台电脑上运行（各模型的许可：Qwen Research 仅限非商业；Stability AI Community 年收入低于 100 万美元免费）。🌍 Walk-in world（附加组件：HunyuanWorld 1.0——不可在欧盟、英国、韩国使用，FLUX.1 Fill 仅限非商业，需 24 GB 显存）把全景变成可以走进去的分层 3D 世界。*位置：* Sketcher ▸ 🧱 Picture → 3D scene。*版本：* 2.975.0
+- **🦴 绑定骨骼** — 用 UniRig（MIT，附加组件）为项目中的 3D 模型（人、动物、生物，例如 🧊 Convert to 3D 或 🧱 Picture → 3D scene 做出的模型）生成骨骼和蒙皮权重：3D 模型里得到 `<model>_rigged.glb`，可在 Blender 或时间线上摆姿势、做动画。*位置：* Sketcher ▸ 🦴 Rig ▾、🧱 对话框里的 🦴 Rig。*版本：* 2.976.0
 
 ### 激光切割和雕刻
 

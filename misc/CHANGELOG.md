@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.976.0** — 🦴 Rig It in the Sketcher: a Skeleton and Skin Weights for Any Project 3D Model (a Person, an Animal, a Creature Made From a Photo) by UniRig, an Add-On - `<Model>_rigged.glb` Ready to Pose and Animate
 - **2.975.0** — 🧱 Picture → 3D Scene in the Sketcher: One Picture -> Its Objects Found, Cut Out and Made 3D, Placed Where They Stood, the 360° Surroundings Round the Camera, a Sound for the Place and Each Object - One Scene .glb, All on This Computer
 - **2.974.0** — 🧬 Clone a Voice in the SFX Tab (a Waveform With Draggable START / END Markers, the Part Saved and Picked to Read Your Text); the Read File Goes to the Gallery Too; Each Edit Booth Part Gets Its Own Height
 - **2.973.0** — The Edit Booth Timeline's ▶ Plays Again When a Clip's Sound Is Missing (Skipped and Struck Through); ▶ All or One Layer; the Looper's Own Volume; Space Plays the Timeline When It Has the Focus; 4:00.0 Not 3:60.0

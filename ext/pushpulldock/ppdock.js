@@ -448,6 +448,7 @@
     $("ppShadow").onchange = (e) => S.V && S.V.shadows(e.target.checked);
     $("ppGroup").onclick = () => S.M && groupBtn();
     $("ppSend").onclick = () => sendMenu(); $("ppExport").onclick = () => exportMenu(); $("ppImport").onclick = () => S.V && importMenu();
+    if ($("ppRig")) $("ppRig").onclick = (e) => (root.H3Rig ? root.H3Rig.menu(e.currentTarget) : msg("🦴 Rig it did not load (pprig.js)"));   // 2.976.0
     if ($("ppScene")) $("ppScene").onclick = () => (root.H3PicScene ? root.H3PicScene.open() : msg("🧱 Picture → 3D scene did not load (ppscene.js)"));   // 2.975.0
     $("ppCol").oninput = (e) => setColor(e.target.value);
     $("ppName").addEventListener("change", () => { const was = S.name; S.name = nameNow(); if (S.name !== was && S.M) save(false); });

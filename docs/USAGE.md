@@ -1226,6 +1226,26 @@ Good to know:
 - The idea comes from image-blaster (neilsonnn), which does the same with paid online services; bitGen does it with
   its own local models.
 
+## 🦴 Rig it - a skeleton for a 3D model (the Sketcher, 2.976.0)
+
+A model made from a photo (🧊 Convert to 3D, 🧱 Picture → 3D scene) is one solid shape. **🦴 Rig it** gives it a skeleton
+and skin weights so it can be posed and animated - a person, an animal, a creature. It uses **UniRig** (MIT licence), an
+add-on: **Settings ▸ Add-ons ▸ 🦴 Rig it (UniRig)** (about 7 GB with its checkpoints; an NVIDIA card with 8 GB or more).
+
+1. In the Sketcher click **🦴 Rig ▾** and pick a model of the project - or **🦴 Rig** under an object in the 🧱 Picture →
+   3D scene dialog. Not installed yet: the add-on's Install / Cancel box opens.
+2. It runs as a job (the job list): the shape is read, the skeleton predicted, then the skin weights, and the rig is put
+   onto your original model (its colours kept).
+3. **`<model>_rigged.glb`** arrives in the project's 3D models: ⤒ Import, the timeline's 3D layers, or Blender to pose
+   and animate it.
+
+Good to know:
+
+- Check the bones before you animate - a missing tail or wing bone spoils the skin weights. Blender can fix bones.
+- A car needs no skeleton to drive; rig it only if you want doors or wheels to move (UniRig may give it a few bones).
+- The installer makes its own Python 3.11 (its Blender module needs exactly 3.11) and fetches flash-attn: on Windows a
+  ready-made wheel is looked up on GitHub; if none fits your PyTorch, the log says so.
+
 ## Character swap
 
 Put a new person into existing footage — the performance, camera, background
