@@ -1279,8 +1279,35 @@ Good to know:
 
 - **Your own content, on this computer.** Daz's licence lets you publish renders and videos; the 3D files must not be
   shared - keep `*_daz.glb` out of the render farm's shared projects and the Community. bitGen ships no Daz content.
-- Light, not exact: a character's joint adjustments and dial formulas (what Daz Studio computes) are not applied, so a
-  heavily shaped character can bend a little differently; materials are the base-colour pictures only.
+- Light, not exact: a character's dial formulas (ERCs - one dial driving other shapes) are applied since 2.979.0, but its
+  joint adjustments (bone centres moved by a shape) are not, so a heavily shaped character can bend a little differently;
+  materials are the base-colour pictures only.
+
+### 🧍 Pose + 💪 its own muscle reactions (2.979.0)
+
+> Still **not a replacement for Daz Studio** - light tasks. Daz Studio is a very powerful character creator: use it for
+> real posing and animation.
+
+After **🧍 Build the character**, click **🧍 Pose…** (or pick any `*_daz.glb` in the Pose window's list). The character
+opens in its own 3D view with its skeleton - the Sketcher's ⤒ Open makes plain faces, this keeps the rig.
+
+1. **Pick a bone**: in the list (search *forearm*, *thigh*…) or **click the body** - the bone that moves that spot most is
+   picked (a small blue dot marks it). Drag in the view to turn round it, the wheel to zoom.
+2. **Turn it** with its three sliders: the axis marked *(twist)* turns the bone round its own length, the other two bend
+   the joint. The limits are the figure's own. Double-click a slider for 0. **Mirror to the other side** (on by default)
+   turns the left / right partner too.
+3. **💪 Muscle reactions**: Daz figures carry their own *JCMs* (joint-controlled morphs) - shapes that a formula in the
+   figure's files ties to a joint's angle (the biceps rounds, the elbow creases, the shoulder fills as it lifts). bitGen
+   reads those formulas from your own content (the figure's Morphs folder - nothing is made up) and runs them live as you
+   pose; the box lists the shapes working most. A figure without JCMs gets **our own flex** instead: a light bulge along
+   each limb bone as the next joint bends (up to 7 %, full at 110°). Untick to compare.
+4. **The pose**: **💾 Keep** keeps it for this character on this computer (back when you open it again); **⤓ .json** /
+   **📂 .json…** save and load it as a file. ↺ resets the bone or the whole pose.
+
+Good to know: up to 400 muscle shapes per figure are kept (Genesis 8 / 9 have about 150-250); a formula into a bone centre
+or end point is not applied (the build says how many); twist bones and finger joints move as you turn them, without extra
+shapes of ours. Next in the plan: a soft-tissue touch in this view (a hand or a brush pressing the skin), jiggle, and the
+posed motion baked for the timeline.
 
 ## Character swap
 

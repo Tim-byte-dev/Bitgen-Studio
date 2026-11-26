@@ -5,7 +5,7 @@
  * The dialog (#pdlDlg): the folders, the library by kind (figures / characters, clothing, hair, anatomy, other) with
  * thumbnails, a figure's shape dials (sliders), what it wears, 💨 our own cloth / hair physics (lib/clothSim.js), 📷 a face
  * from a gallery photo (lib/dazFace.js) -> POST /api/dazlib/build -> <name>_daz.glb in the project's 3D models -> ⤒ Open in
- * the Sketcher. Says, always: not a replacement for Daz Studio. Pure: KINDS, dialsToSend(map) (Node: test-977 reads the file). */
+ * the Sketcher. 2.979.0: 🧍 Pose… (ppdazpose.js - the bones + the figure's own muscle reactions live). Says, always: not a replacement for Daz Studio. Pure: KINDS, dialsToSend(map) (Node: test-977 reads the file). */
 (function (root) {
   "use strict";
   const NOTE = "This is not a replacement for Daz Studio - it is made for light tasks. Daz Studio is a very powerful character creator: use it for real character work.";
@@ -51,7 +51,7 @@
       + '<fieldset><legend>📷 A face from a photo (light - Daz Studio\'s Face Transfer does far more)</legend><label><input type="checkbox" id="pdlFaceOn"> use a photo</label><div id="pdlFacePick" hidden></div></fieldset>'
       + '<label class="pdl-dial"><span>Name</span><input type="text" id="pdlName" placeholder="character" style="width:160px"></label>'
       + '<div class="pdl-dial"><button type="button" class="ghost" id="pdlSave" title="Keep this character (figure, dials, what it wears, physics) in the project - build it again later">💾 Save</button><select id="pdlChars" title="A saved character"><option value="">📂 Load a saved one…</option></select></div></div></div>'
-      + '<div class="pdl-foot"><span class="hint" id="pdlMsg" role="status"></span><button type="button" class="ghost" id="pdlOpen" hidden>⤒ Open in the Sketcher</button><button type="button" class="primary" id="pdlBuild">🧍 Build the character</button></div></div>';
+      + '<div class="pdl-foot"><span class="hint" id="pdlMsg" role="status"></span><button type="button" class="ghost" id="pdlOpen" hidden>⤒ Open in the Sketcher</button><button type="button" class="ghost" id="pdlPose" title="Pose the character in 3D - its bones, its own muscle reactions (JCMs) live">🧍 Pose…</button><button type="button" class="primary" id="pdlBuild">🧍 Build the character</button></div></div>';
     doc.body.appendChild(d);
     $("pdlX").onclick = () => d.close();
     $("pdlTabs").querySelectorAll("[data-kind]").forEach((b) => { b.onclick = () => { st.kind = b.dataset.kind; list(); }; });
@@ -60,6 +60,7 @@
     $("pdlFolders").onclick = folders; $("pdlFolderSave").onclick = saveFolders;
     $("pdlBuild").onclick = buildIt;
     $("pdlOpen").onclick = openIt;
+    $("pdlPose").onclick = () => { if (root.H3DazPose) root.H3DazPose.open(st.last && st.last.model); };
     $("pdlSave").onclick = saveChar; $("pdlChars").onchange = () => { const v = $("pdlChars").value; if (v) loadChar(v); };
     $("pdlFaceOn").onchange = () => { $("pdlFacePick").hidden = !$("pdlFaceOn").checked; if ($("pdlFaceOn").checked && !st.facePicker && root.H3PicPick) st.facePicker = root.H3PicPick.mount($("pdlFacePick"), { title: "The face photo", onPick: (it) => { st.face = it; say("📷 " + it.name); } }); };
     return d;
@@ -120,7 +121,8 @@
       const r = await fetch("/api/dazlib/build", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText);
       st.last = j; $("pdlOpen").hidden = false;
-      say("✔ " + j.model + " in the project's 3D models - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
+      const mu = j.info.muscles || {}, mw = mu.kind === "jcm" ? " · 💪 " + mu.shapes + " muscle shape(s) (JCMs)" : mu.kind === "flex" ? " · 💪 our own flex (" + mu.shapes + ")" : "";
+      say("✔ " + j.model + " in the project's 3D models - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + mw + " - 🧍 Pose… to move it" + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
     } catch (e) { say("⚠ " + e.message); }
     $("pdlBuild").disabled = false;
   }

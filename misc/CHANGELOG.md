@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.979.0** — 🧍 Pose a Daz Character in 3D With Its Own Skeleton (Click the Body to Pick a Bone, the Figure's Own Limits, Mirrored Sides, 💾 Kept Poses) and 💪 Its Own Muscle Reactions Live: the JCM Formulas From Your Daz Content (Our Own Flex When a Figure Has None); a Character's Dial Formulas (ERCs) Applied When It Is Built - Still Not a Replacement for Daz Studio (Light Tasks)
 - **2.978.0** — 🧱 Picture → 3D Scene Checks Every Model It Needs First (One Download Box: the Edit Models, the 360 LoRA, the 3D Engine, the Sound Models), a Failed Step Says Why and ↻ Try Again Carries On; One Picture Picker for 🧱 Picture → 3D Scene and the Daz Library's Face Photo: 🖼 Gallery, 🗂 Assets, 📌 References, 📁 a Folder or 📄 a File of This Computer; 💾 Save / 📂 Load a Daz Character
 - **2.977.0** — 📚 The Daz Library Read by bitGen Itself (Not a Replacement for Daz Studio - Light Tasks): Figures, Shape Dials, Clothing / Hair / Anatomy on One Skeleton, Our Own Cloth and Hair Physics, a Face From a Photo -> `<Name>_daz.glb`
 - **2.976.0** — 🦴 Rig It in the Sketcher: a Skeleton and Skin Weights for Any Project 3D Model (a Person, an Animal, a Creature Made From a Photo) by UniRig, an Add-On - `<Model>_rigged.glb` Ready to Pose and Animate

@@ -1389,6 +1389,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🧱 图片 → 3D 场景** — 放入一张图片：Vision 模型找出其中的主要物体，Qwen Image 2.1 edit 把每个物体抠出来并做出干净背景（物体去掉后的画面），360 outpaint LoRA 把背景扩展成 360° 环境，Hunyuan3D 2.1 / TRELLIS.2 为每个物体生成 3D 模型，Stable Audio Open 1.0 为场景和每个物体生成声音——最后在项目的 3D 模型里得到一个场景 .glb：物体放在图片中的位置（方向、地面上的距离、高度），全景包围相机。⤒ 在 Sketcher 中打开、👁 3D 环视、▶ 声音、⤓ 下载。全部在这台电脑上运行（各模型的许可：Qwen Research 仅限非商业；Stability AI Community 年收入低于 100 万美元免费）。🌍 Walk-in world（附加组件：HunyuanWorld 1.0——不可在欧盟、英国、韩国使用，FLUX.1 Fill 仅限非商业，需 24 GB 显存）把全景变成可以走进去的分层 3D 世界。*位置：* Sketcher ▸ 🧱 Picture → 3D scene。*版本：* 2.975.0
 - **🦴 绑定骨骼** — 用 UniRig（MIT，附加组件）为项目中的 3D 模型（人、动物、生物，例如 🧊 Convert to 3D 或 🧱 Picture → 3D scene 做出的模型）生成骨骼和蒙皮权重：3D 模型里得到 `<model>_rigged.glb`，可在 Blender 或时间线上摆姿势、做动画。*位置：* Sketcher ▸ 🦴 Rig ▾、🧱 对话框里的 🦴 Rig。*版本：* 2.976.0
 - **📚 Daz 素材库** — 不是 Daz Studio 的替代品（只用于轻量任务；Daz Studio 是非常强大的角色制作软件）：bitGen 直接读取你自己的 Daz 内容文件夹（无需启动 Daz）——带缩略图的人物和角色、形体调节、套在人物骨骼上的服装／头发／解剖部件、我们自己的布料和头发物理（轻量悬垂）、照片生成的脸——输出带骨骼的 `<name>_daz.glb`。加密的 Daz Connect 内容会被跳过。*位置：* Sketcher ▸ 📚 Daz library。*版本：* 2.977.0
+- **🧍 为 Daz 角色摆姿势 + 💪 它自己的肌肉反应** — 不是 Daz Studio 的替代品（只用于轻量任务；Daz Studio 是非常强大的角色制作工具）：用 `<name>_daz.glb` 自己的骨骼在 3D 中摆姿势（在列表中选骨骼或点击身体，在角色自身的限制内旋转，另一侧镜像）；角色的 JCM（关节控制变形）按它自己的 DSON 公式实时跟随，关节弯曲时肌肉隆起、褶皱出现；没有 JCM 的角色使用我们自己的弯曲隆起。构建角色时也会应用其调节公式（ERC）。姿势按角色保存，可存为 .json。*位置：* Sketcher ▸ 📚 Daz library ▸ 🧍 Pose…。*版本：* 2.979.0
 
 ### 激光切割和雕刻
 

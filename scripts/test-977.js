@@ -109,7 +109,7 @@ function makeLib(dir) {
     check("build(): one .glb - the body, its eyes, the shirt, the hair (each skinned to ONE skeleton)", meshNames.length === 4 && J.skins.length === 1 && J.nodes.filter((n) => n.mesh != null).every((n) => n.skin === 0), meshNames);
     const bodyAcc = J.accessors[J.meshes[0].primitives[0].attributes.POSITION];
     check("build(): Daz cm -> metres; the dial at 0.5 makes the body 5% taller (170 cm -> 1.785 m)", Math.abs(bodyAcc.max[1] - 1.785) < 1e-4, bodyAcc.max);
-    check("build(): the dial is a morph target too (named), the skeleton's bones are nodes (hip, head, l_eye, r_eye)", J.meshes[0].extras.targetNames[0] === "Tall" && J.meshes[0].primitives[0].targets.length === 1
+    check("build(): the dial is a morph target too (named), the skeleton's bones are nodes (hip, head, l_eye, r_eye)", J.meshes[0].extras.targetNames[0] === "Tall" && J.meshes[0].primitives[0].targets.length >= 1
       && ["hip", "head", "l_eye", "r_eye"].every((b) => J.nodes.some((n) => n.name === b)));
     check("build(): the material picture embedded (Face / Body groups -> two materials with a texture); the eyes' moisture see-through", J.images.length >= 1 && J.materials.some((m) => m.name === "Face" && m.pbrMetallicRoughness.baseColorTexture) && J.materials.find((m) => m.name === "EyeMoisture").alphaMode === "BLEND");
     const shirt = out.info.pieces.find((p) => p.kind === "clothing"), hair = out.info.pieces.find((p) => p.kind === "hair");
