@@ -65,7 +65,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await tile("Shoes").dragTo(p.locator("#ppView"), { targetPosition: { x: Math.round(at[0] - vb.l), y: Math.round(at[1] - vb.t) } });
     await p.waitForFunction(() => /Shoes/.test(document.getElementById("dzTree").textContent), null, { timeout: 30000 });
     await p.waitForFunction(() => !H3DazTools.state.busy && H3DazScene.rig(H3DazScene.list()[0]).meshes.length >= 3, null, { timeout: 60000 });
-    const r2 = await ev(() => { const r = H3DazScene.rig(H3DazScene.list()[0]); return { model: r.model, place: r.place, n: H3DazScene.list().length, comps: [...document.querySelectorAll("#dzTree .dzcomp span")].map((s) => s.textContent.trim()) }; });
+    const r2 = await ev(() => { const r = H3DazScene.rig(H3DazScene.list()[0]); return { model: r.model, place: r.place, n: H3DazScene.list().length, comps: [...document.querySelectorAll("#dzTree .dzcomp:not(.dzpiece):not(.dzpieces):not(.dzwarn) span")].map((s) => s.textContent.trim()) }; });
     check("👕 the shirt (clicked) and 👟 the shoes (dropped onto the doll) worn - rebuilt IN PLACE, still one character", r2.n === 1 && r2.comps.join("|") === "🦴 Doll (figure)|👕 Shirt|👕 Shoes" && Math.abs(r2.place.x - r1.place.x) < 1e-9 && r2.model !== r1.model, r2);
     // the pose preset
     await kind("pose", "Wave"); await tile("Wave").click();
@@ -101,9 +101,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const ids = await ev(() => H3DazScene.list());
     check("a second doll in the scene, picked", ids.length === 2 && (await ev(() => H3DazScene.sel())) === ids[1]);
     await p.click('#dzParTabs [data-tab="shape"]');
-    const first = await scr([2, 0, 1.0]);
+    const pl0 = await ev((id) => H3DazScene.rig(id).place, ids[0]), first = await scr([pl0.x, pl0.y, 1.0]);   // 2.985.0: where it stands (motion ✕ no longer leaves the hips walked off)
     await p.mouse.click(first[0], first[1]);
-    check("a click on the first doll in the view picks it (the explorer follows)", (await ev(() => H3DazScene.sel())) === ids[0] && (await ev((id) => document.querySelector('#dzTree .dzc.sel').dataset.char === id, ids[0])));
+    check("a click on the first doll in the view picks it (the explorer follows)", (await ev(() => H3DazScene.sel())) === ids[0] && (await ev((id) => document.querySelector('#dzTree .dzc.sel').dataset.char === id, ids[0])), await ev((a) => ({ sel: H3DazScene.sel(), ids: H3DazScene.list(), cur: H3DazTools.cur().id, places: H3DazScene.list().map((i) => H3DazScene.rig(i).place), at: a, el: document.elementFromPoint(a[0], a[1]).id }), first));
     // the floating library moves
     const lh = await box("dzLibHead");
     await p.mouse.move(lh.l + 40, lh.t + 8); await p.mouse.down(); await p.mouse.move(lh.l + 140, lh.t + 68, { steps: 5 }); await p.mouse.up();

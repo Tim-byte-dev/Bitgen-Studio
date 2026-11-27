@@ -15259,6 +15259,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui983-ui.js > /tmp/ui983.log 2>&
 node scripts/test-984.js > /tmp/t984.log 2>&1 && ok "2.984.0 units: the Sketcher's arrow keys (zoom / turn round Z, an axis while a tool is half-way) and the ⚙ properties docker's layout (tabs, below, own place, drops)" || { bad "2.984.0 units"; grep -a "^FAIL" -A1 /tmp/t984.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui984-ui.js > /tmp/ui984.log 2>&1 && ok "2.984.0 browser test: ↑ ↓ zoom, ← → orbit, the ⚙ docker beside the toolbox - folded, tabs dragged, the DAZ dockers docked in it, kept over a reload" || { bad "2.984.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui984.log | head -8; }
 
+node scripts/test-985.js > /tmp/t985.log 2>&1 && ok "2.985.0 units: Delete for DAZ characters, the pieces built, material presets, a pose's own figure turn / move, 🔍 Zoom, 🏛 Architecture, ✨ Photo's people" || { bad "2.985.0 units"; grep -a "^FAIL" -A1 /tmp/t985.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui985-ui.js > /tmp/ui985.log 2>&1 && ok "2.985.0 browser test: 🏛 hides / shows, 🔍 zooms, pieces 👁, a lying pose kept over a reload, the depth map reaches the doll, Delete + ↶" || { bad "2.985.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui985.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

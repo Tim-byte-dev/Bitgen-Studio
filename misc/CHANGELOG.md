@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.985.0** — The Sketcher's 🔍 Zoom Tool and 🏛 Architecture Button (Hide / Show Every Building Tool); Delete Removes a Picked DAZ Character (↶ Undo); the Explorer Lists Every Piece Built With 👁; 🎨 Material Presets; Poses That Turn or Move the Whole Figure, Kept; ✨ Photo Keeps the Characters and Says Why a Render Failed
 - **2.984.0** — The Sketcher's Arrow Keys Move the View (↑ / ↓ Zoom, ← / → Orbit Round Z; an Axis While a Tool Is Half-Way) and a Collapsible ⚙ Properties Docker Beside the Toolbox Where the Sketcher's Other Panels (🗂 Outline, 🧱 Wall Types, the DAZ Library / Explorer / Parameters) Dock as Tabs or Below
 - **2.983.0** — The DAZ Dockers in the Sketcher Itself (a Daz Studio-Like Layout: the 📚 Library Floating Over the 3D View, the 🧭 Explorer and 🎚 Parameters - Shape / Pose / Motion - Docked Beside It, One Button); Characters Dragged Into the 3D View as Rigged Objects; Clothes, Shoes, Hair, Anatomy, Pose and Shape Presets Clicked or Dropped Onto the Picked Character; a Click on Its Body Picks a Bone
 - **2.982.0** — 📏 A Daz Body From Height, Weight and Tape Measurements (the Figure's Own Dials, a Build to Choose, the Weight From the Body's Volume) and 🎬 Mixamo Motion on a Daz Character in 🕺 Pose (Genesis 3 / 8 / 9 Bones, the T / A Rest Pose Corrected, the Walk Scaled or In Place, the Muscle Shapes Following, ⤓ Baked Into a glTF Animation)

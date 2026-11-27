@@ -313,7 +313,9 @@
 
     /* ---- the camera */
     function fitBox() {
-      const M = V.M, xb = V.extraBox ? V.extraBox() : null;
+      const M = V.M; let xb = V.extraBox ? V.extraBox() : null;
+      // 2.985.0: + what other parts put in the scene (the DAZ characters - ppdazscene.js) - Zoom extents and the ✨ Photo's depth reach them
+      for (const f of V.moreBoxes || []) { let b2 = null; try { b2 = f(); } catch (e) { /* fine */ } if (b2 && b2.min.every(Number.isFinite) && b2.max.every(Number.isFinite)) xb = xb ? { min: [0, 1, 2].map((k) => Math.min(xb.min[k], b2.min[k])), max: [0, 1, 2].map((k) => Math.max(xb.max[k], b2.max[k])) } : b2; }
       let b = M && M.v.length ? G().bbox(M) : xb || { min: [-2, -2, 0], max: [2, 2, 2] };
       if (xb && M && M.v.length) b = { min: [0, 1, 2].map((k) => Math.min(b.min[k], xb.min[k])), max: [0, 1, 2].map((k) => Math.max(b.max[k], xb.max[k])) };
       const c = G().v3.mul(G().v3.add(b.min, b.max), 0.5), r = Math.max(1, G().v3.len(G().v3.sub(b.max, b.min)) / 2);
@@ -416,7 +418,7 @@
       if (o.depth) {
         ground.visible = false; R.setClearColor(0x000000, 1);
         if (o.camera) scene.overrideMaterial = new T.ShaderMaterial({ uniforms: { near: { value: 0.3 }, far: { value: Math.max(8, br * 2.4) } }, side: T.DoubleSide,
-          vertexShader: "varying float vZ; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }",
+          vertexShader: "#include <common>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\nvarying float vZ; void main(){\n#include <skinbase_vertex>\n#include <morphinstance_vertex>\n#include <begin_vertex>\n#include <morphtarget_vertex>\n#include <skinning_vertex>\n#include <project_vertex>\nvZ = -mvPosition.z; }",   // 2.985.0: posed (skinned) DAZ characters too
           fragmentShader: "uniform float near; uniform float far; varying float vZ; void main(){ float d = clamp((vZ - near) / (far - near), 0.0, 1.0); float v = 1.0 - pow(d, 0.6); gl_FragColor = vec4(vec3(v), 1.0); }" });
         else {
           scene.overrideMaterial = new T.MeshDepthMaterial();
@@ -469,7 +471,7 @@
       if (!!s.ortho !== V.isOrtho) setOrtho(!!s.ortho);
       cam.position.fromArray(s.p); controls.target.fromArray(s.t || [0, 0, 0]); ortho.userData.k = s.k || 10; ortho.zoom = s.zoom || 1; size(); controls.update(); draw();
     }
-    function leftDrag(mode) { controls.mouseButtons.LEFT = mode === "orbit" ? T.MOUSE.ROTATE : mode === "pan" ? T.MOUSE.PAN : -1; }
+    function leftDrag(mode) { controls.mouseButtons.LEFT = mode === "orbit" ? T.MOUSE.ROTATE : mode === "pan" ? T.MOUSE.PAN : mode === "zoom" ? T.MOUSE.DOLLY : -1; }   // 2.985.0: + 🔍 zoom
 
     Object.assign(V, {
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)

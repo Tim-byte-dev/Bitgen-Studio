@@ -16,7 +16,12 @@
   const placeOf = (p) => ({ x: isFinite(+(p && p.x)) ? +p.x : 0, y: isFinite(+(p && p.y)) ? +p.y : 0, rot: isFinite(+(p && p.rot)) ? ((+p.rot % 360) + 360) % 360 : 0 });
   /** a ray {o, d} onto the floor (z 0) -> [x, y] | null (looking up / along it) */
   const groundHit = (r) => { if (!r || !r.d || Math.abs(r.d[2]) < 1e-9) return null; const t = -r.o[2] / r.d[2]; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t] : null; };
-  const pure = { placeOf, groundHit };
+  /** 2.985.0: a piece of a built character from its glTF node name "<name> (<kind>)" -> {name, kind} | null */
+  const pieceOf = (nodeName) => { const m = /^(.*) \((figure|eyes|mouth|graft|hair|clothing|other)\)$/.exec(String(nodeName || "")); return m ? { name: m[1], kind: m[2] } : null; };
+  /** 2.985.0: the hips' move / the whole figure's turn + move of a pose made safe (metres, degrees) */
+  const vec3 = (a) => (Array.isArray(a) && a.length === 3 && a.every((v) => isFinite(+v)) ? a.map(Number) : [0, 0, 0]);
+  const figOf = (f) => ({ rot: { x: +(f && f.rot && f.rot.x) || 0, y: +(f && f.rot && f.rot.y) || 0, z: +(f && f.rot && f.rot.z) || 0 }, move: vec3(f && f.move) });
+  const pure = { placeOf, groundHit, pieceOf, figOf, vec3 };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, rigs = new Map(), st = { sel: "", onChange: null, motion: null };
@@ -31,7 +36,14 @@
     const v = V(); if (!v) return null;
     let g = v.scene.getObjectByName("pp-daz");
     if (!g) { g = new v.T.Group(); g.name = "pp-daz"; v.scene.add(g); }
+    // 2.985.0: Zoom extents and the ✨ Photo's depth map reach the characters
+    if (!v.moreBoxes) v.moreBoxes = []; if (!v.moreBoxes.includes(box3)) v.moreBoxes.push(box3);
     return g;
+  }
+  function box3() {
+    const v = V(); if (!v || !rigs.size) return null;
+    const B = new v.T.Box3(); for (const r of rigs.values()) if (r.outer.visible) B.expandByObject(r.outer);
+    return B.isEmpty() ? null : { min: [B.min.x, B.min.y, B.min.z], max: [B.max.x, B.max.y, B.max.z] };
   }
   function setPlace(r, p) { const q = placeOf(p); r.place = q; r.outer.position.set(q.x, q.y, 0); r.outer.rotation.set(0, 0, q.rot * Math.PI / 180); r.outer.updateMatrixWorld(true); }
   /** the character's .glb into the Sketcher (again, if it was there: its place and pose kept) */
@@ -48,10 +60,12 @@
     const bones = new Map(), rest = new Map(); for (const id of Object.keys(daz.bones)) { const b = byName.get(daz.bones[id].name) || byName.get(id); if (b) { bones.set(id, b); rest.set(b, b.quaternion.clone()); } }
     g.scene.updateMatrixWorld(true);
     const restPos = new Map(), restLocal = new Map(); for (const [id, b] of bones) { const q = b.getWorldPosition(new T.Vector3()); restPos.set(id, [q.x, q.y, q.z]); restLocal.set(id, [b.position.x, b.position.y, b.position.z]); }
-    const r = { id: c.id, model: c.last, name: c.name, outer, inner, root: g.scene, daz, bones, rest, meshes, restPos, restLocal, pose: (old && old.pose) || c.pose || {}, weights: {}, muscles: c.muscles !== false, box: null, F: f, T };
+    const r = { id: c.id, model: c.last, name: c.name, outer, inner, root: g.scene, daz, bones, rest, meshes, restPos, restLocal, pose: (old && old.pose) || c.pose || {}, weights: {}, muscles: c.muscles !== false, box: null, F: f, T,
+      hips: vec3((old && old.hips) || c.hips), fig: figOf((old && old.fig) || c.figPose), hidden: new Set((old && old.hidden) || c.hidePieces || []) };
     if (old) { group().remove(old.outer); if (old.box) { group().remove(old.box); old.box.geometry.dispose(); } if (st.motion && st.motion.id === c.id) motionOff(true); }
     group().add(outer); rigs.set(c.id, r); setPlace(r, (old && old.place) || c.place);
     outer.visible = c.hidden ? false : true;
+    pieceVis(r);
     apply(r); if (st.sel === c.id) select(c.id, true); else changed("put");
     return r;
   }
@@ -69,12 +83,25 @@
   /** the pose onto the bones + the muscle shapes' weights onto every piece */
   function apply(r) {
     const f = r.F, P = root.H3DazPose;
+    // 2.985.0: the hips' move and the whole figure's turn / move (a lying or kneeling pose) - kept with the character
+    const h = r.bones.get("hip") || r.bones.get("hips") || r.bones.get("pelvis"), hl = h && (r.restLocal.get("hip") || r.restLocal.get("hips") || r.restLocal.get("pelvis"));
+    if (h && hl) h.position.set(hl[0] + r.hips[0], hl[1] + r.hips[1], hl[2] + r.hips[2]);
+    const rb = Object.values(r.daz.bones || {}).find((b) => b && b.parent == null), fq = f.boneQuat({ order: (rb && rb.order) || "YZX", orient: [0, 0, 0] }, r.fig.rot);
+    r.root.quaternion.set(fq[0], fq[1], fq[2], fq[3]); r.root.position.set(r.fig.move[0], r.fig.move[1], r.fig.move[2]); r.root.updateMatrixWorld(true);
     for (const [id, b] of r.bones) { const q = r.pose[id] ? f.boneQuat(r.daz.bones[id], r.pose[id]) : [0, 0, 0, 1]; b.quaternion.set(q[0], q[1], q[2], q[3]).premultiply(r.rest.get(b)); }
     r.weights = r.muscles && P && P.muscleWeights ? P.muscleWeights(r.daz, r.pose, f) : {};
     for (const m of r.meshes) { const d = m.morphTargetDictionary, inf = m.morphTargetInfluences; if (!d || !inf) continue; for (const id of Object.keys(r.daz.rest || {})) { const i = d["jcm:" + id]; if (i != null) inf[i] = r.weights[id] || 0; } }
     if (r.box) r.box.update();
   }
-  function pose(id, p, o) { const r = rigs.get(id); if (!r) return null; if (p) r.pose = p; if (o && o.muscles != null) r.muscles = !!o.muscles; if (o && o.hips) { const h = r.bones.get("hip"), l = r.restLocal.get("hip"); if (h && l) h.position.set(l[0] + o.hips[0], l[1] + o.hips[1], l[2] + o.hips[2]); } apply(r); changed("pose"); return r; }
+  function pose(id, p, o) { const r = rigs.get(id); if (!r) return null; if (p) r.pose = p; if (o && o.muscles != null) r.muscles = !!o.muscles; if (o && o.hips) r.hips = vec3(o.hips); if (o && o.fig) r.fig = figOf(o.fig); apply(r); changed("pose"); return r; }
+  /** 2.985.0: the pieces a character was built of (figure, eyes, mouth, graft, hair, clothing) and which are shown */
+  function pieces(id) {
+    const r = rigs.get(id); if (!r) return [];
+    const out = []; r.root.traverse((o) => { const p = pieceOf((o.userData && o.userData.name) || ""); if (p && !out.some((q) => q.name === p.name && q.kind === p.kind)) out.push(Object.assign(p, { shown: !r.hidden.has(p.name) })); });
+    return out;
+  }
+  function pieceVis(r) { r.root.traverse((o) => { const p = pieceOf((o.userData && o.userData.name) || ""); if (p) o.visible = !r.hidden.has(p.name); }); }
+  function pieceShow(id, name, on) { const r = rigs.get(id); if (!r) return; if (on) r.hidden.delete(name); else r.hidden.add(name); pieceVis(r); changed("piece"); }
   function ndc(ev, v) { const rc = v.canvas.getBoundingClientRect(); return new v.T.Vector2(((ev.clientX - rc.left) / rc.width) * 2 - 1, -((ev.clientY - rc.top) / rc.height) * 2 + 1); }
   function hit(ev, only) {
     const v = V(); if (!v || !rigs.size) return null;
@@ -150,7 +177,7 @@
     const j = await res.json().catch(() => ({})); if (!res.ok) throw new Error(j.error || res.statusText);
     return j;
   }
-  root.H3DazScene = Object.assign({ put, remove, clear, select, place, show, pose, apply, pickChar, pickBone, ground,
+  root.H3DazScene = Object.assign({ put, remove, clear, select, place, show, pose, apply, pickChar, pickBone, ground, pieces, pieceShow, box: box3,
     rig: (id) => rigs.get(id) || null, list: () => [...rigs.keys()], sel: () => st.sel, onChange: (fn) => { st.onChange = fn; }, V,
     motion: { load: motionLoad, at: motionAt, play: motionPlay, off: motionOff, bake: motionBake, state: () => st.motion } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -26,7 +26,7 @@
   const TOOLS = [
     ["select", "⬚", "Select", " "], ["line", "╱", "Line", "l"], ["rect", "▭", "Rectangle", "r"], ["circle", "◯", "Circle", "c"], ["polygon", "⬠", "Polygon", "n"],
     ["pushpull", "⇧", "Push/Pull", "p"], ["move", "✥", "Move", "m"], ["rotate", "⟳", "Rotate", "q"], ["scale", "⤡", "Scale", "s"], ["offset", "⧈", "Offset", "f"],
-    ["tape", "📏", "Tape measure", "t"], ["paint", "🪣", "Paint", "b"], ["eraser", "⌫", "Eraser", "e"], ["orbit", "🔄", "Orbit", "o"], ["pan", "✋", "Pan", "h"],
+    ["tape", "📏", "Tape measure", "t"], ["paint", "🪣", "Paint", "b"], ["eraser", "⌫", "Eraser", "e"], ["orbit", "🔄", "Orbit", "o"], ["pan", "✋", "Pan", "h"], ["zoom", "🔍", "Zoom", ""],   // 2.985.0: 🔍 Zoom (Z is 📷 Camera)
   ];
   const HINT = {
     select: "➤ Click one thing to pick it · Ctrl+click adds more (Shift+click: in / out) · double-click a group to edit inside it · Delete erases · Shift + right-drag zooms",
@@ -43,6 +43,7 @@
     paint: "Click faces to paint them (Alt+click: take a face's colour) - the colour is in the bar",
     eraser: "Click (or drag over) lines and faces to erase them",
     orbit: "Drag to orbit (the middle button orbits in any tool)", pan: "Drag to pan (the right button pans in any tool)",
+    zoom: "Drag up to zoom in, down to zoom out · a click zooms in there (Shift+click: out) · the wheel and ↑ ↓ zoom in any tool",
   };
   const VCB = { line: "Length", rect: "Dimensions", circle: "Radius", polygon: "Radius", pushpull: "Distance", move: "Distance", rotate: "Angle", scale: "Scale", offset: "Distance", tape: "Length" };
 
@@ -79,8 +80,8 @@
       }
       if (!HINT[name]) return;
       reset(); tool = name; if (AT) AT.use(null);
-      V.leftDrag(name === "orbit" ? "orbit" : name === "pan" ? "pan" : "");
-      V.canvas.style.cursor = name === "orbit" ? ORBIT_CURSOR : name === "pan" ? "grab" : name === "select" ? "default" : "crosshair";   // 2.632.0: Orbit = an orbit cursor, not the hand
+      V.leftDrag(name === "orbit" ? "orbit" : name === "pan" ? "pan" : name === "zoom" ? "zoom" : "");
+      V.canvas.style.cursor = name === "orbit" ? ORBIT_CURSOR : name === "pan" ? "grab" : name === "zoom" ? "zoom-in" : name === "select" ? "default" : "crosshair";   // 2.632.0: Orbit = an orbit cursor, not the hand
       ctx.status(HINT[name]); ctx.vcbLabel(VCB[name] || "");
       ctx.toolChanged(name);
       if ((name === "move" || name === "rotate" || name === "scale") && !hasSel()) ctx.status(HINT[name] + " - nothing is picked: press on what to " + name);
@@ -127,6 +128,7 @@
       if (AT && AT.owns(tool)) { AT.down(ev); return; }
       if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey || ev.ctrlKey || ev.metaKey, (ev.ctrlKey || ev.metaKey) && !ev.shiftKey); return; }   // 2.648.0: Ctrl+click adds
       if (tool === "orbit" || tool === "pan") return;
+      if (tool === "zoom") { zd = [ev.clientX, ev.clientY]; return; }
       if (tool === "line") {
         const s = snapAt(ev, { from: st.pts && st.pts[st.pts.length - 1] }); const p = s.p;
         if (!st.pts) { st.pts = [p]; return; }
@@ -194,7 +196,7 @@
       if (TT && TT.owns(tool)) { TT.move(ev); return; }
       if (AT && AT.owns(tool)) { AT.move(ev); return; }
       if (tool === "select") { if (AT && AT.selectMove(ev)) return; if (ED && ED.move(ev)) return; const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face && !(p.grp && p.grp !== ctx.group()) ? p.face : null, edge: p.edge || null } : null); return; }
-      if (tool === "orbit" || tool === "pan") return;
+      if (tool === "orbit" || tool === "pan" || tool === "zoom") return;
       if (tool === "eraser") { if (st.erasing && ev.buttons & 1) eraseAt(ev); else { const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face || null, edge: p.edge || null } : null); } return; }
       if (tool === "paint") { const p = V.pick(ev, { group: ctx.group() }); V.setHover(p && p.face ? { face: p.face } : null); return; }
       if (tool === "line") {
@@ -264,7 +266,9 @@
         show(s, { from: st.a, dashed: [{ seg: [st.a, s.p], color: "#222" }], tip: g.fmtLen(v3.len(v3.sub(s.p, st.a))) }); return;
       }
     }
+    let zd = null;                                                       // 2.985.0: 🔍 a click (not a drag) zooms at the pointer
     function up(ev) {
+      if (tool === "zoom") { const z = zd; zd = null; if (z && Math.hypot(ev.clientX - z[0], ev.clientY - z[1]) < 4 && V.zoomAt) { const r = V.canvas.getBoundingClientRect(); V.zoomAt(ev.shiftKey ? 1 / 1.5 : 1.5, ev.clientX - r.left, ev.clientY - r.top); } return; }
       if (TT && TT.owns(tool)) { TT.up(ev); return; }
       if (AT && AT.owns(tool)) { AT.up(ev); return; }
       if (tool === "select" && AT && AT.selectUp(ev)) return;
@@ -462,7 +466,12 @@
       if (k === "ArrowRight" || k === "ArrowLeft" || k === "ArrowUp") { lock = k === "ArrowRight" ? 0 : k === "ArrowLeft" ? 1 : 2; ctx.status("keeping the " + ["red", "green", "blue"][lock] + " axis (↓ lets it go)"); return true; }
       if (k === "ArrowDown") { lock = null; ctx.status(HINT[tool]); return true; }
       if (k === "Shift" && lastSnap && lastSnap.axis != null && !e.repeat) { lock = lastSnap.axis; return true; }
-      if (k === "Delete" || k === "Backspace") { if (hasSel() && tool === "select") { ctx.erase(); return true; } return false; }
+      if (k === "Delete" || k === "Backspace") {                       // 2.985.0: + a picked DAZ character (ppdaztools.js) goes too
+        let did = false;
+        if ((tool === "select" || !Object.keys(st).length) && root.H3DazTools && root.H3DazTools.deleteSel && root.H3DazTools.deleteSel()) did = true;
+        if (hasSel() && tool === "select") { ctx.erase(); did = true; }
+        return did;
+      }
       if (k === "Control" && tool === "move") { st.copy = !st.copy; ctx.status(st.copy ? "✥ Move - a COPY (Ctrl again: move)" : HINT.move); return true; }
       if (!e.ctrlKey && !e.metaKey && !e.altKey) {
         const t = ALL.find((x) => x[3] === k.toLowerCase());

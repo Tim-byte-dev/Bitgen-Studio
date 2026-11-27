@@ -57,7 +57,7 @@ function dressDoll(dir) {
   check("posePick(): only the bones the figure has (numbers made safe)", pk.n === 2 && pk.pose.lForearm.y === -90 && !pk.pose.nope);
   const cs = T.cleanScene({ chars: [{ id: "a", fig: { rel: "x.duf" }, inScene: 1, hidden: 0, place: { x: "2", y: -1, rot: 90 }, pose: { lShldr: { z: 30 }, bad: 5 } }] }).chars[0];
   check("cleanScene(): a character's place in the Sketcher, its pose, in the scene / hidden kept", cs.inScene === true && cs.hidden === false && JSON.stringify(cs.place) === '{"x":2,"y":-1,"rot":90}' && cs.pose.lShldr.z === 30 && !("bad" in cs.pose));
-  check("KINDS: + 🕴 Poses + 🎚 Shapes; WEAR = what is worn", T.KINDS.map((k) => k[0]).join() === "figure,character,clothing,hair,anatomy,pose,shape,other" && T.WEAR.join() === "clothing,hair,anatomy,other");
+  check("KINDS: + 🕴 Poses + 🎚 Shapes; WEAR = what is worn", T.KINDS.map((k) => k[0]).join() === "figure,character,clothing,hair,anatomy,pose,shape,material,other" && T.WEAR.join() === "clothing,hair,anatomy,material,other");
   check("placeOf(): a place made safe (the turn 0..360)", JSON.stringify(S.placeOf({ x: "1.5", y: null, rot: -90 })) === '{"x":1.5,"y":0,"rot":270}');
   check("groundHit(): a ray onto the Sketcher's floor (z 0); looking along / up = none", JSON.stringify(S.groundHit({ o: [0, -5, 5], d: [0, 0.6, -0.8] })) === "[0,-1.25]" && S.groundHit({ o: [0, 0, 5], d: [1, 0, 0] }) === null && S.groundHit({ o: [0, 0, 5], d: [0, 0, 1] }) === null);
   /* wiring */

@@ -46,11 +46,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("the button lit; the not-a-replacement words; the library's figures; the right docker = Explorer + Shape controls", t1.pressed === "true" && /Not a replacement for Daz Studio/.test(t1.note) && t1.items.join() === "Mini" && t1.heads.join() === "🧭 DAZ Explorer,🎚 Parameters", t1);
     await p.click("#dzGrid .dzit");
     await p.waitForSelector("#dzDials .dzdial", { timeout: 10000 });
-    const t2 = await ev(() => ({ tree: [...document.querySelectorAll("#dzTree .dzc span, #dzTree .dzcomp span")].map((s) => s.textContent.trim()), groups: [...document.querySelectorAll("#dzDials summary")].map((s) => s.textContent), dial: document.querySelector("#dzDials .dzdial span").textContent }));
+    const t2 = await ev(() => ({ tree: [...document.querySelectorAll("#dzTree .dzc span, #dzTree .dzcomp:not(.dzpiece):not(.dzpieces):not(.dzwarn) span")].map((s) => s.textContent.trim()), groups: [...document.querySelectorAll("#dzDials summary")].map((s) => s.textContent), dial: document.querySelector("#dzDials .dzdial span").textContent }));
     check("a figure clicked = a character in the explorer (its figure as a component); its shape controls by group", t2.tree.join("|") === "🧍 Mini|🦴 Mini (figure)" && /^Size/.test(t2.groups[0]) && t2.dial === "Tall", t2);
     await p.click('#dzTabs [data-kind="clothing"]'); await p.waitForFunction(() => [...document.querySelectorAll("#dzGrid .dzit span")].some((s) => s.textContent === "Shirt"), null, { timeout: 8000 }); await p.click("#dzGrid .dzit");
     await p.click('#dzTabs [data-kind="hair"]'); await p.waitForFunction(() => [...document.querySelectorAll("#dzGrid .dzit span")].some((s) => s.textContent === "Hair"), null, { timeout: 8000 }); await p.click("#dzGrid .dzit");
-    const t3 = await ev(() => ({ tree: [...document.querySelectorAll("#dzTree .dzcomp span")].map((s) => s.textContent.trim()), worn: document.querySelector("#dzGrid .dzit").classList.contains("worn") }));
+    const t3 = await ev(() => ({ tree: [...document.querySelectorAll("#dzTree .dzcomp:not(.dzpiece):not(.dzpieces):not(.dzwarn) span")].map((s) => s.textContent.trim()), worn: document.querySelector("#dzGrid .dzit").classList.contains("worn") }));
     check("👕 the shirt and 💇 the hair are the character's components (the tile marked worn)", t3.tree.join("|") === "🦴 Mini (figure)|👕 Shirt|💇 Hair" && t3.worn, t3);
     await ev(() => { const r = document.querySelector("#dzDials .dzdial input"); r.value = "0.5"; r.dispatchEvent(new Event("input")); });
     await p.check("#dzChanged");

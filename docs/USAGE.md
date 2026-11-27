@@ -468,6 +468,10 @@ its right edge sizes it, the bar between two dockers shares the height. The othe
 A panel switched off by its own button (🗂 Outline, 🧱 Wall types, 📚 Daz library) has no tab until it is on again - its
 place is kept. The layout is kept; in a narrow Sketcher the docker opens over the view and starts folded.
 
+**🔍 Zoom** (2.985.0, in the toolbox after ✋ Pan): drag up to zoom in, down to zoom out; a click zooms in at that spot,
+Shift+click out. **🏛 Architecture** (the top bar, before 📐 Plan): click it to hide the building tools - the toolbox's
+Build and Ground parts, 📐 Plan, ⌂ Cut-away, 🧱 Wall types, 📄 Plans - when you only sketch; again to show them (kept).
+
 Other tools: **L** Line (a line across a face splits it), **C** Circle, **N** Polygon, **M** Move (**Ctrl** = a
 copy, type `x,y,z`), **Q** Rotate, **S** Scale, **T** Tape, **B** Paint, **E** Eraser, **Space** Select (double-click
 a group to edit inside it, **G** makes a group). Models are kept in the project (projects/<project>/pushpull) and save
@@ -1287,7 +1291,19 @@ the characters stay in the scene. Your characters, their places and poses, and t
   the character's body in the view to pick a bone, or find it in the list; its three sliders, Mirror, 💪 Muscles, ↺ bone / pose
   - the figure's own JCMs follow), **🎬 Motion** (a Mixamo FBX on the picked character: ▶, the time bar, In place, Speed,
   ⤓ Bake; ✕ brings back the pose it had before).
-- Not here (yet): material presets (they are listed under 📦 Other but not applied).
+- **🎨 Materials** (2.985.0): a material preset (eye colour, make-up, a skin) is worn like clothing - its pictures paint
+  the surfaces it names (Irises, Lips …) on every piece of the character. Only the colour picture is used (light tasks).
+- **What the model has** (2.985.0): under each character the explorer lists **In the model** - every piece really built:
+  🧍 the figure, 👁 its eyes, 👄 its mouth, 🫀 grafts (anatomy), 💇 hair, 👕 clothes. Untick one to hide it in the 3D view
+  (kept). An item you wore that is not in this list was not built - the ⚠ line under the character says why.
+- **Poses that move the whole figure** (2.985.0): a pose preset that turns or moves the figure itself (lying, kneeling,
+  sitting on the floor) turns it, and the hips' move is used too; both stay with the character over a reload. ↺ pose
+  stands it up again.
+- **Delete** (2.985.0): a character picked in the view (its blue box) - press **Delete** (or Backspace) over the Sketcher and
+  it leaves the scene and the explorer; **↶ Undo** in the explorer's message brings it back where it stood. A click in
+  the view past the characters un-picks it, so Delete is the Sketcher's own again.
+- **✨ Photo with characters** (2.985.0): the characters are in the photo and in its depth map; the edit model is told
+  there are people and to keep each one's pose, body, hair and clothes.
 
 **📷 Body from a photo (2.981.0)** - in the 🧭 DAZ Explorer: shape the picked character to a photo of a person. It stays your
 own Daz figure, so its UVs, rig, muscle shapes and clothing fit come with it, and the photo is painted into those UVs.

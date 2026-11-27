@@ -16,8 +16,8 @@
 (function (root) {
   "use strict";
   const NOTE = "Not a replacement for Daz Studio - made for light tasks. Daz Studio is a very powerful character creator.";
-  const KINDS = [["figure", "🧍 Figures"], ["character", "🎭 Characters"], ["clothing", "👕 Clothing"], ["hair", "💇 Hair"], ["anatomy", "🫀 Anatomy"], ["pose", "🕴 Poses"], ["shape", "🎚 Shapes"], ["other", "📦 Other"]];
-  const WEAR = ["clothing", "hair", "anatomy", "other"];
+  const KINDS = [["figure", "🧍 Figures"], ["character", "🎭 Characters"], ["clothing", "👕 Clothing"], ["hair", "💇 Hair"], ["anatomy", "🫀 Anatomy"], ["pose", "🕴 Poses"], ["shape", "🎚 Shapes"], ["material", "🎨 Materials"], ["other", "📦 Other"]];   // 2.985.0: + 🎨 (eyes' colour, make-up, skins - worn = painted)
+  const WEAR = ["clothing", "hair", "anatomy", "material", "other"];
   const TEMPLATE = "var(--c1) var(--s1) var(--c2) var(--s2) var(--c3) var(--s3) var(--dzl) 5px minmax(200px, 1fr) 5px var(--dzr) var(--s5) var(--c4) var(--s4) var(--c5)";
   /** the dials by their group (a group's name = the last part of the morph's group path), groups and dials A-Z */
   function groupDials(list) {
@@ -37,6 +37,9 @@
     c.wear.push({ root: it.root, rel: it.rel, name: it.name, kind: it.kind }); return true;
   }
   /** a kept scene made safe to use: characters with a figure, the picked one found (else the first) */
+  const v3 = (a) => (Array.isArray(a) && a.length === 3 && a.every((x) => isFinite(+x)) ? a.map(Number) : [0, 0, 0]);
+  /** 2.985.0 (pure): the icon of a built piece's kind */
+  const PIECE_ICON = { figure: "🧍", eyes: "👁", mouth: "👄", graft: "🫀", hair: "💇", clothing: "👕", other: "📦" };
   function cleanScene(o) {
     const s = o && typeof o === "object" ? o : {}, chars = (Array.isArray(s.chars) ? s.chars : []).filter((c) => c && c.fig && c.fig.rel).slice(0, 40).map((c) => ({
       id: String(c.id || ("c" + (uid++))), name: String(c.name || c.fig.name || "Character").slice(0, 60), fig: { root: c.fig.root, rel: c.fig.rel, name: c.fig.name || "", kind: c.fig.kind || "figure" },
@@ -45,7 +48,10 @@
       muscles: c.muscles !== false, last: typeof c.last === "string" ? c.last : "", inScene: !!c.inScene, hidden: !!c.hidden,
       place: c.place && typeof c.place === "object" ? { x: +c.place.x || 0, y: +c.place.y || 0, rot: +c.place.rot || 0 } : { x: 0, y: 0, rot: 0 },
       pose: c.pose && typeof c.pose === "object" ? Object.fromEntries(Object.entries(c.pose).filter(([, r]) => r && typeof r === "object").map(([k, r]) => [k, { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }])) : {},
-      custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "" }));
+      custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "",
+      // 2.985.0: a pose preset's hips move + the whole figure's turn / move (kept - a sitting pose stays seated after a reload), the pieces hidden, the build's warnings
+      hips: v3(c.hips), figPose: { rot: { x: +(c.figPose && c.figPose.rot && c.figPose.rot.x) || 0, y: +(c.figPose && c.figPose.rot && c.figPose.rot.y) || 0, z: +(c.figPose && c.figPose.rot && c.figPose.rot.z) || 0 }, move: v3(c.figPose && c.figPose.move) },
+      hidePieces: (Array.isArray(c.hidePieces) ? c.hidePieces : []).map(String).slice(0, 80), warn: (Array.isArray(c.warn) ? c.warn : []).map((w) => String(w).slice(0, 300)).slice(0, 6) }));
     return { chars, sel: chars.some((c) => c.id === s.sel) ? s.sel : (chars[0] ? chars[0].id : "") };
   }
   /** 2.981.0: a copy of a character for a 📷 try (its figure, what it wears, its physics; dials / morphs / paint from the try) */
@@ -58,7 +64,7 @@
   function freeSpot(chars) { const used = (chars || []).filter((c) => c.inScene).map((c) => (c.place || {}).x || 0); let x = 0; while (used.some((u) => Math.abs(u - x) < 0.6)) x += 1; return { x, y: 0, rot: 0 }; }
   /** a pose preset's bones kept only when the figure has them (a Genesis 8 pose on a Genesis 9 figure moves little) */
   function posePick(pose, bones) { const out = {}; let n = 0; for (const [k, r] of Object.entries(pose || {})) if (bones && bones[k]) { out[k] = { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }; n++; } return { pose: out, n }; }
-  const pure = { NOTE, KINDS, WEAR, TEMPLATE, ROUTES, groupDials, newChar, wearToggle, cleanScene, tryChar, freeSpot, posePick };
+  const pure = { NOTE, KINDS, WEAR, TEMPLATE, ROUTES, PIECE_ICON, groupDials, newChar, wearToggle, cleanScene, tryChar, freeSpot, posePick };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -202,7 +208,7 @@
     $("dzBone").onchange = () => pickBone($("dzBone").value);
     $("dzPMus").onchange = () => { const c = cur(); if (!c) return; c.muscles = $("dzPMus").checked; keep(); if (root.H3DazScene) root.H3DazScene.pose(c.id, null, { muscles: c.muscles }); activePaint(); };
     $("dzPRBone").onclick = () => { const c = cur(); if (!c || !st.bone) return; delete c.pose[st.bone]; const o = $("dzMirror").checked && mirrorOf(st.bone); if (o) delete c.pose[o]; poseApply(); axes(); };
-    $("dzPRAll").onclick = () => { const c = cur(); if (!c) return; c.pose = {}; poseApply(); axes(); };
+    $("dzPRAll").onclick = () => { const c = cur(); if (!c) return; c.pose = {}; c.hips = [0, 0, 0]; c.figPose = { rot: { x: 0, y: 0, z: 0 }, move: [0, 0, 0] }; if (root.H3DazScene) root.H3DazScene.pose(c.id, null, { hips: c.hips, fig: c.figPose }); poseApply(); axes(); };
     // 🎬 the motion tab
     $("dzFbxB").onclick = () => $("dzFbx").click();
     $("dzFbx").onchange = async () => { const f = $("dzFbx").files[0]; $("dzFbx").value = ""; if (f) motionOpen(await f.arrayBuffer(), f.name).catch((e) => say("⚠ " + e.message)); };
@@ -286,8 +292,11 @@
     if (j.kind === "shape") { j.dials.forEach((d) => { if (+d.value) c.dials[d.url] = +d.value; else delete c.dials[d.url]; }); keep(); dialsPaint(); say("🎚 " + it.name + ": " + j.dials.length + " dial(s) on " + c.name + (c.last ? " - building…" : "")); if (c.last) rebuildSoon(c); return c; }
     const r = root.H3DazScene && root.H3DazScene.rig(c.id);
     if (!r) { say("🕴 build " + c.name + " into the scene first - a pose needs its bones"); return null; }
-    const pk = posePick(j.pose, r.daz.bones); c.pose = pk.pose; keep();
-    root.H3DazScene.pose(c.id, c.pose, { hips: j.hips ? j.hips.map((v) => v * 0.01) : [0, 0, 0] });
+    const pk = posePick(j.pose, r.daz.bones); c.pose = pk.pose;
+    c.hips = j.hips ? j.hips.map((v) => v * 0.01) : [0, 0, 0];                       // 2.985.0: kept with the character (cm -> m)
+    c.figPose = { rot: (j.fig && j.fig.rot) || { x: 0, y: 0, z: 0 }, move: j.fig && j.fig.move ? j.fig.move.map((v) => v * 0.01) : [0, 0, 0] };
+    keep();
+    root.H3DazScene.pose(c.id, c.pose, { hips: c.hips, fig: c.figPose });
     tab("pose"); axes(); activePaint();
     say("🕴 " + it.name + ": " + pk.n + " of " + j.n + " bone turn(s) on " + c.name + (pk.n < j.n ? " (the rest are for another figure)" : ""));
     return c;
@@ -307,11 +316,23 @@
       const comps = [{ name: c.fig.name, kind: c.fig.kind, fig: true }].concat(c.wear);
       comps.forEach((w) => {
         const k = doc.createElement("div"); k.className = "dzcomp"; k.setAttribute("role", "treeitem");
-        const ic = w.fig ? "🦴" : w.kind === "hair" ? "💇" : w.kind === "anatomy" ? "🫀" : "👕";
+        const ic = w.fig ? "🦴" : w.kind === "hair" ? "💇" : w.kind === "anatomy" ? "🫀" : w.kind === "material" ? "🎨" : "👕";
         k.innerHTML = "<span title=\"" + esc(w.rel || c.fig.rel) + "\">" + ic + " " + esc(w.name) + (w.fig ? ' <small style="opacity:.6">(figure)</small>' : "") + "</span>" + (w.fig ? "" : '<button type="button" class="ghost dzx" title="Take it off">✕</button>');
-        const x = k.querySelector("button"); if (x) x.onclick = () => { wearToggle(c, w); keep(); tree(); marks(); };
+        const x = k.querySelector("button"); if (x) x.onclick = () => { wearToggle(c, w); keep(); tree(); marks(); if (c.last && cur() === c) rebuildSoon(c); };   // 2.985.0: off the model too
         t.appendChild(k);
       });
+      // 2.985.0: what the built model really has - the figure, its eyes / mouth / grafts, hair, clothes - each shown or hidden
+      const P = root.H3DazScene && root.H3DazScene.rig(c.id) ? root.H3DazScene.pieces(c.id) : [];
+      if (P.length) {
+        const h = doc.createElement("div"); h.className = "dzcomp dzpieces"; h.innerHTML = '<span style="opacity:.7">In the model (' + P.length + "):</span>"; t.appendChild(h);
+        P.forEach((q) => {
+          const k = doc.createElement("label"); k.className = "dzcomp dzpiece"; k.dataset.piece = q.name;
+          k.innerHTML = '<input type="checkbox"' + (q.shown ? " checked" : "") + ' title="Show / hide it in the 3D view"><span>' + (PIECE_ICON[q.kind] || "📦") + " " + esc(q.name) + ' <small style="opacity:.6">(' + esc(q.kind === "graft" ? "graft" : q.kind) + ")</small></span>";
+          k.querySelector("input").onchange = (e) => { root.H3DazScene.pieceShow(c.id, q.name, e.target.checked); const r = root.H3DazScene.rig(c.id); c.hidePieces = r ? [...r.hidden] : []; keep(); };
+          t.appendChild(k);
+        });
+      }
+      if ((c.warn || []).length) { const w = doc.createElement("div"); w.className = "dzcomp dzwarn"; w.title = c.warn.join("\n"); w.innerHTML = "<span>⚠ " + esc(c.warn[0]) + (c.warn.length > 1 ? " (+" + (c.warn.length - 1) + ")" : "") + "</span>"; t.appendChild(w); }
     });
     const c = cur();
     $("dzOpts").querySelectorAll("[data-drape]").forEach((x) => { x.checked = !!c && c.drape.kinds.includes(x.dataset.drape); x.disabled = !c; });
@@ -334,7 +355,7 @@
       const j = await jpost("/api/dazlib/build", { root: c.fig.root, rel: c.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })),
         wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim(),
         custom: c.custom || [], paint: c.paint || null });
-      c.last = j.model; c.inScene = true; keep();
+      c.last = j.model; c.inScene = true; c.warn = (j.info.warnings || []).slice(0, 6); keep();
       const mu = j.info.muscles || {};
       try { if (sceneV() && root.H3DazScene) { await root.H3DazScene.put(c); root.H3DazScene.select(c.id); } } catch (e) { say("⚠ " + e.message); }
       say("✔ " + j.model + " - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (mu.kind === "jcm" ? ", 💪 " + mu.shapes + " JCMs" : mu.kind === "flex" ? ", 💪 our flex" : "") + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
@@ -516,6 +537,26 @@
   function sceneChanged(why) {
     const M = mot(); if (M && (why === "motion")) { const t = $("dzMTime"); if (t && doc.activeElement !== t) t.value = M.dur ? M.t / M.dur : 0; $("dzMTimeV").textContent = M.t.toFixed(1) + " s"; if (st.tab === "pose" && !M.playing) activePaint(); }
   }
+  /** 2.985.0 (Tim: "del button deletes the selected object including the daz characters"): the character picked in the view
+      (its blue box) leaves the scene and the explorer - ↶ in the message brings it back */
+  function deleteSel() {
+    const S = root.H3DazScene, id = S && S.sel(); if (!st.on || !id) return false;
+    const i = st.scene.chars.findIndex((x) => x.id === id); if (i < 0) return false;
+    const c = st.scene.chars[i], r = S.rig(id); if (r && r.place) c.place = Object.assign({}, r.place);   // where it stood (for ↶)
+    st.scene.chars.splice(i, 1); S.remove(id); S.select("", true);
+    if (st.scene.sel === id) st.scene.sel = st.scene.chars[0] ? st.scene.chars[0].id : "";
+    keep(); tree(); dialsLoad(); marks();
+    st.deleted = { c, i };
+    const m = $("dzMsg"); if (m) { m.innerHTML = ""; m.append("🗑 " + c.name + " deleted "); const u = doc.createElement("button"); u.type = "button"; u.className = "ghost"; u.id = "dzUndoDel"; u.textContent = "↶ Undo"; u.onclick = undoDelete; m.appendChild(u); }
+    const P = root.H3PushPull; if (P && P.msg) P.msg("🗑 " + c.name + " deleted (the DAZ character) - ↶ Undo in the DAZ Explorer");
+    return true;
+  }
+  async function undoDelete() {
+    const d = st.deleted; if (!d) return; st.deleted = null;
+    st.scene.chars.splice(Math.min(d.i, st.scene.chars.length), 0, d.c); st.scene.sel = d.c.id; keep(); tree(); dialsLoad(); marks();
+    try { if (d.c.last && d.c.inScene && sceneV()) { await root.H3DazScene.put(d.c); root.H3DazScene.select(d.c.id); } } catch (e) { say("⚠ " + e.message); return; }
+    say("↶ " + d.c.name + " is back"); tree();
+  }
   function pickChar(id) {
     if (!st.scene.chars.some((c) => c.id === id)) return;
     st.scene.sel = id; keep(); tree(); dialsLoad(); marks(); if (root.H3DazScene) root.H3DazScene.select(id);
@@ -543,7 +584,9 @@
     V.canvas.addEventListener("pointerdown", (e) => { down = [e.clientX, e.clientY]; }, true);
     V.canvas.addEventListener("pointerup", (e) => {
       if (!st.on || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return; down = null;
-      const S = root.H3DazScene, id = S.pickChar(e); if (!id) return;
+      const S = root.H3DazScene, id = S.pickChar(e);
+      if (!id) { if (S.sel()) S.select("", true); return; }                       // 2.985.0: a click past the characters un-picks (Delete is the Sketcher's again)
+      if (root.H3PushPull && root.H3PushPull.setSel) root.H3PushPull.setSel({});
       if (st.tab === "pose" && id === st.scene.sel) { const b = S.pickBone(e, id); if (b) { pickBone(b); return; } }
       pickChar(id); say("🧍 " + ((cur() || {}).name || "") + " picked - use clothes, hair, poses on it from the library");
     }, true);
@@ -572,6 +615,6 @@
     root.setTimeout(button, 1500);   // after the app strip has built itself
     if (LS.get("on", false)) toggle(true);
   }
-  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
+  root.H3DazTools = Object.assign({ deleteSel, undoDelete, toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

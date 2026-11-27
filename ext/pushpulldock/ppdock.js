@@ -300,17 +300,18 @@
   function toolbar() {
     const box = $("ppTools"); if (!box || box.children.length) return;
     const AT = root.PPArchTools;
-    const one = ([id, icon, label, key], hint) => {
-      const b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "ppT_" + id; b.textContent = icon;
+    // 2.985.0: cls "pparch" = an architecture tool (🏛 Architecture hides them - pparchtoggle.js)
+    const one = ([id, icon, label, key], hint, cls) => {
+      const b = doc.createElement("button"); b.type = "button"; b.className = "ghost" + (cls ? " " + cls : ""); b.id = "ppT_" + id; b.textContent = icon;
       if (id === "select" && root.H3PointerIcon) root.H3PointerIcon.apply(b, { size: 17 });   // 2.648.0 (Tim: "change the selection icon to a pointer")
       b.title = label + (key ? " (" + (key === " " ? "Space" : key.length > 1 ? key : key.toUpperCase()) + ")" : "") + " - " + hint;   // 2.657.0: a tool without a key b.setAttribute("aria-label", label);
       b.onclick = () => { S.T.use(id); S.V.canvas.focus({ preventScroll: true }); };
       box.appendChild(b);
     };
     root.PPTools.TOOLS.forEach((t) => one(t, root.PPTools.HINT[t[0]]));
-    if (AT && S.A) { const sep = doc.createElement("div"); sep.className = "pptsep"; sep.textContent = "Build"; box.appendChild(sep); AT.TOOLS.forEach((t) => one(t, AT.HINT[t[0]])); }
+    if (AT && S.A) { const sep = doc.createElement("div"); sep.className = "pptsep pparch"; sep.textContent = "Build"; box.appendChild(sep); AT.TOOLS.forEach((t) => one(t, AT.HINT[t[0]], "pparch")); }
     const TT = root.PPTerrainTools;                                      // 2.653.0: ⛰ the ground
-    if (TT && S.TV) { const sep = doc.createElement("div"); sep.className = "pptsep"; sep.textContent = "Ground"; box.appendChild(sep); TT.TOOLS.forEach((t) => one(t, TT.HINT[t[0]])); }
+    if (TT && S.TV) { const sep = doc.createElement("div"); sep.className = "pptsep pparch"; sep.textContent = "Ground"; box.appendChild(sep); TT.TOOLS.forEach((t) => one(t, TT.HINT[t[0]], "pparch")); }
     const sw = $("ppSw");
     PALETTE.forEach((c) => { const b = doc.createElement("button"); b.type = "button"; b.style.background = c; b.title = c; b.dataset.c = c; b.onclick = () => setColor(c); sw.appendChild(b); });
     paintSw();

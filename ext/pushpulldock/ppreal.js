@@ -57,7 +57,9 @@
     const byName = new Map(); furn.forEach((it) => { const L = String((d.furn ? d.furn(it.type) : it.type) || it.type).toLowerCase(); byName.set(L, (byName.get(L) || 0) + 1); });
     const fl = [...byName.entries()].slice(0, 12).map(([L, k]) => n(k, L, /s$|sh$|ch$/.test(L) ? L + "es" : L + "s"));
     parts.push(...fl);
-    if (people.length) parts.push(people.length === 1 ? "a person" : people.length + " people");
+    // 2.985.0: + the DAZ characters standing in the scene (d.daz = how many are shown)
+    const folk = people.length + (+d.daz || 0);
+    if (folk) parts.push(folk === 1 ? "a person" : folk + " people");
     if ((A.lights || []).length) parts.push(n(A.lights.length, "light fitting"));
     if ((A.pools || []).length) parts.push(n(A.pools.length, "swimming pool"));
     if ((A.drives || []).length) parts.push(n(A.drives.length, "driveway"));
@@ -71,7 +73,7 @@
     ops.forEach((o) => { mat(o.col); mat(o.trimCol); }); roofs.forEach((r) => mat(r.col)); (A.stairs || []).forEach((x) => mat(x.col)); (A.slabs || []).forEach((x) => mat(x.col));
     (faces || []).forEach((F) => mat(F && F.mat));
     if (win.length || door.some((o) => /glass|slid/i.test(String(o.style || "")))) mats.add("glass");
-    return { parts, materials: [...mats], building: rooms.length > 0, any: parts.length > 0 };
+    return { parts, materials: [...mats], building: rooms.length > 0, any: parts.length > 0, people: +d.daz || 0 };
   }
   /** the lead written from the model (pure) */
   function leadFor(w) {
@@ -79,6 +81,7 @@
     const what = w.building ? "a building with " + listOf(w.parts) : listOf(w.parts);
     return "Convert {img1}: Turn this 3D render into a photorealistic photograph of " + what + "."
       + (w.materials.length ? " Real materials: " + listOf(w.materials) + "." : " Real, natural materials.")
+      + (w.people ? " Each person is a real person in exactly the same pose, body shape, hair and clothes, with real skin." : "")   // 2.985.0
       + " Show only what is in the render and add nothing else. Natural daylight, soft shadows, no outlines, DSLR photo.";   // naming what NOT to add would prompt it
   }
   function promptFor(text, board, scene) {
@@ -155,7 +158,8 @@
   function state() { return { sketcher: shown("pushpulldock"), prompt: shown("promptdock"), editor: shown("imageeditdock"), maxed: !!($("pushpulldock") && $("pushpulldock").classList.contains("maxed")) }; }
   const PP = () => root.H3PushPull;
   const say = (t) => { const P = PP(); if (P && P.state && $("ppMsg")) $("ppMsg").textContent = t; };
-  async function engines() { if (S.engines) return S.engines; try { S.engines = await (await root.fetch("/api/aiedit/engines")).json(); } catch (e) { S.engines = { edit: [] }; } return S.engines; }
+  // 2.985.0: an empty / failed answer is not kept (a model installed later, or the server busy at the first ask, works on the next ✨)
+  async function engines() { if (S.engines && S.engines.edit && S.engines.edit.length) return S.engines; try { S.engines = await (await root.fetch("/api/aiedit/engines")).json(); } catch (e) { S.engines = { edit: [] }; } if (!S.engines || !Array.isArray(S.engines.edit)) S.engines = { edit: [] }; return S.engines; }
   const KEY = "pp.realStyle", kept = () => { try { return root.localStorage.getItem(KEY) || ""; } catch (e) { return ""; } }, keep = (v) => { try { if (v) root.localStorage.setItem(KEY, v); } catch (e) { /* fine */ } };
   /** 2.696.0: the bar's Photo style dropdown - the edit styles, the last one used picked; refreshed when it is opened */
   async function fillStyles(force) {
@@ -207,6 +211,17 @@
   }
   function tick() { seams(); link(linkedNow(state())); fillStyles(false); }
 
+  /** 2.985.0: why a render failed - the models it could not find, else the last lines of its log that say what went wrong */
+  async function whyFailed(id, jj) {
+    if (jj && Array.isArray(jj.models_missing) && jj.models_missing.length) return ": a model file is missing - " + jj.models_missing.slice(0, 3).map((m) => (m && (m.name || m.file)) || m).join(", ");
+    try {
+      const L = (await (await root.fetch("/api/jobs/" + encodeURIComponent(id) + "?log_from=0")).json()).log || [];
+      const lines = L.map((x) => String(x && x.text != null ? x.text : x)).filter((x) => x.trim());
+      const bad = lines.filter((x) => /error|failed|missing|not found|out of memory|exception/i.test(x)).slice(-2);
+      const say = (bad.length ? bad : lines.slice(-2)).join(" · ").slice(0, 400);
+      return say ? ": " + say : " - see the job log";
+    } catch (e) { return " - see the job log"; }
+  }
   /* ---- the run */
   async function run(text) {
     const P = PP(), V = P && P.state && P.state.V; if (!V || !P.state.M) { say("📷 the Sketcher's view is not ready"); return; }
@@ -225,7 +240,8 @@
       // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3
       // 2.688.0: the lead names only what the model has (sceneWords)
       const scene = sceneWords(P.state.M.arch, P.state.M.f, { furn: (t) => { try { const pc = root.PPFurn && root.PPFurn.pieces().find((x) => x.type === t); return pc ? pc.label : t; } catch (e) { return t; } },
-        mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } } });
+        mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } },
+        daz: (() => { try { const D = root.H3DazScene; return D ? D.list().filter((id) => { const r = D.rig(id); return r && r.outer.visible; }).length : 0; } catch (e) { return 0; } })() });
       const used = usedPictures(P.state.M.arch, P.state.M.f), bc = used.tiles.length || used.bg ? await boardPic(used) : null;
       const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
       S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
@@ -256,7 +272,7 @@
         if (jj.status === "running" && root.H3Steps && jj.progress) say("📷 a real photo of the model - " + root.H3Steps.text(jj.progress));
         if (jj.status && jj.status !== "running" && jj.status !== "queued") break;
       }
-      if (jj.status !== "done") throw new Error("the render " + jj.status + " - see the job log");
+      if (jj.status !== "done") throw new Error("the render " + jj.status + (await whyFailed(id, jj)));   // 2.985.0: the job's own words, not just "see the job log"
       const out = (jj.outputs && jj.outputs[0]) || jj.output; if (!out) throw new Error("the render made nothing");
       const url = "/outputs/" + encodeURIComponent(out);
       // a REAL image: the project's Image assets (+ a plain layer in the image editor when it is on screen)
