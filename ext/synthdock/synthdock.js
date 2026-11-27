@@ -259,6 +259,7 @@
     try { engine().noteOn(m, vel); } catch (e) { msg(e.message, true); return; }
     G.down[m] = (G.down[m] || 0) + 1; G.last = m; piano(); screenText(); wake();
     if (SC) SC.noteOn(m, vel);   // 2.954.0: ● Rec writes it, 🎓 Learn checks it
+    if (root.H3SynthSteps && root.H3SynthSteps.tapping()) root.H3SynthSteps.tap(vel);   // 2.992.0: 🥁 ● Tap takes keyboard / MIDI notes
   }
   function noteOff(m) {
     if (!G.down[m]) return;
@@ -433,7 +434,7 @@
     if (!d || d.length < 2 || !shown()) return;
     var st = d[0] & 0xf0, a = d[1], b = d.length > 2 ? d[2] : 0;
     // 2.954.0: the drum channel (10) plays the pads - notes 36-51 = pads 1-16
-    if ((d[0] & 0x0f) === 9 && (st === 0x90 || st === 0x80)) { if (st === 0x90 && b > 0 && a >= 36 && a <= 51 && PD) { ctx(); PD.hit(a - 36, b / 127); } return; }
+    if ((d[0] & 0x0f) === 9 && (st === 0x90 || st === 0x80)) { if (st === 0x90 && b > 0 && a >= 36 && a <= 51 && PD) { ctx(); PD.hit(a - 36, b / 127); if (root.H3SynthSteps && root.H3SynthSteps.tapping()) root.H3SynthSteps.tap(b / 127); } return; }
     var dot = $("syMidi"); if (dot) { dot.classList.add("hit"); root.setTimeout(function () { dot.classList.remove("hit"); }, 60); }
     if (st === 0x90 && b > 0) noteOn(a, b / 127);
     else if (st === 0x80 || (st === 0x90 && b === 0)) noteOff(a);

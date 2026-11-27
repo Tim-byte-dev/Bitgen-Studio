@@ -15273,6 +15273,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui988-ui.js > /tmp/ui988.log 2>&
 
 node scripts/test-989.js > /tmp/t989.log 2>&1 && ok "2.989.0 units: ✨ Photo follows the whole prompt, → Image editor transparent" || { bad "2.989.0 units"; grep -a "^FAIL" -A1 /tmp/t989.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui989-ui.js > /tmp/ui989.log 2>&1 && ok "2.989.0 browser test: the image editor's picture transparent, the view kept" || { bad "2.989.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui989.log | head -8; }
+# ---- 2.992.0 (🥁 Drumify in the Edit Booth's step sequencer)
+node scripts/test-992.js > /tmp/t992.log 2>&1 && ok "2.992.0 units: our kit read by band, taps / notes / sounds -> a pattern with the feel kept, fill-ins, ghosts, seeds, stepEvents off / vel / feel, cleanTL, wiring" || { bad "2.992.0 units"; grep -a "^FAIL" -A1 /tmp/t992.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui992-ui.js > /tmp/ui992.log 2>&1 && ok "2.992.0 browser test: 🥁 Drumify - ● Tap on the audio clock, the pattern + its timing heard, Feel 0, 🎲 / ↶, a note clip, a sound file read by band, kept" || { bad "2.992.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui992.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

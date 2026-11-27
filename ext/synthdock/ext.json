@@ -20,6 +20,7 @@
     "synthroll.js",
     "synthmix.js",
     "synthsteps.js",
+    "synthgroove.js",
     "synthundo.js",
     "synthfile.js",
     "synthdock.js"

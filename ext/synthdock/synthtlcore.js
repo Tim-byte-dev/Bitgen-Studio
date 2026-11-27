@@ -64,12 +64,17 @@
       if (!r) return null; var src = okSrc(r.src); if (!src) return null;
       var h = Array.isArray(r.hits) ? r.hits : [], hits = [];
       for (var i = 0; i < n; i++) hits.push(h[i] === 2 ? 2 : h[i] ? 1 : 0);
-      return { src: src, vol: num(r.vol, 0.8, 0, 1), hits: hits };
+      var out = { src: src, vol: num(r.vol, 0.8, 0, 1), hits: hits };
+      // 2.992.0 (🥁 Drumify): how far off the grid each step was played (-0.5..0.5 of a step) and how hard (0..1) - kept only when there
+      if (Array.isArray(r.off)) { out.off = []; for (var j = 0; j < n; j++) out.off.push(hits[j] ? Math.round(num(r.off[j], 0, -0.5, 0.5) * 1000) / 1000 : 0); }
+      if (Array.isArray(r.vel)) { out.vel = []; for (var k = 0; k < n; k++) out.vel.push(hits[k] ? Math.round(num(r.vel[k], hits[k] === 2 ? 1 : 0.7, 0.05, 1) * 1000) / 1000 : 0); }
+      return out;
     }).filter(Boolean).slice(0, MAXROWS);
   }
   function cleanSteps(c, base) {
     var n = Math.round(num(c.n, 16, 2, 64)), div = DIVS.indexOf(+c.div) >= 0 ? +c.div : 4;
     base.kind = "steps"; base.n = n; base.div = div; base.swing = num(c.swing, 0, 0, 0.5); base.rows = cleanStepRows(c.rows, n);
+    if (c.feel != null) base.feel = Math.round(num(c.feel, 1, 0, 1) * 100) / 100;   // 2.992.0: 0 = on the grid, 1 = as played
     return base;
   }
   /** a new step clip: one bar of 16ths, kick / snare / closed + open hats with a plain beat */
@@ -79,13 +84,20 @@
       rows: [{ src: "kit:kick", vol: 0.9, hits: z([0, 8]) }, { src: "kit:snare", vol: 0.8, hits: z([4, 12]) }, { src: "kit:chat", vol: 0.6, hits: z([0, 2, 4, 6, 8, 10, 12, 14]) }, { src: "kit:ohat", vol: 0.6, hits: z([]) }] };
   }
   /** the hits of a step clip over its length (clip-relative s), on the beats of the tempo map: the pattern repeats; odd steps
-   *  late by `swing` of a step; v = row volume x (accent 1, else 0.7) */
+   *  late by `swing` of a step; v = row volume x (accent 1, else 0.7) - 2.992.0: a row's own `vel` (how hard) when it has one,
+   *  and its `off` (played early / late, in steps) x the clip's `feel` (default 1 = as played; 0 = on the grid) */
   function stepEvents(c, map) {
-    var out = [], b0 = beatAt(map, c.start), sl = 1 / (c.div || 4);
+    var out = [], b0 = beatAt(map, c.start), sl = 1 / (c.div || 4), fe = c.feel == null ? 1 : c.feel;
     for (var i = 0; i < 4096; i++) {
       var t0 = timeAt(map, b0 + i * sl) - c.start; if (t0 >= c.len - 1e-9) break;
-      var t = i % 2 ? timeAt(map, b0 + (i + (c.swing || 0)) * sl) - c.start : t0, k = i % c.n;
-      (c.rows || []).forEach(function (r, ri) { var h = r.hits[k]; if (h && t < c.len) out.push({ t: Math.round(t * 1e6) / 1e6, src: r.src, v: r.vol * (h === 2 ? 1 : 0.7), row: ri, step: k }); });
+      var sw = i % 2 ? (c.swing || 0) : 0, k = i % c.n;
+      (c.rows || []).forEach(function (r, ri) {
+        var h = r.hits[k]; if (!h) return;
+        var of = r.off && r.off[k] ? r.off[k] * fe : 0, t = sw || of ? timeAt(map, b0 + (i + sw + of) * sl) - c.start : t0;
+        if (t < 0) t = 0;
+        var v = r.vel && r.vel[k] ? r.vel[k] : (h === 2 ? 1 : 0.7);
+        if (t < c.len) out.push({ t: Math.round(t * 1e6) / 1e6, src: r.src, v: r.vol * v, row: ri, step: k });
+      });
     }
     return out;
   }

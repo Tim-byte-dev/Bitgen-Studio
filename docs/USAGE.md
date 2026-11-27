@@ -2123,6 +2123,25 @@ clip shows its hits; drag its right edge to repeat the pattern for longer (it is
 and press ▦ Steps, to edit it again. The steps follow the tempo track, and the clip goes through the layer's mixer,
 lanes and keyframes like any other.
 
+**🥁 Drumify (2.992.0).** In the step sequencer, **🥁 Drumify…** turns a rhythm into a drum pattern that keeps the feel you
+played it with. Pick where the rhythm comes **From**:
+- **👆 Tap it**: press **● Tap**, listen to one bar of clicks, then tap along for the bars - on the **TAP** pad, any key
+  (Shift = a loud one), your MIDI keyboard or its drum pads (how hard you hit = how loud). It stops by itself at the end
+  (or ■ Stop / Esc).
+- **🎹 A note clip**: a note clip on the timeline - its rhythm and how hard each note was played (low notes lean to the kick).
+- **🔊 A sound**: a sound clip on the timeline, a kit sound or one of your samples - its hits are found and sorted by sound:
+  low = kick, middle = snare, high = hats (read at the timeline's tempo).
+
+**Bars** sets the pattern's length (Auto = as long as what you took). **Your hits** = Auto (by where each hit falls in the
+beat: 1 and 3 a kick, 2 and 4 a snare, the pushed "and"s a kick, the others hats), or all kick / snare / hats. **＋ hats**,
+**＋ backbeat** and **＋ kick on 1** fill in what your rhythm does not have (the hats lean the way you played - a lazy "and"
+gives them swing); **Ghost notes** adds soft snares next to the backbeats. **✨ Make** fills the kick, snare and hat rows
+(other rows stay); **🎲 Another** makes another take of the same rhythm; **↶ Put back** brings back the pattern from before.
+Each cell now shows how hard it was played (brighter = harder) and an orange tick when it was early or late. **Feel** (in
+the sequencer's bar) decides how much of that timing you hear: 1 = as played, 0 = every hit on the grid. A cell you click by
+hand is plain and on the grid. Drumify is our own small set of rules in code - not an AI model: nothing is downloaded and
+nothing leaves your PC. It is for light tasks - it gives you a start and you finish it in the grid.
+
 **The panel above the layers (2.963.0).** Top left, above the layers, a panel always shows what is picked: a clip = its
 file name with **Gain**, **Fade in** and **Fade out** (and its buttons); a keyframe, a tempo change or a take = theirs;
 nothing = the **picked layer**: its **name** (type a new one) with **Vol**, **Pan** and **Filter**. Click a layer's head (or

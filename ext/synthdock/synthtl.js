@@ -529,7 +529,22 @@
   function openSteps(li, ci) {
     var c = L(li) && L(li).clips[ci]; if (!c || c.kind !== "steps" || !root.H3SynthSteps) return false;
     return root.H3SynthSteps.open(c, { color: hue(li), sounds: stepSounds(), changed: function () { changed(); draw(); },
-      play: function () { if (S.playing) stop(); S.ph = c.start; play(); } });
+      play: function () { if (S.playing) stop(); S.ph = c.start; play(); },
+      // 2.992.0 🥁 Drumify: the clock, the tempo, what it can read (note clips, sound clips) and how to load a sound
+      ctx: function () { return O.ctx(); }, dest: function () { return O.dest(); }, tmap: function () { return tmap(); }, load: load,
+      noteClips: function () { return grooveClips("notes"); }, audioClips: function () { return grooveClips("audio"); } });
+  }
+  /** 2.992.0: the timeline's note clips / sound clips for 🥁 Drumify ({label, clip} | {label, src, start, off, len}) */
+  function grooveClips(kind) {
+    var out = [];
+    TLD.layers.forEach(function (l, li) {
+      l.clips.forEach(function (c) {
+        if (kind === "notes" ? c.kind !== "notes" : c.kind) return;
+        var label = l.name + " · " + c.name + " @ " + T.fmt(c.start);
+        out.push(kind === "notes" ? { label: label, clip: c } : { label: label, src: c.src, start: c.start, off: c.off || 0, len: c.len });
+      });
+    });
+    return out.slice(0, 200);
   }
   function openRoll(li, ci) {
     var l = L(li), c = l && l.clips[ci]; if (!c || c.kind !== "notes" || !root.H3SynthRoll) return false;
@@ -1109,7 +1124,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { _ctx: function () { return O.ctx(); }, addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.picked = l != null && l >= 0; paintWhat(); S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; S.picked = false; S.missing = {}; root.setTimeout(paintWhat, 0); layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },

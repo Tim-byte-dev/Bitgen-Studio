@@ -200,6 +200,27 @@
           .systepnone { color: #6c7688; font-size: 12px; }
           .systeps .sydk { flex: 0 0 auto; width: auto; padding: 3px 10px; }
           .systeprow .sydk { width: 32px; padding: 3px 0; }
+          /* 2.992.0 🥁 Drumify: a cell's brightness = how hard it was played, its tick = how early / late */
+          .systep { position: relative; }
+          .systep.on, .systep.acc { opacity: calc(0.4 + 0.6 * var(--v, 1)); }
+          .systep.felt::after { content: ""; position: absolute; top: 3px; bottom: 3px; width: 2px; border-radius: 1px; background: #ffa63d; left: calc(50% - 1px + var(--o, 0) * 100%); pointer-events: none; }
+          .sygrv { border-bottom: 1px solid #262b35; background: #10131a; padding: 6px 8px; display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #cfd6e2; }
+          .sygrv[hidden] { display: none; }
+          .sygrvnote { color: #8a95a8; font-size: 10px; }
+          .sygrvrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+          .sygrvrow label { display: inline-flex; gap: 4px; align-items: center; margin: 0; white-space: nowrap; }
+          .sygrvrow select { font-size: 11px; background: #07090c; color: #e6ebf5; border: 1px solid #2d323d; border-radius: 4px; max-width: 280px; }
+          .sygrvsrc { display: inline-flex; gap: 6px; align-items: center; }
+          .sygrvsrc[hidden] { display: none; }
+          .sygrvpad { width: 92px; height: 34px; border-radius: 6px; border: 1px solid #2d323d; background: #161a22; color: #6c7688; font: 700 11px/1 inherit; letter-spacing: 2px; cursor: pointer; touch-action: none; }
+          .sygrvpad.live { border-color: #ff4d5e; color: #f4f1e8; box-shadow: 0 0 8px #ff4d5e66; }
+          .sygrvpad.hit { background: #ffa63d; color: #07090c; }
+          #syGrvTap.rec { color: #ff4d5e; border-color: #ff4d5e; }
+          #syStepGroove.grvopen { border-color: #ffa63d; color: #ffa63d; }
+          .sygrvgo { border-color: #2ee66b !important; color: #2ee66b !important; }
+          .sygrvn { color: #8a95a8; }
+          .sygrvmsg { color: #9fe8b9; }
+          .sygrvmsg.bad { color: #ff9aa4; }
           /* 2.961.0: the tempo track */
           #syTTempo.on { color: #07090c; background: #ffae3a; border-color: #ffae3a; }
           .sytlrul { position: relative; }
