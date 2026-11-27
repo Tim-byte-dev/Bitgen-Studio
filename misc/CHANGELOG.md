@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.2.0** — 🧬 DAZ Tools Off the Main Toolbar: the Sketcher's Own 📚 DAZ Button Is the One Switch
 - **3.1.0** — 💾 Save Song in the Edit Booth (Every Layer Into One MP3 / WAV); SoulX-Singer Loads (NumPy Kept Below 2.4 for Numba); Seed-VC's Own inference.py Checked at Install
 - **3.0.0** — 🙂 A Real 3D Head From a Face Close-Up (the 3D Engine's Scan, Only the Head Wrapped Onto It); 👤 Make This Person With Shift Uses It
 - **2.999.0** — 👤 Make This Person (References → a Genesis 9 Character in the Sketcher); ✨ Photo Leaves a Face Reference Out When the Face Is Seen at a Very Different Angle (or the Character Already Carries It)

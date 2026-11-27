@@ -33,16 +33,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await ev(() => { Object.keys(localStorage).filter((k) => /^h3\.daztools\./.test(k)).forEach((k) => localStorage.removeItem(k)); });
     await p.reload({ waitUntil: "domcontentloaded" });
-    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3DazTools && document.getElementById("dazTools"), null, { timeout: 60000 });
+    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3DazTools, null, { timeout: 60000 });
     await p.waitForTimeout(1700);
-    const b0 = await ev(() => { const bt = document.getElementById("dazTools"), kids = [...document.getElementById("menubar").children]; return { text: bt.textContent, pressed: bt.getAttribute("aria-pressed"), after: kids[kids.indexOf(bt) - 1] && kids[kids.indexOf(bt) - 1].id, left: !!document.getElementById("dzLib") && getComputedStyle(document.getElementById("dzLib")).display }; });
-    check("🧬 DAZ Tools on the top menu bar (after the app strip), off at first - no Daz dockers", /DAZ Tools/.test(b0.text) && b0.pressed === "false" && b0.after === "appStrip" && (b0.left === false || b0.left === "none"), b0);
+    const b0 = await ev(() => ({ menu: !!document.querySelector("#menubar #dazTools"), any: !!document.getElementById("dazTools"), sk: !!document.querySelector("#pushpulldock #ppDazLib"), pressed: (document.getElementById("ppDazLib") || {}).getAttribute ? document.getElementById("ppDazLib").getAttribute("aria-pressed") : null, left: !!document.getElementById("dzLib") && getComputedStyle(document.getElementById("dzLib")).display }));
+    check("3.2.0: NO DAZ Tools button on the top menu bar - the Sketcher's own 📚 DAZ is the switch; off at first - no Daz dockers", !b0.menu && !b0.any && b0.sk && b0.pressed !== "true" && (b0.left === false || b0.left === "none"), b0);
     const m0 = await box("ppView");   // 2.983.0: the dockers are in the Sketcher
-    await p.click("#dazTools");
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); }); await p.waitForSelector("#ppDazLib", { state: "visible", timeout: 20000 }); await p.click("#ppDazLib");
     await p.waitForSelector("#dzLib .dzit", { timeout: 15000 });
     const L = await box("dzLib"), R = await box("dzSide"), M = await box("ppView");
     check("on (2.983.0): the Sketcher opens with the 📚 DAZ Library FLOATING over its view and the 🧭 Explorer docker RIGHT of the view", L.d !== "none" && R.d !== "none" && L.l >= M.l - 220 && L.l + L.w <= M.l + M.w && M.l + M.w <= R.l + 2 && L.w === 300 && R.w === 330 && R.h > 200 && (await ev(() => !document.getElementById("pushpulldock").classList.contains("dockgone"))), { L, R, M });
-    const t1 = await ev(() => ({ pressed: document.getElementById("dazTools").getAttribute("aria-pressed"), note: document.querySelector("#dzLib .dznote").textContent, items: [...document.querySelectorAll("#dzGrid .dzit span")].map((s) => s.textContent), heads: [...document.querySelectorAll("#dzSide .dzhead b")].map((x) => x.textContent) }));
+    const t1 = await ev(() => ({ pressed: document.getElementById("ppDazLib").getAttribute("aria-pressed"), note: document.querySelector("#dzLib .dznote").textContent, items: [...document.querySelectorAll("#dzGrid .dzit span")].map((s) => s.textContent), heads: [...document.querySelectorAll("#dzSide .dzhead b")].map((x) => x.textContent) }));
     check("the button lit; the not-a-replacement words; the library's figures; the right docker = Explorer + Shape controls", t1.pressed === "true" && /Not a replacement for Daz Studio/.test(t1.note) && t1.items.join() === "Mini" && t1.heads.join() === "🧭 DAZ Explorer,🎚 Parameters", t1);
     await p.click("#dzGrid .dzit");
     await p.waitForSelector("#dzDials .dzdial", { timeout: 10000 });
@@ -85,8 +85,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(800);
     const t7 = await ev(() => Object.assign(H3DazTools.info(), { app: document.getElementById("pushpulldock").classList.contains("dz-on"), w: Math.round(document.getElementById("dzSide").getBoundingClientRect().width) }));
     check("after a reload: still on, the same width, the character still in the explorer", t7.on && t7.app && Math.abs(t7.w - 390) <= 2 && t7.chars === 1 && t7.sel === "Hero", t7);
-    await p.click("#dazTools"); await p.waitForTimeout(300);
-    const off = { L: await box("dzLib"), R: await box("dzSide"), M: await box("ppView"), pressed: await ev(() => document.getElementById("dazTools").getAttribute("aria-pressed")) };
+    await p.click("#ppDazLib"); await p.waitForTimeout(300);
+    const off = { L: await box("dzLib"), R: await box("dzSide"), M: await box("ppView"), pressed: await ev(() => document.getElementById("ppDazLib").getAttribute("aria-pressed")) };
     check("off: the Daz dockers hidden, the Sketcher's view gets its room back, the button dark", off.L.d === "none" && off.R.d === "none" && off.M.w > M.w && off.pressed === "false", { off, m0 });
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + e.message); }

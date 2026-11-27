@@ -1322,8 +1322,8 @@ Good to know:
 
 ## 📚 The Daz library (the Sketcher, 2.977.0)
 
-**The DAZ dockers in the Sketcher (2.983.0)** - press **📚 Daz library** in the Sketcher's toolbar (or **🧬 DAZ Tools** on
-the top menu bar - it opens the Sketcher too). Like Daz Studio's layout: the **📚 DAZ Library** floats over the 3D view (drag
+**The DAZ dockers in the Sketcher (2.983.0)** - press **📚 Daz library** in the Sketcher's toolbar (3.2.0: the
+only switch - the 🧬 DAZ Tools button left the top menu bar). Like Daz Studio's layout: the **📚 DAZ Library** floats over the 3D view (drag
 its title to move it, its corner to size it, ▁ folds it), the **🧭 DAZ Explorer** and the **🎚 Parameters** dock on the right of
 the view (drag their left edge to size them, the bar between them to share the height) - or dock any of them in the ⚙ docker
 beside the toolbox (2.984.0: drag the library's title onto it, or ▾ on the docker). Press it again to hide the dockers -

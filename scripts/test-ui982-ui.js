@@ -33,8 +33,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await ev(() => { Object.keys(localStorage).filter((k) => /^h3\.(daztools|dazpose)\./.test(k)).forEach((k) => localStorage.removeItem(k)); });
     await p.reload({ waitUntil: "domcontentloaded" });
-    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3DazTools && window.H3DazPose && document.getElementById("dazTools"), null, { timeout: 60000 });
-    await p.click("#dazTools");
+    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3DazTools && window.H3DazPose , null, { timeout: 60000 });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); }); await p.waitForSelector("#ppDazLib", { state: "visible", timeout: 20000 }); await p.click("#ppDazLib");   // 3.2.0: the Sketcher's 📚 DAZ (no menu-bar button)
     await p.waitForSelector("#dzLib .dzit", { timeout: 15000 });
     await p.click("#dzGrid .dzit");
     await p.click("#dzMeasure summary");

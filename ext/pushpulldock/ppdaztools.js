@@ -2,7 +2,7 @@
  * controls as DOCKERS (window.H3DazTools). Tim: "add a toggle button to the top toolbar DAZ Tools, open the daz library in a
  * left docker, daz explorer (characters and components) and shape controls in the right docker when on, hide when off".
  * NOT A REPLACEMENT FOR DAZ STUDIO - light tasks; Daz Studio is a very powerful character creator.
- *   #dazTools (the menu bar, after the app strip)   on = #app.dz-on: two grid columns either side of the main column
+ *   (3.2.0: no menu-bar button - the Sketcher's 📚 DAZ #ppDazLib)   on = #app.dz-on: two grid columns either side of the main column
  *   #dzLeft  📚 DAZ Library     the content folders by kind with thumbnails; a figure / character = a new character in the
  *                                explorer, clothing / hair / anatomy = worn by (or taken off) the picked character
  *   #dzRight 🧭 DAZ Explorer    the characters and their components (figure + what they wear): pick, rename (double-click),
@@ -103,7 +103,7 @@
   function css() {
     if ($("dzCss")) return;
     const s = doc.createElement("style"); s.id = "dzCss";
-    s.textContent = "#pushpulldock:not(.dz-on) .dz-el{display:none!important}.dz-el [hidden]{display:none!important}#dazTools.on,#ppDazLib.on{background:var(--tiger-deep,#a8601a);color:#fff}"
+    s.textContent = "#pushpulldock:not(.dz-on) .dz-el{display:none!important}.dz-el [hidden]{display:none!important}#ppDazLib.on{background:var(--tiger-deep,#a8601a);color:#fff}"
       + "#dzSide{width:var(--dzr,330px);flex:none;display:flex;flex-direction:column;min-height:0;position:relative;border-left:1px solid var(--line,#3a352d);border-radius:6px;overflow:hidden}"
       + "#dzSplitR{position:absolute;left:0;top:0;bottom:0;width:6px;cursor:col-resize;z-index:3}#dzSplitR:hover,#dzSplitR.drag{background:var(--tiger-deep,#a8601a)}"
       + "#dzLib{position:absolute;left:var(--dzlx,76px);top:var(--dzly,6px);width:var(--dzlw,300px);height:var(--dzlh,70%);min-width:200px;min-height:160px;z-index:7;resize:both;border:1px solid var(--line,#3a352d);border-radius:7px;box-shadow:0 8px 26px #000b}"
@@ -134,18 +134,9 @@
       + ".dzsplit{cursor:col-resize}";
     doc.head.appendChild(s);
   }
-  /* ---------------- the toolbar button */
-  function button() {
-    let b = $("dazTools"); const mb = $("menubar"); if (!mb) return null;
-    if (!b) {
-      b = doc.createElement("button"); b.type = "button"; b.id = "dazTools"; b.className = "ghost"; b.textContent = "🧬 DAZ Tools";
-      b.title = "DAZ Tools - in the Sketcher: the Daz library (a floating docker), the explorer and the parameters (dockers on the right). " + NOTE;
-      b.setAttribute("aria-pressed", "false"); b.onclick = () => toggle();
-    }
-    const strip = $("appStrip"), pb = mb.querySelector(".projbtns"), after = strip || pb;
-    if (after && after.nextSibling !== b) mb.insertBefore(b, after.nextSibling); else if (!after && b.parentElement !== mb) mb.appendChild(b);
-    return b;
-  }
+  /* ---------------- 3.2.0 (Tim: "please remove the daz tools button from the main toolbar, it is in sketcher only"): no menu-bar
+     button - 📚 DAZ in the Sketcher's own bar (#ppDazLib, ppdock.js) is the one switch. An old one is taken away. */
+  function button() { const b = $("dazTools"); if (b) b.remove(); return null; }
   /* ---------------- the dockers */
   function build() {
     const host = $("ppMain"); if (!host) return false;
@@ -694,12 +685,12 @@
   /* ---------------- on / off */
   /** on: the Sketcher shown (if it was closed), the three DAZ dockers in it, the characters back in its scene; off: the dockers hidden (the characters stay in the scene) */
   function toggle(force) {
-    const on = force != null ? !!force : !st.on, d = $("pushpulldock"), b = button(), b2 = $("ppDazLib");
+    const on = force != null ? !!force : !st.on, d = $("pushpulldock"), b2 = $("ppDazLib");
     if (on && d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") { try { root.toggleDockGone("pushpulldock", "tX_pushpulldock"); } catch (e) { /* the menu's own way */ } }
     if (on && !build()) return false;
     st.on = on; LS.set("on", on);
     if (d) d.classList.toggle("dz-on", on);
-    for (const x of [b, b2]) if (x) { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); }
+    for (const x of [b2]) if (x) { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); }
     regrid();
     if (on) {
       sizes(LS.get("w", {}));
@@ -710,8 +701,7 @@
     return on;
   }
   function boot() {
-    button();
-    root.setTimeout(button, 1500);   // after the app strip has built itself
+    button();   // 3.2.0: an old menu-bar button gone
     if (LS.get("on", false)) toggle(true);
   }
   root.H3DazTools = Object.assign({ makePerson, carried: () => st.scene.chars.filter((c) => c.inScene && !c.hidden).flatMap((c) => c.fromRefs || []), deleteSel, undoDelete, toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
