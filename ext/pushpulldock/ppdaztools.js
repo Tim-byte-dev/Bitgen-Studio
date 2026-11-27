@@ -65,7 +65,28 @@
   function freeSpot(chars) { const used = (chars || []).filter((c) => c.inScene).map((c) => (c.place || {}).x || 0); let x = 0; while (used.some((u) => Math.abs(u - x) < 0.6)) x += 1; return { x, y: 0, rot: 0 }; }
   /** a pose preset's bones kept only when the figure has them (a Genesis 8 pose on a Genesis 9 figure moves little) */
   function posePick(pose, bones) { const out = {}; let n = 0; for (const [k, r] of Object.entries(pose || {})) if (bones && bones[k]) { out[k] = { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }; n++; } return { pose: out, n }; }
-  const pure = { NOTE, KINDS, WEAR, TEMPLATE, ROUTES, PIECE_ICON, groupDials, newChar, wearToggle, cleanScene, tryChar, freeSpot, posePick };
+  /* 2.999.0 👤 MAKE THIS PERSON (Tim: "can we do a head from a picture and the body to a g9 template? pictures will be in
+     reference images"): the References dock's pictures -> a Genesis 9 character in the Sketcher, through 📷 Body from a photo
+     (A fit the dials / B scan + wrap) + 🙂 Head (a face close-up when there is one). The character remembers the pictures it
+     was made from (fromRefs) - ✨ Photo then leaves them out of step 1: the render's head already carries that face. */
+  const BODY_ROLES = /^(person|body|outfit|clothing|pose|subject|)$/i, FACE_ROLES = /^(face|head|expression)$/i;
+  const refName = (r) => String((r && ((r.file && r.file.name) || r.name)) || "");
+  /** the References dock's pictures for a person (pure): {body, face} - body = the first person / body / outfit picture (the
+   *  face one when there is nothing else), face = the first face / head close-up (null: the head from the body photo) */
+  function personRefs(list) {
+    const a = (Array.isArray(list) ? list : []).filter((r) => r && (r.url || r.file) && !(r.file && r.file.type && !/^image\//.test(r.file.type)));
+    const role = (r) => String(r.role === "other" ? r.roleOther || "" : r.role || "person").trim();
+    const face = a.find((r) => FACE_ROLES.test(role(r))) || null, body = a.find((r) => /^(person|body|subject|)$/i.test(role(r))) || a.find((r) => BODY_ROLES.test(role(r))) || face;
+    return { body: body || null, face: face && face !== body ? face : null };
+  }
+  /** the Genesis 9 base figure among the library's figures (pure): the plainest "Genesis 9" (not a character / add-on) */
+  function pickG9(items) {
+    const L = (Array.isArray(items) ? items : []).filter((it) => it && it.kind === "figure" && /genesis\s*9/i.test(String(it.name || "") + " " + String(it.rel || "")));
+    const bad = /anatom|eyebrow|eyelash|tear|mouth|brow|lash|genital|geograft|shell|hair|morph/i;
+    const ok = L.filter((it) => !bad.test(String(it.name || "")));
+    return (ok.length ? ok : L).sort((a, b) => String(a.name).length - String(b.name).length || String(a.rel).localeCompare(String(b.rel)))[0] || null;
+  }
+  const pure = { NOTE, KINDS, WEAR, TEMPLATE, ROUTES, PIECE_ICON, groupDials, newChar, wearToggle, cleanScene, tryChar, freeSpot, posePick, personRefs, pickG9, refName };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -423,6 +444,51 @@
     } catch (e) { say("⚠ 📷 " + e.message); }
     st.busy = false; $("dzTry").disabled = false; tree();
   }
+  /** 2.999.0 👤 the References dock's person -> a Genesis 9 character in the Sketcher (route A dials / B scan + wrap) */
+  async function makePerson(route) {
+    const R0 = (typeof refs !== "undefined" && Array.isArray(refs)) ? refs : (Array.isArray(root.refs) ? root.refs : []);   // eslint-disable-line no-undef - the page's top-level `refs`
+    const pr = personRefs(R0);
+    if (!pr.body) throw new Error("put a picture of the person in the References dock first (Type: person - and a face close-up typed face, if you have one)");
+    if (st.busy) throw new Error("the DAZ tools are busy - wait for them to finish");
+    if (!st.on) toggle(true);
+    if (!$("dzTry")) throw new Error("the DAZ tools could not open");
+    say("👤 looking for Genesis 9 in your Daz library…");
+    let j; try { j = await jget("/api/dazlib/scan?kind=figure&q=" + encodeURIComponent("Genesis 9") + "&limit=200"); } catch (e) { throw new Error("the Daz library could not be read (" + e.message + ") - 📁 point bitGen at it in 📚 DAZ Library"); }
+    const g9 = pickG9(j.items);
+    if (!g9) throw new Error("no Genesis 9 figure in your Daz library - 📁 point bitGen at the folder that has it (📚 DAZ Library)");
+    let base = st.scene.chars.find((c) => c.fig.rel === g9.rel && c.fig.root === g9.root && !c.from);
+    if (!base) { base = newChar(g9, 1); st.scene.chars.push(base); }
+    st.scene.sel = base.id; keep(); tree(); dialsLoad();
+    // the try reads its choices from the 📷 panel: set them for this run (put back after)
+    const ids = ["dzHead", "dzPaint", "dzBackOn"], was = {}; ids.forEach((k) => { const e = $(k); if (e) was[k] = e.type === "checkbox" ? e.checked : e.value; });
+    const keepPick = { photo: st.photo, headPhoto: st.headPhoto };
+    const pic = (r, i) => ({ url: r.url, name: refName(r) || "reference_" + i + ".png" });
+    st.photo = pic(pr.body, 1); st.headPhoto = pr.face ? pic(pr.face, 2) : null;
+    $("dzHead").value = pr.face ? "close" : "photo"; $("dzPaint").value = "body"; $("dzBackOn").checked = false;
+    const before = st.scene.chars.length;
+    try { await tryIt(route === "B" ? "B" : "A"); }
+    finally { ids.forEach((k) => { const e = $(k); if (e && k in was) { if (e.type === "checkbox") e.checked = was[k]; else e.value = was[k]; } }); st.photo = keepPick.photo; st.headPhoto = keepPick.headPhoto; }
+    const c = st.scene.chars.length > before ? st.scene.chars[st.scene.chars.length - 1] : null;
+    if (!c) throw new Error(($("dzMsg") && $("dzMsg").textContent.replace(/^⚠\s*/, "")) || "the character was not made");
+    if (!c.last) throw new Error((($("dzMsg") && $("dzMsg").textContent) || "it was not built").replace(/^⚠\s*/, "") + " - " + c.name + " is in the 🧭 Explorer: 🧍 Build it again");
+    // what it was made from: the picture's name (+ its blob / file url - never a data: url, which can be megabytes)
+    c.fromRefs = [pr.body, pr.face].filter(Boolean).map((r) => ({ url: /^data:/.test(String(r.url || "")) ? "" : String(r.url || ""), name: refName(r) })); keep();
+    return c;
+  }
+  /** the 👤 button in the References dock (made here - the DAZ tools' own; the page's dock is not touched otherwise) */
+  function personButton() {
+    const bar = doc.querySelector("#refsdock .grpbar"); if (!bar || $("refPerson")) return;
+    const b = doc.createElement("button"); b.type = "button"; b.className = "ghost gbtn"; b.id = "refPerson"; b.textContent = "👤";
+    b.title = "👤 Make this person - the references typed person (the body) and face (a close-up, if any) become a Genesis 9 character in the Sketcher (📷 Body from a photo + 🙂 Head). Click: fit the dials (fast) · Shift+click: scan + wrap (closer, uses the 3D engine). Not a replacement for Daz Studio.";
+    b.onclick = async (ev) => {
+      const route = ev.shiftKey ? "B" : "A"; b.disabled = true; b.textContent = "⏳";
+      try { const c = await makePerson(route); say("👤 " + c.name + " - made from the References dock's picture" + (c.fromRefs.length > 1 ? "s" : "") + "; ✨ Photo leaves them out of its step 1 (the head already carries that face)"); }
+      catch (e) { say("⚠ 👤 " + e.message); b.title = "⚠ " + e.message; b.disabled = false; b.textContent = "⚠"; root.setTimeout(() => { b.textContent = "👤"; }, 4000); return; }
+      b.disabled = false; b.textContent = "👤";
+    };
+    bar.appendChild(b);
+  }
+  root.setInterval(personButton, 1500); personButton();
   /* ---------------- 📏 2.982.0: height, weight, tape measurements -> the figure's own body dials (a new character) */
   const fmtM = (m) => !m ? "" : [m.height ? m.height.toFixed(1) + " cm" : "", m.weight ? m.weight.toFixed(1) + " kg" : "", m.chest ? "chest " + m.chest.toFixed(0) : "", m.waist ? "waist " + m.waist.toFixed(0) : "", m.hips ? "hips " + m.hips.toFixed(0) + " cm" : ""].filter(Boolean).join(" · ");
   const dialsOf = (c) => Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] }));
@@ -629,6 +695,6 @@
     root.setTimeout(button, 1500);   // after the app strip has built itself
     if (LS.get("on", false)) toggle(true);
   }
-  root.H3DazTools = Object.assign({ deleteSel, undoDelete, toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
+  root.H3DazTools = Object.assign({ makePerson, carried: () => st.scene.chars.filter((c) => c.inScene && !c.hidden).flatMap((c) => c.fromRefs || []), deleteSel, undoDelete, toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

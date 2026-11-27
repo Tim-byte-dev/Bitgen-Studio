@@ -25,7 +25,7 @@ const M = RL.promptFor("", used(tiles, [{ src: "x", where: ["walls"] }]), null);
 check("materials + references on one board: both lines", /material board/.test(M) && /references? for the model itself/.test(M));
 check("boardCaptions: + the references", RL.boardCaptions(used(tiles)).join("|") === "Reference 1 (location)|Reference 2 (old brick wall)");
 const pr = rd("ext/pushpulldock/ppreal.js");
-check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /const all = refTiles\(/.test(pr) && /used\.refs = p\.subject;/.test(pr) && /\(used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length\) \? await boardPic\(used\)/.test(pr) && /refUse\(p, R\.refs\)/.test(pr));   // 2.996.0: the board = the model's own references; the message says what each went to
+check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /const all = refTiles\(/.test(pr) && /used\.refs = (p\.subject|fa\.keep);/.test(pr) && /\(used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length\) \? await boardPic\(used\)/.test(pr) && /refUse\(p, R\.refs\)/.test(pr));   // 2.996.0: the board = the model's own references; the message says what each went to
 check("boardPic: blob: references drawn, a 3 × 3 board at most", /\/\^blob:\|\^data:\//.test(pr) && /\.slice\(0, 9\)\)\.slice\(0, 9\)/.test(pr));
 
 const P = require(path.join(ROOT, "static/lbpano.js"));

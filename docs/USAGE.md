@@ -1355,6 +1355,18 @@ the characters stay in the scene. Your characters, their places and poses, and t
 - **✨ Photo with characters** (2.985.0): the characters are in the photo and in its depth map; the edit model is told
   there are people and to keep each one's pose, body, hair and clothes.
 
+**👤 Make this person (2.999.0)** - the **👤** button in the **References** dock's bar (next to 💾 ✕) makes a Genesis 9
+character from the references: the picture typed **person** (or body) shapes the body, a close-up typed **face** shapes and
+paints the head (without one, the head comes from the person picture's face). Click = fit the dials (fast); **Shift+click** =
+scan + wrap (closer - it uses the 3D engine). It opens the DAZ tools, finds Genesis 9 in your Daz library, runs 📷 Body from a
+photo + 🙂 Head below and builds the character into the Sketcher. The character remembers the pictures it was made from, so
+✨ Photo leaves them out of its step 1 - the render's head already carries that face.
+
+**✨ Photo and the face's angle (2.999.0)** - an edit model can only copy a face it can see. When the camera sees a DAZ
+character's face more than 40° from straight on, ✨ Photo leaves the references that carry a face (Type person, face, hair,
+expression) out of step 1 and keeps the render's own head; clothing, body and object references still go. The first message
+says which ones were left out and why.
+
 **📷 Body from a photo (2.981.0)** - in the 🧭 DAZ Explorer: shape the picked character to a photo of a person. It stays your
 own Daz figure, so its UVs, rig, muscle shapes and clothing fit come with it, and the photo is painted into those UVs.
 Pick the photo (a person standing, head to feet, facing the camera), pick the **way**, press **▶ Try it**. Each try is a NEW

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.999.0** — 👤 Make This Person (References → a Genesis 9 Character in the Sketcher); ✨ Photo Leaves a Face Reference Out When the Face Is Seen at a Very Different Angle (or the Character Already Carries It)
 - **2.998.0** — ✨ Photo: Only the Finished Photo in the Gallery (Its Steps' Pictures Moved Out)
 - **2.997.0** — 🦴 Rig it (UniRig) Installs Without uv or Python 3.11 Already There: the Add-ons Find a Fitting Python on This Computer, or Install uv Into the App's Runtime Folder and Fetch One
 - **2.996.0** — ✨ Photo / ✏ Edit (Sketcher): One Job per Step, Each Checked - the Model Made Real First (Grey Kept), Then the Place; References Used by Their Type; a Copied Reference or a Grey Mannequin Made Again; Failures Said

@@ -1411,6 +1411,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **✨ Photo / ✏ Edit (Sketcher)：每步只做一件事，每步都检查** — 第 1 步只把模型变成真实照片（灰色背景保持不变；类型为 person / clothing / object 等的参考图用于模型外观）；第 2 步只做场景（用文字或 *style* 参考图填充灰色，或把模型抠出放到 *environment* 参考图上，只融合边缘）。如果某步照搬了参考图或仍是灰色人体模型，会不带参考图再做一次；填充太平淡会再填一次；仍失败的部分以 ⚠ 显示。*位置：* Sketcher ▸ ✨ Photo；提示词面板 ▸ ✏ Edit (Sketcher)。*版本：* 2.996.0
 - **附加组件自己准备所需的 Python** — 🦴 Rig it（UniRig：仅限 Python 3.11）、⛰ Panorama depth 和 👗 Garment designer（3.10 - 3.12）在应用自带的 Python 合适时直接使用；否则查找本机上其他合适的 Python（py 启动器、常见安装文件夹）；再没有就把 uv 装进应用的 runtime 文件夹，由它把该版本 Python 下载到那里。只有全部失败时才停止安装，并说明如何解决。*位置：* Settings ▸ Add-ons ▸ Install。*版本：* 2.997.0
 - **✨ Photo：图库只显示最终照片** — 各步骤自己的图片（第 1 步、第 2 步、重试）在照片完成后移出图库；最终照片放入图库和 Image assets。*位置：* Sketcher ▸ ✨ Photo；提示词面板 ▸ ✏ Edit (Sketcher)。*版本：* 2.998.0
+- **👤 Make this person 与 ✨ Photo 的角度修正** — References 面板中的 👤 把类型为 person（身体）的参考图和面部特写做成 Sketcher 中的 Genesis 9 角色（拟合参数，或 Shift = 扫描＋包裹），之后 ✨ Photo 不再发送这些图片（头部已带有那张脸）；当相机看到角色面部偏离正面超过 40° 时，也会不发送面部参考图。*位置：* References 面板 ▸ 👤；Sketcher ▸ ✨ Photo。*版本：* 2.999.0
 
 ### 激光切割和雕刻
 

@@ -70,7 +70,7 @@ check("refUse: what each reference was used for, said (a place typed 'person' is
 // ---- the wiring
 const PR = src("ext/pushpulldock/ppreal.js"), AE = src("routes/aiedit.js");
 check("capture: step 1 gets the model's own references only (plan.subject); the grey unless the model has its own backdrop",
-  /used\.refs = p\.subject;/.test(PR) && /p\.mode === "own" \? \{\} : \{ fill: FILL \}/.test(PR) && /promptFor\(text, withBoard \? used : null, scene, \{ own: p\.mode === "own" \}\)/.test(PR));
+  /used\.refs = (p\.subject|fa\.keep);/.test(PR) && /p\.mode === "own" \? \{\} : \{ fill: FILL \}/.test(PR) && /promptFor\(text, withBoard \? used : null, scene, \{ own: p\.mode === "own" \}\)/.test(PR));
 check("step 1 checked (modelChange + edgeCorr -> judge); failed = once more WITHOUT the references (form(false, retryPrompt)), the better kept",
   /judge\(change, corr\)/.test(PR) && /form\(false, retryPrompt\(text, p\)\)/.test(PR) && /best = better\(best, await look\(/.test(PR));
 check("step 2: place = cut out onto the environment picture (coverData) + the edge band (ringPrompt, greenOnly); fill = the green with a style reference only",

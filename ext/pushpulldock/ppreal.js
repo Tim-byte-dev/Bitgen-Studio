@@ -145,6 +145,8 @@
   function refUse(p, list) {
     return (Array.isArray(list) ? list : []).filter(Boolean).map((r) => String(r.cap || "Reference").replace(/ \(.*$/, "") + " (" + (roleOf(r) || "person") + ") → "
       + (r === p.env ? "the place (the model is put into it)" : r === p.style ? "the look of the place"
+        : (p.carriedOut || []).includes(r) ? "left out: the 👤 character in the scene was made from it - its head already carries that face"
+        : (p.faceOut || []).includes(r) ? "left out: the camera sees the face at " + Math.round(p.faceAngle) + "° (more than " + FACE_LIMIT + "° from straight on) - the render's own head is kept"
         : p.subject.includes(r) ? "the model's look" + (p.mode === "own" ? "" : " - a place? set its Type to environment") : "not used here"));
   }
   /** how much the model changed between picture 1 and the photo (pure): the mean RGB difference 0..255 where the model is
@@ -211,6 +213,30 @@
     if (sa !== sb) return sa ? a : b;
     return sa ? (b.change > a.change ? b : a) : (b.corr > a.corr ? b : a);
   }
+  /* 2.999.0 (Tim: "when the angle is too different from the reference picture i get very bad picture"): an edit model can only
+     copy a face it can SEE - a straight-on photo given for a head seen from the side makes it invent one. The camera's angle
+     to the character's face is measured (faceAngle) and past FACE_LIMIT the references that carry a FACE (person, face, hair,
+     expression) stay out of step 1 - the render's own head is kept, made real; clothing, body, objects … still go. */
+  const FACE_LIMIT = 40, FACE_ROLES = /^(person|face|hair|expression|head)$/i;
+  const v3 = { sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2],
+    cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], len: (a) => Math.hypot(a[0], a[1], a[2]) };
+  /** how far (degrees, 0 = straight on) the camera is from looking the face in the eye (pure): head = the head bone, l / r = the
+   *  eye bones, neck = the neck bone (the head's up), cam = the camera's position - all world [x, y, z]; null when unknown */
+  function faceAngle(head, l, r, neck, cam) {
+    if (!head || !l || !r || !neck || !cam) return null;
+    const side = v3.sub(l, r), up = v3.sub(head, neck), mid = [(l[0] + r[0]) / 2, (l[1] + r[1]) / 2, (l[2] + r[2]) / 2];
+    let fwd = v3.cross(side, up); const n = v3.len(fwd); if (n < 1e-9) return null; fwd = fwd.map((x) => x / n);
+    if (v3.dot(fwd, v3.sub(mid, head)) < 0) fwd = fwd.map((x) => -x);                    // toward the eyes
+    const to = v3.sub(cam, mid), m = v3.len(to); if (m < 1e-9) return null;
+    return Math.acos(Math.max(-1, Math.min(1, v3.dot(fwd, to) / m))) * 180 / Math.PI;
+  }
+  /** the model's own references for step 1 at this face angle (pure) -> {keep, out} - faces left out past FACE_LIMIT */
+  function refsForAngle(subject, angle, carried) {
+    const C = (Array.isArray(carried) ? carried : []).filter(Boolean), isC = (r) => C.some((c) => (c.url && c.url === r.src) || (c.name && c.name === r.name));
+    const a = (Array.isArray(subject) ? subject : []).filter((r) => !isC(r)), carriedOut = (Array.isArray(subject) ? subject : []).filter(isC);   // 2.999.0: 👤 a character made from it
+    if (angle == null || angle <= FACE_LIMIT) return { keep: a.slice(), out: [], carriedOut };
+    return { keep: a.filter((r) => !FACE_ROLES.test(roleOf(r) || "person")), out: a.filter((r) => FACE_ROLES.test(roleOf(r) || "person")), carriedOut };
+  }
   /** the reference to put the model INTO: the first one whose Type is "environment" (or null) */
   function envRef(list) { return groupRefs(list).env; }
   /** pass 2's selection: 1 = the background (no model there: alpha < 128), grown `grow` px INTO the model's edge so a grey
@@ -265,7 +291,7 @@
   /** 2.987.0 (pure): the prompt docker's reference pictures as board tiles - pictures only, 6 at most, "Reference n (its words)" */
   function refTiles(list) {
     return (Array.isArray(list) ? list : []).filter((r) => r && r.url && !(r.file && r.file.type && !/^image\//.test(r.file.type))).slice(0, 6)
-      .map((r, i) => ({ src: r.url, role: r.role === "other" ? String(r.roleOther || "").trim() : String(r.role || ""), cap: "Reference " + (i + 1) + (r.desc ? " (" + String(r.desc).slice(0, 40) + ")" : r.role && r.role !== "person" ? " (" + r.role + ")" : "") }));   // 2.993.0: + role
+      .map((r, i) => ({ src: r.url, name: String((r.file && r.file.name) || r.name || ""), role: r.role === "other" ? String(r.roleOther || "").trim() : String(r.role || ""), cap: "Reference " + (i + 1) + (r.desc ? " (" + String(r.desc).slice(0, 40) + ")" : r.role && r.role !== "person" ? " (" + r.role + ")" : "") }));   // 2.993.0: + role
   }
   /** s = {sketcher, prompt, editor, maxed} (on screen) */
   function linkedNow(s) { return !!(s && s.sketcher && s.prompt && (s.maxed || !s.editor)); }
@@ -313,7 +339,7 @@
     });
     return c;
   }
-  const api = { KEEP_GREY, OWN_BG, SUBJ1, SUBJS, groupRefs, refUse, edgeCorr, judge, better, ringPrompt, EDGE_OK, plan, modelChange, greyLeft, retryPrompt, UNCHANGED, GREY_LEFT, envRef, bgMask, greenFill, fillPrompt, FILL, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { FACE_LIMIT, faceAngle, refsForAngle, KEEP_GREY, OWN_BG, SUBJ1, SUBJS, groupRefs, refUse, edgeCorr, judge, better, ringPrompt, EDGE_OK, plan, modelChange, greyLeft, retryPrompt, UNCHANGED, GREY_LEFT, envRef, bgMask, greenFill, fillPrompt, FILL, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -473,6 +499,23 @@
     R.shots.fill = { green: c, mask: m };
     return { data: out, job, left, again };
   }
+  /** 2.999.0: the face angle of the DAZ character nearest the camera (degrees) | null (no character / no eye bones) */
+  function headAngle(V) {
+    try {
+      const D = root.H3DazScene, cam = V && V.cam && V.cam(); if (!D || !cam) return null;
+      const T = cam.position.constructor, wp = (b) => { const q = b.getWorldPosition(new T()); return [q.x, q.y, q.z]; }, cp = [cam.position.x, cam.position.y, cam.position.z];
+      let best = null;
+      for (const id of D.list()) {
+        const r = D.rig(id); if (!r || !r.outer.visible || !r.bones) continue;
+        const f = (rx) => { for (const [bid, b] of r.bones) if (rx.test(bid)) return b; return null; };
+        const head = f(/^head$/i), l = f(/^(l_?eye|lEye|left_?eye)$/i), rr = f(/^(r_?eye|rEye|right_?eye)$/i), neck = f(/^(neck2|neckUpper|neck_?upper|neck)$/i) || f(/^neck/i);
+        if (!head || !l || !rr || !neck) continue;
+        const hp = wp(head), d = Math.hypot(hp[0] - cp[0], hp[1] - cp[1], hp[2] - cp[2]), a = faceAngle(hp, wp(l), wp(rr), wp(neck), cp);
+        if (a != null && (!best || d < best.d)) best = { d, a };
+      }
+      return best ? best.a : null;
+    } catch (e) { return null; }
+  }
   /** 2.995.0: everything a photo needs, taken AT THE CLICK (the view, its shots, the prompt docker's references, the name) - so
    *  the next click can turn the view and queue another while this one is still being made */
   function capture(text) {
@@ -481,7 +524,10 @@
     const used = usedPictures(P.state.M.arch, P.state.M.f);
     const all = refTiles((() => { try { return typeof refs !== "undefined" ? refs : root.refs; } catch (e) { return root.refs; } })());   // eslint-disable-line no-undef - the prompt docker's (index.html's top-level `refs`)
     const p = plan(text, !!used.bg, all);
-    used.refs = p.subject;                                                                          // 2.996.0: step 1 gets the model's own references only
+    p.faceAngle = headAngle(V);                                                                    // 2.999.0: the face's angle to the camera
+    const fa = refsForAngle(p.subject, p.faceAngle, (() => { try { return root.H3DazTools && root.H3DazTools.carried ? root.H3DazTools.carried() : []; } catch (e) { return []; } })());
+    p.faceOut = fa.out; p.carriedOut = fa.carriedOut;
+    used.refs = fa.keep;                                                                           // 2.996.0: step 1 gets the model's own references only
     V.setSel({ f: [], e: [], k: [] }); if (P.state.A && P.state.A.setSel) P.state.A.setSel(null);
     let model, photo, depth;
     try {
@@ -594,7 +640,7 @@
     if (IE && shown("imageeditdock")) try { IE.load(url, "📷 " + saved.name, !!(IE.S && IE.S.w)); } catch (e) { /* fine */ }
     say(tag + (notes.length ? " ⚠ " : " ") + "a real photo of the model - in the Image assets as " + saved.name + (notes.length ? " (" + notes.join("; ") + ")" : "") + (S.runs > 1 ? " · " + (S.runs - 1) + " more being made" : ""));
     S.last = { k: R.k, asset: saved.name, url, job: best.job, fillJob: fill ? fill.job : null, mode: p.mode, step2, change: best.change, corr: best.corr, ok: best.ok, why: best.why, retried,
-      left: fill ? fill.left : null, fillAgain: !!(fill && fill.again), notes, uses, gallery: gal && gal.name, steps: (R.outs || []).slice() };
+      left: fill ? fill.left : null, fillAgain: !!(fill && fill.again), notes, uses, faceAngle: p.faceAngle, faceOut: (p.faceOut || []).length, gallery: gal && gal.name, steps: (R.outs || []).slice() };
     try { if (root.H3TestEvent) root.H3TestEvent("sketcher_real", saved.name); } catch (e) { /* fine */ }
     return S.last;
   }

@@ -152,6 +152,24 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => { delete H3PushPull.state.M.arch.bg; });
     check("the model's own backdrop: one step (OWN_BG, the backdrop on the board), no fill", !err && sent.length === 1 && /Keep the background of \{img1\} the same place, made real/.test(sent[0].prompt) && last.mode === "own" && last.step2 === "none", { sent, last });
 
+    // ---- 2.999.0 the angle fix: a (stand-in) DAZ character whose face the camera sees straight on, then from the side
+    const fakeChar = (sideways) => ev((sw) => {
+      window.__realDaz = window.__realDaz || window.H3DazScene;
+      const C = H3PushPull.state.V.cam().position, T = C.constructor, H = [C.x + 3, C.y, C.z], f = sw ? [0, 1, 0] : [-1, 0, 0], sd = sw ? [1, 0, 0] : [0, 1, 0];
+      const b = (p) => ({ getWorldPosition: (v) => v.set(p[0], p[1], p[2]) });
+      const at = (k, s2) => [H[0] + f[0] * 0.09 + sd[0] * s2, H[1] + f[1] * 0.09 + sd[1] * s2, H[2] + 0.06];
+      const bones = new Map([["head", b(H)], ["l_eye", b(at(0, 0.032))], ["r_eye", b(at(0, -0.032))], ["neck2", b([H[0], H[1], H[2] - 0.1])]]);
+      window.H3DazScene = Object.assign({}, window.__realDaz, { list: () => ["c1"], rig: () => ({ outer: { visible: true }, bones }) });
+    }, sideways);
+    await setRefs([["person"], ["clothing", "#5050f0"]]);
+    await answer('return rec.fill_edit === "1" ? "blue" : "changed";');
+    await fakeChar(false); err = await runIt("a woman"); sent = await sentNow(); last = await lastNow();
+    check("2.999.0 the face seen straight on: both references to step 1 (the board), none left out", !err && last.faceAngle < 5 && last.faceOut === 0 && /board of references for the model itself/.test(sent[0].prompt), { a: last.faceAngle, out: last.faceOut });
+    await fakeChar(true); err = await runIt("a woman"); sent = await sentNow(); last = await lastNow();
+    check("…from the side (~90°): the person reference left OUT of step 1 (the clothing alone goes), and the message says why", !err && last.faceAngle > 80 && last.faceOut === 1 && /reference for the model itself \(clothing\)/.test(sent[0].prompt)
+      && /Reference 1 \(person\) → left out: the camera sees the face at \d+°/.test(last.uses.join("|")), { a: last.faceAngle, out: last.faceOut, uses: last.uses, p: sent[0].prompt.slice(-300) });
+    await ev(() => { window.H3DazScene = window.__realDaz; });
+
     // ---- J: ✨ Photo = the prompt docker's path; K: two at once, queued
     await answer('return rec.fill_edit === "1" ? "blue" : "changed";');
     await ev(async () => { window.__sent = []; document.getElementById("prompt").value = "a red barn on a farm"; await H3SketcherReal.run("a red barn on a farm"); });
