@@ -1297,6 +1297,13 @@ A model made from a photo (🧊 Convert to 3D, 🧱 Picture → 3D scene) is one
 and skin weights so it can be posed and animated - a person, an animal, a creature. It uses **UniRig** (MIT licence), an
 add-on: **Settings ▸ Add-ons ▸ 🦴 Rig it (UniRig)** (about 7 GB with its checkpoints; an NVIDIA card with 8 GB or more).
 
+**Its Python (2.997.0)** - UniRig needs Python **3.11** exactly (its Blender module, bpy 4.2, comes only for 3.11). Install
+uses the app's own Python when it is 3.11; else another Python 3.11 on this computer (Windows' `py -3.11`, the usual install
+folders, `python3.11`); else it installs **uv** into the app's `runtime` folder with the app's own Python, and uv downloads a
+Python 3.11 there too (nothing goes into Windows' own Python list). The ⛰ Panorama depth (3.10 - 3.12) and 👗 Garment designer
+(3.10 - 3.12) add-ons do the same. Only when none of that works does Install stop - and says to install Python 3.11 from
+python.org (or `winget install Python.Python.3.11`) and press Install again.
+
 1. In the Sketcher click **🦴 Rig ▾** and pick a model of the project - or **🦴 Rig** under an object in the 🧱 Picture →
    3D scene dialog. Not installed yet: the add-on's Install / Cancel box opens.
 2. It runs as a job (the job list): the shape is read, the skeleton predicted, then the skin weights, and the rig is put
@@ -11558,7 +11565,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **Python, NumPy, OpenCV, soundfile and pyaaf2** - the workers, tracking, beats, sound and AAF export
 - **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
 - **[GarmentCode](https://github.com/maria-korosteleva/GarmentCode)** (Maria Korosteleva, Nico Pietrani, Olga Sorkine-Hornung and others (ETH Zurich)) - 👗 the Garment designer's sewing-pattern programs (MIT, installed as an add-on)
-- **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python
+- **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python; 2.997.0: the Python 3.11 / 3.12 the add-ons need when this computer has none
 - **ReportLab, pypdf, jsdom and Playwright** - the Guide PDFs and the test suite
 
 ### 3D models

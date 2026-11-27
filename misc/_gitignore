@@ -180,6 +180,8 @@ mail/
 # 2.994.0: the add-ons' own installs (code + venvs + weights, GBs each) - never in the repo or a zip. Before this they were not
 # ignored at all: a push from an install folder would have taken them along.
 /pager/
+# 2.997.0: the app's runtimes (uv and the Pythons it fetches for add-ons) - this machine's own
+/runtime/
 /unirig/
 /hyworld/
 /flowhmr/
