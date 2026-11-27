@@ -58,7 +58,18 @@ FILES=$(find . -type f \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "basic_settings.tmp" ! -name "basic_settings.tmp.part" \
   ! -name "models_found.json" ! -name "models_found.json.part" \
+  ! -path "./settings/*" ! -path "./usage/*" ! -name "components.txt" ! -name "MM3_Characters_tmp.json" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
+# 2.992.0: .gitignore is the list of what is this machine's own (the 2.992.0 build caught settings/keys.master - an
+# encryption key the app makes on first start - and usage/, components.txt riding in the zips). In a git checkout every
+# UNTRACKED file git ignores is left out of every zip, whatever the list above misses; tracked files always ship.
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  IGN=$(echo "$FILES" | git check-ignore --stdin 2>/dev/null || true)
+  if [ -n "$IGN" ]; then
+    FILES=$(echo "$FILES" | grep -vxF -f <(echo "$IGN") || true)
+    echo "left out (git ignores them, this machine's own): $(echo "$IGN" | wc -l) file(s): $(echo "$IGN" | head -5 | tr '\n' ' ')"
+  fi
+fi
 # 2.589.0 (Tim: "remove this from bitgen and give it as an additional addon with notes saying this may trigger virus
 # checkers"): OPTIONAL extensions (ext.json "optional": true - the Team render farm, ext/teamdock) are in NO install
 # zip (full / repo / flat) - only their own bitgen-ext-<id>-v<ver>.zip, built below from ALLFILES
