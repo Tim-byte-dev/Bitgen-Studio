@@ -213,6 +213,8 @@ function mount(app) {
       if (b.ref_raw === "1") plan.prompt = String(plan.prompt || "").replace(/\{img(\d)\}/g, (_, n) => refWords.tag(n, wording));
       else plan.prompt = refNums.length === nr ? refWords.withRefs(plan.prompt, refNums, wording, refDescs) : aiEdit.refPrompt(plan.prompt, b.ref_desc, wording);
     }
+    // 2.996.0: ref_raw with no reference too (the Sketcher's fill of the grey: "{img1}" reached the model as written)
+    if (!ref0 && b.ref_raw === "1") plan.prompt = String(plan.prompt || "").replace(/\{img(\d)\}/g, (_, n) => refWords.tag(n, refWords.wordingFor(style, core.BASE)));
     if (plan.mode !== "edit") {
       if (!mask || !mask.buffer) return res.status(400).json({ error: "mask image missing (select an area first)" });
       if (plan.input === "rgba" && !(rgba && rgba.buffer))

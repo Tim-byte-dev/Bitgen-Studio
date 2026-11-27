@@ -17,15 +17,15 @@ check("refTiles: the prompt docker's pictures (not videos, not empty), \"Referen
 check("refTiles: 6 at most", RL.refTiles(Array.from({ length: 9 }, (_, i) => ({ url: "blob:" + i }))).length === 6);
 const used = (refs, tiles2) => ({ tiles: tiles2 || [], bg: null, refs: refs || [] });
 const A = RL.promptFor("a cottage at dusk", used(tiles), null), B = RL.promptFor("", used(tiles), null), C = RL.promptFor("a cottage at dusk", null, null), D = RL.promptFor("", null, null);
-check("prompt + references: the lead, the depth line, the references line, the words", /depth map/.test(A) && /Reference/.test(A) && /a cottage at dusk$/.test(A) && !/material board/.test(A), A);
-check("references, no prompt: the references line, no words", /Reference/.test(B) && !/cottage/.test(B));
-check("a prompt, no references: the words, no references line", !/Reference/.test(C) && /cottage/.test(C));
-check("neither: the scene only (the lead + the depth line)", D === RL.LEAD + " " + RL.DEPTH, D);
+check("prompt + references: the lead, the depth line, the references line, the words", /depth map/.test(A) && /references? for the model itself/.test(A) && /a cottage at dusk$/.test(A) && !/material board/.test(A), A);
+check("references, no prompt: the references line, no words", /references? for the model itself/.test(B) && !/cottage/.test(B));   // 2.996.0: the model's own references (SUBJ1 / SUBJS)
+check("a prompt, no references: the words, no references line", !/for the model itself\)? *:|references? for the model/.test(C) && /cottage/.test(C));
+check("neither: the scene only (the lead + the depth line)", D === RL.LEAD + " " + RL.DEPTH + " " + RL.KEEP_GREY, D);   // 2.996.0: + the grey kept (the place is step 2)
 const M = RL.promptFor("", used(tiles, [{ src: "x", where: ["walls"] }]), null);
-check("materials + references on one board: both lines", /material board/.test(M) && /Reference/.test(M));
+check("materials + references on one board: both lines", /material board/.test(M) && /references? for the model itself/.test(M));
 check("boardCaptions: + the references", RL.boardCaptions(used(tiles)).join("|") === "Reference 1 (location)|Reference 2 (old brick wall)");
 const pr = rd("ext/pushpulldock/ppreal.js");
-check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /used\.refs = refTiles\(/.test(pr) && /\(used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length\) \? await boardPic\(used\)/.test(pr) && /\(the scene only\)/.test(pr));
+check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /const all = refTiles\(/.test(pr) && /used\.refs = p\.subject;/.test(pr) && /\(used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length\) \? await boardPic\(used\)/.test(pr) && /refUse\(p, R\.refs\)/.test(pr));   // 2.996.0: the board = the model's own references; the message says what each went to
 check("boardPic: blob: references drawn, a 3 × 3 board at most", /\/\^blob:\|\^data:\//.test(pr) && /\.slice\(0, 9\)\)\.slice\(0, 9\)/.test(pr));
 
 const P = require(path.join(ROOT, "static/lbpano.js"));

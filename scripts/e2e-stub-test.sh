@@ -15278,13 +15278,15 @@ node scripts/test-992.js > /tmp/t992.log 2>&1 && ok "2.992.0 units: our kit read
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui992-ui.js > /tmp/ui992.log 2>&1 && ok "2.992.0 browser test: 🥁 Drumify - ● Tap on the audio clock, the pattern + its timing heard, Feel 0, 🎲 / ↶, a note clip, a sound file read by band, kept" || { bad "2.992.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui992.log | head -8; }
 # ---- 2.993.0 (✨ Photo never leaves the grey; ⤓ Import Daz content zips)
 node scripts/test-993.js > /tmp/t993.log 2>&1 && ok "2.993.0 units: the photo's background (environment reference / fill pass), Daz import (where each entry goes, find, unpack, keep / replace, the job)" || { bad "2.993.0 units"; grep -a "^FAIL" -A1 /tmp/t993.log | head -8; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui993-ui.js > /tmp/ui993.log 2>&1 && ok "2.993.0 browser test: ✨ Photo - words = pass 2 fills the green under a mask, an environment reference = the model drawn into it, refused = kept" || { bad "2.993.0 browser test (photo)"; grep -a "^FAIL" -A1 /tmp/ui993.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui993dz-ui.js > /tmp/ui993dz.log 2>&1 && ok "2.993.0 browser test: ⤓ Import Daz content - a new library + layout, zips found in folders, unpacked to the right place, kept / replaced" || { bad "2.993.0 browser test (Daz import)"; grep -a "^FAIL" -A1 /tmp/ui993dz.log | head -8; }
 # ---- 2.994.0 (⛰ Panorama depth - PaGeR, non-commercial weights)
 node scripts/test-994.js > /tmp/t994.log 2>&1 && ok "2.994.0 units: the PaGeR add-on (install on a stand-in machine), the route, the job, depthAt, the non-commercial disclaimer everywhere" || { bad "2.994.0 units"; grep -a "^FAIL" -A1 /tmp/t994.log | head -8; }
 python3 scripts/test-pager994.py > /tmp/t994py.log 2>&1 && ok "2.994.0 python: the depth mesh, the .glb, the stereo 360, the worker end to end (a stand-in venv)" || { bad "2.994.0 python"; grep -a "^FAIL" -A1 /tmp/t994py.log | head -8; }
 # ---- 2.995.0 (✨ Photo / ✏ Edit (Sketcher): one rule, checked results, several at once)
 node scripts/test-995.js > /tmp/t995.log 2>&1 && ok "2.995.0 units: plan (own / placed / fill), modelChange, greyLeft, retryPrompt, the silhouette alpha, no busy lock" || { bad "2.995.0 units"; grep -a "^FAIL" -A1 /tmp/t995.log | head -8; }
+# ---- 2.996.0 (✨ Photo / ✏ Edit (Sketcher): one job per step, each checked)
+node scripts/test-996.js > /tmp/t996.log 2>&1 && ok "2.996.0 units: step 1 = the model alone (the grey kept), step 2 = the place, the references by Type, edgeCorr / judge / better, the server's {img1} without a reference" || { bad "2.996.0 units"; grep -a "^FAIL" -A1 /tmp/t996.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui996-ui.js > /tmp/ui996.log 2>&1 && ok "2.996.0 browser test: ✨ Photo - the reference back / the render back retried alone, an environment = cut out onto it, a failed step said, several at once" || { bad "2.996.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui996.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui994-ui.js > /tmp/ui994.log 2>&1 && ok "2.994.0 browser test: ⛰ Depth - the first-time download box (non-commercial), the job, the bent spheres, stepping round, VR stereo" || { bad "2.994.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui994.log | head -8; }
 
 say "======================="

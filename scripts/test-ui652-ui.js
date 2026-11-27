@@ -59,7 +59,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
       const px = (c, x, y) => Array.from(c.getContext("2d").getImageData(x, y, 1, 1).data.slice(0, 3));
       return { prompt: r.prompt, ref0: r.ref0, raw: r.raw, board: bm ? [bm.width, bm.height] : null, photoCorner: px(sh.photo, 3, 3), depthCorner: px(sh.depth, 3, 3), boardTiles: sh.board ? px(sh.board, 20, 20) : null }; });
     check("sent: the render, its depth (ref0) and the material board (ref1) - the prompt names {img3} as the board, the user's words last",
-      s1.ref0 && s1.board && s1.raw === "1" && /\{img3\} is a material board/.test(s1.prompt) && /tile marked Background/.test(s1.prompt) && /\nThe prompt: a summer afternoon$/.test(s1.prompt), s1);
+      s1.ref0 && s1.board && s1.raw === "1" && /\{img3\} is a material board/.test(s1.prompt) && /tile marked Background/.test(s1.prompt) && /\n(The prompt|What the photo is for \(use it for the model itself\)): a summer afternoon$/.test(s1.prompt), s1);   // 2.996.0: a backdrop of its own = step 1 alone
     check("…the board: the red picture's tile + the backdrop's (2 tiles, one row), each captioned", s1.board[0] === 2 * 320 + 3 * 8 && s1.board[1] === 320 + 44 + 2 * 8 && s1.boardTiles[0] > 180 && s1.boardTiles[1] < 80,
       { board: s1.board, tile: s1.boardTiles });
     check("…the render shows the backdrop (green behind the model); its depth map does not (black there)", s1.photoCorner[1] > 120 && s1.photoCorner[0] < 90 && s1.depthCorner.every((v) => v < 20), { photo: s1.photoCorner, depth: s1.depthCorner });

@@ -2,7 +2,7 @@
 // bitGen Studio 2.993.0 - (1) ✨ Photo never leaves the grey: an "environment" reference = the model drawn into it; else pass 2
 // fills the grey (painted green) under a mask. Tim: "it still produces a gray background but it does use the reference picture".
 // (2) ⤓ Import Daz content: a library folder + its layout, zips found in folders and unpacked to the right place. Tim: "add an
-// import button next to my library ...". Browser: test-ui993-ui.js, test-ui993dz-ui.js.
+// import button next to my library ...". Browser: test-ui993dz-ui.js (the photo part: test-ui996-ui.js since 2.996.0).
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -30,14 +30,12 @@ const DI = require("../lib/dazImport.js");
     /fill all of it with a real, detailed photographic place/.test(fp) && /Never leave green, grey, white or a plain backdrop/.test(fp) && /stays exactly as it is/.test(fp) && /\{img2\} is the reference picture/.test(fp) && /The place and the scene: a woman standing in a park$/.test(fp)
     && !/\{img2\}/.test(fp0) && !/The place and the scene/.test(fp0) && !/The place and the scene/.test(R.fillPrompt(R.DEFAULT, false)));
   const sc = R.sceneWords({ rooms: [{ closed: true }] }, [], {}), pl = R.promptFor("a woman in a park", { refs: [{}], tiles: [], single: true }, sc, { placed: true }), pl0 = R.promptFor("", { refs: [{}], tiles: [], single: true }, sc, { placed: true });
-  check("an environment reference: the prompt says the place is already in picture 1 (PLACED), never the grey EMPTY line - with or without words",
-    pl.includes(R.PLACED) && !pl.includes(R.EMPTY) && pl0.includes(R.PLACED) && !/add nothing else/.test(pl0) && R.promptFor("x", null, sc).includes(R.EMPTY));
+  check("2.996.0 (replaces PLACED): an environment reference is never in step 1 - the plan puts the model INTO it in step 2", R.plan("a park", false, [{ role: "environment", src: "e" }]).mode === "place" && !R.promptFor("a park", null, sc).includes("already shows the 3D model"));
   const PR = src("ext/pushpulldock/ppreal.js");
-  check("the run: env reference -> placedPic (the reference behind the model alone); words / other references -> fill on the grey, then fillPass; the shot of the model alone is TRANSPARENT (photo would give it the sky)",
-    /const p = plan\(text, !!used\.bg, used\.refs\)/.test(PR) && /if \(p\.mode === "placed"\) \{ const pc = await placedPic\(p\.env\.src, R\.shots\.model\); if \(pc\) c = pc; \}/.test(PR)   // 2.995.0: one rule (plan)
-    && /V\.shot\(w, h, \{ clean: true, transparent: true \}\)/.test(PR) && /fill = await fillPass\(R, pic\)/.test(PR));
-  check("pass 2 = /api/aiedit fill_edit (the same edit model, generate, under the mask, ref_raw), the first reference as {img2}; refused = the first photo kept and said; the model's own pixels from pass 1",
-    /fill_edit: "1", edit_style_id: style, fill_kind: "generate"/.test(PR) && /ref_raw: "1"/.test(PR) && /fd\.append\("mask", mb/.test(PR) && /could not be filled \(/.test(PR) && /if \(!sel\[i\]\) \{ fd2\.data\[i \* 4\] = first\.data\[i \* 4\]/.test(PR));
+  check("the run (2.996.0): env reference -> cut out onto it (coverData) + the edge band; else fillPass on the grey; the shot of the model alone is TRANSPARENT",
+    /const p = plan\(text, !!used\.bg, all\)/.test(PR) && /const env = await coverData\(p\.env\.src, w, h\)/.test(PR) && /V\.shot\(w, h, \{ clean: true, transparent: true \}\)/.test(PR) && /fill = await fillPass\(R, best\.d, sel,/.test(PR));
+  check("pass 2 = /api/aiedit fill_edit (the same edit model, generate, under the mask, ref_raw); failed = said in the last message; outside the fill the step-1 pixels exactly",
+    /fill_edit: "1", edit_style_id: style, fill_kind: "generate"/.test(PR) && /ref_raw: "1"/.test(PR) && /fd\.append\("mask", mb/.test(PR) && /the place could not be made \(/.test(PR) && /if \(!sel\[i\]\) \{ out\.data\[i \* 4\] = base\.data\[i \* 4\]/.test(PR));
 
   // ---------------- (2) Daz import
   check("mapEntry: the first library top folder starts the path, in Daz's case (Content/ and wrappers dropped)",

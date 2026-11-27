@@ -649,50 +649,34 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
-**The same result every time, several at once (2.995.0)** - ✨ Photo and the prompt docker's ✏ Edit (Sketcher) now go
-through one rule, so the same view and words give the same kind of result:
-- **A backdrop or 360° sky of the model's own** - kept: one render, the model in it.
-- **A reference whose Type is *environment*** - the model drawn into that picture: one render.
-- **Anything else** - words or none, references or none - the model on a flat grey, then the grey is filled with a real
-  place (your prompt's, or one that suits the model when there are no words). Before, an empty prompt sent the pale sky
-  colour, which often came back as a grey background.
-- **Checked before it is kept**: if the photo comes back still looking like the 3D model (a grey mannequin), it is made
-  once more with short, direct words; if the place round the model comes back still grey or green, it is filled once more.
-  When it still is, the message says so (try another edit model, or more words).
+**How ✨ Photo makes the photo (2.996.0 - one job per step, each checked)** - ✨ Photo and the prompt docker's ✏ Edit
+(Sketcher) work the same way. Each step does one thing:
+- **Step 1 - the model made real.** A clean render of the view on a flat grey, its depth map, the model's own materials
+  and the references *for the model* go to the edit model. It is told to make the model a real photo and to **keep the
+  grey** - the place is not its job. Your words go along for the model itself (clothes, hair, materials…).
+- **Step 2 - the place.**
+  - No *environment* reference: the grey round the model is painted green and filled under a mask (the Krita AI plugin's
+    "fill the green") with your prompt's place - or, with no words, a real place that suits the model. A *style*
+    reference gives that place its look.
+  - A reference whose Type is **environment**: the step-1 photo of the model is **cut out onto that very picture**, and
+    only a thin band round the model's edge is blended (the ground under it, its shadow, its outline). The place is
+    exactly your picture.
+  - A **backdrop or 360° sky of the model's own**: there is no step 2 - it stays, made real in step 1.
+- **The reference's Type decides where it goes** (the dropdown under each picture in the prompt docker):
+  person, face, body, hair, clothing, object, wall, floor… = the model's look (step 1); **environment** = the place
+  (step 2); **style** = the place's look (step 2). A new reference starts as *person*, so a photo of a place you want the
+  model to stand in must be set to **environment**. The first message says what each reference was used for.
+- **Checked before it is kept.** If step 1 comes back with other outlines than the render (it copied a reference) or still
+  looking like the 3D render (a grey mannequin), it is made once more on its own, without the references, and the better
+  one is kept. If step 2 leaves the grey, the green or a plain studio backdrop, it is filled once more. Whatever still went
+  wrong is in the last message, marked ⚠ (a step that failed is never hidden behind "done").
 - **Press it again while one is being made**: each press takes its own picture of the view at that moment and adds its
-  jobs to the queue - turn the view, change the words, press again. The buttons count them (*✨ Photo · 2*, *✏ Edit
-  (Sketcher) · 2 making*); each message is numbered (📷 #3 …).
-- The model's outline for the fill now comes from a silhouette render. On a real graphics card the Sketcher's view has no
-  see-through background, so the old way read the whole picture as "the model" and the fill never ran - the grey stayed.
-  This also fixes → Image editor's transparent background, and an environment reference no longer gets a black box
-  round the model.
+  jobs to the queue. The buttons count them (*✨ Photo · 2*, *✏ Edit (Sketcher) · 2 making*); each message is numbered.
 
-**No more grey background (2.993.0)** - an edit model copies what is *in* picture 1, so a grey there came back grey whatever
-the words said. Now the place is put into the pictures:
-- **A reference whose Type is *environment*** (the Type dropdown under a picture in the prompt docker): picture 1 is the model
-  drawn straight over that picture, and the edit model makes it one real photo - that exact place, the model lit and shadowed
-  to match. One render.
-- **Words, or references of other Types** (a new reference starts as *person*): the photo is made as before (step 1 of 2),
-  then the grey round the model is painted green and filled again under a mask by the same edit model (step 2 of 2 - the
-  Krita AI plugin's "fill the green"), with your prompt's place and the first reference's look. Only the background is new:
-  the model keeps its pixels from step 1. If step 2 cannot run, the first photo is kept and the message says why.
-- No words and no references: 2.995.0 - the same as words (the grey, then a place that suits the model). A backdrop or 360° sky you set stays.
-
-**One reference picture is sent whole (2.991.0)** - with a single reference in the prompt docker (and no materials of the
-model's own), ✨ Photo sends that picture itself - its whole shape, sharp - as picture 3 and asks for its place, ground,
-surroundings, sky and look around the model. Before, it went as a small captioned square cut from the picture, and the edit
-model often lost it. Several references, or references with the model's own materials, still go on one labelled board.
-
-**The prompt's place replaces the empty background (2.990.0)** - with words in the prompt ("a woman standing in a park"),
-picture 1 is drawn on a flat grey with no sky or ground, and the edit model is told the grey is empty space to fill with the
-place your prompt describes - its ground, its surroundings, its sky (before, it kept the plain background). A backdrop or
-360° sky you set in the Sketcher stays as it is.
-
-**The prompt is followed in full (2.989.0)** - with words in the prompt docker, ✨ Photo and ✏ Edit (Sketcher) no longer tell
-the edit model to "add nothing else": the place, the setting, the time of day, the weather and any other people, animals or
-things your prompt names are added around the model, which keeps its shapes and camera angle. With no words: the scene
-alone, as before. **→ Image editor** sends the view with a **transparent background** (no sky, backdrop or ground) - Send ▾
-still has "with its background".
+History: 2.989 - 2.995 asked one job to make the model real *and* replace the grey, and sent references "for the whole
+picture's look". That is what gave a reference picture back, a grey background, or a mannequin in the right place.
+2.995.0 also made the model's outline come from a silhouette render (a real graphics card gives the Sketcher's view no
+see-through background), which fixed → Image editor's transparent picture too.
 
 **What ✨ Photo uses (2.987.0)** - the prompt docker's **reference pictures** and its **prompt**: both when there are
 both; the references alone when the prompt is empty; the prompt alone when there are no references; neither = the scene

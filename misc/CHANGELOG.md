@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.996.0** — ✨ Photo / ✏ Edit (Sketcher): One Job per Step, Each Checked - the Model Made Real First (Grey Kept), Then the Place; References Used by Their Type; a Copied Reference or a Grey Mannequin Made Again; Failures Said
 - **2.995.0** — ✨ Photo / ✏ Edit (Sketcher) Give the Same Result Every Time (One Rule, Checked for a Grey Mannequin or a Grey Background) and Queue Several at Once
 - **2.994.0** — ⛰ Panorama Depth (PaGeR, Non-Commercial Use Only): A 360° Panorama's Real Shape - Step Round In It, Real VR Stereo, a Stereo 360 and a Walk-In Mesh
 - **2.993.0** — ✨ Photo No Longer Leaves a Grey Background (Environment Reference Behind the Model, or a Fill Pass); ⤓ Import Daz Content Zips Into a Library Folder

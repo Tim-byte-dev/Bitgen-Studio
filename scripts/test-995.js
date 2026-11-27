@@ -12,7 +12,7 @@ const R = require(path.join(ROOT, "ext/pushpulldock/ppreal.js"));
 // plan - the one rule
 const P = (t, bg, refs) => R.plan(t, bg, refs || []);
 check("plan: the model's own backdrop / sky = own (one pass, as it is) - words or not", P("", true).mode === "own" && P("a park", true).mode === "own" && P("a park", true).words === true);
-check("…an environment reference = placed (the model drawn into it), its picture kept", P("x", false, [{ role: "Environment", src: "e.png" }]).mode === "placed" && P("x", false, [{ role: "environment", src: "e.png" }]).env.src === "e.png");
+check("…an environment reference = place (2.996.0: the model cut out onto it in step 2), its picture kept", P("x", false, [{ role: "Environment", src: "e.png" }]).mode === "place" && P("x", false, [{ role: "environment", src: "e.png" }]).env.src === "e.png");
 check("…everything else = fill: no words, the default words, words, a person reference (no more 'no words = the pale sky')",
   ["", R.DEFAULT, "  ", "a park"].every((t) => P(t, false).mode === "fill") && P("", false, [{ role: "person", src: "p" }]).mode === "fill");
 check("…words = only real words (not empty, not the default)", !P("", false).words && !P(R.DEFAULT, false).words && P("a park", false).words);
@@ -20,10 +20,7 @@ check("…words = only real words (not empty, not the default)", !P("", false).w
 // promptFor in fill mode, no words: the grey is EMPTY (a place that suits the model), never "add nothing else"
 const sc = R.sceneWords({ rooms: [{ closed: true }] }, [], {});
 const f0 = R.promptFor("", null, sc, { fill: true }), f1 = R.promptFor(R.DEFAULT, null, sc, { fill: true }), o0 = R.promptFor("", null, sc), pl = R.promptFor("", null, sc, { placed: true, fill: true });
-check("promptFor fill, no words: the EMPTY_ANY line (replace the grey with a real place that suits the model), 'add nothing else' dropped",
-  f0.includes(R.EMPTY_ANY) && f1.includes(R.EMPTY_ANY) && !/add nothing else/.test(f0) && f0.includes(R.KEEP_MODEL) && !/\nThe prompt/.test(f0), f0);
-check("…without fill (own backdrop) as before; placed wins over fill (PLACED, no grey line)", !o0.includes(R.EMPTY_ANY) && /add nothing else/.test(o0) && pl.includes(R.PLACED) && !pl.includes(R.EMPTY_ANY));
-check("…with words the EMPTY line (the prompt's place) as before", R.promptFor("a park", null, sc, { fill: true }).includes(R.EMPTY) && !R.promptFor("a park", null, sc, { fill: true }).includes(R.EMPTY_ANY));
+check("2.996.0: step 1 never replaces the grey (EMPTY / EMPTY_ANY / PLACED gone - see test-996): KEEP_GREY with or without words, OWN_BG with a backdrop", f0.includes(R.KEEP_GREY) && f1.includes(R.KEEP_GREY) && o0.includes(R.KEEP_GREY) && R.promptFor("", null, sc, { own: true }).includes(R.OWN_BG));
 
 // modelChange - the grey mannequin detector
 const W = 8, H = 4, N = W * H, rgba = (f) => { const d = new Uint8ClampedArray(N * 4); for (let i = 0; i < N; i++) { const c = f(i); d[i * 4] = c[0]; d[i * 4 + 1] = c[1]; d[i * 4 + 2] = c[2]; d[i * 4 + 3] = 255; } return d; };
@@ -40,16 +37,15 @@ check("greyLeft: a real place = 0, the grey kept = 1, the green kept = 1 (only t
   R.greyLeft(filled, sel, 128) === 0 && R.greyLeft(greyBack, sel, 128) === 1 && R.greyLeft(greenBack, sel, 128) === 1 && R.GREY_LEFT > 0 && R.GREY_LEFT < 1);
 
 // retryPrompt / fillPrompt strict
-const rp = R.retryPrompt("a woman in a park", { mode: "fill" }), rp0 = R.retryPrompt("", { mode: "placed" });
-check("retryPrompt: short and direct - a real photograph, nothing like a grey mannequin, shapes / pose / camera kept, the prompt after",
-  /^Make \{img1\} a real photograph/.test(rp) && /grey 3D model, a mannequin or a render/.test(rp) && /same shapes, pose, layout and camera angle/.test(rp) && /Replace the flat grey/.test(rp) && /\nThe prompt: a woman in a park$/.test(rp)
-  && /place behind it stays/.test(rp0) && !/The prompt/.test(rp0));
+const rp = R.retryPrompt("a woman in a park", { mode: "fill" }), rp0 = R.retryPrompt("", { mode: "own" });
+check("retryPrompt: short and direct - a real photograph, nothing like a grey mannequin, shapes / pose / camera kept, the prompt after (2.996.0: the grey kept / the backdrop kept)",
+  /^Make \{img1\} a real photograph/.test(rp) && /grey 3D model, a mannequin or a render/.test(rp) && /same shapes, pose, layout and camera angle/.test(rp) && rp.includes(R.KEEP_GREY) && /: a woman in a park$/.test(rp) && rp0.includes(R.OWN_BG) && !/What the photo/.test(rp0));
 check("fillPrompt strict: 'Every green pixel must become …' first, the rest as before", /^Every green pixel must become part of a real photographed place/.test(R.fillPrompt("x", false, true)) && !/^Every/.test(R.fillPrompt("x", false)));
 
 // the wiring
 const PR = src("ext/pushpulldock/ppreal.js"), PV = src("ext/pushpulldock/ppview.js");
 check("one way in: the ✨ Photo button and the prompt docker both call run -> capture (the plan) -> make",
-  /async function run\(text\) \{\s*const R = capture\(text\)/.test(PR) && /const p = plan\(text, !!used\.bg, used\.refs\)/.test(PR) && /return await make\(R\)/.test(PR) && /run\(text\)\.catch/.test(PR) && /H3SketcherReal\.run\(t\)/.test(src("ext/pushpulldock/ppdock.js")));
+  /async function run\(text\) \{\s*const R = capture\(text\)/.test(PR) && /const p = plan\(text, !!used\.bg, all\)/.test(PR) && /return await make\(R\)/.test(PR) && /run\(text\)\.catch/.test(PR) && /H3SketcherReal\.run\(t\)/.test(src("ext/pushpulldock/ppdock.js")));
 check("several at once: no busy lock ('still making the last one' gone), a running count on both buttons, the shots taken at the click",
   !/S\.busy/.test(PR) && !/still making the last one/.test(PR) && /S\.runs\+\+; paintBusy\(\);/.test(PR) && /S\.runs = Math\.max\(0, S\.runs - 1\)/.test(PR)
   && /"✏ Edit \(Sketcher\)" \+ \(S\.runs \? " · " \+ S\.runs \+ " making" : ""\)/.test(PR) && /"✨ Photo" \+ \(S\.runs \? " · " \+ S\.runs : ""\)/.test(PR) && /shots: \{ photo, depth, model \}/.test(PR));
@@ -57,7 +53,7 @@ check("…each job goes in the queue (refreshJobs after every /api/aiedit), each
 check("the model's coverage from a SILHOUETTE shot (the renderer has alpha: false - a 'transparent' clear was opaque black on a real GPU)",
   /alpha: false/.test(PV) && /if \(o\.mask\) \{ ground\.visible = false; R\.setClearColor\(0x000000, 1\); scene\.overrideMaterial = new T\.MeshBasicMaterial\(\{ color: 0xffffff, side: T\.DoubleSide \}\); \}/.test(PV)
   && /if \(o\.transparent && !o\.mask\) \{[\s\S]{0,200}mask: true/.test(PV) && /d\.data\[i\] = md\[i - 3\]/.test(PV));
-check("checked results: a photo still like the render -> once more (retryPrompt); a fill still grey / green -> once more (strict, no reference); said when it still is",
-  /change >= 0 && change < UNCHANGED/.test(PR) && /retryPrompt\(text, p\)/.test(PR) && /if \(left > GREY_LEFT\)/.test(PR) && /form\(false, true\)/.test(PR) && /it still looks like the 3D model/.test(PR) && /some of the place is still grey/.test(PR));
+check("checked results (2.996.0: judge = shape + change): failed step 1 -> once more (retryPrompt, no references); a fill still plain / green -> once more (strict, no reference); said when it still is",
+  /judge\(change, corr\)/.test(PR) && /retryPrompt\(text, p\)/.test(PR) && /if \(left > GREY_LEFT\)/.test(PR) && /form\(false, true\)/.test(PR) && /it still looks like the 3D model/.test(PR) && /some of the place is still a plain backdrop/.test(PR));
 console.log("\nRESULT: " + pass + " passed, " + fail + " failed");
 process.exitCode = fail ? 1 : 0;
