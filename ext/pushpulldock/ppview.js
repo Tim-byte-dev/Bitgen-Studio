@@ -348,6 +348,15 @@
     /** 2.648.0 (Tim: "shift + drag foward = zoom in, shift + drag back = zoom out"): f > 1 = closer, round the screen point
         (sx, sy px from the view's top-left) - it stays under the pointer (perspective: the eye moves toward it; parallel /
         the floorplan: the zoom) */
+    // 2.984.0: ← / → turn the view around the up (Z) axis through what it looks at - the "orbit on the xy plane" of the arrow keys
+    function orbitZ(rad) {
+      if (!Number.isFinite(rad) || !rad) return;
+      const t = controls.target, c = Math.cos(rad), s = Math.sin(rad);
+      const turn = (v) => { const x = v.x - t.x, y = v.y - t.y; v.x = t.x + x * c - y * s; v.y = t.y + x * s + y * c; };
+      turn(persp.position); if (ortho.position) turn(ortho.position);
+      if (Math.hypot(cam.position.x - t.x, cam.position.y - t.y) < 1e-6) cam.up.applyAxisAngle(new T.Vector3(0, 0, 1), rad);   // straight down: turn the picture
+      controls.update(); draw();
+    }
     function zoomAt(f, sx, sy) {
       if (!(f > 0) || !Number.isFinite(f)) return;
       const r = R.domElement.getBoundingClientRect(), x = sx == null ? r.width / 2 : sx, y = sy == null ? r.height / 2 : sy;
@@ -466,7 +475,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, orbitZ, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

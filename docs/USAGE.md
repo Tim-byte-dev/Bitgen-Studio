@@ -449,8 +449,24 @@ to use as film sets. It replaces the House builder of older versions. Its ❔ ha
 
 Sizes are typed at any moment (no need to click the box): lengths (`1.5`, `150cm`, `1500mm`, `5'`), two values
 (`3,2`), sides (`36s`), degrees. The marker shows what the point snaps to (Endpoint, Midpoint, On Edge, On Face,
-On Ground) and a dotted line when you are on the red / green / blue axis - **Shift** or **→ ← ↑** keep that axis.
-Middle drag orbits, right drag pans, the wheel zooms, **Shift+Z** shows everything.
+On Ground) and a dotted line when you are on the red / green / blue axis - **Shift**, or **→ ← ↑** while a tool is
+half-way (a line started, a face being pushed), keep that axis (**↓** lets it go).
+Middle drag orbits, right drag pans, the wheel zooms, **Shift+Z** shows everything. With no tool half-way the arrow keys
+move the view (2.984.0): **↑ / ↓** zoom in / out, **← / →** turn the view round its upright (Z) axis - an orbit on the
+ground plane, 5° a press (**Shift** = 15°). In a text box the arrows stay the box's.
+
+**The ⚙ docker beside the toolbox (2.984.0)** - right of the left toolbox a docker column holds the Sketcher's panels:
+🗂 **Outline** and ⚙ **Properties** (the settings of the tool you chose or of what you picked - "Nothing picked" when
+there is nothing), stacked one above the other. **«** folds it to a thin strip (a strip button opens it on that panel);
+its right edge sizes it, the bar between two dockers shares the height. The other Sketcher panels - 🧱 **Wall types**,
+📚 **DAZ Library**, 🧭 **DAZ Explorer**, 🎚 **DAZ Parameters** - can dock in it too:
+- **drag a tab** onto another tab bar = a tab there; onto the lower part of a docker = its own docker below it; out of
+  the column = back to its own place (Properties right of the view, the DAZ library floating, …);
+- **drag the 📚 DAZ Library's title** onto the column = a tab in it;
+- **▾** on the docker's title lists every panel with **Tab / Below / Own place** (and ↺ Reset); **⋯** on a tab bar (or a
+  right-click on a tab) moves the tab shown: its own docker below, a tab in the docker above / below, back to its own place.
+A panel switched off by its own button (🗂 Outline, 🧱 Wall types, 📚 Daz library) has no tab until it is on again - its
+place is kept. The layout is kept; in a narrow Sketcher the docker opens over the view and starts folded.
 
 Other tools: **L** Line (a line across a face splits it), **C** Circle, **N** Polygon, **M** Move (**Ctrl** = a
 copy, type `x,y,z`), **Q** Rotate, **S** Scale, **T** Tape, **B** Paint, **E** Eraser, **Space** Select (double-click
@@ -518,7 +534,7 @@ With **Select**:
 
 ### The outline docker, skirting + cornice, walls dragged, room groups (2.639.0)
 
-- **🗂 Outline** (the Sketcher's bar) - a docker left of the view listing every object: Room groups, Rooms ▸ Room 1 ▸
+- **🗂 Outline** (the Sketcher's bar) - a docker left of the view (since 2.984.0 in the ⚙ docker beside the toolbox) listing every object: Room groups, Rooms ▸ Room 1 ▸
   Wall 1 … n, Floor 1, Ceiling 1, Skirting 1, Cornice 1, Floor slab 1, Door 1, Window 1 …; free-standing Walls, Roofs,
   Floors, Stairs, Lights, Furniture, Cameras. A click picks; **👁** hides / shows (undo-able, saved with the model).
 - **Room groups** - ＋ makes one, ⊞ on a room puts it in (or out); a group's 👁 hides / shows all its rooms.
@@ -1255,7 +1271,8 @@ Good to know:
 **The DAZ dockers in the Sketcher (2.983.0)** - press **📚 Daz library** in the Sketcher's toolbar (or **🧬 DAZ Tools** on
 the top menu bar - it opens the Sketcher too). Like Daz Studio's layout: the **📚 DAZ Library** floats over the 3D view (drag
 its title to move it, its corner to size it, ▁ folds it), the **🧭 DAZ Explorer** and the **🎚 Parameters** dock on the right of
-the view (drag their left edge to size them, the bar between them to share the height). Press it again to hide the dockers -
+the view (drag their left edge to size them, the bar between them to share the height) - or dock any of them in the ⚙ docker
+beside the toolbox (2.984.0: drag the library's title onto it, or ▾ on the docker). Press it again to hide the dockers -
 the characters stay in the scene. Your characters, their places and poses, and the dockers' sizes are kept.
 - **Put a character in the scene**: drag a 🧍 figure or 🎭 character from the library into the 3D view - it is built and
   stands where you dropped it, picked (a blue box). Clicking a figure puts it beside the others. It is a real rigged

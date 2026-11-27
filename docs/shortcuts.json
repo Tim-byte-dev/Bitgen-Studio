@@ -939,8 +939,12 @@
           "Orbit / Pan (the middle / right button always)"
         ],
         [
+          "↑ / ↓ · ← / →",
+          "Zoom in / out · turn the view round Z (Shift: 15°) - with no tool half-way"
+        ],
+        [
           "→ ← ↑ / ↓",
-          "Keep the red / green / blue axis / let it go (Shift: the axis shown)"
+          "A tool half-way: keep the red / green / blue axis / let it go (Shift: the axis shown)"
         ],
         [
           "G",

@@ -39,7 +39,7 @@
     "ppdazlib.js",
     "ppdazpose.js",
     "ppdazscene.js",
-    "ppdaztools.js",
+    "ppdaztools.js", "ppdocks.js",
     "pprig.js",
     "ppscene.js",
     "ppreal.js",

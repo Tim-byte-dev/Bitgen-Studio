@@ -15256,6 +15256,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui982-ui.js > /tmp/ui982.log 2>&
 node scripts/test-983.js > /tmp/t983.log 2>&1 && ok "2.983.0 units: the DAZ dockers in the Sketcher - pose / shape presets read, the doll's wardrobe, places, the wiring" || { bad "2.983.0 units"; grep -a "^FAIL" -A1 /tmp/t983.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui983-ui.js > /tmp/ui983.log 2>&1 && ok "2.983.0 browser test: the doll dragged into the Sketcher's scene, dressed / posed / shaped / placed / moved, picked by a click, kept over a reload" || { bad "2.983.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui983.log | head -8; }
 
+node scripts/test-984.js > /tmp/t984.log 2>&1 && ok "2.984.0 units: the Sketcher's arrow keys (zoom / turn round Z, an axis while a tool is half-way) and the ⚙ properties docker's layout (tabs, below, own place, drops)" || { bad "2.984.0 units"; grep -a "^FAIL" -A1 /tmp/t984.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui984-ui.js > /tmp/ui984.log 2>&1 && ok "2.984.0 browser test: ↑ ↓ zoom, ← → orbit, the ⚙ docker beside the toolbox - folded, tabs dragged, the DAZ dockers docked in it, kept over a reload" || { bad "2.984.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui984.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

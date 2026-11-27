@@ -168,7 +168,7 @@
     let box = $("ppWT");
     if (!box) {
       box = doc.createElement("div"); box.id = "ppWT"; box.setAttribute("aria-label", "Wall types");
-      main.insertBefore(box, props);
+      main.insertBefore(box, props.parentNode === main ? props : null);   // 2.984.0: ⚙ Properties may be in the docker (ppdocks.js)
       const st = doc.createElement("style");
       st.textContent = "#ppWT{width:250px;flex:none;overflow:auto;font-size:11px;border-left:1px solid var(--line,#444);padding:4px 6px 10px}#ppWT.off{display:none}"
         + "#pushpulldock.ppnarrow #ppWT{position:absolute;right:0;top:0;bottom:0;z-index:6;background:var(--panel,#1f1c17);box-shadow:-6px 0 18px #0006;max-width:70%}"

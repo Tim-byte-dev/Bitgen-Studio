@@ -168,6 +168,8 @@
     const d = $("pushpulldock"), side = $("dzSide"), lib = $("dzLib");
     if (d && w.r) d.style.setProperty("--dzr", Math.max(220, Math.min(800, w.r)) + "px");
     if (side && w.eh) side.style.setProperty("--dzeh", Math.max(15, Math.min(85, w.eh)) + "%");
+    // 2.984.0: not moved yet - it starts over the VIEW (the ⚙ docker, ppdocks.js, may sit between the toolbox and the view)
+    const vw = $("ppView"); if (lib && vw && !(w.lib && isFinite(w.lib.x))) lib.style.setProperty("--dzlx", (vw.offsetLeft + 8) + "px");
     if (lib && w.lib) { const L = w.lib; if (isFinite(L.x)) lib.style.setProperty("--dzlx", L.x + "px"); if (isFinite(L.y)) lib.style.setProperty("--dzly", L.y + "px"); if (L.w) lib.style.width = L.w + "px"; if (L.h) lib.style.height = L.h + "px"; }
     if (lib) lib.classList.toggle("folded", !!(w.lib && w.lib.folded));
   }
@@ -192,7 +194,7 @@
     });
     head.addEventListener("dblclick", (e) => { if (!e.target.closest("button")) foldLib(); });
     $("dzLibMin").onclick = foldLib;
-    try { new root.ResizeObserver(() => { if (!st.on || lib.classList.contains("folded")) return; const W = LS.get("w", {}), r = lib.getBoundingClientRect(); if (r.width < 50) return; W.lib = Object.assign({}, W.lib, { w: Math.round(r.width), h: Math.round(r.height) }); LS.set("w", W); }).observe(lib); } catch (e) { /* old browsers: not kept */ }
+    try { new root.ResizeObserver(() => { if (!st.on || lib.classList.contains("folded") || lib.closest("#ppDockCol")) return; const W = LS.get("w", {}), r = lib.getBoundingClientRect(); if (r.width < 50) return; W.lib = Object.assign({}, W.lib, { w: Math.round(r.width), h: Math.round(r.height) }); LS.set("w", W); }).observe(lib); } catch (e) { /* old browsers: not kept */ }
     $("dzRootsSave").onclick = saveRoots; $("dzRootsFind").onclick = () => { $("dzRoots").value = (st.detected || []).join("\n"); };
     $("dzParTabs").querySelectorAll("[data-tab]").forEach((b) => { b.onclick = () => tab(b.dataset.tab); });
     // 🕺 the pose tab
@@ -558,6 +560,7 @@
     for (const x of [b, b2]) if (x) { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); }
     regrid();
     if (on) {
+      sizes(LS.get("w", {}));
       if (root.H3DazScene) root.H3DazScene.onChange(sceneChanged);
       tree(); list(); dialsLoad(); chars(); tab(st.tab || "shape");
       let n = 0; const wait = () => { if (!st.on) return; if (hookView()) { restore(); return; } if (n++ < 80) root.setTimeout(wait, 250); }; wait();

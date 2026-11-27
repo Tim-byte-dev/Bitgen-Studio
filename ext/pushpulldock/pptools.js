@@ -16,6 +16,7 @@
  *   T Tape         two points: their distance          B Paint   click faces (Alt+click picks a face's colour)
  *   E Eraser       click (or drag over) lines / faces - a line that borders faces takes them with it
  *   O Orbit / H Pan (left drag); middle drag orbits, right drag pans, the wheel zooms - always
+ *   ↑ ↓ zoom in / out, ← → turn the view around Z (2.984.0; Shift = bigger steps); with a tool half-way they keep the axis instead:
  *   → ← ↑ keep the red / green / blue axis, ↓ lets it go; Shift keeps the axis the marker shows
  * create(ctx) -> {use(name), name(), cancel(), key(e), vcb(text), down / move / up / dbl(ev)}  ctx = the docker (ppdock.js)
  */
@@ -455,6 +456,9 @@
       if (k === "Escape") return escape();
       if (TT && TT.owns(tool) && TT.key(e)) return true;
       if (AT && AT.key(e, tool)) return true;
+      const nav = arrowNav(k, Object.keys(st).length > 0, e.shiftKey);       // 2.984.0: arrows move the VIEW unless a tool is half-way (then they keep an axis)
+      if (nav && nav.zoom && V.zoomAt) { V.zoomAt(nav.zoom); return true; }
+      if (nav && nav.turn && V.orbitZ) { V.orbitZ(nav.turn); return true; }
       if (k === "ArrowRight" || k === "ArrowLeft" || k === "ArrowUp") { lock = k === "ArrowRight" ? 0 : k === "ArrowLeft" ? 1 : 2; ctx.status("keeping the " + ["red", "green", "blue"][lock] + " axis (↓ lets it go)"); return true; }
       if (k === "ArrowDown") { lock = null; ctx.status(HINT[tool]); return true; }
       if (k === "Shift" && lastSnap && lastSnap.axis != null && !e.repeat) { lock = lastSnap.axis; return true; }
@@ -470,5 +474,16 @@
     use("select");
     return { escape, state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED, terrain: TT };
   }
-  root.PPTools = { create, TOOLS, HINT, VCB };
+  // 2.984.0 (pure): what an arrow key does - ↑ / ↓ zoom in / out, ← / → turn the view around Z (Shift = 3× the step);
+  // while a tool is half-way (a line started, a face being pushed) the arrows keep their SketchUp meaning: → red, ← green, ↑ blue, ↓ free
+  function arrowNav(k, busy, shift) {
+    if (busy) return null;
+    const m = shift ? 3 : 1;
+    if (k === "ArrowUp") return { zoom: Math.pow(1.15, m) };
+    if (k === "ArrowDown") return { zoom: 1 / Math.pow(1.15, m) };
+    if (k === "ArrowLeft") return { turn: -m * Math.PI / 36 };
+    if (k === "ArrowRight") return { turn: m * Math.PI / 36 };
+    return null;
+  }
+  root.PPTools = { create, TOOLS, HINT, VCB, arrowNav };
 })(typeof window !== "undefined" ? window : globalThis);
