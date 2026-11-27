@@ -320,6 +320,49 @@
     (sel.e || []).forEach((x) => { const E = M.e.find((y) => y.id === x); if (E) E.grp = id; });
     return id;
   }
+  /** 2.986.0: the parts of a set of faces -> [{name, f [ids]}] - by the faces' own names (nm - an imported model's meshes)
+   *  when there are 2+, else by loose pieces (faces sharing a vertex, through any chain, are one piece) */
+  function partsOf(M, fids) {
+    const F = [...new Set(fids || [])].map((x) => face(M, x)).filter(Boolean); if (!F.length) return { by: "", parts: [] };
+    const names = new Set(F.map((x) => x.nm || ""));
+    if (names.size >= 2) { const by = new Map(); F.forEach((x) => { const k = x.nm || ""; if (!by.has(k)) by.set(k, []); by.get(k).push(x.id); }); return { by: "name", parts: [...by].map(([name, f]) => ({ name, f })) }; }
+    const up = new Map(), find = (a) => { while (up.get(a) !== a) { up.set(a, up.get(up.get(a))); a = up.get(a); } return a; };
+    F.forEach((x) => x.loops.forEach((l) => l.forEach((i) => { if (!up.has(i)) up.set(i, i); })));
+    F.forEach((x) => { const vs = [].concat(...x.loops); for (let k = 1; k < vs.length; k++) { const a = find(vs[0]), b = find(vs[k]); if (a !== b) up.set(a, b); } });
+    const by = new Map(); F.forEach((x) => { const k = find(x.loops[0][0]); if (!by.has(k)) by.set(k, []); by.get(k).push(x.id); });
+    return { by: "piece", parts: [...by.values()].map((f) => ({ name: "", f })) };
+  }
+  /** 2.986.0: ✂ Separate - every group the faces belong to (all its faces) - or the loose faces themselves - becomes a group
+   *  per part, named "<group> · <part>" / "<group> 1..n"; the group's edges go with the part holding both ends. The old
+   *  group goes. -> {made [group ids], by "name" | "piece", why} */
+  function separate(M, fids) {
+    const F = [...new Set(fids || [])].map((x) => face(M, x)).filter(Boolean);
+    if (!F.length) return { made: [], why: "pick a group (or some faces) first" };
+    const sets = new Map();                                                   // group id (0 = loose) -> its face ids
+    F.forEach((x) => { const g = x.grp || 0; if (!sets.has(g)) sets.set(g, g ? M.f.filter((y) => y.grp === g).map((y) => y.id) : []); if (!g) sets.get(0).push(x.id); });
+    const made = []; let by = "", one = 0;
+    for (const [g, ids] of sets) {
+      const P = partsOf(M, ids); if (P.parts.length < 2) { one++; continue; }
+      by = by || P.by;
+      const rec = g ? M.g.find((x) => x.id === g) : null, base = rec ? rec.name : "Part";
+      const mine = [];
+      P.parts.forEach((p, i) => {
+        const vs = new Set(); p.f.forEach((id) => face(M, id).loops.forEach((l) => l.forEach((v) => vs.add(v))));
+        const ed = g ? M.e.filter((E) => E.grp === g && vs.has(E.a) && vs.has(E.b)).map((E) => E.id) : [];
+        const nid = group(M, { f: p.f, e: ed }, (base + (p.name ? " · " + p.name : " " + (i + 1))).slice(0, 60));
+        if (rec && rec.soft) M.g.find((x) => x.id === nid).soft = true;
+        made.push(nid); mine.push({ nid, vs: [...vs] });
+      });
+      // the group's other edges (drawn on a face, ends of their own) go with the nearest part
+      if (g) M.e.filter((E) => E.grp === g).forEach((E) => {
+        const m = mul(add(M.v[E.a], M.v[E.b]), 0.5); let best = mine[0].nid, bd = Infinity;
+        mine.forEach((q) => q.vs.forEach((v) => { const d = len(sub(M.v[v], m)); if (d < bd) { bd = d; best = q.nid; } }));
+        E.grp = best;
+      });
+      if (g) M.g = M.g.filter((x) => x.id !== g || M.f.some((y) => y.grp === g) || M.e.some((y) => y.grp === g));
+    }
+    return { made, by, why: made.length ? "" : one ? "it is one piece already - nothing to separate" : "nothing to separate" };
+  }
   function explode(M, gid) { M.f.forEach((F) => { if (F.grp === gid) F.grp = null; }); M.e.forEach((E) => { if (E.grp === gid) E.grp = null; }); M.g = M.g.filter((g) => g.id !== gid); }
   /** unused vertices dropped (indices renumbered); empty groups dropped */
   function gc(M) {
@@ -394,7 +437,7 @@
   }
   const toJson = (M) => Object.assign({ v: M.v, f: M.f, e: M.e, g: M.g, n: M.n }, M.arch ? { arch: M.arch } : {});
 
-  const api = { EPS, newModel, vAt, face, newell, faceNormal, facePlane, faceArea, loopPts, basis, to2, inPoly2, neighbours, innerFaces, hostOf,
+  const api = { partsOf, separate, EPS, newModel, vAt, face, newell, faceNormal, facePlane, faceArea, loopPts, basis, to2, inPoly2, neighbours, innerFaces, hostOf,
     addFace, addEdge, insertOnEdge, pushPull, offset, offsetLoop2, selVerts, move, rotateZ, scale, copyOf, remove, group, explode, gc, bbox,
     closestOnLine, linesClosest, rectPts, circlePts, parseVcb, fmtLen, fromJson, toJson, edgeKey, faceEdgeKeys, loopEdges,
     v3: { sub, add, mul, dot, cross, len, norm } };

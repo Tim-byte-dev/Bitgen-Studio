@@ -59,7 +59,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const view = (n) => ev((n) => { H3PushPull.state.V.view(n); }, n);
     const AR = () => ev(() => JSON.parse(JSON.stringify(H3PushPull.state.M.arch || {})));
     const msg = () => ev(() => document.getElementById("ppMsg").textContent);
-    const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(16));   // 2.985.0: + 🔍 Zoom among the modelling tools
+    const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(17));   // 2.985.0: + 🔍 Zoom, 2.986.0: + ✂ Separate among the modelling tools
     check("the Build tools under the modelling tools: Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs", tools.join() === "room,wall,door,window,floor,ceiling,roof,light,stairs,furniture,camera,terrain,pool,drive,road", tools);   // 2.653.0: + ⛰ Terrain (under Ground)
 
     /* their keys stay in the docker */

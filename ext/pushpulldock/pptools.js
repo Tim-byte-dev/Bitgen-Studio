@@ -16,7 +16,8 @@
  *   T Tape         two points: their distance          B Paint   click faces (Alt+click picks a face's colour)
  *   E Eraser       click (or drag over) lines / faces - a line that borders faces takes them with it
  *   O Orbit / H Pan (left drag); middle drag orbits, right drag pans, the wheel zooms - always
- *   ↑ ↓ zoom in / out, ← → turn the view around Z (2.984.0; Shift = bigger steps); with a tool half-way they keep the axis instead:
+ *   ↑ ↓ ← → pan, Ctrl+↑ / ↓ zoom, Ctrl+← everything in view, Ctrl+→ to what is picked (2.986.0; Shift = bigger steps); with a
+ *   tool half-way the plain arrows keep the axis instead:
  *   → ← ↑ keep the red / green / blue axis, ↓ lets it go; Shift keeps the axis the marker shows
  * create(ctx) -> {use(name), name(), cancel(), key(e), vcb(text), down / move / up / dbl(ev)}  ctx = the docker (ppdock.js)
  */
@@ -26,7 +27,7 @@
   const TOOLS = [
     ["select", "⬚", "Select", " "], ["line", "╱", "Line", "l"], ["rect", "▭", "Rectangle", "r"], ["circle", "◯", "Circle", "c"], ["polygon", "⬠", "Polygon", "n"],
     ["pushpull", "⇧", "Push/Pull", "p"], ["move", "✥", "Move", "m"], ["rotate", "⟳", "Rotate", "q"], ["scale", "⤡", "Scale", "s"], ["offset", "⧈", "Offset", "f"],
-    ["tape", "📏", "Tape measure", "t"], ["paint", "🪣", "Paint", "b"], ["eraser", "⌫", "Eraser", "e"], ["orbit", "🔄", "Orbit", "o"], ["pan", "✋", "Pan", "h"], ["zoom", "🔍", "Zoom", ""],   // 2.985.0: 🔍 Zoom (Z is 📷 Camera)
+    ["tape", "📏", "Tape measure", "t"], ["paint", "🪣", "Paint", "b"], ["eraser", "⌫", "Eraser", "e"], ["orbit", "🔄", "Orbit", "o"], ["pan", "✋", "Pan", "h"], ["zoom", "🔍", "Zoom", ""], ["separate", "✂", "Separate into parts", ""],   // 2.985.0: 🔍 Zoom (Z is 📷 Camera)
   ];
   const HINT = {
     select: "➤ Click one thing to pick it · Ctrl+click adds more (Shift+click: in / out) · double-click a group to edit inside it · Delete erases · Shift + right-drag zooms",
@@ -43,6 +44,7 @@
     paint: "Click faces to paint them (Alt+click: take a face's colour) - the colour is in the bar",
     eraser: "Click (or drag over) lines and faces to erase them",
     orbit: "Drag to orbit (the middle button orbits in any tool)", pan: "Drag to pan (the right button pans in any tool)",
+    separate: "Click a group (an imported model, a group you made) - it becomes a group per part: its meshes by name, else its loose pieces · with a group picked, ✂ does it at once",
     zoom: "Drag up to zoom in, down to zoom out · a click zooms in there (Shift+click: out) · the wheel and ↑ ↓ zoom in any tool",
   };
   const VCB = { line: "Length", rect: "Dimensions", circle: "Radius", polygon: "Radius", pushpull: "Distance", move: "Distance", rotate: "Angle", scale: "Scale", offset: "Distance", tape: "Length" };
@@ -85,6 +87,7 @@
       ctx.status(HINT[name]); ctx.vcbLabel(VCB[name] || "");
       ctx.toolChanged(name);
       if ((name === "move" || name === "rotate" || name === "scale") && !hasSel()) ctx.status(HINT[name] + " - nothing is picked: press on what to " + name);
+      if (name === "separate" && hasSel() && ctx.separate) { const s0 = ctx.sel(); if ((s0.f || []).length && ctx.separate(s0.f)) sepDone(); }   // 2.986.0: ✂ on what is picked
     }
     const hasSel = () => { const s = ctx.sel(); return !!((s.f && s.f.length) || (s.e && s.e.length) || (s.k && s.k.length) || (s.p && s.p.length)); };
     /** 2.663.0: ✎ the sketch plane (ppplane.js - a face clicked with Select): the drawing tools draw in it */
@@ -129,6 +132,7 @@
       if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey || ev.ctrlKey || ev.metaKey, (ev.ctrlKey || ev.metaKey) && !ev.shiftKey); return; }   // 2.648.0: Ctrl+click adds
       if (tool === "orbit" || tool === "pan") return;
       if (tool === "zoom") { zd = [ev.clientX, ev.clientY]; return; }
+      if (tool === "separate") { const p = V.pick(ev, { group: ctx.group() }); if (p && p.face != null && ctx.separate) { if (ctx.separate([p.face])) sepDone(); } else ctx.status("✂ click a group's face - or pick some loose faces first, then ✂"); return; }
       if (tool === "line") {
         const s = snapAt(ev, { from: st.pts && st.pts[st.pts.length - 1] }); const p = s.p;
         if (!st.pts) { st.pts = [p]; return; }
@@ -266,6 +270,7 @@
         show(s, { from: st.a, dashed: [{ seg: [st.a, s.p], color: "#222" }], tip: g.fmtLen(v3.len(v3.sub(s.p, st.a))) }); return;
       }
     }
+    function sepDone() { const t = ctx.statusText ? ctx.statusText() : ""; use("select"); if (t) ctx.status(t); }   // 2.986.0: ✂'s words stay
     let zd = null;                                                       // 2.985.0: 🔍 a click (not a drag) zooms at the pointer
     function up(ev) {
       if (tool === "zoom") { const z = zd; zd = null; if (z && Math.hypot(ev.clientX - z[0], ev.clientY - z[1]) < 4 && V.zoomAt) { const r = V.canvas.getBoundingClientRect(); V.zoomAt(ev.shiftKey ? 1 / 1.5 : 1.5, ev.clientX - r.left, ev.clientY - r.top); } return; }
@@ -460,9 +465,12 @@
       if (k === "Escape") return escape();
       if (TT && TT.owns(tool) && TT.key(e)) return true;
       if (AT && AT.key(e, tool)) return true;
-      const nav = arrowNav(k, Object.keys(st).length > 0, e.shiftKey);       // 2.984.0: arrows move the VIEW unless a tool is half-way (then they keep an axis)
+      // 2.986.0 (Tim): ↑ ↓ ← → pan; Ctrl+↑ / ↓ zoom in / out, Ctrl+← everything in view, Ctrl+→ to what is picked; a tool half-way: plain arrows keep an axis
+      const nav = arrowNav(k, Object.keys(st).length > 0, e.shiftKey, e.ctrlKey || e.metaKey);
       if (nav && nav.zoom && V.zoomAt) { V.zoomAt(nav.zoom); return true; }
-      if (nav && nav.turn && V.orbitZ) { V.orbitZ(nav.turn); return true; }
+      if (nav && nav.pan && V.panBy) { V.panBy(nav.pan[0], nav.pan[1]); return true; }
+      if (nav && nav.reset) { V.extents(); ctx.status("⤢ everything in view (Ctrl+←)"); return true; }
+      if (nav && nav.toSel) { if (root.H3PushPull && root.H3PushPull.zoomSel) root.H3PushPull.zoomSel(); return true; }
       if (k === "ArrowRight" || k === "ArrowLeft" || k === "ArrowUp") { lock = k === "ArrowRight" ? 0 : k === "ArrowLeft" ? 1 : 2; ctx.status("keeping the " + ["red", "green", "blue"][lock] + " axis (↓ lets it go)"); return true; }
       if (k === "ArrowDown") { lock = null; ctx.status(HINT[tool]); return true; }
       if (k === "Shift" && lastSnap && lastSnap.axis != null && !e.repeat) { lock = lastSnap.axis; return true; }
@@ -483,16 +491,22 @@
     use("select");
     return { escape, state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED, terrain: TT };
   }
-  // 2.984.0 (pure): what an arrow key does - ↑ / ↓ zoom in / out, ← / → turn the view around Z (Shift = 3× the step);
-  // while a tool is half-way (a line started, a face being pushed) the arrows keep their SketchUp meaning: → red, ← green, ↑ blue, ↓ free
-  function arrowNav(k, busy, shift) {
+  // 2.986.0 (pure): what an arrow key does - ↑ ↓ ← → pan (a tenth of the view, Shift: a third); Ctrl+↑ / Ctrl+↓ zoom in / out
+  // (×1.15, Shift ×1.15³), Ctrl+← everything in view (reset), Ctrl+→ zoom to what is picked. While a tool is half-way (a line
+  // started, a face being pushed) the plain arrows keep their SketchUp meaning (→ red, ← green, ↑ blue, ↓ free); Ctrl+arrows
+  // still move the view. (2.984.0's ← / → orbit is gone - the middle button / 🔄 Orbit turn the view.)
+  function arrowNav(k, busy, shift, ctrl) {
+    if (!/^Arrow(Up|Down|Left|Right)$/.test(k)) return null;
+    if (ctrl) {
+      const m = shift ? 3 : 1;
+      if (k === "ArrowUp") return { zoom: Math.pow(1.15, m) };
+      if (k === "ArrowDown") return { zoom: 1 / Math.pow(1.15, m) };
+      if (k === "ArrowLeft") return { reset: true };
+      return { toSel: true };
+    }
     if (busy) return null;
-    const m = shift ? 3 : 1;
-    if (k === "ArrowUp") return { zoom: Math.pow(1.15, m) };
-    if (k === "ArrowDown") return { zoom: 1 / Math.pow(1.15, m) };
-    if (k === "ArrowLeft") return { turn: -m * Math.PI / 36 };
-    if (k === "ArrowRight") return { turn: m * Math.PI / 36 };
-    return null;
+    const d = shift ? 1 / 3 : 0.1;
+    return { pan: k === "ArrowUp" ? [0, d] : k === "ArrowDown" ? [0, -d] : k === "ArrowLeft" ? [-d, 0] : [d, 0] };
   }
   root.PPTools = { create, TOOLS, HINT, VCB, arrowNav };
 })(typeof window !== "undefined" ? window : globalThis);

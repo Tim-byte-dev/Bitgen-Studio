@@ -15262,6 +15262,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui984-ui.js > /tmp/ui984.log 2>&
 node scripts/test-985.js > /tmp/t985.log 2>&1 && ok "2.985.0 units: Delete for DAZ characters, the pieces built, material presets, a pose's own figure turn / move, 🔍 Zoom, 🏛 Architecture, ✨ Photo's people" || { bad "2.985.0 units"; grep -a "^FAIL" -A1 /tmp/t985.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui985-ui.js > /tmp/ui985.log 2>&1 && ok "2.985.0 browser test: 🏛 hides / shows, 🔍 zooms, pieces 👁, a lying pose kept over a reload, the depth map reaches the doll, Delete + ↶" || { bad "2.985.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui985.log | head -8; }
 
+node scripts/test-986.js > /tmp/t986.log 2>&1 && ok "2.986.0 units: ✂ Separate (by name / by loose pieces, edges, undo) and the arrow keys (pan, Ctrl zoom / reset / to the picked)" || { bad "2.986.0 units"; grep -a "^FAIL" -A1 /tmp/t986.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui986-ui.js > /tmp/ui986.log 2>&1 && ok "2.986.0 browser test: ✂ on a picked group and on an imported chair (by its meshes), ↑ ↓ ← → pan, Ctrl+arrows zoom / reset / to the picked" || { bad "2.986.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui986.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

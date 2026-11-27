@@ -359,6 +359,17 @@
       if (Math.hypot(cam.position.x - t.x, cam.position.y - t.y) < 1e-6) cam.up.applyAxisAngle(new T.Vector3(0, 0, 1), rad);   // straight down: turn the picture
       controls.update(); draw();
     }
+    // 2.986.0: the arrow keys' pan - the view slides a fraction of its own height / width (fx right, fy up), camera + target together
+    function panBy(fx, fy) {
+      if (!Number.isFinite(fx) || !Number.isFinite(fy) || (!fx && !fy)) return;
+      cam.updateMatrixWorld();
+      const r = R.domElement.getBoundingClientRect(), asp = r.width && r.height ? r.width / r.height : 1;
+      const h = cam === persp ? 2 * cam.position.distanceTo(controls.target) * Math.tan(cam.fov * Math.PI / 360) : (cam.top - cam.bottom) / (cam.zoom || 1);
+      const right = new T.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), up = new T.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
+      const d = right.multiplyScalar(fx * h * asp).add(up.multiplyScalar(fy * h));
+      cam.position.add(d); controls.target.add(d); if (cam !== persp) persp.position.add(d); else ortho.position.add(d);
+      controls.update(); draw();
+    }
     function zoomAt(f, sx, sy) {
       if (!(f > 0) || !Number.isFinite(f)) return;
       const r = R.domElement.getBoundingClientRect(), x = sx == null ? r.width / 2 : sx, y = sy == null ? r.height / 2 : sy;
@@ -477,7 +488,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, orbitZ, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, orbitZ, panBy, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

@@ -119,7 +119,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("a click on the character picks it (its box)", (await ev(() => H3DazScene.sel())) === (await ev(() => H3DazScene.list()[0])));
     const name = await ev(() => H3DazTools.cur().name);
     await p.keyboard.press("Delete"); await p.waitForTimeout(200);
-    check("Delete: the picked DAZ character leaves the scene and the explorer", (await ev(() => H3DazScene.list().length)) === 0 && (await ev(() => H3DazTools.state.scene.chars.length)) === 0 && /deleted/.test(await ev(() => document.getElementById("dzMsg").textContent)));
+    check("Delete: the picked DAZ character leaves the scene and the explorer", (await ev(() => H3DazScene.list().length)) === 0 && (await ev(() => H3DazTools.state.scene.chars.length)) === 0 && /deleted/.test(await ev(() => document.getElementById("dzMsg").textContent)), await ev(() => ({ n: H3DazScene.list().length, sel: H3DazScene.sel(), tool: H3PushPull.state.T.name(), st: Object.keys(H3PushPull.state.T.state()), msg: document.getElementById("ppMsg").textContent, act: document.activeElement && (document.activeElement.id || document.activeElement.tagName) })));
     await p.click("#dzUndoDel"); await built(1);
     const back = await ev(() => ({ name: H3DazTools.cur() && H3DazTools.cur().name, x: H3DazScene.rig(H3DazScene.list()[0]).place.x }));
     check("↶ Undo brings it back, where it stood", back.name === name && Math.abs(back.x - 6) < 1e-6, back);

@@ -240,7 +240,7 @@
       const col = o.material && o.material.color ? "#" + o.material.color.getHexString() : null, v = new T.Vector3();
       for (let i = 0; i + 2 < pos.count; i += 3) {
         const t = [0, 1, 2].map((k) => { v.fromBufferAttribute(pos, i + k).applyMatrix4(o.matrixWorld); return [v.x, -v.z, v.y]; });   // Y up -> Z up
-        tris.push({ t, col });
+        tris.push({ t, col, nm: String(o.name || (o.parent && o.parent.name) || "").slice(0, 60) });   // 2.986.0: its mesh's name (✂ Separate splits by it)
       }
     });
     if (!tris.length) throw new Error("no triangles in " + name);
@@ -255,7 +255,7 @@
     let n = 0;
     tris.forEach((x) => {
       const P = x.t.map((p) => [p[0] + shift[0], p[1] + shift[1], p[2] + shift[2]]);
-      const F = addTri(P, gid, x.col); if (F) n++;
+      const F = addTri(P, gid, x.col); if (F) { n++; if (x.nm) F.nm = x.nm; }
     });
     commit("import", before);
     msg("⤒ " + name + " - " + n + " faces as the group \"" + name.replace(/\.[^.]+$/, "") + "\" (double-click it to edit inside)");
@@ -281,6 +281,17 @@
     if (S.V) { S.V.setGroup(S.group); S.V.setSel(S.sel); }
     paintGroup(); info();
     if (!quiet) msg(gid ? "▣ editing inside the group - its faces only; Esc (or a click outside it) leaves" : "▣ out of the group");
+  }
+  /* 2.986.0 (Tim: "add a tool the will separate a selected layer into layers"): ✂ Separate - a group (or loose faces) split
+     into a group per part: by the parts' own names when it has several (an imported model's meshes), else by its loose pieces */
+  function separate(fids) {
+    const before = snapshot(), r = G().separate(S.M, fids);
+    if (!r.made.length) { msg("✂ " + (r.why || "nothing to separate")); return 0; }
+    commit("separate", before);
+    S.sel = { f: [], e: [], k: [] }; S.V.setSel(S.sel); info();
+    msg("✂ separated into " + r.made.length + " groups (" + (r.by === "name" ? "by their parts' names" : "by their loose pieces") + ") - each picked, moved and hidden on its own; ↶ Ctrl+Z puts it back");
+    test("pp_separate", String(r.made.length));
+    return r.made.length;
   }
   function groupBtn() {
     const g0 = groupPicked();
@@ -353,6 +364,8 @@
       const bs = all.map((t) => root.PPArch.selBox(S.M.arch, t)).filter(Boolean);
       if (bs.length) { b = { min: [0, 1, 2].map((k) => Math.min(...bs.map((q) => q.min[k]))), max: [0, 1, 2].map((k) => Math.max(...bs.map((q) => q.max[k]))) }; what = all.length > 1 ? all.length + " picked" : "the picked " + (at.part || { op: "door / window", stair: "stairs", item: "piece", cam: "camera" }[at.ak] || at.ak); }
     }
+    // 2.986.0: a DAZ character picked in the view (its blue box)
+    if (!b && root.H3DazScene && root.H3DazScene.sel()) { const r = root.H3DazScene.rig(root.H3DazScene.sel()), T = S.V.T; if (r && T) { const B = new T.Box3().expandByObject(r.outer); if (!B.isEmpty()) { b = { min: [B.min.x, B.min.y, B.min.z], max: [B.max.x, B.max.y, B.max.z] }; what = r.name || "the picked character"; } } }
     if (S.T && S.T.arch && S.T.arch.leaveThrough && S.T.arch.through && S.T.arch.through() != null) S.T.arch.leaveThrough();
     if (!b) { S.V.extents(); msg("⊡ nothing picked - everything in view"); return null; }
     S.V.frameBox(b); msg("⊡ zoomed to " + what + " · Shift + right-drag: forward zooms in, back zooms out");
@@ -398,7 +411,7 @@
     S.T = root.PPTools.create({
       V: S.V, model: () => S.M, sel: () => S.sel, setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s); S.V.setSel(S.sel); info(); if (S.T && S.T.arch && !S.T.arch.sel()) S.T.arch.props(); },
       group: () => S.group, enterGroup, status: msg, statusText: () => ($("ppMsg") || {}).textContent || "", vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
-      snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
+      snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase, separate,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
       archView: S.A ? () => S.A : null, terrainView: S.TV ? () => S.TV : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, zoomPicked: () => zoomSel(), resized: () => { if (S.V) S.V.size(); },
       // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
@@ -490,7 +503,7 @@
     root.addEventListener("beforeunload", () => { if (S.dirty && S.M) { try { navigator.sendBeacon("/api/pushpull/" + encodeURIComponent(nameNow()), new Blob([JSON.stringify({ model: G().toJson(S.M), view: S.V ? S.V.state() : null })], { type: "application/json" })); } catch (e) { /* fine */ } } });
   }
   wire();
-  root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, tool: (n) => S.T && S.T.use(n), boot, setColor,
+  root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, separate, tool: (n) => S.T && S.T.use(n), boot, setColor,
     setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s || {}); if (S.V) S.V.setSel(S.sel); info(); },   // 2.667.0: the objects panel picks a shape
     zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot, leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); } };   // 2.663.0: + leavePlan (ppplane.js ⊥ Look at)   // 2.639.0: + commit / snapshot (ppoutline.js)
 })(typeof window !== "undefined" ? window : globalThis);

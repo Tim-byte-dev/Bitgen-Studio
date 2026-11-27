@@ -42,22 +42,21 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 
     // ---- the arrow keys
     await ev(() => { H3PushPull.state.V.view("iso"); }); await p.waitForTimeout(100);
-    const c0 = await cam(); await keyIn("ArrowUp"); const c1 = await cam(); await keyIn("ArrowDown"); await keyIn("ArrowDown"); const c2 = await cam();
+    // 2.986.0: ↑ ↓ ← → pan, Ctrl+↑ / ↓ zoom (Tim's second ask - test-ui986-ui.js has the rest)
+    const tgt = () => ev(() => { const t = H3PushPull.state.V.controls.target; return [t.x, t.y, t.z]; });
+    const c0 = await cam(); await keyIn("Control+ArrowUp"); const c1 = await cam(); await keyIn("Control+ArrowDown"); await keyIn("Control+ArrowDown"); const c2 = await cam();
     const zoomed = (a, b2) => (a.zoom !== b2.zoom ? b2.zoom / a.zoom : a.d / b2.d);
-    check("↑ zooms in, ↓ zooms out (the view, no tool going)", zoomed(c0, c1) > 1.1 && zoomed(c1, c2) < 0.85, [c0, c1, c2]);
-    const a0 = await cam(); await keyIn("ArrowLeft"); const a1 = await cam(); await keyIn("ArrowRight"); await keyIn("ArrowRight"); const a2 = await cam();
-    const ang = (c) => Math.atan2(c.y, c.x) * 180 / Math.PI, dA = (x, y) => ((ang(y) - ang(x) + 540) % 360) - 180;
-    check("← / → turn the view around Z (5° a press), the height and the distance kept - an orbit on the xy plane", Math.abs(dA(a0, a1) + 5) < 0.2 && Math.abs(dA(a1, a2) - 10) < 0.3 && Math.abs(a2.z - a0.z) < 1e-6 && Math.abs(Math.hypot(a2.x, a2.y) - Math.hypot(a0.x, a0.y)) < 1e-6, [dA(a0, a1), dA(a1, a2), a0, a2]);
-    await keyIn("Shift+ArrowRight"); const a3 = await cam();
-    check("Shift + → = a 15° step", Math.abs(dA(a2, a3) - 15) < 0.3, dA(a2, a3));
+    check("Ctrl+↑ zooms in, Ctrl+↓ zooms out (the view, no tool going)", zoomed(c0, c1) > 1.1 && zoomed(c1, c2) < 0.85, [c0, c1, c2]);
+    const t0 = await tgt(), a0 = await cam(); await keyIn("ArrowLeft"); const t1 = await tgt(), a1 = await cam();
+    check("← pans (the view slides, its angle and distance kept)", Math.hypot(t1[0] - t0[0], t1[1] - t0[1], t1[2] - t0[2]) > 0.2 && Math.abs(a1.x - a0.x) < 1e-6 && Math.abs(a1.d - a0.d) < 1e-6, [t0, t1]);
     // a line started: the arrows keep their SketchUp meaning (an axis), the view stays
     await ev(() => H3PushPull.tool("line")); await p.mouse.click(vw.l + vw.w / 2, vw.t + vw.h / 2 + 40); await p.waitForTimeout(100);
-    const l0 = await cam(); await keyIn("ArrowRight"); const l1 = await cam();
-    check("with a line half-way ← → ↑ keep an axis instead (the view does not move)", Math.abs(l1.x - l0.x) < 1e-9 && Math.abs(l1.d - l0.d) < 1e-9 && /red axis/.test(await ev(() => document.getElementById("ppMsg").textContent)), await ev(() => document.getElementById("ppMsg").textContent));
+    const l0 = await cam(), lt0 = await tgt(); await keyIn("ArrowRight"); const l1 = await cam(), lt1 = await tgt();
+    check("with a line half-way ← → ↑ keep an axis instead (the view does not move)", Math.abs(l1.x - l0.x) < 1e-9 && lt1.every((v, i) => Math.abs(v - lt0[i]) < 1e-9) && Math.abs(l1.d - l0.d) < 1e-9 && /red axis/.test(await ev(() => document.getElementById("ppMsg").textContent)), await ev(() => document.getElementById("ppMsg").textContent));
     await p.keyboard.press("Escape"); await p.keyboard.press("Escape"); await ev(() => H3PushPull.tool("select"));
     // typing in a box: the arrows are the box's
-    const v0 = await cam(); await p.focus("#ppVcb"); await p.keyboard.press("ArrowUp"); const v1 = await cam();
-    check("in a text box the arrows stay the box's", Math.abs(v1.d - v0.d) < 1e-9 && v1.zoom === v0.zoom);
+    const v0 = await cam(), vt0 = await tgt(); await p.focus("#ppVcb"); await p.keyboard.press("ArrowUp"); const v1 = await cam(), vt1 = await tgt();
+    check("in a text box the arrows stay the box's", Math.abs(v1.d - v0.d) < 1e-9 && v1.zoom === v0.zoom && vt1.every((v, i) => Math.abs(v - vt0[i]) < 1e-9));
     await ev(() => document.activeElement.blur());
 
     // ---- fold / unfold

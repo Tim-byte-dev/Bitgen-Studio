@@ -451,9 +451,10 @@ Sizes are typed at any moment (no need to click the box): lengths (`1.5`, `150cm
 (`3,2`), sides (`36s`), degrees. The marker shows what the point snaps to (Endpoint, Midpoint, On Edge, On Face,
 On Ground) and a dotted line when you are on the red / green / blue axis - **Shift**, or **→ ← ↑** while a tool is
 half-way (a line started, a face being pushed), keep that axis (**↓** lets it go).
-Middle drag orbits, right drag pans, the wheel zooms, **Shift+Z** shows everything. With no tool half-way the arrow keys
-move the view (2.984.0): **↑ / ↓** zoom in / out, **← / →** turn the view round its upright (Z) axis - an orbit on the
-ground plane, 5° a press (**Shift** = 15°). In a text box the arrows stay the box's.
+Middle drag orbits, right drag pans, the wheel zooms, **Shift+Z** shows everything. The arrow keys move the view (2.986.0):
+**↑ ↓ ← →** pan (a tenth of the view a press, **Shift** a third); **Ctrl+↑ / Ctrl+↓** zoom in / out; **Ctrl+←** resets
+(everything in view, as ⤢); **Ctrl+→** zooms to what is picked (a DAZ character too). With a tool half-way (a line
+started) the plain arrows keep an axis instead; Ctrl+arrows still move the view. In a text box the arrows stay the box's.
 
 **The ⚙ docker beside the toolbox (2.984.0)** - right of the left toolbox a docker column holds the Sketcher's panels:
 🗂 **Outline** and ⚙ **Properties** (the settings of the tool you chose or of what you picked - "Nothing picked" when
@@ -468,6 +469,10 @@ its right edge sizes it, the bar between two dockers shares the height. The othe
 A panel switched off by its own button (🗂 Outline, 🧱 Wall types, 📚 Daz library) has no tab until it is on again - its
 place is kept. The layout is kept; in a narrow Sketcher the docker opens over the view and starts folded.
 
+**✂ Separate into parts** (2.986.0, in the toolbox after 🔍 Zoom): a group becomes a group per part - an imported model
+by its own meshes' names (a chair's seat, its legs …), anything else by its loose pieces (parts that do not touch). Pick
+the group and press ✂, or press ✂ and click the group. Each new group is named after the old one ("chair · Seat",
+"Two boxes 1"); Ctrl+Z puts it back as one. Loose faces picked become a group per piece.
 **🔍 Zoom** (2.985.0, in the toolbox after ✋ Pan): drag up to zoom in, down to zoom out; a click zooms in at that spot,
 Shift+click out. **🏛 Architecture** (the top bar, before 📐 Plan): click it to hide the building tools - the toolbox's
 Build and Ground parts, 📐 Plan, ⌂ Cut-away, 🧱 Wall types, 📄 Plans - when you only sketch; again to show them (kept).

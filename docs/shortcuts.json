@@ -939,8 +939,8 @@
           "Orbit / Pan (the middle / right button always)"
         ],
         [
-          "↑ / ↓ · ← / →",
-          "Zoom in / out · turn the view round Z (Shift: 15°) - with no tool half-way"
+          "↑ ↓ ← → · Ctrl+↑ / ↓ · Ctrl+← / →",
+          "Pan · zoom in / out · everything in view / zoom to what is picked (Shift: bigger steps)"
         ],
         [
           "→ ← ↑ / ↓",

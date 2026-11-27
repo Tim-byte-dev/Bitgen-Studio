@@ -14,15 +14,13 @@ const rd = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 
 require(path.join(ROOT, "ext/pushpulldock/pptools.js"));
 const A = globalThis.PPTools.arrowNav;
-check("↑ zooms in (×1.15), ↓ out", near(A("ArrowUp", false).zoom, 1.15) && near(A("ArrowDown", false).zoom, 1 / 1.15));
-check("← / → turn the view 5° around Z (← one way, → the other)", near(A("ArrowLeft", false).turn, -Math.PI / 36) && near(A("ArrowRight", false).turn, Math.PI / 36));
-check("Shift = 3 steps (15°, 1.15³)", near(A("ArrowRight", false, true).turn, Math.PI / 12) && near(A("ArrowUp", false, true).zoom, Math.pow(1.15, 3)));
-check("a tool half-way: no view move (the arrows keep an axis as before)", A("ArrowUp", true) === null && A("ArrowLeft", true) === null);
-check("other keys: nothing", A("a", false) === null && A("Enter", false) === null);
+check("(2.986.0) Ctrl+↑ zooms in (×1.15), Ctrl+↓ out; plain ↑ ↓ ← → pan", near(A("ArrowUp", false, false, true).zoom, 1.15) && near(A("ArrowDown", false, false, true).zoom, 1 / 1.15) && A("ArrowUp", false).pan[1] > 0 && A("ArrowLeft", false).pan[0] < 0);
+check("a tool half-way: plain arrows move nothing (they keep an axis as before)", A("ArrowUp", true) === null && A("ArrowLeft", true) === null);
+check("other keys: nothing", A("a", false) === null && A("Enter", false) === null && A("a", false, false, true) === null);
 const tools = rd("ext/pushpulldock/pptools.js");
-check("pptools.key: the view moves only when arrowNav says so, before the axis lock", tools.indexOf("arrowNav(k, Object.keys(st).length > 0, e.shiftKey)") > 0 && tools.indexOf("arrowNav(k, Object.keys(st).length") < tools.indexOf('lock = k === "ArrowRight"'));
+check("pptools.key: the view moves only when arrowNav says so, before the axis lock", tools.indexOf("arrowNav(k, Object.keys(st).length > 0, e.shiftKey, e.ctrlKey || e.metaKey)") > 0 && tools.indexOf("arrowNav(k, Object.keys(st).length") < tools.indexOf('lock = k === "ArrowRight"'));
 const view = rd("ext/pushpulldock/ppview.js");
-check("ppview: orbitZ turns the camera round the target in the xy plane (and is exported)", /function orbitZ\(rad\)/.test(view) && /zoomAt, orbitZ, diag/.test(view));
+check("ppview: orbitZ turns the camera round the target in the xy plane (and is exported)", /function orbitZ\(rad\)/.test(view) && /zoomAt, orbitZ, panBy, diag/.test(view));
 
 require(path.join(ROOT, "ext/pushpulldock/ppdocks.js"));
 const D = globalThis.H3PPDocks;
