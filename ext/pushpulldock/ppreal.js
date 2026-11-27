@@ -110,9 +110,45 @@
       const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
       return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + (board.single ? REF1 : REFS) + "." : "") + " " + FOLLOW + (board && board.bg ? "" : " " + (placed ? PLACED : EMPTY)) + "\nThe prompt: " + t;   // a backdrop / sky of your own stays
     }
-    const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
+    const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length, fill = !placed && !!(opt && opt.fill);
     const lead0 = scene ? leadFor(scene) : LEAD;
-    return (placed ? lead0.replace(" Show only what is in the render and add nothing else.", "") : lead0) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + (board.single ? REF1 : REFS) + "." : "") + (placed ? " " + PLACED : "") + (t && t !== DEFAULT ? "\n" + t : "");
+    return (placed ? lead0.replace(" Show only what is in the render and add nothing else.", "") : fill ? lead0.replace(" Show only what is in the render and add nothing else.", " " + KEEP_MODEL) : lead0) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + (board.single ? REF1 : REFS) + "." : "") + (placed ? " " + PLACED : "") + (fill ? " " + EMPTY_ANY : "") + (t && t !== DEFAULT ? "\n" + t : "");
+  }
+  /* 2.995.0 (Tim: "please check the conditional statements for edit sketcher button and photo button in sketcher, i am getting
+     mixed results, sometimes correct, sometimes with a gray mannequin, sometimes with gray bg"): ONE rule for both buttons (plan),
+     every way: the model's own backdrop / sky = one pass as it is; an "environment" reference = the model drawn into it (one
+     pass); ANYTHING else - words or not, references or not - = the model on the flat grey + pass 2 fills the grey (no more
+     "no words = the pale sky colour", which came back as a grey background). */
+  const KEEP_MODEL = "Add nothing to the model itself that is not in the render.";   // (2.688.0's rule, for the model - the place round it is new)
+  const EMPTY_ANY = "In {img1} the flat plain grey around the 3D model is empty space, not a wall or a backdrop: replace all of it with a real place that suits the model - its ground, its surroundings and its sky - never keep a plain, grey or white background.";
+  /** the way a photo is made (pure): {mode: "own" | "placed" | "fill", words, env} - hasBg = the model's own backdrop / sky */
+  function plan(text, hasBg, refs) {
+    const t = String(text || "").trim(), words = !!t && t !== DEFAULT;
+    if (hasBg) return { mode: "own", words, env: null };
+    const env = envRef(refs);
+    return env ? { mode: "placed", words, env } : { mode: "fill", words, env: null };
+  }
+  /** how much the model changed between picture 1 and the photo (pure): the mean RGB difference 0..255 where the model is
+   *  (alpha >= 128); a, b = RGBA data of the same size; -1 = no model in view. A grey 3D mannequin copied back comes out ~0 */
+  function modelChange(a, b, alpha, step) {
+    const k = Math.max(1, step | 0); let sum = 0, n = 0;
+    for (let i = 0; i < alpha.length; i += k) { if (alpha[i] < 128) continue; const j = i * 4; sum += Math.abs(a[j] - b[j]) + Math.abs(a[j + 1] - b[j + 1]) + Math.abs(a[j + 2] - b[j + 2]); n++; }
+    return n ? sum / (3 * n) : -1;
+  }
+  /** the part of the filled area that is still flat grey or green (pure): 0..1 - data RGBA, sel 1 = filled */
+  function greyLeft(data, sel, grey) {
+    const G = grey == null ? 128 : grey; let bad = 0, n = 0;
+    for (let i = 0; i < sel.length; i += 3) { if (!sel[i]) continue; n++; const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
+      if ((Math.abs(r - G) <= 14 && Math.abs(g - G) <= 14 && Math.abs(b - G) <= 14) || (g > 180 && r < 90 && b < 90)) bad++; }
+    return n ? bad / n : 0;
+  }
+  const UNCHANGED = 9, GREY_LEFT = 0.3;
+  /** the second try's words when the first photo came back still the 3D render (a grey mannequin): short and direct */
+  function retryPrompt(text, p) {
+    const t = String(text || "").trim(), w = t && t !== DEFAULT ? t : "";
+    return "Make {img1} a real photograph. Nothing may stay looking like a grey 3D model, a mannequin or a render: real skin, hair, clothes, real materials and textures, real light and shadows. Keep exactly the same shapes, pose, layout and camera angle ({img2} is its depth map)."
+      + (p && p.mode === "fill" ? " Replace the flat grey around it with a real place." : p && p.mode === "placed" ? " The place behind it stays as it is." : "")
+      + (w ? "\nThe prompt: " + w : "");
   }
   /** the reference to put the model INTO: the first one whose Type is "environment" (or null) */
   function envRef(list) { return (Array.isArray(list) ? list : []).find((r) => r && /^(environment|background|location|place|scene|setting)$/i.test(String(r.role || ""))) || null; }
@@ -131,9 +167,9 @@
   function greenFill(data, sel) { let n = 0; for (let i = 0; i < sel.length; i++) if (sel[i]) { data[i * 4] = 0; data[i * 4 + 1] = 255; data[i * 4 + 2] = 0; data[i * 4 + 3] = 255; n++; } return n; }
   /** pass 2's words (after the route's "Fill the green spaces according to the image."): the place from the prompt, the
    *  reference's look, the model kept. {img2} = the reference when one goes along */
-  function fillPrompt(text, hasRef) {
+  function fillPrompt(text, hasRef, strict) {
     const t = String(text || "").trim(), words = t && t !== DEFAULT ? t : "";
-    return "The green area is the place around the person or object in {img1}: fill all of it with a real, detailed photographic place - ground, surroundings and sky - in the same light and perspective, so it is one photograph. Never leave green, grey, white or a plain backdrop. The person or object in {img1} stays exactly as it is."
+    return (strict ? "Every green pixel must become part of a real photographed place - not one may stay green or grey. " : "") + "The green area is the place around the person or object in {img1}: fill all of it with a real, detailed photographic place - ground, surroundings and sky - in the same light and perspective, so it is one photograph. Never leave green, grey, white or a plain backdrop. The person or object in {img1} stays exactly as it is."
       + (hasRef ? " {img2} is the reference picture: the place has its look - its kind of place, colours, light and mood." : "")
       + (words ? "\nThe place and the scene: " + words : "");
   }
@@ -210,12 +246,12 @@
     });
     return c;
   }
-  const api = { PLACED, envRef, bgMask, greenFill, fillPrompt, REF1, EMPTY, FILL, FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { KEEP_MODEL, EMPTY_ANY, plan, modelChange, greyLeft, retryPrompt, UNCHANGED, GREY_LEFT, PLACED, envRef, bgMask, greenFill, fillPrompt, REF1, EMPTY, FILL, FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
   const shown = (id) => { const d = $(id); return !!(d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed") && d.getClientRects().length && d.getBoundingClientRect().width > 0); };
-  const S = { linked: false, keep: null, engines: null, busy: false };
+  const S = { linked: false, keep: null, engines: null, runs: 0, seq: 0 };   // 2.995.0: runs = how many photos are being made (each click queues its own)
   function state() { return { sketcher: shown("pushpulldock"), prompt: shown("promptdock"), editor: shown("imageeditdock"), maxed: !!($("pushpulldock") && $("pushpulldock").classList.contains("maxed")) }; }
   const PP = () => root.H3PushPull;
   const say = (t) => { const P = PP(); if (P && P.state && $("ppMsg")) $("ppMsg").textContent = t; };
@@ -263,7 +299,7 @@
     return mineTake.prev ? mineTake.prev(gm, text) : false;
   }
   function mineLabel() {
-    if (S.linked && $("genModeSel") && $("genModeSel").value === "image") return S.busy ? "⏳ Sketcher…" : "✏ Edit (Sketcher)";
+    if (S.linked && $("genModeSel") && $("genModeSel").value === "image") return "✏ Edit (Sketcher)" + (S.runs ? " · " + S.runs + " making" : "");
     return mineLabel.prev ? mineLabel.prev() : null;
   }
   function seams() {
@@ -301,6 +337,12 @@
     const u = /^blob:|^data:/.test(String(src)) ? String(src) : String(src).replace(/^\/passets\/images\/(.*)$/, (m, n) => "/passets/images/" + encodeURIComponent(n));
     return new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = u; });
   }
+  const blobOf = (cv) => new Promise((ok) => cv.toBlob(ok, "image/png"));
+  /** a picture (blob) drawn at w x h -> its canvas + RGBA data */
+  async function dataOf(blob, w, h) {
+    const u = URL.createObjectURL(blob), im = await imgOf(u); URL.revokeObjectURL(u); if (!im) return null;
+    const c = canvas(w, h), g = c.getContext("2d"); g.drawImage(im, 0, 0, w, h); return { c, d: g.getImageData(0, 0, w, h) };
+  }
   /** 2.993.0: picture 1 for an "environment" reference - that picture (filling the shot, cropped to its shape) with the model
    *  alone drawn over it */
   async function placedPic(src, model) {
@@ -310,129 +352,161 @@
     g.drawImage(model, 0, 0, w, h);
     return c;
   }
+  /** send one picture job to /api/aiedit and wait for it -> {blob, job} (throws the server's / the job's words) */
+  async function aiJob(fd, label) {
+    const res = await root.fetch("/api/aiedit", { method: "POST", body: fd }), j = await res.json();
+    if (!res.ok) { const e = new Error(j.error || "refused"); e.refused = true; throw e; }
+    if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }   // it is in the queue
+    const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
+    const out = await waitJob(id, label);
+    return { blob: await (await root.fetch("/outputs/" + encodeURIComponent(out))).blob(), job: id };
+  }
   /** 2.993.0 pass 2: the first photo with the background (where the model is not, grown into its edge) painted GREEN, filled
    *  under a noise mask by the same edit model with the prompt's place and the first reference's look; the model's own pixels
-   *  from the first photo are kept. -> {blob, job} | null (no background to fill) */
-  async function fillPass(pic, model, text, style, used) {
-    const w = model.width, h = model.height, purl = URL.createObjectURL(pic), im = await imgOf(purl); URL.revokeObjectURL(purl);
-    if (!im) throw new Error("the first photo could not be read");
-    const c = canvas(w, h), g = c.getContext("2d"); g.drawImage(im, 0, 0, w, h);
-    const first = g.getImageData(0, 0, w, h), md = model.getContext("2d").getImageData(0, 0, w, h).data, alpha = new Uint8Array(w * h);
-    for (let i = 0; i < alpha.length; i++) alpha[i] = md[i * 4 + 3];
-    const sel = bgMask(alpha, w, h, Math.max(2, Math.round(0.006 * Math.max(w, h))));
+   *  from the first photo are kept. 2.995.0: the model's coverage from the silhouette (R.alpha), and a fill that still left grey
+   *  / green is tried once more (strict, no reference). -> {blob, job, left} | null (no background to fill) */
+  async function fillPass(R, pic) {
+    const { w, h, alpha, text, style, used, tag } = R;
+    const fp = await dataOf(pic, w, h); if (!fp) throw new Error("the first photo could not be read");
+    const first = fp.d, sel = bgMask(alpha, w, h, Math.max(2, Math.round(0.006 * Math.max(w, h))));
     let n = 0; for (let i = 0; i < sel.length; i++) n += sel[i];
     if (n < sel.length * 0.01) return null;
-    const green = new ImageData(new Uint8ClampedArray(first.data), w, h); greenFill(green.data, sel); g.putImageData(green, 0, 0);
+    const c = canvas(w, h), g = c.getContext("2d"), green = new ImageData(new Uint8ClampedArray(first.data), w, h); greenFill(green.data, sel); g.putImageData(green, 0, 0);
     const m = canvas(w, h), mg = m.getContext("2d"), mi = mg.createImageData(w, h);
     for (let i = 0; i < sel.length; i++) mi.data[i * 4 + 3] = sel[i] ? 0 : 255;                // transparent = what is filled
     mg.putImageData(mi, 0, 0);
     const r = canvas(w, h), rg = r.getContext("2d"); rg.putImageData(first, 0, 0); rg.globalCompositeOperation = "destination-in"; rg.drawImage(m, 0, 0);
-    const blobOf = (cv) => new Promise((ok) => cv.toBlob(ok, "image/png"));
     const ref = used.refs.length ? await imgOf(used.refs[0].src) : null;
-    const refBlob = ref ? await (async () => { const k = Math.min(1, 1024 / Math.max(ref.width, ref.height)), rc = canvas(Math.round(ref.width * k), Math.round(ref.height * k)); rc.getContext("2d").drawImage(ref, 0, 0, rc.width, rc.height); return blobOf(rc); })() : null;
+    const refBlob = ref ? await (() => { const k = Math.min(1, 1024 / Math.max(ref.width, ref.height)), rc = canvas(Math.round(ref.width * k), Math.round(ref.height * k)); rc.getContext("2d").drawImage(ref, 0, 0, rc.width, rc.height); return blobOf(rc); })() : null;
     const [cb, mb, rb] = [await blobOf(c), await blobOf(m), await blobOf(r)];
-    const send = async (withRef) => {
+    const form = (withRef, strict) => {
       const fd = new FormData();
       fd.append("crop", cb, "sketcher_fill.png"); fd.append("mask", mb, "sketcher_fill_mask.png"); fd.append("rgba", rb, "sketcher_fill_hole.png");
       if (withRef) { fd.append("ref0", refBlob, "sketcher_reference.png"); fd.append("ref_desc", "the reference picture"); }
-      const fields = { mode: "generate", fill_edit: "1", edit_style_id: style, fill_kind: "generate", style_id: style, prompt: fillPrompt(text, withRef), ref_raw: "1",
+      const fields = { mode: "generate", fill_edit: "1", edit_style_id: style, fill_kind: "generate", style_id: style, prompt: fillPrompt(text, withRef, strict), ref_raw: "1",
         strength: 100, count: 1, width: w, height: h, mask_grow: 0, mask_feather: Math.max(2, Math.round(0.008 * Math.max(w, h))) };
       Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
-      S.sent2 = { prompt: fields.prompt, ref: !!withRef, filled: n, of: sel.length };
-      const res = await root.fetch("/api/aiedit", { method: "POST", body: fd }); return { res, j: await res.json() };
+      S.sent2 = { prompt: fields.prompt, ref: !!withRef, filled: n, of: sel.length, strict: !!strict };
+      return fd;
     };
-    say("📷 step 2 of 2: the place round the model…");
-    let { res, j } = await send(!!refBlob);
-    if (!res.ok && refBlob && /picture\(s\)|takes \d|at most|reference/i.test(j.error || "")) ({ res, j } = await send(false));
-    if (!res.ok) throw new Error(j.error || "refused");
-    const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
-    const out = await waitJob(id, "📷 step 2 of 2: the place round the model");
-    const b2 = await (await root.fetch("/outputs/" + encodeURIComponent(out))).blob(), u2 = URL.createObjectURL(b2), im2 = await imgOf(u2); URL.revokeObjectURL(u2);
-    if (!im2) throw new Error("the filled photo could not be read");
+    const label = tag + " step 2: the place round the model";
+    say(label + "…");
+    let got;
+    try { got = await aiJob(form(!!refBlob, false), label); }
+    catch (e) { if (!(e.refused && refBlob && /picture\(s\)|takes \d|at most|reference/i.test(e.message || ""))) throw e; got = await aiJob(form(false, false), label); }
+    let f2 = await dataOf(got.blob, w, h); if (!f2) throw new Error("the filled photo could not be read");
+    let left = greyLeft(f2.d.data, sel, FILL >> 16), job = got.job, again = false;
+    if (left > GREY_LEFT) {   // 2.995.0: the grey / green is still there - once more, strict, without the reference
+      say(tag + " the place came back " + Math.round(left * 100) + "% grey / green - filling it once more…"); again = true;
+      try { const g2 = await aiJob(form(false, true), label + " (again)"), f3 = await dataOf(g2.blob, w, h);
+        if (f3) { const l3 = greyLeft(f3.d.data, sel, FILL >> 16); if (l3 < left) { f2 = f3; left = l3; job = g2.job; } } }
+      catch (e) { /* the first fill stays */ }
+    }
     // the model itself from the first photo (only the filled part is new)
-    const f = canvas(w, h), fg = f.getContext("2d"); fg.drawImage(im2, 0, 0, w, h);
-    const fd2 = fg.getImageData(0, 0, w, h); for (let i = 0; i < sel.length; i++) if (!sel[i]) { fd2.data[i * 4] = first.data[i * 4]; fd2.data[i * 4 + 1] = first.data[i * 4 + 1]; fd2.data[i * 4 + 2] = first.data[i * 4 + 2]; fd2.data[i * 4 + 3] = 255; }
-    fg.putImageData(fd2, 0, 0);
-    S.shots.fill = { green: c, mask: m, result: f };
-    return { blob: await blobOf(f), job: id };
+    const fd2 = f2.d; for (let i = 0; i < sel.length; i++) if (!sel[i]) { fd2.data[i * 4] = first.data[i * 4]; fd2.data[i * 4 + 1] = first.data[i * 4 + 1]; fd2.data[i * 4 + 2] = first.data[i * 4 + 2]; fd2.data[i * 4 + 3] = 255; }
+    f2.c.getContext("2d").putImageData(fd2, 0, 0);
+    R.shots.fill = { green: c, mask: m, result: f2.c };
+    return { blob: await blobOf(f2.c), job, left, again };
   }
-  /* ---- the run */
+  /** 2.995.0: everything a photo needs, taken AT THE CLICK (the view, its shots, the prompt docker's references, the name) - so
+   *  the next click can turn the view and queue another while this one is still being made */
+  function capture(text) {
+    const P = PP(), V = P && P.state && P.state.V; if (!V || !P.state.M) return null;
+    const cv = V.canvas, sz = shotSize(cv.clientWidth, cv.clientHeight, 1024), w = sz.w, h = sz.h;
+    const used = usedPictures(P.state.M.arch, P.state.M.f);
+    used.refs = refTiles((() => { try { return typeof refs !== "undefined" ? refs : root.refs; } catch (e) { return root.refs; } })());   // eslint-disable-line no-undef - the prompt docker's (index.html's top-level `refs`)
+    const p = plan(text, !!used.bg, used.refs);
+    V.setSel({ f: [], e: [], k: [] }); if (P.state.A && P.state.A.setSel) P.state.A.setSel(null);
+    let model, photo, depth;
+    try {
+      model = V.shot(w, h, { clean: true, transparent: true });                                   // the model alone (alpha from its silhouette)
+      photo = V.shot(w, h, Object.assign({ clean: true, photo: true }, p.mode === "fill" ? { fill: FILL } : {}));
+      depth = V.shot(w, h, { clean: true, depth: true });
+    } finally { V.setSel(P.state.sel); }
+    const md = model.getContext("2d").getImageData(0, 0, w, h).data, alpha = new Uint8Array(w * h);
+    for (let i = 0; i < alpha.length; i++) alpha[i] = md[i * 4 + 3];
+    const scene = sceneWords(P.state.M.arch, P.state.M.f, { furn: (t) => { try { const pc = root.PPFurn && root.PPFurn.pieces().find((x) => x.type === t); return pc ? pc.label : t; } catch (e) { return t; } },
+      mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } },
+      daz: (() => { try { const D = root.H3DazScene; return D ? D.list().filter((id) => { const r = D.rig(id); return r && r.outer.visible; }).length : 0; } catch (e) { return 0; } })() });
+    const name = realName(P.nameNow ? P.nameNow() : (($("ppName") || {}).value || "model"));
+    return { k: ++S.seq, text, w, h, used, plan: p, alpha, scene, name, shots: { photo, depth, model } };
+  }
+  function paintBusy() {
+    if (typeof root.paintGoLabel === "function") try { root.paintGoLabel(); } catch (e) { /* fine */ }
+    const b = $("ppReal"); if (b) b.textContent = "✨ Photo" + (S.runs ? " · " + S.runs : "");
+  }
+  /* ---- the run: the ✨ Photo button and the prompt docker's ✏ Edit (Sketcher) both come here - the same rule (plan) */
   async function run(text) {
-    const P = PP(), V = P && P.state && P.state.V; if (!V || !P.state.M) { say("📷 the Sketcher's view is not ready"); return; }
-    if (S.busy) { say("📷 still making the last one"); return; }
+    const R = capture(text); if (!R) { say("📷 the Sketcher's view is not ready"); return; }
+    S.runs++; paintBusy();
+    try { return await make(R); } finally { S.runs = Math.max(0, S.runs - 1); paintBusy(); }
+  }
+  async function make(R) {
     const E = await engines(), st = $("styleSel"), style = sketcherStyle(ownStyle(), st ? st.value : "", E);   // 2.696.0: the bar's Photo style
     if (style) keep(style);
     if (!style) { say("📷 no edit model - install one (Qwen Image Edit, FLUX Kontext, FLUX.2 Klein ...) in the Model manager"); return; }
-    S.busy = true; if (typeof root.paintGoLabel === "function") root.paintGoLabel();
-    try {
-      const cv = V.canvas, sz = shotSize(cv.clientWidth, cv.clientHeight, 1024);
-      V.setSel({ f: [], e: [], k: [] }); if (P.state.A && P.state.A.setSel) P.state.A.setSel(null);
-      // 2.627.0: a CLEAN render (no outlines / grid, shadows, a daylight sky) = picture 1, its DEPTH map = picture 2
-      const used = usedPictures(P.state.M.arch, P.state.M.f);
-      used.refs = refTiles((() => { try { return typeof refs !== "undefined" ? refs : root.refs; } catch (e) { return root.refs; } })());   // eslint-disable-line no-undef - the prompt docker's (index.html's top-level `refs`)
-      const words = String(text || "").trim() && String(text).trim() !== DEFAULT && !used.bg;   // (a backdrop / sky you set stays)   // 2.990.0: words = the model on a flat grey (the place comes from the prompt)
-      // 2.993.0: an "environment" reference = the model drawn INTO it (one pass); words / other references = the grey filled in pass 2
-      const env = used.bg ? null : envRef(used.refs), fillBg = !used.bg && !env && !!(words || used.refs.length);
-      const tr = env || fillBg ? V.shot(sz.w, sz.h, { clean: true, transparent: true }) : null;   // the model alone (photo would clear to its sky colour)
-      let c = V.shot(sz.w, sz.h, Object.assign({ clean: true, photo: true }, fillBg ? { fill: FILL } : {})), dm = V.shot(sz.w, sz.h, { clean: true, depth: true }); V.setSel(P.state.sel);
-      if (env) { const pc = await placedPic(env.src, tr); if (pc) c = pc; }
-      const blob = await new Promise((ok) => c.toBlob(ok, "image/png")), dblob = await new Promise((ok) => dm.toBlob(ok, "image/png"));
-      S.shots = { photo: c, depth: dm, model: tr };
-      // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3
-      // 2.688.0: the lead names only what the model has (sceneWords)
-      const scene = sceneWords(P.state.M.arch, P.state.M.f, { furn: (t) => { try { const pc = root.PPFurn && root.PPFurn.pieces().find((x) => x.type === t); return pc ? pc.label : t; } catch (e) { return t; } },
-        mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } },
-        daz: (() => { try { const D = root.H3DazScene; return D ? D.list().filter((id) => { const r = D.rig(id); return r && r.outer.visible; }).length : 0; } catch (e) { return 0; } })() });
-      // 2.991.0 (Tim: "after i changed the reference image it went now a gray background and not holding the reference image"):
-      // ONE reference and nothing else for the board = that picture itself, whole (a captioned 320 px tile cropped it and lost it)
-      used.single = used.refs.length === 1 && !used.tiles.length && !used.bg;
-      const bc = !used.single && (used.tiles.length || used.bg || used.refs.length) ? await boardPic(used) : used.single ? await refPic(used.refs[0].src) : null;
-      const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
-      S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
-      const send = async (withBoard) => {
-        const fd = new FormData();
-        fd.append("crop", blob, "sketcher.png");
-        fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
-        if (withBoard) fd.append("ref1", bblob, "sketcher_materials.png");
-        const fields = { mode: "edit", prompt: promptFor(text, withBoard ? used : null, scene, { placed: !!env }), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
-        Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
-        if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
-        S.sent = { prompt: fields.prompt, board: !!withBoard, scene, placed: !!env, fill: fillBg };
-        const r = await root.fetch("/api/aiedit", { method: "POST", body: fd }); return { r, j: await r.json() };
-      };
-      const what = [used.tiles.length || used.bg ? "its materials" : "", used.refs.length ? used.refs.length + " reference picture" + (used.refs.length > 1 ? "s" : "") : "", String(text || "").trim() && text.trim() !== DEFAULT ? "your prompt" : ""].filter(Boolean);
-      say("📷 a real photo of the model" + (what.length ? " + " + what.join(" + ") : " (the scene only)") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
-      let { r, j } = await send(!!bblob);
-      if (!r.ok && bblob && /picture\(s\)|takes \d|at most/i.test(j.error || "")) {   // this edit model takes two pictures: without the board
-        ({ r, j } = await send(false));
-        if (r.ok) say("📷 queued without the materials / references board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
-      }
-      if (!r.ok) throw new Error(j.error || "refused");
-      if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }
-      const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
-      const out = await waitJob(id, "📷 a real photo of the model" + (fillBg ? " (step 1 of 2)" : ""));
-      let url = "/outputs/" + encodeURIComponent(out);
-      // a REAL image: the project's Image assets (+ a plain layer in the image editor when it is on screen)
-      let pic = await (await root.fetch(url)).blob(), id2 = null;
-      if (fillBg) {   // 2.993.0: pass 2 - the place round the model
-        try { const f = await fillPass(pic, tr, text, style, used); if (f) { pic = f.blob; id2 = f.job; } }
-        catch (e) { say("📷 the place round the model could not be filled (" + (e.message || e) + ") - keeping the first photo"); await new Promise((ok) => setTimeout(ok, 1500)); }
-      }
-      const name = realName(P.state && P.nameNow ? P.nameNow() : (($("ppName") || {}).value || "model"));
-      const up = new FormData(); up.append("file", new File([pic], name, { type: pic.type || "image/png" }), name);
-      const saved = await (await root.fetch("/api/passets", { method: "POST", body: up })).json();
-      if (!saved || !saved.name) throw new Error((saved && saved.error) || "it could not be filed in the Image assets");
-      if (typeof root.refreshAssets === "function") try { root.refreshAssets(); } catch (e) { /* fine */ }
-      if (typeof root.loadPAssets === "function") try { root.loadPAssets(); } catch (e) { /* fine */ }
-      const IE = root.imageEditorInstance && root.imageEditorInstance.E;
-      if (id2) url = "/passets/images/" + encodeURIComponent(saved.name);
-      if (IE && shown("imageeditdock")) try { IE.load(url, "📷 " + saved.name, !!(IE.S && IE.S.w)); } catch (e) { /* fine */ }
-      say("📷 a real photo of the model - in the Image assets as " + saved.name);
-      S.last = { asset: saved.name, url, job: id, fillJob: id2, placed: !!env, fill: fillBg };
-      try { if (root.H3TestEvent) root.H3TestEvent("sketcher_real", saved.name); } catch (e) { /* fine */ }
-    } finally { S.busy = false; if (typeof root.paintGoLabel === "function") root.paintGoLabel(); }
+    const { w, h, used, plan: p, text, scene } = R, tag = "📷 #" + R.k;
+    R.style = style; R.tag = tag;
+    let c = R.shots.photo;
+    if (p.mode === "placed") { const pc = await placedPic(p.env.src, R.shots.model); if (pc) c = pc; }
+    R.shots.sent = c; S.shots = R.shots;
+    const blob = await blobOf(c), dblob = await blobOf(R.shots.depth);
+    // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3; 2.991.0: ONE reference alone = that picture, whole
+    used.single = used.refs.length === 1 && !used.tiles.length && !used.bg;
+    const bc = !used.single && (used.tiles.length || used.bg || used.refs.length) ? await boardPic(used) : used.single ? await refPic(used.refs[0].src) : null;
+    const bblob = bc ? await blobOf(bc) : null;
+    R.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
+    const form = (withBoard, prompt) => {
+      const fd = new FormData();
+      fd.append("crop", blob, "sketcher.png");
+      fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
+      if (withBoard) fd.append("ref1", bblob, "sketcher_materials.png");
+      const fields = { mode: "edit", prompt: prompt || promptFor(text, withBoard ? used : null, scene, { placed: p.mode === "placed", fill: p.mode === "fill" }), style_id: style, strength: 100, count: 1, width: w, height: h, whole: "1" };
+      Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
+      if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
+      S.sent = { prompt: fields.prompt, board: !!withBoard, scene, placed: p.mode === "placed", fill: p.mode === "fill", mode: p.mode, retry: !!prompt };
+      return fd;
+    };
+    const what = [used.tiles.length || used.bg ? "its materials" : "", used.refs.length ? used.refs.length + " reference picture" + (used.refs.length > 1 ? "s" : "") : "", p.words ? "your prompt" : ""].filter(Boolean);
+    const label = tag + " a real photo of the model" + (p.mode === "fill" ? " (step 1 of 2)" : "");
+    say(tag + " a real photo of the model" + (what.length ? " + " + what.join(" + ") : " (the scene only)") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
+    let board = !!bblob, got;
+    try { got = await aiJob(form(board), label); }
+    catch (e) {
+      if (!(e.refused && bblob && /picture\(s\)|takes \d|at most/i.test(e.message || ""))) throw e;   // this edit model takes two pictures: without the board
+      board = false; got = await aiJob(form(false), label);
+      say(tag + " queued without the materials / references board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
+    }
+    // 2.995.0: the photo came back still the 3D render (a grey mannequin) - once more with short, direct words
+    const sent = c.getContext("2d").getImageData(0, 0, w, h).data;
+    let pic = got.blob, job = got.job, change = -1, retried = false;
+    const d1 = await dataOf(pic, w, h); if (d1) change = modelChange(sent, d1.d.data, R.alpha, 3);
+    if (change >= 0 && change < UNCHANGED) {
+      retried = true; say(tag + " the photo came back still looking like the 3D model - trying once more…");
+      try { const g2 = await aiJob(form(board, retryPrompt(text, p)), label + " (again)"), d2 = await dataOf(g2.blob, w, h), c2 = d2 ? modelChange(sent, d2.d.data, R.alpha, 3) : -1;
+        if (c2 > change) { pic = g2.blob; job = g2.job; change = c2; } }
+      catch (e) { /* the first stays */ }
+    }
+    let fill = null;
+    if (p.mode === "fill") {   // 2.993.0: pass 2 - the place round the model
+      try { fill = await fillPass(R, pic); if (fill) pic = fill.blob; }
+      catch (e) { say(tag + " the place round the model could not be filled (" + (e.message || e) + ") - keeping the first photo"); await new Promise((ok) => setTimeout(ok, 1500)); }
+    }
+    // a REAL image: the project's Image assets (+ a plain layer in the image editor when it is on screen)
+    const up = new FormData(); up.append("file", new File([pic], R.name, { type: pic.type || "image/png" }), R.name);
+    const saved = await (await root.fetch("/api/passets", { method: "POST", body: up })).json();
+    if (!saved || !saved.name) throw new Error((saved && saved.error) || "it could not be filed in the Image assets");
+    if (typeof root.refreshAssets === "function") try { root.refreshAssets(); } catch (e) { /* fine */ }
+    if (typeof root.loadPAssets === "function") try { root.loadPAssets(); } catch (e) { /* fine */ }
+    const url = "/passets/images/" + encodeURIComponent(saved.name), IE = root.imageEditorInstance && root.imageEditorInstance.E;
+    if (IE && shown("imageeditdock")) try { IE.load(url, "📷 " + saved.name, !!(IE.S && IE.S.w)); } catch (e) { /* fine */ }
+    const still = [change >= 0 && change < UNCHANGED ? "it still looks like the 3D model - try another edit model or more words" : "", fill && fill.left > GREY_LEFT ? "some of the place is still grey" : ""].filter(Boolean);
+    say(tag + " a real photo of the model - in the Image assets as " + saved.name + (still.length ? " (" + still.join("; ") + ")" : "") + (S.runs > 1 ? " · " + (S.runs - 1) + " more being made" : ""));
+    S.last = { k: R.k, asset: saved.name, url, job, fillJob: fill ? fill.job : null, placed: p.mode === "placed", fill: p.mode === "fill", mode: p.mode, change, retried, left: fill ? fill.left : null, fillAgain: !!(fill && fill.again) };
+    try { if (root.H3TestEvent) root.H3TestEvent("sketcher_real", saved.name); } catch (e) { /* fine */ }
+    return S.last;
   }
-  root.H3SketcherReal = Object.assign({ state, run, link, tick, last: () => S.last, linked: () => S.linked, shots: () => S.shots }, api);
+  root.H3SketcherReal = Object.assign({ state, run, link, tick, last: () => S.last, linked: () => S.linked, shots: () => S.shots, runs: () => S.runs }, api);
   setInterval(tick, 700);
   doc.addEventListener("DOMContentLoaded", tick);
 })(typeof window !== "undefined" ? window : globalThis);

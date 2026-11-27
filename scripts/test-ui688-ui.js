@@ -98,7 +98,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     if (runErr) console.log("      (run: " + runErr.slice(0, 300) + ")");
     if (!sentPrompt) console.log("      (the Sketcher said: " + await ev(() => document.getElementById("ppMsg").textContent) + ")");
     check("✨ Photo's prompt: the room, its door and the armchair - and no window / glass (the model has none)",
-      !!sentPrompt && /a building with a room with walls/.test(sentPrompt) && /a door/.test(sentPrompt) && /armchair/i.test(sentPrompt) && !/window|glass/i.test(sentPrompt) && /add nothing else/.test(sentPrompt), sentPrompt);
+      !!sentPrompt && /a building with a room with walls/.test(sentPrompt) && /a door/.test(sentPrompt) && /armchair/i.test(sentPrompt) && !/window|glass/i.test(sentPrompt) && /add nothing else|Add nothing to the model itself/.test(sentPrompt), sentPrompt);   // 2.995.0: no words = a place round it too, nothing added to the model
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e.stack || e.message)); }
   await b.close();

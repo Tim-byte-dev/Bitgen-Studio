@@ -34,8 +34,8 @@ const DI = require("../lib/dazImport.js");
     pl.includes(R.PLACED) && !pl.includes(R.EMPTY) && pl0.includes(R.PLACED) && !/add nothing else/.test(pl0) && R.promptFor("x", null, sc).includes(R.EMPTY));
   const PR = src("ext/pushpulldock/ppreal.js");
   check("the run: env reference -> placedPic (the reference behind the model alone); words / other references -> fill on the grey, then fillPass; the shot of the model alone is TRANSPARENT (photo would give it the sky)",
-    /const env = used\.bg \? null : envRef\(used\.refs\), fillBg = !used\.bg && !env && !!\(words \|\| used\.refs\.length\)/.test(PR) && /if \(env\) \{ const pc = await placedPic\(env\.src, tr\); if \(pc\) c = pc; \}/.test(PR)
-    && /V\.shot\(sz\.w, sz\.h, \{ clean: true, transparent: true \}\)/.test(PR) && /const f = await fillPass\(pic, tr, text, style, used\)/.test(PR));
+    /const p = plan\(text, !!used\.bg, used\.refs\)/.test(PR) && /if \(p\.mode === "placed"\) \{ const pc = await placedPic\(p\.env\.src, R\.shots\.model\); if \(pc\) c = pc; \}/.test(PR)   // 2.995.0: one rule (plan)
+    && /V\.shot\(w, h, \{ clean: true, transparent: true \}\)/.test(PR) && /fill = await fillPass\(R, pic\)/.test(PR));
   check("pass 2 = /api/aiedit fill_edit (the same edit model, generate, under the mask, ref_raw), the first reference as {img2}; refused = the first photo kept and said; the model's own pixels from pass 1",
     /fill_edit: "1", edit_style_id: style, fill_kind: "generate"/.test(PR) && /ref_raw: "1"/.test(PR) && /fd\.append\("mask", mb/.test(PR) && /could not be filled \(/.test(PR) && /if \(!sel\[i\]\) \{ fd2\.data\[i \* 4\] = first\.data\[i \* 4\]/.test(PR));
 

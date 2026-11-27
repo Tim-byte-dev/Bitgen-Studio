@@ -15283,6 +15283,8 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui993dz-ui.js > /tmp/ui993dz.log
 # ---- 2.994.0 (⛰ Panorama depth - PaGeR, non-commercial weights)
 node scripts/test-994.js > /tmp/t994.log 2>&1 && ok "2.994.0 units: the PaGeR add-on (install on a stand-in machine), the route, the job, depthAt, the non-commercial disclaimer everywhere" || { bad "2.994.0 units"; grep -a "^FAIL" -A1 /tmp/t994.log | head -8; }
 python3 scripts/test-pager994.py > /tmp/t994py.log 2>&1 && ok "2.994.0 python: the depth mesh, the .glb, the stereo 360, the worker end to end (a stand-in venv)" || { bad "2.994.0 python"; grep -a "^FAIL" -A1 /tmp/t994py.log | head -8; }
+# ---- 2.995.0 (✨ Photo / ✏ Edit (Sketcher): one rule, checked results, several at once)
+node scripts/test-995.js > /tmp/t995.log 2>&1 && ok "2.995.0 units: plan (own / placed / fill), modelChange, greyLeft, retryPrompt, the silhouette alpha, no busy lock" || { bad "2.995.0 units"; grep -a "^FAIL" -A1 /tmp/t995.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui994-ui.js > /tmp/ui994.log 2>&1 && ok "2.994.0 browser test: ⛰ Depth - the first-time download box (non-commercial), the job, the bent spheres, stepping round, VR stereo" || { bad "2.994.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui994.log | head -8; }
 
 say "======================="

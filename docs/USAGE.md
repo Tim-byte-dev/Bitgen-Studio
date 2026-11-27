@@ -649,6 +649,24 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**The same result every time, several at once (2.995.0)** - ✨ Photo and the prompt docker's ✏ Edit (Sketcher) now go
+through one rule, so the same view and words give the same kind of result:
+- **A backdrop or 360° sky of the model's own** - kept: one render, the model in it.
+- **A reference whose Type is *environment*** - the model drawn into that picture: one render.
+- **Anything else** - words or none, references or none - the model on a flat grey, then the grey is filled with a real
+  place (your prompt's, or one that suits the model when there are no words). Before, an empty prompt sent the pale sky
+  colour, which often came back as a grey background.
+- **Checked before it is kept**: if the photo comes back still looking like the 3D model (a grey mannequin), it is made
+  once more with short, direct words; if the place round the model comes back still grey or green, it is filled once more.
+  When it still is, the message says so (try another edit model, or more words).
+- **Press it again while one is being made**: each press takes its own picture of the view at that moment and adds its
+  jobs to the queue - turn the view, change the words, press again. The buttons count them (*✨ Photo · 2*, *✏ Edit
+  (Sketcher) · 2 making*); each message is numbered (📷 #3 …).
+- The model's outline for the fill now comes from a silhouette render. On a real graphics card the Sketcher's view has no
+  see-through background, so the old way read the whole picture as "the model" and the fill never ran - the grey stayed.
+  This also fixes → Image editor's transparent background, and an environment reference no longer gets a black box
+  round the model.
+
 **No more grey background (2.993.0)** - an edit model copies what is *in* picture 1, so a grey there came back grey whatever
 the words said. Now the place is put into the pictures:
 - **A reference whose Type is *environment*** (the Type dropdown under a picture in the prompt docker): picture 1 is the model
@@ -658,7 +676,7 @@ the words said. Now the place is put into the pictures:
   then the grey round the model is painted green and filled again under a mask by the same edit model (step 2 of 2 - the
   Krita AI plugin's "fill the green"), with your prompt's place and the first reference's look. Only the background is new:
   the model keeps its pixels from step 1. If step 2 cannot run, the first photo is kept and the message says why.
-- No words and no references: the plain photo with its daylight sky, as always. A backdrop or 360° sky you set stays.
+- No words and no references: 2.995.0 - the same as words (the grey, then a place that suits the model). A backdrop or 360° sky you set stays.
 
 **One reference picture is sent whole (2.991.0)** - with a single reference in the prompt docker (and no materials of the
 model's own), ✨ Photo sends that picture itself - its whole shape, sharp - as picture 3 and asks for its place, ground,

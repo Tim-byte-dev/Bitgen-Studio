@@ -42,7 +42,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
         const m = s.match(/^\/api\/jobs\/(ui993_\d+)/); if (m) return J({ status: "done", outputs: [m[1] + ".png"] });
         const mo = s.match(/^\/outputs\/(ui993_\d+)\.png/);
         if (mo) { const rec = window["__job_" + mo[1]]; if (rec.fill_edit === "1") { const bm = await createImageBitmap(rec.crop); return new Response(await blue(bm.width, bm.height), { headers: { "Content-Type": "image/png" } }); }
-          return new Response(rec.crop, { headers: { "Content-Type": "image/png" } }); }   // pass 1 answers with its own picture 1
+          const bm1 = await createImageBitmap(rec.crop), c1 = document.createElement("canvas"); c1.width = bm1.width; c1.height = bm1.height; const q1 = c1.getContext("2d"); q1.drawImage(bm1, 0, 0); q1.globalCompositeOperation = "difference"; q1.fillStyle = "#303030"; q1.fillRect(0, 0, c1.width, c1.height);
+          return new Response(await new Promise((ok) => c1.toBlob(ok, "image/png")), { headers: { "Content-Type": "image/png" } }); }   // pass 1 answers with its picture 1, 48 off each channel (2.995.0: changed - a "photo", so no second try)
         if (s === "/api/passets" && o && o.method === "POST") { window.__saved.push(o.body.get("file")); return J({ name: "ui993_photo.png" }); }
         return real(u, o);
       };
@@ -65,10 +66,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       sent[1].fill === "1" && sent[1].kind === "generate" && sent[1].mode === "generate" && sent[1].mask && !sent[1].whole && sent[1].edit && sent[1].edit === sent[0].style && sent[1].raw === "1"
       && /The place and the scene: a woman standing in a park/.test(sent[1].prompt) && /Never leave green, grey, white/.test(sent[1].prompt) && !sent[1].ref0, sent[1]);
     const g2 = await px("window.__sent[1].crop", [[0.02, 0.02], [0.98, 0.5], center]), mk = await px("window.__sent[1].mask", [[0.02, 0.02], center]), g1 = await px("window.__sent[0].crop", [[0.02, 0.02], center]);
-    check("…pass 2's picture: the grey round the model painted GREEN, the model itself kept", near(g2.pts[0], [0, 255, 0], 2) && near(g2.pts[1], [0, 255, 0], 2) && near(g2.pts[2], g1.pts[1]) && near(g1.pts[0], [128, 128, 128], 4), { g2, g1 });
+    const p1 = (q) => q.slice(0, 3).map((v) => Math.abs(v - 48));   // pass 1's answer at that pixel
+    check("…pass 2's picture: the grey round the model painted GREEN, the model itself kept", near(g2.pts[0], [0, 255, 0], 2) && near(g2.pts[1], [0, 255, 0], 2) && near(g2.pts[2], p1(g1.pts[1])) && near(g1.pts[0], [128, 128, 128], 4), { g2, g1 });
     check("…its mask: the background transparent (filled), the model opaque (kept)", mk.pts[0][3] === 0 && mk.pts[1][3] === 255, mk);
     const sv = await px("window.__saved[0]", [[0.02, 0.02], [0.98, 0.98], center]);
-    check("the photo kept: the filled place round the model (no grey, no green left), the model's own pixels from pass 1", near(sv.pts[0], [16, 48, 224]) && near(sv.pts[1], [16, 48, 224]) && near(sv.pts[2], g1.pts[1]), sv);
+    check("the photo kept: the filled place round the model (no grey, no green left), the model's own pixels from pass 1", near(sv.pts[0], [16, 48, 224]) && near(sv.pts[1], [16, 48, 224]) && near(sv.pts[2], p1(g1.pts[1])), sv);
     const last = await ev(() => H3SketcherReal.last());
     check("…said what was done (fillJob)", last && last.fill === true && /^ui993_/.test(last.fillJob || "") && !last.placed, last);
 
@@ -93,11 +95,11 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("pass 2 refused: the first photo is still saved (no error), the fill not done", !err && (await ev(() => window.__saved.length)) === 1 && msg.fillJob === null, { err, msg });
     await ev(() => { window.__refuse2 = false; refs.length = 0; });
 
-    // ---- E: no words, no references -> one pass, the plain photo with its sky, as always
+    // ---- E: 2.995.0 no words, no references -> the SAME rule: the grey + pass 2 (the pale sky colour came back as a grey background)
     err = await runIt("");
-    sent = await ev(() => window.__sent.map((r) => ({ fill: r.fill_edit })));
+    sent = await ev(() => window.__sent.map((r) => ({ fill: r.fill_edit, prompt: r.prompt })));
     const g5 = sent.length ? await px("window.__sent[0].crop", [[0.02, 0.02]]) : null;
-    check("no words and no references: one pass, the plain photo (its daylight sky, not the grey)", !err && sent.length === 1 && g5 && !near(g5.pts[0], [128, 128, 128], 4), { err, sent, g5 });
+    check("2.995.0 no words and no references: two passes too - picture 1 on the grey (EMPTY_ANY: a real place that suits the model), then the fill", !err && sent.length === 2 && sent[1].fill === "1" && g5 && near(g5.pts[0], [128, 128, 128], 4) && /a real place that suits the model/.test(sent[0].prompt) && !/add nothing else/.test(sent[0].prompt) && /Add nothing to the model itself/.test(sent[0].prompt), { err, sent: sent.length, g5 });
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("ran without throwing", false, String(e && e.stack || e)); }
   finally { try { await ev(() => { refs.length = 0; }); } catch (e) { /* gone */ } await b.close(); }

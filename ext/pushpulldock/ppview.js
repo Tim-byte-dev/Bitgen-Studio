@@ -425,10 +425,10 @@
       // 2.629.0: + a NORMAL map; o.camera's depth is linear (0.3 m .. the model's size) - the House builder's shader
       const lines = [], hadSh = R.shadowMap.enabled, fit = { near: persp.near, far: persp.far };
       // 2.652.0: the model's backdrop / 360° sky (ppmatpick.js) - in the photo (fitted to the shot's shape), never in a depth / normal map
-      const bg0 = scene.background; if (o.depth || o.normal) scene.background = null; else if (bg0 && V.bgFit) V.bgFit(w / h);
+      const bg0 = scene.background; if (o.depth || o.normal || o.mask) scene.background = null; else if (bg0 && V.bgFit) V.bgFit(w / h);
       if (o.photo) { if (!hadSh) shadows(true); R.setClearColor(0xc9dcec, 1); }
       if (fill0) { scene.background = null; ground.visible = false; R.setClearColor(o.fill, 1); }      // (shadows() rebuilds - the lines are hidden after it)
-      if (o.photo || o.depth || o.normal) scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
+      if (o.photo || o.depth || o.normal || o.mask) scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
       const { c: bc, r: br } = fitBox();
       if (o.depth) {
         ground.visible = false; R.setClearColor(0x000000, 1);
@@ -442,10 +442,15 @@
         }
       }
       if (o.normal) { ground.visible = false; scene.overrideMaterial = new T.MeshNormalMaterial({ side: T.DoubleSide }); R.setClearColor(0x8080ff, 1); }
+      // 2.995.0: a SILHOUETTE (the model white on black) - the renderer has no alpha channel (alpha: false), so on a real GPU a
+      // "transparent" clear came back opaque black; the model's coverage now comes from this, never from the drawing buffer's alpha
+      const gr0 = ground.visible;
+      if (o.mask) { ground.visible = false; R.setClearColor(0x000000, 1); scene.overrideMaterial = new T.MeshBasicMaterial({ color: 0xffffff, side: T.DoubleSide }); }
       R.render(scene, C);
       if (tr0) { scene.background = tr0.bg; ground.visible = tr0.gr; }
       if (fill0) { scene.background = fill0.bg; ground.visible = fill0.gr; }
-      if (o.depth || o.normal) { scene.overrideMaterial = null; persp.near = fit.near; persp.far = fit.far; persp.updateProjectionMatrix(); ground.visible = R.shadowMap.enabled; }
+      if (o.depth || o.normal || o.mask) { if (scene.overrideMaterial && scene.overrideMaterial.dispose) scene.overrideMaterial.dispose(); scene.overrideMaterial = null; persp.near = fit.near; persp.far = fit.far; persp.updateProjectionMatrix(); ground.visible = R.shadowMap.enabled; }
+      if (o.mask) ground.visible = gr0;   // (the depth / normal clean-up above ties the ground to the shadows - the silhouette leaves it as it was)
       if (o.photo && !hadSh) shadows(false);
       scene.background = bg0; if (bg0 && V.bgFit) V.bgFit();
       lines.forEach((x) => { x.visible = true; });
@@ -453,6 +458,11 @@
       R.setClearColor(V.clear != null ? V.clear : new T.Color(V.theme.bg).getHex(), 1); grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true; hid.forEach((x) => { x.visible = true; });
       persp.aspect = pa; ortho.left = ol[0]; ortho.right = ol[1];
       R.setSize(keep.x, keep.y, false); size();
+      if (o.transparent && !o.mask) {   // 2.995.0: the alpha from the silhouette (works with or without a drawing-buffer alpha)
+        const m = shot(w, h, { clean: o.clean, camera: o.camera, mask: true }), g = c.getContext("2d"), d = g.getImageData(0, 0, w, h), md = m.getContext("2d").getImageData(0, 0, w, h).data;
+        for (let i = 3; i < d.data.length; i += 4) d.data[i] = md[i - 3];
+        g.putImageData(d, 0, 0);
+      }
       return c;
     }
     /** 2.629.0: a 360° panorama (equirectangular W × W/2) from p, its middle facing yaw (degrees, clockwise seen from above) -
