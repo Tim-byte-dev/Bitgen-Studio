@@ -1284,6 +1284,14 @@ one you don't keep.
 - Light, not exact: loose clothing reads as body, and the photo's clothes are painted onto the skin too - a photo in
   fitted clothes works best. Daz Studio (Face Transfer, its shaping) does far more.
 
+**📏 Height & weight (2.982.0)** - in the 🧭 DAZ Explorer: type a **height** (cm) and / or a **weight** (kg), and the tape
+measurements if you have them (**chest** at the armpits, the narrowest **waist**, the widest **hips**, all round the body),
+pick a **build** and press **▶ Make**. The picked character's own body dials are turned until its numbers match - a NEW
+character (\"Doll · 📏 185 cm 80 kg\"), built straight away. **📏 Measure it** shows a character's numbers now.
+- The weight comes from the body's volume x 1.02 kg a litre (a body is 1.01 - 1.06) - a good guide, not a scale.
+- One weight fits many bodies, so the **build** decides which dials carry it: *slim* (thin / height / proportion dials),
+  *average*, *athletic* (fitness / muscle / shoulders), *soft* (heavy / fat / pear ...). The dials are your library's own.
+
 > **This is not a replacement for Daz Studio** - it is made for light tasks. Daz Studio is a very powerful character
 > creator (full shaping with its formulas, HD detail, Iray, dForce, posing): use it for real character work.
 
@@ -1335,6 +1343,18 @@ opens in its own 3D view with its skeleton - the Sketcher's ⤒ Open makes plain
    each limb bone as the next joint bends (up to 7 %, full at 110°). Untick to compare.
 4. **The pose**: **💾 Keep** keeps it for this character on this computer (back when you open it again); **⤓ .json** /
    **📂 .json…** save and load it as a file. ↺ resets the bone or the whole pose.
+
+**🎬 Motion (Mixamo) (2.982.0)** - in 🕺 Pose: put a Mixamo animation on the character.
+1. On **mixamo.com** (free with an Adobe ID) pick an animation, **⤓ Download**: Format **FBX**, Skin **Without Skin**. Mixamo's
+   animations are royalty free in your projects; bitGen never shares or downloads them for you.
+2. **📂 Mixamo .fbx…** - it plays at once. bitGen matches Mixamo's bones to your figure's (Genesis 3 / 8 / 9), corrects the
+   rest pose (Mixamo stands in a T, Genesis 8 / 9 in an A) and scales the walk to your character's legs. The figure's own
+   muscle shapes (JCMs, or our flex) follow every frame.
+3. **▶ / ⏸**, the time bar, **In place** (no walking forward), **Speed**; **✕** back to posing by hand.
+4. **⤓ Bake into a .glb** - a copy of the character, `<character>_<file>.glb`, with the motion as a glTF animation (30
+   frames a second - the bones, the walk and the muscle shapes' weights) for the timeline's 3D layers or Blender.
+Light, not exact: Daz's twist bones get no turn of their own, the feet can slide a little (no foot locking), the clothing
+moves with the skin (not simulated again), fingers move only when the clip has them.
 
 Good to know: up to 400 muscle shapes per figure are kept (Genesis 8 / 9 have about 150-250); a formula into a bone centre
 or end point is not applied (the build says how many); twist bones and finger joints move as you turn them, without extra

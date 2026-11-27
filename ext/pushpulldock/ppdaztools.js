@@ -88,6 +88,7 @@
       + "#dzDials{flex:1;overflow:auto;padding:2px 6px}#dzDials details{border-bottom:1px solid #ffffff12}#dzDials summary{cursor:pointer;padding:3px 0;opacity:.85}"
       + ".dzdial{display:flex;gap:5px;align-items:center;padding:1px 0}.dzdial span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dzdial input[type=range]{width:42%}.dzdial output{width:38px;text-align:right;font-variant-numeric:tabular-nums}.dzdial.set span{color:#38e1ff}"
       + "#dzPhoto{border-top:1px solid var(--line,#3a352d);padding:3px 6px}#dzPhoto summary{cursor:pointer;font-weight:600}.dzph{display:flex;flex-direction:column;gap:4px;padding:4px 0}.dzrow{display:flex;gap:6px;align-items:center}.dzrow select,.dzrow input{flex:1;min-width:0}"
+      + ".dzmg{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}.dzmg label{display:flex;gap:4px;align-items:center}.dzmg input{width:100%;min-width:0}#dzMeasure{border-top:1px solid var(--line,#3a352d);padding:3px 6px}#dzMeasure summary{cursor:pointer;font-weight:600}"
       + "#dzMsg{padding:4px 6px;border-top:1px solid var(--line,#3a352d);min-height:22px;font-size:11px;opacity:.9}"
       + ".dzsplit{cursor:col-resize}";
     doc.head.appendChild(s);
@@ -128,6 +129,11 @@
       + '<div id="dzBOpts" hidden><label class="dzrow">3D engine <select id="dzEngine"><option value="auto">auto</option><option value="hunyuan">Hunyuan3D 2.1</option><option value="trellis">TRELLIS.2</option></select></label><label><input type="checkbox" id="dzTurn"> the scan faces away (turn it)</label></div>'
       + '<div class="hint">Light, not exact: a standing person, head to feet, facing the camera; loose clothing reads as body. The photo\'s clothes are painted too.</div>'
       + '<button type="button" class="primary" id="dzTry">▶ Try it</button></div></details>'
+      + '<details id="dzMeasure"><summary title="Make this character\'s body from a height and a weight (and tape measurements if you have them) - a new character">📏 Height &amp; weight</summary><div class="dzph">'
+      + '<div class="dzmg"><label>Height <input type="number" id="dzMH" min="40" max="260" step="0.5" placeholder="cm"></label><label>Weight <input type="number" id="dzMW" min="3" max="300" step="0.5" placeholder="kg"></label>'
+      + '<label title="Round the chest at the armpits">Chest <input type="number" id="dzMC" min="30" max="250" placeholder="cm"></label><label title="Round the narrowest waist">Waist <input type="number" id="dzMWa" min="30" max="250" placeholder="cm"></label><label title="Round the widest hips">Hips <input type="number" id="dzMHi" min="30" max="250" placeholder="cm"></label></div>'
+      + '<label class="dzrow" title="One weight fits many bodies - which dials carry it">Build <select id="dzMBuild"><option value="average">average</option><option value="slim">slim</option><option value="athletic">athletic</option><option value="soft">soft</option></select></label>'
+      + '<div id="dzMNow" class="hint"></div><div style="display:flex;gap:6px"><button type="button" class="ghost" id="dzMRead" title="The picked character\'s height, weight and tape measurements now">📏 Measure it</button><button type="button" class="primary" id="dzMMake">▶ Make</button></div></div></details>'
       + '<div class="dzbtns"><button type="button" class="primary" id="dzBuild">🧍 Build</button><button type="button" class="ghost" id="dzPose" disabled>🕺 Pose</button><button type="button" class="ghost" id="dzOpen" disabled title="Into the Sketcher model (plain faces)">⤒ Open</button><button type="button" class="ghost" id="dzSave">💾 Save</button></div></div>'
       + '<div class="dzhs" id="dzHSplit" role="separator" aria-orientation="horizontal" title="Drag to share the height"></div>'
       + '<div id="dzShape"><div class="dzhead"><b>🎚 Shape controls</b><label style="font-weight:400" title="Only the dials that are not 0"><input type="checkbox" id="dzChanged"> changed</label><button type="button" class="ghost dzx" id="dzReset" title="Every dial of this character back to 0">↺</button></div>'
@@ -179,6 +185,8 @@
     $("dzRoute").onchange = () => { $("dzBOpts").hidden = $("dzRoute").value !== "B"; LS.set("route", $("dzRoute").value); };
     $("dzRoute").value = LS.get("route", "A") === "B" ? "B" : "A"; $("dzBOpts").hidden = $("dzRoute").value !== "B";
     $("dzTry").onclick = () => tryIt($("dzRoute").value);
+    $("dzMRead").onclick = () => measureIt().catch((e) => say("⚠ " + e.message));
+    $("dzMMake").onclick = () => makeFromMeasures().catch((e) => { st.busy = false; tree(); say("⚠ 📏 " + e.message); });
     $("dzReset").onclick = () => { const c = cur(); if (!c) return; c.dials = {}; keep(); dialsPaint(); say("↺ every dial of " + c.name + " back to 0"); };
   }
   /* ---------------- 📚 the library */
@@ -200,6 +208,10 @@
       g.appendChild(b);
     });
   }
+  /** the tiles re-marked in place (figure / worn) - no re-listing, so the grid never flickers */
+  function marks() {
+    const c = cur(); for (const b of doc.querySelectorAll("#dzGrid .dzit")) { b.classList.toggle("fig", !!c && c.fig.rel === b.dataset.rel); b.classList.toggle("worn", !!c && c.wear.some((w) => w.rel === b.dataset.rel)); }
+  }
   function libClick(it) {
     if (["figure", "character"].includes(it.kind)) {
       const n = st.scene.chars.filter((c) => c.fig.rel === it.rel).length + 1, c = newChar(it, n);
@@ -207,7 +219,7 @@
       return;
     }
     const c = cur(); if (!c) { say("pick a figure or a character first (🧍 Figures / 🎭 Characters)"); return; }
-    const on = wearToggle(c, it); keep(); tree(); list(); say((on ? "👕 " + c.name + " wears " : "✕ " + c.name + " took off ") + it.name);
+    const on = wearToggle(c, it); keep(); tree(); marks(); say((on ? "👕 " + c.name + " wears " : "✕ " + c.name + " took off ") + it.name);
   }
   /* ---------------- 🧭 the explorer */
   function tree() {
@@ -226,7 +238,7 @@
         const k = doc.createElement("div"); k.className = "dzcomp"; k.setAttribute("role", "treeitem");
         const ic = w.fig ? "🦴" : w.kind === "hair" ? "💇" : w.kind === "anatomy" ? "🫀" : "👕";
         k.innerHTML = "<span title=\"" + esc(w.rel || c.fig.rel) + "\">" + ic + " " + esc(w.name) + (w.fig ? ' <small style="opacity:.6">(figure)</small>' : "") + "</span>" + (w.fig ? "" : '<button type="button" class="ghost dzx" title="Take it off">✕</button>');
-        const x = k.querySelector("button"); if (x) x.onclick = () => { wearToggle(c, w); keep(); tree(); list(); };
+        const x = k.querySelector("button"); if (x) x.onclick = () => { wearToggle(c, w); keep(); tree(); marks(); };
         t.appendChild(k);
       });
     });
@@ -301,6 +313,30 @@
     } catch (e) { say("⚠ 📷 " + e.message); }
     st.busy = false; $("dzTry").disabled = false; tree();
   }
+  /* ---------------- 📏 2.982.0: height, weight, tape measurements -> the figure's own body dials (a new character) */
+  const fmtM = (m) => !m ? "" : [m.height ? m.height.toFixed(1) + " cm" : "", m.weight ? m.weight.toFixed(1) + " kg" : "", m.chest ? "chest " + m.chest.toFixed(0) : "", m.waist ? "waist " + m.waist.toFixed(0) : "", m.hips ? "hips " + m.hips.toFixed(0) + " cm" : ""].filter(Boolean).join(" · ");
+  const dialsOf = (c) => Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] }));
+  async function measureIt() {
+    const c = cur(); if (!c) { say("pick a character first"); return null; }
+    $("dzMNow").textContent = "📏 measuring…";
+    const j = await jpost("/api/dazlib/body/measures", { root: c.fig.root, rel: c.fig.rel, dials: dialsOf(c), measure_only: true });
+    $("dzMNow").textContent = "Now: " + fmtM(j.now) + " (the weight from its volume - a guide)"; return j.now;
+  }
+  async function makeFromMeasures() {
+    const base = cur(); if (!base) { say("pick a character first - its figure is the one shaped"); return; }
+    const target = { height: +$("dzMH").value || 0, weight: +$("dzMW").value || 0, chest: +$("dzMC").value || 0, waist: +$("dzMWa").value || 0, hips: +$("dzMHi").value || 0 };
+    if (!Object.values(target).some((x) => x > 0)) { say("📏 type a height and / or a weight (tape measurements if you have them)"); return; }
+    if (st.busy) return; st.busy = true; tree(); say("📏 fitting " + base.name + "'s body dials…");
+    const j = await jpost("/api/dazlib/body/measures", { root: base.fig.root, rel: base.fig.rel, dials: dialsOf(base), target, build: $("dzMBuild").value });
+    const tag = [target.height ? target.height + " cm" : "", target.weight ? target.weight + " kg" : ""].filter(Boolean).join(" ") || "measured";
+    const c = tryChar(base, "📏", 1); c.name = base.name + " · 📏 " + tag; c.from = "measures"; c.dials = {}; j.dials.forEach((d) => { c.dials[d.url] = d.value; });
+    st.scene.chars.push(c); st.scene.sel = c.id; keep(); st.busy = false; tree(); dialsLoad(); list();
+    const rep = "📏 " + j.changed.length + " dial(s) moved: " + fmtM(j.before) + " → " + fmtM(j.after);
+    $("dzMNow").textContent = rep; say(rep + " - building…");
+    await buildChar();
+    say(rep + " · " + ($("dzMsg").textContent.indexOf("⚠") >= 0 ? $("dzMsg").textContent : "built - 🕺 Pose to see it"));
+    st.lastMeasure = j; return j;
+  }
   function pose() { const c = cur(); if (c && c.last && root.H3DazPose) root.H3DazPose.open(c.last); }
   async function openIt() {
     const c = cur(), P = root.H3PushPull; if (!c || !c.last) return;
@@ -374,6 +410,6 @@
     root.setTimeout(button, 1500);   // after the app strip has built itself
     if (LS.get("on", false)) toggle(true);
   }
-  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
+  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

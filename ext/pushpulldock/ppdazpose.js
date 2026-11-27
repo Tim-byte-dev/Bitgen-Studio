@@ -79,6 +79,11 @@
       + '<fieldset><legend>Turn it</legend><div id="pdpAxes"></div><label><input type="checkbox" id="pdpMirror" checked> Mirror to the other side</label>'
       + '<div style="display:flex;gap:6px"><button type="button" class="ghost" id="pdpResetBone">↺ This bone</button><button type="button" class="ghost" id="pdpResetAll">↺ The whole pose</button></div></fieldset>'
       + '<fieldset><legend>💪 Muscle reactions</legend><label><input type="checkbox" id="pdpMuscle" checked> the figure\'s own (JCMs) follow the joints</label><div id="pdpKind" class="hint"></div><div id="pdpActive"></div></fieldset>'
+      + '<fieldset id="pdpMotion"><legend>🎬 Motion (Mixamo)</legend><div class="hint">From mixamo.com (a free Adobe ID): pick an animation, ⤓ Download - Format <b>FBX</b>, Skin <b>Without Skin</b>. Royalty free in your projects; bitGen never shares the file.</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><button type="button" class="ghost" id="pdpFbxB">📂 Mixamo .fbx…</button><input type="file" id="pdpFbx" accept=".fbx" hidden><select id="pdpClip" hidden></select></div>'
+      + '<div class="pdp-ax" id="pdpMotRow" hidden><button type="button" class="ghost" id="pdpPlay" title="Play / pause (Space)">▶</button><input type="range" id="pdpTime" min="0" max="1" step="0.001" value="0"><output id="pdpTimeV">0.0 s</output></div>'
+      + '<div id="pdpMotOpts" hidden style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><label><input type="checkbox" id="pdpInPlace"> In place</label><label>Speed <select id="pdpSpeed"><option>0.5</option><option selected>1</option><option>2</option></select></label>'
+      + '<button type="button" class="ghost" id="pdpBake" title="A copy of the character with this motion as a glTF animation - the timeline\'s 3D layers / Blender play it">⤓ Bake into a .glb</button><button type="button" class="ghost" id="pdpMotOff" title="Back to posing by hand">✕</button></div></fieldset>'
       + '<fieldset><legend>The pose</legend><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="ghost" id="pdpKeep" title="Kept for this character on this computer - back when you open it again">💾 Keep</button><button type="button" class="ghost" id="pdpDown">⤓ .json</button><button type="button" class="ghost" id="pdpLoadB">📂 .json…</button><input type="file" id="pdpLoad" accept=".json,application/json" hidden></div></fieldset>'
       + '</div></div><div class="pdp-foot"><span class="hint" id="pdpMsg" role="status"></span></div></div>';
     doc.body.appendChild(d);
@@ -92,6 +97,15 @@
     $("pdpResetBone").onclick = () => { if (!st.sel) return; delete st.pose[st.sel]; const o = mirrorOf(st.sel); if (st.mirror && o) delete st.pose[o]; axes(); apply(); };
     $("pdpResetAll").onclick = () => { st.pose = {}; axes(); apply(); };
     $("pdpKeep").onclick = keep; $("pdpDown").onclick = down; $("pdpLoadB").onclick = () => $("pdpLoad").click();
+    $("pdpFbxB").onclick = () => $("pdpFbx").click();
+    $("pdpFbx").onchange = async () => { const f = $("pdpFbx").files[0]; $("pdpFbx").value = ""; if (f) { try { await motionLoad(await f.arrayBuffer(), f.name); } catch (e) { say("⚠ " + e.message); } } };
+    $("pdpClip").onchange = () => { const M = st.motion; if (M) { motionClip(+$("pdpClip").value); } };
+    $("pdpPlay").onclick = () => motionPlay(!(st.motion && st.motion.playing));
+    $("pdpTime").oninput = () => { const M = st.motion; if (!M) return; motionPlay(false); motionAt(+$("pdpTime").value * M.dur); };
+    $("pdpInPlace").onchange = () => { if (st.motion) { st.motion.inPlace = $("pdpInPlace").checked; motionAt(st.motion.t); } };
+    $("pdpSpeed").onchange = () => { if (st.motion) st.motion.speed = +$("pdpSpeed").value || 1; };
+    $("pdpBake").onclick = () => motionBake().catch((e) => say("⚠ " + e.message));
+    $("pdpMotOff").onclick = motionOff;
     $("pdpLoad").onchange = async () => { const f = $("pdpLoad").files[0]; $("pdpLoad").value = ""; if (!f) return; try { setPose(JSON.parse(await f.text())); say("📂 " + f.name); } catch (e) { say("⚠ " + e.message); } };
     return d;
   }
@@ -158,9 +172,79 @@
     const b = v.bones.get(st.sel); v.mark.visible = !!b;
     if (b) { b.updateWorldMatrix(true, false); b.getWorldPosition(v.mark.position); }
   }
+  /* ---------------- 🎬 2.982.0: Mixamo motion - static/dazmotion.js retargets an FBX's skeleton onto the Daz bones */
+  const motionLib = () => script("/static/dazmotion.js", "H3DazMotion");
+  async function motionLoad(buf, name) {
+    const v = st.view; if (!v || !st.daz) throw new Error("open a character first");
+    const MO = await motionLib(), T = v.T; let g;
+    try { g = new T.FBXLoader().parse(buf, ""); } catch (e) { throw new Error(name + " is not an FBX bitGen can read (" + e.message + ") - Mixamo's ⤓ Download, Format FBX"); }
+    const clips = (g.animations || []).filter((c) => c.duration > 0); if (!clips.length) throw new Error(name + " has no animation in it (on Mixamo, pick an animation before ⤓ Download)");
+    const srcB = []; g.traverse((o) => { if (o.isBone || /mixamorig/i.test(o.name)) srcB.push(o); });
+    g.updateMatrixWorld(true);
+    const src = {}, names = new Set(srcB.map((o) => o.name));
+    for (const o of srcB) { const q = o.getWorldQuaternion(new T.Quaternion()), p = o.getWorldPosition(new T.Vector3()); src[o.name] = { parent: o.parent && names.has(o.parent.name) ? o.parent.name : null, q: [q.x, q.y, q.z, q.w], p: [p.x, p.y, p.z] }; }
+    const daz = {}; for (const [id, b] of v.bones) daz[id] = { parent: (st.daz.bones[id] || {}).parent || null, pos: v.restPos.get(id) };
+    const map = MO.mapBones(Object.keys(daz), Object.keys(src));
+    if (Object.keys(map).length < 4) throw new Error("only " + Object.keys(map).length + " bone(s) of " + name + " match this figure - is it a Mixamo FBX (mixamorig bones)?");
+    const S = MO.setup({ daz, src, map }), mixer = new T.AnimationMixer(g);
+    st.motion = { MO, g, srcB, S, mixer, clips, clip: 0, action: null, dur: 0, t: 0, playing: false, inPlace: $("pdpInPlace").checked, speed: +$("pdpSpeed").value || 1, name: name.replace(/\.fbx$/i, ""), mapped: Object.keys(map).length };
+    $("pdpClip").innerHTML = clips.map((c, i) => "<option value=\"" + i + "\">" + esc(c.name || "clip " + (i + 1)) + " (" + c.duration.toFixed(1) + " s)</option>").join(""); $("pdpClip").hidden = clips.length < 2;
+    $("pdpMotRow").hidden = false; $("pdpMotOpts").hidden = false;
+    motionClip(0);
+    say("🎬 " + name + " - " + st.motion.mapped + " bones matched (" + Object.keys(daz).length + " in the figure; twist bones follow) - ▶ to play");
+    motionPlay(true);
+    return st.motion;
+  }
+  function motionClip(i) {
+    const M = st.motion; if (!M) return;
+    if (M.action) M.action.stop();
+    M.clip = i; M.action = M.mixer.clipAction(M.clips[i]); M.action.play(); M.dur = M.clips[i].duration; M.t = 0; motionAt(0);
+  }
+  /** the motion at time t onto the figure: the bones (local turns -> the Daz channels -> apply(), so the JCMs follow) + the hips */
+  function motionAt(t) {
+    const M = st.motion, v = st.view; if (!M || !v) return null;
+    M.t = Math.max(0, Math.min(M.dur, t)); M.mixer.setTime(Math.min(M.t, M.dur - 1e-4));   // exactly the end wraps to 0 M.g.updateMatrixWorld(true);
+    const src = {}, T = v.T;
+    for (const o of M.srcB) { const q = o.getWorldQuaternion(new T.Quaternion()), p = o.getWorldPosition(new T.Vector3()); src[o.name] = { q: [q.x, q.y, q.z, q.w], p: [p.x, p.y, p.z] }; }
+    const fr = M.MO.frame(M.S, src, { inPlace: M.inPlace });
+    st.pose = M.MO.channels(st.daz.bones, fr.local); apply();
+    const hb = v.bones.get(M.S.hip), hr = v.restLocal.get(M.S.hip);
+    if (hb && hr) hb.position.set(hr[0] + fr.hips[0], hr[1] + fr.hips[1], hr[2] + fr.hips[2]);
+    const tv = $("pdpTime"); if (tv && document.activeElement !== tv) tv.value = M.dur ? M.t / M.dur : 0;
+    const o = $("pdpTimeV"); if (o) o.textContent = M.t.toFixed(1) + " s";
+    return fr;
+  }
+  function motionPlay(on) { const M = st.motion; if (!M) return; M.playing = !!on; M.last = performance.now(); const b = $("pdpPlay"); if (b) b.textContent = on ? "⏸" : "▶"; }
+  function motionTick() { const M = st.motion; if (!M || !M.playing) return; const now = performance.now(), dt = (now - (M.last || now)) / 1000; M.last = now; let t = M.t + dt * M.speed; if (t > M.dur) t = t % Math.max(1e-6, M.dur); motionAt(t); }
+  function motionOff() {
+    const M = st.motion; if (!M) return; st.motion = null;
+    const v = st.view; if (v) { const hb = v.bones.get(M.S.hip), hr = v.restLocal.get(M.S.hip); if (hb && hr) hb.position.set(hr[0], hr[1], hr[2]); }
+    $("pdpMotRow").hidden = true; $("pdpMotOpts").hidden = true; $("pdpClip").hidden = true; st.pose = {}; axes(); apply(); say("✕ the motion is off - posing by hand");
+  }
+  /** every frame (30 a second) -> POST /api/dazlib/motion/bake: the bones' turns, the hips' moves, the muscle shapes' weights */
+  async function motionBake() {
+    const M = st.motion, v = st.view; if (!M || !v) throw new Error("open a Mixamo .fbx first");
+    motionPlay(false);
+    const fps = 30, n = Math.max(2, Math.min(3600, Math.round(M.dur * fps) + 1)), times = [], rot = {}, tr = {}, weights = [];
+    const body = v.meshes.find((m) => m.morphTargetDictionary && Object.keys(m.morphTargetDictionary).some((k) => /^jcm:/.test(k))) || v.meshes.find((m) => m.morphTargetDictionary);
+    const tnames = body ? Object.entries(body.morphTargetDictionary).sort((a, b) => a[1] - b[1]).map((x) => x[0]) : [];
+    const hipName = (st.daz.bones[M.S.hip] || {}).name, hr = v.restLocal.get(M.S.hip);
+    say("⤓ baking " + n + " frames…");
+    for (let f = 0; f < n; f++) {
+      const t = Math.min(M.dur, f / fps), fr = motionAt(t); times.push(+t.toFixed(4));
+      for (const [id, b] of v.bones) { const q = b.quaternion, nm = st.daz.bones[id].name; (rot[nm] = rot[nm] || []).push(q.x, q.y, q.z, q.w); }
+      if (hipName && hr) (tr[hipName] = tr[hipName] || []).push(hr[0] + fr.hips[0], hr[1] + fr.hips[1], hr[2] + fr.hips[2]);
+      for (const k of tnames) weights.push(/^jcm:/.test(k) ? +(st.weights[k.slice(4)] || 0).toFixed(4) : 0);
+    }
+    for (const nm of Object.keys(rot)) { const a = rot[nm]; let still = true; for (let i = 0; i < a.length; i += 4) if (Math.abs(a[i + 3]) < 0.99999) { still = false; break; } if (still) delete rot[nm]; }
+    const r = await fetch("/api/dazlib/motion/bake", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: st.model, clip: M.name, times, rotations: rot, translations: tr, weights: weights.some((x) => x) ? weights : [] }) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText);
+    say("⤓ " + j.model + " - " + j.frames + " frames, " + j.channels + " animated parts, in the project's 3D models (the timeline's 3D layers / Blender play it)");
+    st.lastBake = j; models(); return j;
+  }
   function stopView() { const v = st.view; if (!v) return; st.view = null; cancelAnimationFrame(v.raf); try { v.r.dispose(); } catch (e) { /* fine */ } }
   async function load(model) {
-    stopView(); st.model = model; st.daz = null; st.pose = {}; st.sel = ""; $("pdpName").textContent = model; say("reading " + model + "…");
+    stopView(); st.motion = null; ["pdpMotRow", "pdpMotOpts", "pdpClip"].forEach((x) => { if ($(x)) $(x).hidden = true; }); st.model = model; st.daz = null; st.pose = {}; st.sel = ""; $("pdpName").textContent = model; say("reading " + model + "…");
     try {
       const T = await three(); st.F = await formulas();
       const cv = $("pdpView"), r = new T.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true }); if ("outputColorSpace" in r && T.SRGBColorSpace) r.outputColorSpace = T.SRGBColorSpace;
@@ -175,12 +259,14 @@
       st.daz = daz;
       const byName = new Map(); g.scene.traverse((o) => { if (o.isBone) byName.set((o.userData && o.userData.name) || o.name, o); });
       for (const id of Object.keys(daz.bones)) { const b = byName.get(daz.bones[id].name) || byName.get(id); if (b) { bones.set(id, b); rest.set(b, b.quaternion.clone()); } }
+      g.scene.updateMatrixWorld(true);
+      const restPos = new Map(), restLocal = new Map(); for (const [id, b] of bones) { const q = b.getWorldPosition(new T.Vector3()); restPos.set(id, [q.x, q.y, q.z]); restLocal.set(id, [b.position.x, b.position.y, b.position.z]); }
       const box = new T.Box3().setFromObject(g.scene), c = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3()), h = Math.max(size.y, size.x, 0.3);
       cam.position.set(c.x, c.y + h * 0.05, c.z + h * 2.4); const ctl = new T.OrbitControls(cam, cv); ctl.target.copy(c); ctl.enableDamping = true; ctl.update();
       const mark = new T.Mesh(new T.SphereGeometry(h * 0.012, 12, 8), new T.MeshBasicMaterial({ color: 0x38e1ff, depthTest: false })); mark.renderOrder = 9; mark.visible = false; sc.add(mark);
-      st.view = { r, sc, cam, ctl, raf: 0, meshes, bones, rest, mark, T };
+      st.view = { r, sc, cam, ctl, raf: 0, meshes, bones, rest, mark, T, restPos, restLocal };
       clickPick(cv, T);
-      const loop = () => { if (!st.view) return; ctl.update(); r.render(sc, cam); st.view.raf = requestAnimationFrame(loop); };
+      const loop = () => { if (!st.view) return; motionTick(); ctl.update(); r.render(sc, cam); st.view.raf = requestAnimationFrame(loop); };
       loop();
       let kept = null; try { kept = JSON.parse(root.localStorage.getItem("h3.dazpose." + model) || "null"); } catch (e) { kept = null; }
       const n = Object.keys(daz.rest || {}).length;
@@ -209,6 +295,6 @@
     });
   }
   function open(model) { const d = ensure(); if (!d.open) d.showModal(); models(); if (model) load(model); else if (!st.model) say("pick a character built with 📚 Daz library"); }
-  root.H3DazPose = Object.assign({ open, load, setRot, setPose, pick, apply, state: st, info: () => ({ model: st.model, sel: st.sel, bones: st.view ? st.view.bones.size : 0, muscles: st.daz && st.daz.muscles, weights: st.weights, pose: st.pose,
+  root.H3DazPose = Object.assign({ open, load, setRot, setPose, pick, apply, state: st, motion: { load: motionLoad, at: motionAt, play: motionPlay, bake: motionBake, off: motionOff }, info: () => ({ model: st.model, sel: st.sel, bones: st.view ? st.view.bones.size : 0, muscles: st.daz && st.daz.muscles, weights: st.weights, pose: st.pose,
     influences: st.view ? st.view.meshes.map((m) => (m.morphTargetDictionary ? Object.fromEntries(Object.entries(m.morphTargetDictionary).map(([k, i]) => [k, m.morphTargetInfluences[i]])) : {})) : [] }) }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

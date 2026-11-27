@@ -61,6 +61,32 @@ function mount(app) {
       res.json({ dials, changed: r.changed, target, before: r.before, after: r.after, error: r.error, height_cm: { before: r.height.before, after: r.height.after }, tried: r.dials, note: D.NOT_DAZ });
     } catch (e) { fail(res, e); }
   });
+  // 2.982.0: 📏 height / weight / tape measurements -> the figure's own body dials (measure_only: just the numbers now)
+  app.post("/api/dazlib/body/measures", J, (req, res) => {
+    const b = req.body || {};
+    try {
+      const { fig, set } = figureOf(b), ix = require("../lib/dazMuscle").index(fig.file), T = b.target || {}, target = {};
+      for (const k of ["height", "weight", "chest", "waist", "hips"]) if (+T[k] > 0) target[k] = +T[k];
+      if (b.measure_only || !Object.keys(target).length) return res.json({ now: BF.measureNow(fig, ix, set) });
+      if (target.height && (target.height < 40 || target.height > 260)) throw bad("a height between 40 and 260 cm");
+      if (target.weight && (target.weight < 3 || target.weight > 300)) throw bad("a weight between 3 and 300 kg");
+      const r = BF.fitMeasures({ fig, ix, set0: set, target, build: b.build });
+      const dials = Object.entries(r.set).filter(([, v]) => v).map(([id, v]) => { const m = ix.mods.get(id); return m ? { url: urlOf(m), value: v } : null; }).filter((x) => x && x.url);
+      res.json({ dials, changed: r.changed, before: r.before, after: r.after, target, tried: r.dials, note: D.NOT_DAZ });
+    } catch (e) { fail(res, e); }
+  });
+  // 2.982.0: 🎬 a motion (Mixamo, retargeted in 🕺 Pose) baked into a copy of the character's .glb
+  app.post("/api/dazlib/motion/bake", require("express").json({ limit: "64mb" }), (req, res) => {
+    const b = req.body || {};
+    try {
+      const m3d = require("../lib/m3d"), src = path.join(m3d.dir(), path.basename(String(b.model || "")));
+      if (!b.model || !fs.existsSync(src)) throw bad("that character is not in the project's 3D models: " + b.model, 404);
+      const r = require("../lib/glbAnim").addAnimation(fs.readFileSync(src), { name: b.clip, times: b.times, rotations: b.rotations, translations: b.translations, weights: b.weights });
+      const stem = path.basename(src).replace(/\.glb$/i, ""), clip = BF.safeName(b.clip || "motion").replace(/ /g, "_") || "motion";
+      const saved = m3d.saveModel(stem + "_" + clip + ".glb", r.glb);
+      res.json({ model: (saved && saved.name) || stem + "_" + clip + ".glb", channels: r.channels, skipped: r.skipped, frames: (b.times || []).length });
+    } catch (e) { fail(res, e); }
+  });
   app.post("/api/dazlib/body/scan", J, (req, res) => {
     const b = req.body || {};
     try { const pic = picture(b.picture, b.where), j = require("../lib/to3d").queue(pic, { engine: b.engine, model_name: BF.safeName((b.name || "body") + "_scan").replace(/ /g, "_") }); res.json({ job: j.id, model: j.model }); } catch (e) { fail(res, e); }

@@ -171,5 +171,23 @@
   }
   /** the other side's rotation: the figure is mirrored across X, so x stays and y / z turn the other way */
   const mirrorRot = (r) => ({ x: num(r && r.x), y: -num(r && r.y), z: -num(r && r.z) });
-  return { parseUrl, key, compact, spline, run, evaluate, driven, euler, boneQuat, twistAxis, swing, qmul, qconj, qrot, mirrorName, mirrorRot };
+  /** 2.982.0: the other way - a quaternion -> the Euler angles (degrees) of a rotation order (the same composition as euler()) */
+  function eulerFrom(order, q) {
+    const o = /^[XYZ]{3}$/i.test(order || "") ? order.toUpperCase() : "XYZ", [x, y, z, w] = q;
+    const m11 = 1 - 2 * (y * y + z * z), m12 = 2 * (x * y - z * w), m13 = 2 * (x * z + y * w), m21 = 2 * (x * y + z * w), m22 = 1 - 2 * (x * x + z * z), m23 = 2 * (y * z - x * w), m31 = 2 * (x * z - y * w), m32 = 2 * (y * z + x * w), m33 = 1 - 2 * (x * x + y * y);
+    const cl = (v) => Math.max(-1, Math.min(1, v)), r = { x: 0, y: 0, z: 0 }, ok = (v) => Math.abs(v) < 0.9999999;
+    if (o === "XYZ") { r.y = Math.asin(cl(m13)); if (ok(m13)) { r.x = Math.atan2(-m23, m33); r.z = Math.atan2(-m12, m11); } else r.x = Math.atan2(m32, m22); }
+    else if (o === "YXZ") { r.x = Math.asin(-cl(m23)); if (ok(m23)) { r.y = Math.atan2(m13, m33); r.z = Math.atan2(m21, m22); } else r.y = Math.atan2(-m31, m11); }
+    else if (o === "ZXY") { r.x = Math.asin(cl(m32)); if (ok(m32)) { r.y = Math.atan2(-m31, m33); r.z = Math.atan2(-m12, m22); } else r.z = Math.atan2(m21, m11); }
+    else if (o === "ZYX") { r.y = Math.asin(-cl(m31)); if (ok(m31)) { r.x = Math.atan2(m32, m33); r.z = Math.atan2(m21, m11); } else r.z = Math.atan2(-m12, m22); }
+    else if (o === "YZX") { r.z = Math.asin(cl(m21)); if (ok(m21)) { r.x = Math.atan2(-m23, m22); r.y = Math.atan2(-m31, m11); } else r.y = Math.atan2(m13, m33); }
+    else { r.z = Math.asin(-cl(m12)); if (ok(m12)) { r.x = Math.atan2(m32, m22); r.y = Math.atan2(m13, m11); } else r.x = Math.atan2(-m23, m33); }
+    return { x: r.x / R, y: r.y / R, z: r.z / R };
+  }
+  /** a posed bone's local rotation -> its own channel values (degrees in its oriented frame) - boneQuat() the other way */
+  function boneChannels(b, q) {
+    const O = b && b.orient && (b.orient[0] || b.orient[1] || b.orient[2]) ? euler("XYZ", b.orient[0], b.orient[1], b.orient[2]) : null;
+    return eulerFrom(b && b.order, O ? qmul(qmul(qconj(O), q), O) : q);
+  }
+  return { parseUrl, key, compact, spline, run, evaluate, driven, euler, eulerFrom, boneQuat, boneChannels, twistAxis, swing, qmul, qconj, qrot, mirrorName, mirrorRot };
 });
