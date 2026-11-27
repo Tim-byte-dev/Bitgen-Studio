@@ -4100,6 +4100,12 @@ and the GitHub repository it updates from.
 what it needs, how big it is and whether it is installed. **⤓ Install**, **⟳ Reinstall** and **🗑 Remove** work there,
 and the install log appears in the tab. One install runs at a time.
 
+- **🤗 Hugging Face downloads (3.3.0)** - first in the list. Most model repos on Hugging Face are stored with Xet now;
+  without the `hf_xet` package their downloads fall back to plain HTTP (slower, and a broken download starts over - an
+  install log then says "Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed"). ⤓ Install puts
+  `hf_xet` into the app's own Python and every add-on's Python environment already here (huggingface_hub itself is left as
+  each add-on pinned it); add-ons installed afterwards get it on their own. A gated model still needs your Hugging Face
+  token.
 - **YuE2 music**: the "YuE2" style in the Music docker (songs from lyrics plus a style caption).
   - ⤓ Install makes its own Python environment in the app's `yue2` folder.
   - It then installs PyTorch 2.10 with CUDA for your card and the pinned YuE2 pipeline (yue2-infer 0.1.6), about 5 GB.

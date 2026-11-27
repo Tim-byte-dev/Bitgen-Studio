@@ -1414,6 +1414,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **👤 Make this person 与 ✨ Photo 的角度修正** — References 面板中的 👤 把类型为 person（身体）的参考图和面部特写做成 Sketcher 中的 Genesis 9 角色（拟合参数，或 Shift = 扫描＋包裹），之后 ✨ Photo 不再发送这些图片（头部已带有那张脸）；当相机看到角色面部偏离正面超过 40° 时，也会不发送面部参考图。*位置：* References 面板 ▸ 👤；Sketcher ▸ ✨ Photo。*版本：* 2.999.0
 - **🙂 用面部特写做出真正的 3D 头部** — 🙂 Head ▸「用特写做 3D 头部」：3D 引擎把特写变成 3D 形状，放到角色头上，只让头部贴合它（颈部过渡，眼睛/牙齿/舌头不动）——保存为自定义形变，脸部再绘制上去。按 Shift 使用 👤 Make this person 时会用这个。*位置：* 🧭 DAZ Explorer ▸ 📷 Body from a photo ▸ 🙂 Head；References ▸ 👤（Shift）。*版本：* 3.0.0
 - **💾 Save song（Edit Booth）与 SoulX / Seed-VC 修复** — 时间线的 💾 Save song 把所有图层（效果、自动化、关键帧、限幅器）混成一首 MP3（320 kb/s）或 WAV（16 位），存入 Sound assets 和图库，并复制一份到下载文件夹；🎤 Sing in my voice 的安装为 Numba 把 NumPy 保持在 2.4 以下，并检查 Seed-VC 自己的 inference.py。*位置：* 🎛 Edit Booth ▸ 时间线 ▸ 💾 Save song；Settings ▸ Add-ons ▸ 🎤 Sing in my voice。*版本：* 3.1.0
+- **🤗 Hugging Face downloads（hf_xet）** — 位于 Settings ▸ Add-ons 的第一项：把 hf_xet 装进应用的 Python 和每个附加组件的 Python 环境，让以 Xet 存储的 Hugging Face 模型下载更快、可续传，而不是退回普通 HTTP；之后安装的附加组件会自动带上它。*位置：* Settings ▸ Add-ons ▸ 🤗 Hugging Face downloads。*版本：* 3.3.0
 
 ### 激光切割和雕刻
 
