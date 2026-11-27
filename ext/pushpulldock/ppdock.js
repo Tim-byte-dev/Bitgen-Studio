@@ -158,6 +158,7 @@
       { head: "Send the model" },
       { label: "🖼 A picture → the image editor", title: "The view as it is now (no grid / axes), the size of the editor's picture (else 1920 × 1080)", run: () => guard("→ Image editor", toEditor) },
       { label: "🖼 A picture with a clear background → the image editor", run: () => guard("→ Image editor", () => toEditor(true)) },
+      { label: "🖼 A picture with its background (sky / backdrop) → the image editor", run: () => guard("→ Image editor", () => toEditor(false)) },
       { label: "🎞 A 3D layer → the timeline", run: () => guard("→ Timeline", toTimeline) },
       { label: "🟠 → Blender (its own window) - with the lights", run: () => guard("→ Blender", () => toProject("glb", { lights: true }).then((saved) => api("/api/blender/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: saved }) }).then(() => msg("Blender is opening with " + saved)))) },
       { label: "🎮 → Unreal (the open project) - with the lights", run: () => guard("→ Unreal", () => toProject("glb", { lights: true }).then((saved) => { msg("importing " + saved + " into Unreal…"); return api("/api/unreal/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: saved }) }).then((j) => msg(saved + " → Unreal: " + ((j.assets || [])[0] || "imported"))); })) },
@@ -439,7 +440,7 @@
   }
   function wire() {
     $("ppSave").onclick = () => save(false);
-    $("ppToIE").onclick = () => guard("→ Image editor", () => toEditor(false));
+    $("ppToIE").onclick = () => guard("→ Image editor", () => toEditor(true));   // 2.989.0 (Tim): a TRANSPARENT background to the image editor
     $("ppToTL").onclick = () => guard("→ Timeline", toTimeline);
     $("ppNight").onclick = () => { if (!S.A) return; S.A.setNight(!S.A.isNight); $("ppNight").classList.toggle("on", S.A.isNight); $("ppNight").textContent = S.A.isNight ? "☀ Day" : "🌙 Night"; msg(S.A.isNight ? "🌙 night - the rooms' lights light them (💡 X puts lights in)" : "☀ day"); };
     $("ppCut").onclick = () => { if (!S.A) return; S.A.cut(!S.A.cutaway); $("ppCut").classList.toggle("on", S.A.cutaway); msg(S.A.cutaway ? "⌂ cut-away - roofs and ceilings hidden" : "⌂ roofs and ceilings back"); };

@@ -15271,6 +15271,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui987-ui.js > /tmp/ui987.log 2>&
 node scripts/test-988.js > /tmp/t988.log 2>&1 && ok "2.988.0 units: 🙂 the head (headWarp / headSize, the cheeks + top of the head, the face over a painted body) and the UI size zoom" || { bad "2.988.0 units"; grep -a "^FAIL" -A1 /tmp/t988.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui988-ui.js > /tmp/ui988.log 2>&1 && ok "2.988.0 browser test: the UI size - the app's whole-UI zoom (a stand-in shell), a browser's text, 250 % at most, kept; 🙂 Head row" || { bad "2.988.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui988.log | head -8; }
 
+node scripts/test-989.js > /tmp/t989.log 2>&1 && ok "2.989.0 units: ✨ Photo follows the whole prompt, → Image editor transparent" || { bad "2.989.0 units"; grep -a "^FAIL" -A1 /tmp/t989.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui989-ui.js > /tmp/ui989.log 2>&1 && ok "2.989.0 browser test: the image editor's picture transparent, the view kept" || { bad "2.989.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui989.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

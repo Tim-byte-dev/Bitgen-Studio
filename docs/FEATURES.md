@@ -1400,6 +1400,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **The Sketcher's ✂ Separate and arrow keys** — ✂ Separate into parts in the toolbox: a group becomes a group per part (an imported model by its meshes' names, anything else by its loose pieces), one undo step. The arrow keys pan the view; Ctrl+↑ / ↓ zoom, Ctrl+← shows everything, Ctrl+→ zooms to what is picked. *(2.986.0)*
 - **🌐 Panorama 3D in the image preview + ✨ Photo with your references** — a picture in the preview seen as a 360° panorama round you: drag, zoom, arrows / WASD, auto-turn, full screen, 👓 VR side by side or top / bottom, stereo panoramas read per eye. The Sketcher's ✨ Photo uses the prompt docker's reference pictures and prompt when there are any (the scene alone when neither). *(2.987.0)*
 - **🙂 A head like the person's + the UI size zooms everything** — 📷 Body from a photo shapes the head too (its width, its height above the eyes, the chin - from the photo's face or a close-up) and paints the face over the painted body; the UI size slider (60 - 250 %) zooms the whole app - buttons, icons, dockers, text - for a screen across the room. *(2.988.0)*
+- **✨ Photo follows the whole prompt; a transparent picture to the image editor** — with your words, ✨ Photo and ✏ Edit (Sketcher) add the place, setting, weather and other people or things your prompt names around the model (its shapes and camera kept); → Image editor sends the Sketcher's view with a transparent background. *(2.989.0)*
 
 ### Laser cutting and engraving
 

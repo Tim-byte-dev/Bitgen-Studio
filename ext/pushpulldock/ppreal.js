@@ -87,8 +87,17 @@
       + (w.people ? " Each person is a real person in exactly the same pose, body shape, hair and clothes, with real skin." : "")   // 2.985.0
       + " Show only what is in the render and add nothing else. Natural daylight, soft shadows, no outlines, DSLR photo.";   // naming what NOT to add would prompt it
   }
+  /* 2.989.0 (Tim: "when photo button is pressed or edit in sketcher button in prompt docker is pressed then follow the full
+     prompt, location, setting, other characters etc."): with the user's words the lead no longer says "add nothing else" -
+     the model's shapes and camera stay, the PROMPT decides the place, the setting, the light, the people and things around */
+  const FOLLOW = "Follow the prompt below in full: its location, setting, surroundings, time of day, weather, lighting, mood and any other people, animals or objects it names are added around the 3D model - the model itself keeps its shapes, layout and camera angle.";
   function promptFor(text, board, scene) {
     const t = String(text || "").trim();
+    if (t && t !== DEFAULT) {
+      const lead = (scene ? leadFor(scene) : LEAD).replace(" Show only what is in the render and add nothing else.", "");
+      const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
+      return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + " " + FOLLOW + "\nThe prompt: " + t;
+    }
     const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
     return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
   }
@@ -159,7 +168,7 @@
     });
     return c;
   }
-  const api = { REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);

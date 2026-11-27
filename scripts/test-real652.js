@@ -27,7 +27,7 @@ check("boardCaptions: a tile each + the background last", JSON.stringify(R.board
 check("nothing used: no tiles, no board", R.usedPictures({ rooms: [], tex: [] }).tiles.length === 0 && R.usedPictures(null).bg === null);
 const p0 = R.promptFor("at sunset"), p1 = R.promptFor("at sunset", u), p2 = R.promptFor("", { tiles: [1], bg: null });
 check("promptFor: the board line names {img3} (the server puts the model's word) and says what it is for; the background line only with one; the user's words last",
-  !/\{img3\}/.test(p0) && /\{img3\} is a material board/.test(p1) && /tile marked Background/.test(p1) && !/Background/.test(p2) && /\nat sunset$/.test(p1) && p1.startsWith(R.LEAD), p1);
+  !/\{img3\}/.test(p0) && /\{img3\} is a material board/.test(p1) && /tile marked Background/.test(p1) && !/Background/.test(p2) && /\nThe prompt: at sunset$/.test(p1) && p1.startsWith(R.LEAD.replace(" Show only what is in the render and add nothing else.", "")), p1);   // 2.989.0: the prompt is followed in full
 
 const PR = read("ext/pushpulldock/ppreal.js"), PV = read("ext/pushpulldock/ppview.js"), PM = read("ext/pushpulldock/ppmatpick.js"), PD = read("ext/pushpulldock/ppdock.js"), DH = read("ext/pushpulldock/dock.html");
 check("the run: the board as ref1 (picture 3) with ref_raw; a model that takes two pictures -> sent again without it, said so",

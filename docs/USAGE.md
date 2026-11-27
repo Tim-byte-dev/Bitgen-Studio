@@ -649,6 +649,12 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**The prompt is followed in full (2.989.0)** - with words in the prompt docker, ✨ Photo and ✏ Edit (Sketcher) no longer tell
+the edit model to "add nothing else": the place, the setting, the time of day, the weather and any other people, animals or
+things your prompt names are added around the model, which keeps its shapes and camera angle. With no words: the scene
+alone, as before. **→ Image editor** sends the view with a **transparent background** (no sky, backdrop or ground) - Send ▾
+still has "with its background".
+
 **What ✨ Photo uses (2.987.0)** - the prompt docker's **reference pictures** and its **prompt**: both when there are
 both; the references alone when the prompt is empty; the prompt alone when there are no references; neither = the scene
 alone (the render, its depth map and the words written from the model). The references go to the edit model on one
