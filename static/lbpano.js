@@ -12,7 +12,14 @@
  *             as one: auto = 2:1 mono, 1:1 top / bottom, 4:1 side by side
  *   kept      the view and the picture kind (localStorage h3.lbpano.*)
  * three.js = static/vendor/three-m3d.min.js (H3M3D.load - already on this computer, nothing from the internet).
- * Pure (Node: scripts/test-987.js): detect, eyeUV, viewports, clampLook, FOV. */
+ * Pure (Node: scripts/test-987.js): detect, eyeUV, viewports, clampLook, FOV.
+ * 2.994.0 (Tim: "is this worth adding? https://pager360.github.io/" -> "yes do it please, first time dl, add disclaimer that these
+ *   models are for non-commercial use only"): ⛰ Depth (#lb_panodepth) - PaGeR (Settings ▸ Add-ons ▸ ⛰ Panorama depth; asked to
+ *   download the first time - H3NeedInstall "pager") reads this panorama's shape (POST /api/panodepth, a job); both eyes' spheres
+ *   are then bent to the depth (the job's <stem>_depth.f32 - 512 x 256 metres, depthAt), so the place has its real shape: the
+ *   👓 VR views become real stereo and I / K step forward / back, J / L to the sides (Shift = 5x, Home = back to the middle).
+ *   The job also leaves a stereo 360 (<stem>_360_TB.png) in the gallery and the walk-in mesh in models3d. PaGeR's weights are
+ *   CC BY-NC 4.0: NON-COMMERCIAL use only - said in the button's title and the message. Pure: depthAt. */
 (function (root) {
   "use strict";
   const FOV = [30, 110];
@@ -35,12 +42,20 @@
     const y = ((((+L.yaw || 0) + 180) % 360) + 360) % 360 - 180;
     return { yaw: y, pitch: Math.max(-89, Math.min(89, +L.pitch || 0)), fov: Math.max(FOV[0], Math.min(FOV[1], +L.fov || 75)) };
   }
-  const pure = { detect, eyeUV, viewports, clampLook, FOV };
+  /** the depth (metres) at texture u (0..1, wraps round) and v (three.js: 1 = top) from a w x h grid (row 0 = the top) - bilinear */
+  function depthAt(grid, w, h, u, v) {
+    const x = ((((u * w - 0.5) % w) + w) % w), y = Math.max(0, Math.min(h - 1, (1 - v) * h - 0.5));
+    const x0 = Math.floor(x), y0 = Math.floor(y), x1 = (x0 + 1) % w, y1 = Math.min(h - 1, y0 + 1), fx = x - x0, fy = y - y0;
+    const g = (xx, yy) => grid[yy * w + xx];
+    return (g(x0, y0) * (1 - fx) + g(x1, y0) * fx) * (1 - fy) + (g(x0, y1) * (1 - fx) + g(x1, y1) * fx) * fy;
+  }
+  const DEPTH_NOTE = "PaGeR's model weights are CC BY-NC 4.0 - for NON-COMMERCIAL use only";
+  const pure = { detect, eyeUV, viewports, clampLook, FOV, depthAt, DEPTH_NOTE };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const LS = { get: (k, d) => { try { const v = root.localStorage.getItem("h3.lbpano." + k); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { root.localStorage.setItem("h3.lbpano." + k, v); } catch (e) { /* this session */ } } };
-  const S = { on: false, T: null, R: null, scene: null, cams: null, mats: [], tex: null, look: { yaw: 0, pitch: 0, fov: 75 }, mode: LS.get("mode", "normal"), pic: LS.get("pic", "auto"), layout: "mono", spin: false, raf: 0, drag: null, url: "", size: [0, 0], keys: new Set() };
+  const S = { depth: { on: false, busy: false, cache: new Map(), pos: [0, 0, 0], msg: "", last: null }, on: false, T: null, R: null, scene: null, cams: null, mats: [], tex: null, look: { yaw: 0, pitch: 0, fov: 75 }, mode: LS.get("mode", "normal"), pic: LS.get("pic", "auto"), layout: "mono", spin: false, raf: 0, drag: null, url: "", size: [0, 0], keys: new Set() };
   const cur = () => { try { return root.lb && root.lb.items ? root.lb.items[root.lb.i] : (typeof lb !== "undefined" ? lb.items[lb.i] : null); } catch (e) { return null; } };   // eslint-disable-line no-undef
 
   function css() {
@@ -65,6 +80,7 @@
       + '<button type="button" class="ghost" id="lb_panohome" title="Straight ahead, the zoom back (Home)">⟲</button><button type="button" class="ghost" id="lb_panospin" title="Turn by itself (Space)">⟳ Auto</button>'
       + '<select id="lb_panomode" title="How it is shown - 👓 for a phone headset or a VR player" aria-label="View"><option value="normal">🖥 Normal</option><option value="sbs">👓 VR side by side</option><option value="tb">👓 VR top / bottom</option></select>'
       + '<select id="lb_panopic" title="The picture: a plain 360° (mono) or a STEREO one - each eye its own half" aria-label="Picture"><option value="auto">Auto</option><option value="mono">Mono 360°</option><option value="sbs">Stereo side by side</option><option value="tb">Stereo top / bottom</option></select>'
+      + '<button type="button" class="ghost" id="lb_panodepth" aria-pressed="false" title="⛰ Depth: the place\'s real shape (PaGeR - downloaded the first time). The 👓 VR views become real stereo; I / K step forward / back, J / L to the sides. ' + DEPTH_NOTE + '.">⛰ Depth</button>'
       + '<button type="button" class="ghost" id="lb_panofull" title="Full screen (F)">⛶</button><button type="button" class="ghost" id="lb_panoclose" title="Back to the picture (Esc)">✕</button></div>';
     st.appendChild(v);
     v.querySelectorAll("[data-turn]").forEach((b) => {
@@ -77,6 +93,7 @@
     $("lb_panomode").value = S.mode; $("lb_panomode").onchange = (e) => { S.mode = e.target.value; LS.set("mode", S.mode); draw(); info(); };
     $("lb_panopic").value = S.pic; $("lb_panopic").onchange = (e) => { S.pic = e.target.value; LS.set("pic", S.pic); applyLayout(); };
     $("lb_panofull").onclick = full; $("lb_panoclose").onclick = () => show(false);
+    $("lb_panodepth").onclick = () => depth(!S.depth.on);
     const ui = $("lb_panoui"); ["pointerdown", "wheel", "click"].forEach((t) => ui.addEventListener(t, (e) => e.stopPropagation()));
     // the preview's own drag (pan the picture / swipe to the next) and wheel (zoom the picture) stay out of the panorama
     ["pointerdown", "pointermove", "pointerup", "wheel", "dblclick"].forEach((t) => v.addEventListener(t, (e) => e.stopPropagation()));
@@ -96,7 +113,7 @@
     for (const [i, eye] of [[1, "left"], [2, "right"]]) {
       const g = new T.SphereGeometry(50, 96, 64); g.scale(-1, 1, 1);
       const m = new T.MeshBasicMaterial({ color: 0xffffff }); const mesh = new T.Mesh(g, m); mesh.layers.set(i); mesh.rotation.y = -Math.PI / 2;   // the picture's middle ahead
-      S.scene.add(mesh); S.mats.push({ eye, m });
+      S.scene.add(mesh); S.mats.push({ eye, m, g, p0: Float32Array.from(g.attributes.position.array) });
     }
     const c = R.domElement;
     c.addEventListener("pointerdown", (e) => { if (e.button !== 0) return; c.setPointerCapture(e.pointerId); S.drag = { x: e.clientX, y: e.clientY, yaw: S.look.yaw, pitch: S.look.pitch }; spin(false); });
@@ -147,6 +164,7 @@
       cam.fov = L.fov; cam.aspect = vp.w / vp.h; cam.updateProjectionMatrix();
       cam.rotation.order = "YXZ"; cam.rotation.set(-L.pitch * Math.PI / 180, -L.yaw * Math.PI / 180, 0);
       const right = new T.Vector3(1, 0, 0).applyEuler(cam.rotation); cam.position.copy(right.multiplyScalar(vp.eye === "right" ? ipd : -ipd));
+      if (S.depth.on) cam.position.add(new T.Vector3(S.depth.pos[0], S.depth.pos[1], S.depth.pos[2]));   // 2.994.0: stepped round the place
       R.setViewport(vp.x, vp.y, vp.w, vp.h); R.setScissor(vp.x, vp.y, vp.w, vp.h); R.render(S.scene, cam);
     }
     R.setScissorTest(false);
@@ -161,12 +179,73 @@
     if (S.spin) S.raf = requestAnimationFrame(step);
   }
   function full() { const v = $("lb_panoview"); if (doc.fullscreenElement) doc.exitFullscreen().catch(() => {}); else if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); }
+  /* ---- 2.994.0: ⛰ Depth */
+  function dmsg(t) { S.depth.msg = t || ""; const i = $("lb_panoinfo"); if (i) i.textContent = t ? "⛰ " + t : ""; if (!t) info(); }
+  function paintDepthBtn() { const b = $("lb_panodepth"); if (b) { b.classList.toggle("on", S.depth.on); b.setAttribute("aria-pressed", S.depth.on ? "true" : "false"); b.disabled = S.depth.busy; } }
+  /** both eyes' spheres bent to a depth grid (null = round again) */
+  function bend(d) {
+    for (const x of S.mats) {
+      const pa = x.g.attributes.position, uv = x.g.attributes.uv, p0 = x.p0;
+      for (let i = 0; i < pa.count; i++) {
+        const k = d ? depthAt(d.grid, d.w, d.h, uv.getX(i), uv.getY(i)) / 50 : 1;
+        pa.array[i * 3] = p0[i * 3] * k; pa.array[i * 3 + 1] = p0[i * 3 + 1] * k; pa.array[i * 3 + 2] = p0[i * 3 + 2] * k;
+      }
+      pa.needsUpdate = true; x.g.computeBoundingSphere();
+    }
+    if (S.cams) for (const c of Object.values(S.cams)) { c.near = d ? 0.05 : 0.1; c.far = d ? Math.max(200, (d.meta && d.meta.far || 75) * 2) : 200; c.updateProjectionMatrix(); }
+  }
+  function walk(dir, m) {
+    const y = S.look.yaw * Math.PI / 180, f = [Math.sin(y), 0, -Math.cos(y)], r = [Math.cos(y), 0, Math.sin(y)];
+    const v = dir === "fwd" ? f : dir === "back" ? f.map((x) => -x) : dir === "right" ? r : r.map((x) => -x);
+    const p = S.depth.pos.map((x, i) => x + v[i] * m), n = Math.hypot(p[0], p[2]), lim = 2;
+    S.depth.pos = n > lim ? [p[0] * lim / n, 0, p[2] * lim / n] : p; draw();
+  }
+  async function getJSON(u, o) { const r = await root.fetch(u, o), j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.error || ("HTTP " + r.status)), { j }); return j; }
+  /** this panorama's depth: cached, else a PaGeR job (asked to download it the first time) -> {grid, w, h, meta} */
+  async function depthFor(url) {
+    if (S.depth.cache.has(url)) return S.depth.cache.get(url);
+    if (root.H3NeedInstall && !(await root.H3NeedInstall.ensure("pager", "⛰ Depth reads this panorama's shape. " + DEPTH_NOTE + "."))) throw new Error("not downloaded - " + DEPTH_NOTE);
+    dmsg("reading the panorama's shape… (" + DEPTH_NOTE + ")");
+    const blob = await (await root.fetch(url)).blob(), name = decodeURIComponent(String(url).split("/").pop().split("?")[0]) || "panorama.png";
+    const j = await getJSON("/api/panodepth?name=" + encodeURIComponent(name), { method: "POST", body: blob });
+    const id = j.job && j.job.id; if (!id) throw new Error("no job");
+    let jj = null;
+    for (;;) {
+      await new Promise((ok) => setTimeout(ok, 1500));
+      try { jj = await getJSON("/api/jobs/" + encodeURIComponent(id)); } catch (e) { continue; }
+      if (jj.status === "running" && root.H3Steps && jj.progress) dmsg("reading the shape - " + root.H3Steps.text(jj.progress));
+      if (jj.status && jj.status !== "running" && jj.status !== "queued") break;
+    }
+    if (jj.status !== "done") { const lg = (jj.log || []).slice(-30).reverse().find((l) => /ERROR|stopped/i.test(String(l))); throw new Error("the depth job " + jj.status + (lg ? ": " + String(lg).replace(/^.*ERROR:\s*/, "") : " - see the job log")); }
+    const outs = jj.outputs && jj.outputs.length ? jj.outputs : [jj.output], pv = outs.find((o) => /_depth\.png$/.test(o)) || outs[0];
+    const stem = String(pv || "").replace(/_depth\.png$|_360_TB\.png$/, "");
+    const meta = await getJSON("/outputs/" + encodeURIComponent(stem + "_depth.json"));
+    const buf = await (await root.fetch("/outputs/" + encodeURIComponent(stem + "_depth.f32"))).arrayBuffer();
+    const w = (meta.grid || [512, 256])[0], h = (meta.grid || [512, 256])[1], grid = new Float32Array(buf);
+    if (grid.length !== w * h) throw new Error("the depth grid is not " + w + " x " + h);
+    const d = { grid, w, h, meta, stem, job: id };
+    S.depth.cache.set(url, d); return d;
+  }
+  async function depth(on) {
+    if (S.depth.busy) return false;
+    if (!on) { S.depth.on = false; S.depth.pos = [0, 0, 0]; bend(null); paintDepthBtn(); dmsg(""); draw(); return true; }
+    if (!S.on) return false;
+    if (S.layout !== "mono") { dmsg("Depth reads a plain (mono) 360° panorama - this one is already stereo"); return false; }
+    S.depth.busy = true; paintDepthBtn();
+    try {
+      const d = await depthFor(S.url);
+      S.depth.on = true; S.depth.last = d; bend(d);
+      dmsg("depth on - " + (d.meta.scene || "") + ", nearest " + (+d.meta.near || 0).toFixed(1) + " m · I / K / J / L step round · the stereo 360 (" + d.stem + "_360_TB.png) is in the gallery, the walk-in mesh in 3D models · " + DEPTH_NOTE);
+      draw(); return true;
+    } catch (e) { dmsg(e.message || String(e)); return false; }
+    finally { S.depth.busy = false; paintDepthBtn(); }
+  }
   async function show(on) {
     const v = build(); if (!v) return false;
     const it = cur();
     if (on && (!it || it.kind !== "image")) return false;
     S.on = !!on; v.classList.toggle("on", S.on); const b = $("lb_pano"); if (b) { b.classList.toggle("on", S.on); b.setAttribute("aria-pressed", S.on ? "true" : "false"); }
-    if (!S.on) { spin(false); if (doc.fullscreenElement === v) doc.exitFullscreen().catch(() => {}); return true; }
+    if (!S.on) { spin(false); if (S.depth.on) depth(false); if (doc.fullscreenElement === v) doc.exitFullscreen().catch(() => {}); return true; }
     try { await load(it.url); } catch (e) { S.on = false; v.classList.remove("on"); if (b) b.classList.remove("on"); const i = $("lb_panoinfo"); if (i) i.textContent = "🌐 " + (e.message || e); return false; }
     draw(); return true;
   }
@@ -178,7 +257,9 @@
     if (m) { stop(); turn(m, e.shiftKey ? 15 : 5); return; }
     if (k === "+" || k === "=") { stop(); zoom(1 / 1.15); return; }
     if (k === "-") { stop(); zoom(1.15); return; }
-    if (k === "Home" || k === "0") { stop(); home(); return; }
+    const wk = { i: "fwd", I: "fwd", k: "back", K: "back", j: "left", J: "left", l: "right", L: "right" }[k];
+    if (wk && S.depth.on) { stop(); walk(wk, e.shiftKey ? 0.5 : 0.1); return; }
+    if (k === "Home" || k === "0") { stop(); home(); S.depth.pos = [0, 0, 0]; draw(); return; }
     if (k === " ") { stop(); spin(!S.spin); return; }
     if (k === "f" || k === "F") { stop(); full(); return; }
     if (k === "Escape") { stop(); show(false); }
@@ -200,11 +281,13 @@
       const it = cur(); b.style.display = it && it.kind === "image" ? "" : "none";
       if (!lbd.open) { last = null; return; }
       const u = it && it.url; if (u === last) return; last = u;
-      if (S.on) { if (it && it.kind === "image") load(u).then(draw).catch(() => {}); else show(false); }
+      if (S.on) { if (S.depth.on) depth(false); if (it && it.kind === "image") load(u).then(draw).catch(() => {}); else show(false); }
     }, 300);
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3LbPano = Object.assign({ show, state: () => ({ on: S.on, look: Object.assign({}, S.look), mode: S.mode, pic: S.pic, layout: S.layout, size: S.size.slice(), url: S.url, spin: S.spin }),
+  root.H3LbPano = Object.assign({ depth, walk, depthState: () => ({ on: S.depth.on, busy: S.depth.busy, pos: S.depth.pos.slice(), msg: S.depth.msg, stem: S.depth.last && S.depth.last.stem, cached: S.depth.cache.size }),
+    radiusAt: (eye, i) => { const x = S.mats.find((m) => m.eye === (eye || "left")); if (!x) return 0; const a = x.g.attributes.position.array; return Math.hypot(a[i * 3], a[i * 3 + 1], a[i * 3 + 2]); },
+    show, state: () => ({ on: S.on, look: Object.assign({}, S.look), mode: S.mode, pic: S.pic, layout: S.layout, size: S.size.slice(), url: S.url, spin: S.spin }),
     turn, zoom, home, spin, setMode: (m) => { S.mode = m; LS.set("mode", m); if ($("lb_panomode")) $("lb_panomode").value = m; draw(); info(); },
     setPic: (p) => { S.pic = p; LS.set("pic", p); if ($("lb_panopic")) $("lb_panopic").value = p; applyLayout(); }, canvas: () => S.R && S.R.domElement, draw, paint }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

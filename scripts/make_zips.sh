@@ -58,6 +58,8 @@ FILES=$(find . -type f \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "basic_settings.tmp" ! -name "basic_settings.tmp.part" \
   ! -name "models_found.json" ! -name "models_found.json.part" \
+  ! -path "./pager/*" ! -path "./unirig/*" ! -path "./hyworld/*" ! -path "./flowhmr/*" ! -path "./garmentcode/*" \
+  ! -path "./voice-kit/*" ! -path "./ming-tts/*" ! -path "./bark-stt/*" ! -path "./qwen3vl/*" \
   ! -path "./settings/*" ! -path "./usage/*" ! -name "components.txt" ! -path "./comfy_workflows/MM3_Characters_tmp.json" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
 # 2.992.0: .gitignore is the list of what is this machine's own (the 2.992.0 build caught settings/keys.master - an

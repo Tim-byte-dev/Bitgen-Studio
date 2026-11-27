@@ -176,3 +176,15 @@ mail/
 
 # 2.888.0: your own skills for the chat's LLM (lib/skills.js - <app>/my-skills/<name>/SKILL.md) - user state
 /my-skills/
+
+# 2.994.0: the add-ons' own installs (code + venvs + weights, GBs each) - never in the repo or a zip. Before this they were not
+# ignored at all: a push from an install folder would have taken them along.
+/pager/
+/unirig/
+/hyworld/
+/flowhmr/
+/garmentcode/
+/voice-kit/
+/ming-tts/
+/bark-stt/
+/qwen3vl/

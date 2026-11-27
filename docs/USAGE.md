@@ -2224,6 +2224,25 @@ turn (Shift: bigger steps), **⟲** straight ahead, **⟳ Auto** turns by itself
   shown as one, each eye seeing its own half. Auto reads 2:1 as mono, 1:1 as top / bottom, 4:1 as side by side.
 - A panorama is twice as wide as it is high (Image ▸ 🌐 360 Panorama makes one); other pictures are wrapped too, stretched.
 
+### ⛰ Depth - the place's real shape (2.994.0)
+
+> **Non-commercial use only.** ⛰ Depth uses PaGeR. Its code is Apache-2.0, but its model weights are **CC BY-NC 4.0**: for
+> personal, research and education use only - not for paid or commercial work, including what you make with it.
+
+In 🌐 Panorama 3D, press **⛰ Depth**. The first time, a box asks to download it (⬇ Download / Cancel - about 11 GB once: the
+PaGeR code, PyTorch in its own Python, its weights and CLIP; it needs an NVIDIA card with 12 GB or more). It is also in
+Settings ▸ Add-ons ▸ ⛰ Panorama depth (PaGeR). Then it reads the panorama's shape - how far away everything is, the ground,
+the sky - and the panorama takes that shape round you:
+- **I / K** step forward / back, **J / L** to the sides (Shift: 5 times as far, at most 2 m from where the picture was taken);
+  near things move against far ones as you step. **Home** takes you back to the middle.
+- **👓 VR side by side / top / bottom** now show real stereo - each eye sees the place from its own spot.
+- The job also leaves, in the gallery, a **stereo 360** (`<name>_360_TB.png`, top = left eye) for 🥽 VR World's stereo modes
+  and VR players, and the coloured depth (`<name>_depth.png`); in the project's 3D models, the **walk-in mesh**
+  (`<name>_depth.glb` - open it in the Sketcher, on a timeline 3D layer or in Blender) with the depth in centimetres, the
+  surface normals and the sky as pictures.
+- **⛰** again turns it off; a picture read once is not read again while the preview is open. It reads plain (mono) 360°
+  panoramas - a stereo one already has its depth.
+
 ## Save and Save as (preview dialog and gallery)
 
 - **Save as** is the small 💾 icon at the top left of every gallery tile (on a song it is in the name

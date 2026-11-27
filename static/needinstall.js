@@ -53,6 +53,10 @@
     sing_rvc: { name: "RVC through Applio (singing voice conversion)", desc: "Trains a model of your voice on about 10 minutes of it, then sings any vocal in that voice.",
       hint: "about 9 GB: Applio (MIT), PyTorch and its packages in their own Python, its pretrained voices, rmvpe and contentvec",
       status: "/api/sing/status?engine=rvc", addon: "singvoice", items: ["rvc"] },
+    // 2.994.0: ⛰ Panorama depth (Settings ▸ Add-ons ▸ ⛰ Panorama depth (PaGeR)) - the weights are NON-COMMERCIAL
+    pager: { name: "⛰ Panorama depth (PaGeR) - non-commercial use only", desc: "Finds the shape of a 360° panorama - how far away everything is, the ground, the sky - for a walk-in depth view and a stereo 360 for VR. Its model weights are CC BY-NC 4.0: for NON-COMMERCIAL use only (personal, research, education) - not for paid or commercial work.",
+      hint: "about 11 GB, once: the PaGeR code (Apache-2.0), PyTorch and its packages in their own Python, its weights (~5 GB, CC BY-NC 4.0) and CLIP ViT-B-32; an NVIDIA card with 12 GB or more",
+      status: "/api/panodepth", addon: "pager" },
     garment: { name: "Garment designer (GarmentCode)", desc: "Makes sewing patterns - tops, hoodies, dresses, skirts, trousers - to the mannequin's or your own measurements.",
       hint: "about 150 MB: GarmentCode's pattern programs (MIT) and numpy, scipy and matplotlib in their own Python - no graphics card needed",
       status: "/api/garment", addon: "garment" },

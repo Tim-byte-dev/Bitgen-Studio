@@ -363,6 +363,16 @@ and contributors) and its checkpoints ([VAST-AI/UniRig](https://huggingface.co/V
 Python 3.11 and packages (Blender's bpy module - GPL; spconv - Apache-2.0; PyG's torch_scatter / torch_cluster - MIT; flash-attn -
 BSD-3-Clause). misc/rig_worker.py runs UniRig's own Python steps (its bash scripts are not used). bitGen ships none of it.
 
+## ⛰ Panorama depth - PaGeR (2.994.0) - NON-COMMERCIAL weights
+
+Settings ▸ Add-ons ▸ ⛰ Panorama depth fetches [prs-eth/PaGeR](https://github.com/prs-eth/PaGeR) (code: Apache-2.0, ETH Zurich,
+Google, Meta, Athlence Sports) into <app>/pager with its own Python, and its weights
+([prs-eth/PaGeR](https://huggingface.co/prs-eth/PaGeR)) into the Hugging Face cache. **The weights are CC BY-NC 4.0 - for
+NON-COMMERCIAL use only** (inherited from its Depth Anything 3 ViT-Giant backbone, ByteDance Seed, CC BY-NC 4.0): personal,
+research and education use; not for paid or commercial work. Its indoor / outdoor pick uses OpenAI CLIP ViT-B-32 through
+open_clip (MIT). misc/pager_run.py calls PaGeR the way its own app.py does; misc/pager_geo.py (bitGen's own) makes the walk-in
+mesh and the stereo 360 from the depth. bitGen ships none of PaGeR.
+
 ## 📚 The Daz library (2.977.0)
 
 The Sketcher's 📚 Daz library (lib/dazLib.js, lib/clothSim.js, lib/dazFace.js - bitGen's own code, no third-party importer)

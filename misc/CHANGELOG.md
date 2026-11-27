@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.994.0** — ⛰ Panorama Depth (PaGeR, Non-Commercial Use Only): A 360° Panorama's Real Shape - Step Round In It, Real VR Stereo, a Stereo 360 and a Walk-In Mesh
 - **2.993.0** — ✨ Photo No Longer Leaves a Grey Background (Environment Reference Behind the Model, or a Fill Pass); ⤓ Import Daz Content Zips Into a Library Folder
 - **2.992.0** — 🥁 Drumify in the Edit Booth's Step Sequencer: Tap, Play or Take a Rhythm and Get a Drum Pattern With Your Feel
 - **2.991.0** — ✨ Photo Sends One Reference Picture Whole (Not a Cropped Tile) So Its Place and Look Hold
