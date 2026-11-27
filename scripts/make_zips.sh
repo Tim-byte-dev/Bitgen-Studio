@@ -58,7 +58,7 @@ FILES=$(find . -type f \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "basic_settings.tmp" ! -name "basic_settings.tmp.part" \
   ! -name "models_found.json" ! -name "models_found.json.part" \
-  ! -path "./settings/*" ! -path "./usage/*" ! -name "components.txt" ! -name "MM3_Characters_tmp.json" \
+  ! -path "./settings/*" ! -path "./usage/*" ! -name "components.txt" ! -path "./comfy_workflows/MM3_Characters_tmp.json" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
 # 2.992.0: .gitignore is the list of what is this machine's own (the 2.992.0 build caught settings/keys.master - an
 # encryption key the app makes on first start - and usage/, components.txt riding in the zips). In a git checkout every

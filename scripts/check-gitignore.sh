@@ -29,7 +29,7 @@ for d in $(grep -o '! -path "\./[^/*"]*/\*"' scripts/make_zips.sh \
     # exclusion that is legitimately in make_zips.sh and NOT in .gitignore.
     .git) continue ;;
   esac
-  grep -qE "^${d}/?$|^${d}/" .gitignore \
+  grep -qE "^/?${d}/?$|^/?${d}/" .gitignore \
     || note "make_zips.sh excludes ./${d}/ from the zip but .gitignore does not ignore it"
 done
 
