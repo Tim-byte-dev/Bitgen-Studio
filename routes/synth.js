@@ -5,6 +5,8 @@
 //   POST /api/synth/samples                multipart "files" (🎙 Sample it sends its WAV the same way) -> {added, errors, samples}
 //   GET  /api/synth/samples/file/:name     the file (the looper's rows)
 //   POST /api/synth/samples/delete {name}
+//   POST /api/synth/song                   3.1.0: multipart "file" (the timeline's mix) + name, format mp3 | wav -> the Sound
+//                                          assets + the gallery (lib/synthSong.js)
 //   POST /api/synth/to-project             multipart "file" + to = sfx | sound, name -> the loop / a take in this project's
 //                                          SFX (lib/sfx.js - a 48 kHz WAV), for "sound" its Sound assets too
 //   GET  /api/synth/sources                2.954.0: every sound the timeline can take, grouped (lib/synthSources.js)
@@ -74,6 +76,16 @@ function mount(app) {
     const r = SF.remove((req.body || {}).name);
     if (r.error) return res.status(r.status || 400).json(r);
     res.json({ ok: true, ...r });
+  });
+  // 3.1.0 💾 Save song: the timeline's mix (a WAV from the browser) -> an MP3 / a WAV in the Sound assets + the gallery (lib/synthSong.js)
+  app.post("/api/synth/song", upload.single("file"), (req, res) => {
+    const f = req.file;
+    try {
+      if (!f) return res.status(400).json({ error: "no mix came" });
+      const b = req.body || {}, r = require("../lib/synthSong").save(f.path, b.name, b.format);
+      res.json(Object.assign({ ok: true, url: r.gallery ? "/outputs/" + encodeURIComponent(r.gallery) : "", note: `${r.name} is in the Sound assets` + (r.gallery ? ` and the gallery (${r.gallery})` : "") }, r));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+    finally { gone([f]); }
   });
   app.post("/api/synth/to-project", upload.single("file"), (req, res) => {
     const f = req.file, to = String((req.body || {}).to || "sfx");

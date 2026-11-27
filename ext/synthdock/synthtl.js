@@ -1094,6 +1094,24 @@
       return O.toProject(blob, "timeline.wav", to, name);
     }).catch(function (e) { msg(e.message || String(e), true); return null; });
   }
+  /** 3.1.0 💾 Save song (Tim: "add a button to edit booth timeline to save as mp3 or wav. compile all the layers into a song"):
+   *  every layer mixed (render(): their effects, lanes, keyframes, the limiter) -> /api/synth/song -> an MP3 / a WAV in the
+   *  Sound assets + the gallery; a copy downloaded too when ticked */
+  function saveSong(name, format, dl) {
+    var fmt = format === "wav" ? "wav" : "mp3", nm = String(name || "").trim() || (O.fileName && O.fileName() ? O.fileName().replace(/\.sfx$/i, "") : "song");
+    msg("💾 Mixing every layer into " + nm + "…");
+    return render(48000).then(function (r) {
+      msg("💾 Saving " + nm + " as " + fmt.toUpperCase() + " (" + r.seconds.toFixed(1) + " s)…");
+      var fd = new root.FormData(); fd.append("name", nm); fd.append("format", fmt); fd.append("file", O.blobOf(r), "mix.wav");
+      return root.fetch("/api/synth/song", { method: "POST", body: fd }).then(function (x) { return x.json(); });
+    }).then(function (j) {
+      if (!j || j.error) throw new Error((j && j.error) || "the song could not be saved");
+      if (dl && j.url) { var a = doc.createElement("a"); a.href = j.url; a.download = j.name; doc.body.appendChild(a); a.click(); a.remove(); }
+      if (O.refresh) try { O.refresh(); } catch (e) { /* fine */ }
+      if (typeof root.refreshGallery === "function") try { root.refreshGallery(); } catch (e) { /* fine */ }
+      msg("💾 " + j.note + (dl && j.url ? " - and in your Downloads" : "")); return j;
+    }).catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
   function wire() {
     var on = function (id, f) { var el = $(id); if (el) el.onclick = f; };
     on("syTPlay", function () { O.ctx(); toggle(); });
@@ -1114,6 +1132,10 @@
     };
     on("syTMark", function () { addMarker(); });
     on("syTStems", function () { stems(); });
+    on("sySong", function () { var bx = $("sySongBox"), open = bx.style.display === "none"; bx.style.display = open ? "" : "none"; if (open) { var n = $("sySongName"); if (!n.value) n.value = O.fileName && O.fileName() ? O.fileName().replace(/\.sfx$/i, "") : ""; try { $("sySongFmt").value = root.localStorage.getItem("h3.synth.song.fmt") === "wav" ? "wav" : "mp3"; } catch (e) { /* fine */ } n.focus(); } });
+    on("sySongX", function () { $("sySongBox").style.display = "none"; });
+    on("sySongGo", function () { var f = $("sySongFmt").value; try { root.localStorage.setItem("h3.synth.song.fmt", f); } catch (e) { /* fine */ } var b = $("sySongGo"); b.disabled = true; saveSong($("sySongName").value, f, $("sySongDl").checked).then(function (j) { b.disabled = false; if (j) $("sySongBox").style.display = "none"; }); });
+    var sn = $("sySongName"); if (sn) sn.onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); $("sySongGo").click(); } else if (e.key === "Escape") $("sySongBox").style.display = "none"; };
     on("syTMixBtn", function () { if (root.H3SynthMix) root.H3SynthMix.toggle(); });
     on("syTNotes", function () { addNotes([], "Notes", null, S.sel, S.ph).then(function (c) { var l = L(S.sel); openRoll(S.sel, l.clips.indexOf(c)); }); });
     on("syTSnap", function () { TLD.snap = !TLD.snap; paintSnap(); changed(); });
@@ -1124,7 +1146,7 @@
   function zoom(f) { TLD.zoom = Math.max(4, Math.min(400, TLD.zoom * f)); changed(); draw(); }
   function init(o) { O = o; TLD = T.cleanTL(o.saved); layout(); wire(); wireCanvas(); wirePicker(); heads(); picker(); paintSnap(); paintRecBar(); paintTempoBtn(); draw(); root.setTimeout(warm, 600); }
   function setSources(g) { sources = g || []; picker(); }
-  root.H3SynthTL = { _ctx: function () { return O.ctx(); }, addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
+  root.H3SynthTL = { saveSong: saveSong, _ctx: function () { return O.ctx(); }, addSteps: addSteps, openSteps: openSteps, tempo: toggleTempo, tmap: function () { return tmap(); }, delTempo: delTempo, selTempo: function (i) { S.tpt = i; keyEd(); draw(); }, rec: startRec, endRec: endRec, recording: function () { return S.rec ? { layer: S.rec.layer, passes: S.rec.passes.slice(), at: S.rec.at, from: S.rec.from, loop: S.rec.loop, punch: S.rec.punch } : null; }, lastRec: function () { return S.lastRec || null; }, toggle: toggle, setLoop: setLoop, toggleLoop: toggleLoop, arm: function (i) { S.arm = i; heads(); }, comp: function (l, ci, a, b) { compApply({ l: l, ci: ci, grp: L(l).clips[ci].grp, a: a, b: b }); }, flatten: flattenSel, bounce: bounce, renderDry: renderDry, renderMix: renderMix, patchLayer: patchLayer, setView: function (i, k) { S.view[i] = k; heads(); draw(); }, stems: stems, addMarker: addMarker, setFxLive: function () { liveMix(); }, changedFx: function () { liveMix(); changed(); draw(); },
     meters: function () { return S.nodes ? { layers: S.nodes.map(function (n) { return n.meter; }), master: S.mMeter } : null; }, playing: function () { return S.playing; }, addNotes: addNotes, openRoll: openRoll, split: split, dup: dup, select: function (l, c) { S.sel = l; S.picked = l != null && l >= 0; paintWhat(); S.clip = c == null ? null : { l: l, c: c }; S.key = null; keyEd(); draw(); }, init: init, play: play, stop: stop, seek: seek, addClip: addClip, addLoop: addLoop, addNewLayer: addNewLayer, newLayer: newLayer, ask: ask, dropped: dropped, render: render, exportTL: exportTL, del: del, draw: draw, setSources: setSources,
     tl: function () { return TLD; }, setTL: function (j) { if (S.rec) endRec(); stop(); TLD = T.cleanTL(j); S.arm = null; S.tpt = null; S.picked = false; S.missing = {}; root.setTimeout(paintWhat, 0); layout(); paintTempoBtn(); S.sel = 0; S.clip = null; S.key = null; S.apt = null; S.view = {}; keyEd(); heads(); paintRecBar(); draw(); warm(); changed(); },
     geo: function () { return { RULER: RULER, LH: LH, zoom: TLD.zoom, scroll: S.scroll }; },

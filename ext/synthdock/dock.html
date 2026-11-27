@@ -342,7 +342,9 @@
           .sylib .sydrop.over { border-color: #38e1ff; color: #38e1ff; }
           .symsg { font-size: 11px; color: #9aa4b6; min-height: 14px; }
           .symsg.bad { color: #ff7a7a; }
-        </style>
+          .sysong { display: inline-flex; gap: 4px; align-items: center; }
+  .sysong input[type=text] { width: 12em; }
+</style>
         <div class="sytop">
           <button class="ghost" id="syPrev" type="button" title="The patch before">◀</button>
           <select id="syPreset" title="Patches - ours and the ones you saved (💾)"></select>
@@ -497,6 +499,8 @@
             <button class="ghost" id="syTSnap" type="button" title="⌗ Snap to the looper's 16th notes (hold Shift while dragging to place freely)">⌗ Snap</button>
             <button class="ghost" id="syTZoomOut" type="button" title="Zoom out">－</button><button class="ghost" id="syTZoomIn" type="button" title="Zoom in">＋</button>
             <span class="sep"></span>
+            <button class="ghost" id="sySong" type="button" title="💾 Save song: every layer mixed into one song (their effects, lanes and volumes) - an MP3 or a WAV in this project's Sound assets and the gallery (and a copy to your Downloads)">💾 Save song</button>
+            <span class="sysong" id="sySongBox" style="display:none"><input id="sySongName" type="text" maxlength="80" placeholder="Song name" title="The song's name (its file name and its title tag)" aria-label="Song name"><select id="sySongFmt" title="MP3 (320 kb/s - small, plays everywhere) or WAV (16-bit, lossless)" aria-label="Format"><option value="mp3">MP3</option><option value="wav">WAV</option></select><label title="Also save a copy to this computer's Downloads"><input id="sySongDl" type="checkbox" checked> ⬇ a copy</label><button class="ghost" id="sySongGo" type="button">Save</button><button class="ghost sym" id="sySongX" type="button" title="Close">✕</button></span>
             <button class="ghost" id="syTWav" type="button" title="⬇ The timeline mixed down to a WAV">⬇ WAV</button>
             <button class="ghost" id="syTToSfx" type="button" title="The mix into this project's SFX">→ 💥 SFX</button>
             <button class="ghost" id="syTStems" type="button" title="⬇ Stems: every layer rendered alone (with its effects) into this project's Sound assets">⬇ Stems</button>

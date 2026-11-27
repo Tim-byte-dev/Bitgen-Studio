@@ -2133,6 +2133,12 @@ a marker on the ruler to go there, double-click it to rename it (double-click th
 right-click to remove it. **⬇ Stems** renders every layer that has sounds (and is not muted) on its own, with its effects,
 into this project's Sound assets as "<timeline name> - <layer name>".
 
+**💾 Save song (3.1.0).** In the timeline's bar: every layer mixed into one song - their effects, automation lanes, volume
+keyframes and the master limiter, muted layers left out - saved as an **MP3** (320 kb/s, plays everywhere) or a **WAV**
+(16-bit, lossless) under the name you type. It goes into this project's **Sound assets** and the gallery's Audio tab
+(song_<name>), with its title and date in the file's tags; with **⬇ a copy** ticked it is downloaded to this computer too.
+A second song with the same name gets "(2)" - nothing is overwritten. (⬇ WAV still downloads a quick WAV of the mix.)
+
 **Automation lanes, the Filter, bounce (2.959.0).** Under each layer's knobs a small picker says what the line drawn over
 the layer edits: **◆ Vol** (the volume keyframes, as before) or the **Pan**, **Filter** or **Rev** lane. With a lane
 picked, **double-click** the layer to put a point there - where you click is the time and the value (up = right / open /
@@ -2209,6 +2215,9 @@ vocal and its instrumental. Both buttons work on the **picked layer** (click its
   (a model trained on your voice). One that is not installed says so in the list; ▶ then shows the Download / Cancel box and
   installs it in place (or Settings ▸ Add-ons ▸ 🎤 Sing in my voice - tick the ones you want). Seed-VC is GPL-3.0 (installed
   from its own repository and run as its own program), SoulX-Singer Apache-2.0, Applio MIT.
+  3.1.0: the install keeps NumPy below 2.4 (librosa's Numba refuses 2.4 - "Numba needs NumPy 2.3 or less") and puts it back
+  if something else brought it in; Seed-VC's check now loads its own inference.py, so a missing piece shows at install time,
+  not on the first song. Already installed and not loading? Press Install again - it repairs in place.
 - **Your voice** - for Seed-VC and SoulX-Singer a **clip**: **🎙 Record** (the microphone - sing, or just read out loud, for 15
   to 30 seconds in your normal voice, then ■ Stop) or **📂** a recording of you (any sound or video file). The clips are kept
   for every project. For RVC a **trained model**: **🎓 Train** ticks your clips (about 10 minutes together sounds most like

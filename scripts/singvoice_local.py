@@ -243,6 +243,13 @@ def train(job):
 
 
 # ---------------------------------------------------------------- the install's check
+def numpy_pin(msg):
+    """3.1.0 (Tim: "soulx: installed, but it does not load: missing module: Numba needs NumPy 2.3 or less. Got NumPy 2.4."):
+    Numba's complaint -> the NumPy pip should go back to ("numpy<2.4"), else None"""
+    m = re.search(r"Numba needs NumPy (\d+)\.(\d+) or less", str(msg or ""))
+    return "numpy<%d.%d" % (int(m.group(1)), int(m.group(2)) + 1) if m else None
+
+
 def check(job):
     eng, src = job.get("engine"), job.get("src_dir") or ""
     try:
@@ -250,6 +257,17 @@ def check(job):
             sys.path.insert(0, src); os.chdir(src)
             import torch, librosa, hf_utils  # noqa
             from modules.commons import str2bool  # noqa
+            # 3.1.0 (Tim: "seed vc also installs but doesn't start"): what inference.py itself imports - loaded as a module
+            # (its own `if __name__ == "__main__"` does not run; a top-level argparse sees --help and exits: fine)
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("seedvc_inference_check", os.path.join(src, "inference.py"))
+            argv0 = sys.argv; sys.argv = ["inference.py", "--help"]
+            try:
+                spec.loader.exec_module(importlib.util.module_from_spec(spec))
+            except SystemExit:
+                pass
+            finally:
+                sys.argv = argv0
         elif eng == "soulx":
             sys.path.insert(0, src); os.chdir(src)
             import torch, librosa, soundfile  # noqa
@@ -261,9 +279,13 @@ def check(job):
             import click  # noqa
         else:
             return {"error": "no such engine: %s" % eng}
+        import numba  # noqa - 3.1.0: librosa's Numba refuses a NumPy newer than it knows (reported below as a pin)
         import torch
         return {"ok": True, "cuda": bool(torch.cuda.is_available()), "torch": torch.__version__}
     except ImportError as e:
+        pin = numpy_pin(str(e))
+        if pin:
+            return {"error": str(e), "pin": pin}
         return {"error": "missing module: %s" % (getattr(e, "name", None) or e), "missing": getattr(e, "name", None) or ""}
     except Exception as e:
         return {"error": "%s: %s" % (type(e).__name__, e)}

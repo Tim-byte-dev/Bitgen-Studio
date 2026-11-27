@@ -1413,6 +1413,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **✨ Photo：圖庫只顯示最終照片** — 各步驟自己的圖片（第 1 步、第 2 步、重試）在照片完成後移出圖庫；最終照片放入圖庫和 Image assets。*位置：* Sketcher ▸ ✨ Photo；提示詞面板 ▸ ✏ Edit (Sketcher)。*版本：* 2.998.0
 - **👤 Make this person 與 ✨ Photo 的角度修正** — References 面板中的 👤 把類型為 person（身體）的參考圖和臉部特寫做成 Sketcher 中的 Genesis 9 角色（擬合參數，或 Shift = 掃描＋包覆），之後 ✨ Photo 不再傳送這些圖片（頭部已帶有那張臉）；當相機看到角色臉部偏離正面超過 40° 時，也會不傳送臉部參考圖。*位置：* References 面板 ▸ 👤；Sketcher ▸ ✨ Photo。*版本：* 2.999.0
 - **🙂 用臉部特寫做出真正的 3D 頭部** — 🙂 Head ▸「用特寫做 3D 頭部」：3D 引擎把特寫變成 3D 形狀，放到角色頭上，只讓頭部貼合它（頸部過渡，眼睛/牙齒/舌頭不動）——儲存為自訂形變，臉部再繪製上去。按 Shift 使用 👤 Make this person 時會用這個。*位置：* 🧭 DAZ Explorer ▸ 📷 Body from a photo ▸ 🙂 Head；References ▸ 👤（Shift）。*版本：* 3.0.0
+- **💾 Save song（Edit Booth）與 SoulX / Seed-VC 修復** — 時間軸的 💾 Save song 把所有圖層（效果、自動化、關鍵影格、限幅器）混成一首 MP3（320 kb/s）或 WAV（16 位元），存入 Sound assets 和圖庫，並複製一份到下載資料夾；🎤 Sing in my voice 的安裝為 Numba 把 NumPy 保持在 2.4 以下，並檢查 Seed-VC 自己的 inference.py。*位置：* 🎛 Edit Booth ▸ 時間軸 ▸ 💾 Save song；Settings ▸ Add-ons ▸ 🎤 Sing in my voice。*版本：* 3.1.0
 
 ### 雷射切割和雕刻
 
