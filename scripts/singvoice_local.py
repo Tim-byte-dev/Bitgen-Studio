@@ -288,7 +288,14 @@ def check(job):
             return {"error": str(e), "pin": pin}
         return {"error": "missing module: %s" % (getattr(e, "name", None) or e), "missing": getattr(e, "name", None) or ""}
     except Exception as e:
-        return {"error": "%s: %s" % (type(e).__name__, e)}
+        # 3.4.1: where it broke (the last frame of the engine's own code or a package) - the install log says it
+        import traceback
+        tb = traceback.extract_tb(e.__traceback__)
+        where = ""
+        if tb:
+            f = tb[-1]
+            where = " (%s:%d in %s)" % (os.path.basename(os.path.dirname(f.filename)) + "/" + os.path.basename(f.filename), f.lineno, f.name)
+        return {"error": "%s: %s%s" % (type(e).__name__, e, where)}
 
 
 def main():

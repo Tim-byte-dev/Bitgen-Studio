@@ -2218,6 +2218,10 @@ vocal and its instrumental. Both buttons work on the **picked layer** (click its
   3.1.0: the install keeps NumPy below 2.4 (librosa's Numba refuses 2.4 - "Numba needs NumPy 2.3 or less") and puts it back
   if something else brought it in; Seed-VC's check now loads its own inference.py, so a missing piece shows at install time,
   not on the first song. Already installed and not loading? Press Install again - it repairs in place.
+  3.4.1: Seed-VC and SoulX-Singer get their own Python 3.10 - 3.12 (their pinned packages have no Python 3.13 builds - on
+  3.13 pip took newer ones that break them, e.g. "LlamaConfig accepts only keyword arguments"): a Python 3.10 / 3.11 / 3.12
+  on this computer, else the install downloads Python 3.10 into the app's runtime folder. An environment made earlier with
+  3.13 is made again by Install (the code and models stay). A check that still fails says where (file:line).
 - **Your voice** - for Seed-VC and SoulX-Singer a **clip**: **🎙 Record** (the microphone - sing, or just read out loud, for 15
   to 30 seconds in your normal voice, then ■ Stop) or **📂** a recording of you (any sound or video file). The clips are kept
   for every project. For RVC a **trained model**: **🎓 Train** ticks your clips (about 10 minutes together sounds most like
