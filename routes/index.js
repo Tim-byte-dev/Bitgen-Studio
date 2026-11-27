@@ -15,6 +15,7 @@
 //   /api/pano360  2.971.0: 🌐 a 360 panorama from pictures placed on a green 2:1 canvas (routes/pano360.js)
 //   /api/picscene 2.975.0: 🧱 Picture → 3D scene - one picture -> its objects in 3D + the 360° surroundings + sounds (routes/picScene.js)
 //   /api/rig      2.976.0: 🦴 Rig it - a skeleton + skin weights for a project 3D model (routes/rig.js, UniRig)
+//   /api/dazlib/library|structure|zips|import   2.993.0: ⤓ Import Daz content zips (routes/dazImport.js)
 //   /api/dazlib   2.977.0: 📚 the Daz library - browse, dials, a character -> .glb, our own cloth drape, a face from a photo (routes/dazLibrary.js)
 //   GET /api/about                  the version + the credits (routes/about.js, lib/credits.json)
 //   GET/POST /api/basic-settings/styles  Basic Settings per style - misc/basic_settings.tmp (routes/basicTmp.js)
@@ -246,6 +247,7 @@ function mount(app) {
   require("./picScene").mount(app);    // 2.975.0: 🧱 Picture → 3D scene (the Sketcher) - lib/picScene.js
   require("./rig").mount(app);         // 2.976.0: 🦴 Rig it - UniRig skeleton + skin weights for a 3D model (lib/rigAddon.js)
   require("./dazLibrary").mount(app);  // 2.977.0: 📚 the Daz library read by bitGen itself (lib/dazLib.js) - not a replacement for Daz Studio
+  require("./dazImport").mount(app);   // 2.993.0: ⤓ Import Daz content zips into a library folder (lib/dazImport.js)
   require("./dazBody").mount(app);     // 2.981.0: 📷 a Daz body from a photo - A fit the dials / B scan + wrap (lib/dazBodyFit.js)
   require("./segment").mount(app);     // 2.390.0: Segment Anything (SAM + CLIPSeg) for the image editor - select / mask / layers
   require("./psd").mount(app);         // 2.390.0: the image editor's PSD files kept in the project (projects/<p>/psd)

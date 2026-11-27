@@ -1,6 +1,6 @@
 {
   "name": "bitgen-studio",
-  "version": "2.992.0",
+  "version": "2.993.0",
   "private": true,
   "description": "bitGen Studio - a local, self-hosted studio for video, image, audio and speech generation on Windows, driving ComfyUI.",
   "main": "misc/server.js",
@@ -23,7 +23,8 @@
     "mysql2": "^3.24.6",
     "nodemailer": "^10.6.0",
     "pptxgenjs": "^4.0.1",
-    "serialport": "^12.0.0"
+    "serialport": "^12.0.0",
+    "yauzl": "^3.4.0"
   },
   "license": "MIT",
   "devDependencies": {

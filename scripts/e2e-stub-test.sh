@@ -15276,6 +15276,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui989-ui.js > /tmp/ui989.log 2>&
 # ---- 2.992.0 (🥁 Drumify in the Edit Booth's step sequencer)
 node scripts/test-992.js > /tmp/t992.log 2>&1 && ok "2.992.0 units: our kit read by band, taps / notes / sounds -> a pattern with the feel kept, fill-ins, ghosts, seeds, stepEvents off / vel / feel, cleanTL, wiring" || { bad "2.992.0 units"; grep -a "^FAIL" -A1 /tmp/t992.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui992-ui.js > /tmp/ui992.log 2>&1 && ok "2.992.0 browser test: 🥁 Drumify - ● Tap on the audio clock, the pattern + its timing heard, Feel 0, 🎲 / ↶, a note clip, a sound file read by band, kept" || { bad "2.992.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui992.log | head -8; }
+# ---- 2.993.0 (✨ Photo never leaves the grey; ⤓ Import Daz content zips)
+node scripts/test-993.js > /tmp/t993.log 2>&1 && ok "2.993.0 units: the photo's background (environment reference / fill pass), Daz import (where each entry goes, find, unpack, keep / replace, the job)" || { bad "2.993.0 units"; grep -a "^FAIL" -A1 /tmp/t993.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui993-ui.js > /tmp/ui993.log 2>&1 && ok "2.993.0 browser test: ✨ Photo - words = pass 2 fills the green under a mask, an environment reference = the model drawn into it, refused = kept" || { bad "2.993.0 browser test (photo)"; grep -a "^FAIL" -A1 /tmp/ui993.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui993dz-ui.js > /tmp/ui993dz.log 2>&1 && ok "2.993.0 browser test: ⤓ Import Daz content - a new library + layout, zips found in folders, unpacked to the right place, kept / replaced" || { bad "2.993.0 browser test (Daz import)"; grep -a "^FAIL" -A1 /tmp/ui993dz.log | head -8; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

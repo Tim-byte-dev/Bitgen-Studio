@@ -649,6 +649,17 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**No more grey background (2.993.0)** - an edit model copies what is *in* picture 1, so a grey there came back grey whatever
+the words said. Now the place is put into the pictures:
+- **A reference whose Type is *environment*** (the Type dropdown under a picture in the prompt docker): picture 1 is the model
+  drawn straight over that picture, and the edit model makes it one real photo - that exact place, the model lit and shadowed
+  to match. One render.
+- **Words, or references of other Types** (a new reference starts as *person*): the photo is made as before (step 1 of 2),
+  then the grey round the model is painted green and filled again under a mask by the same edit model (step 2 of 2 - the
+  Krita AI plugin's "fill the green"), with your prompt's place and the first reference's look. Only the background is new:
+  the model keeps its pixels from step 1. If step 2 cannot run, the first photo is kept and the message says why.
+- No words and no references: the plain photo with its daylight sky, as always. A backdrop or 360° sky you set stays.
+
 **One reference picture is sent whole (2.991.0)** - with a single reference in the prompt docker (and no materials of the
 model's own), ✨ Photo sends that picture itself - its whole shape, sharp - as picture 3 and asks for its place, ground,
 surroundings, sky and look around the model. Before, it went as a small captioned square cut from the picture, and the edit
@@ -1371,6 +1382,21 @@ character (\"Doll · 📏 185 cm 80 kg\"), built straight away. **📏 Measure i
 
 bitGen reads your Daz content folders itself - no Daz Studio running, nothing else to install. Click **📚 Daz library** in
 the Sketcher.
+
+**⤓ Import Daz content (2.993.0)** - the **⤓** beside **📁** in the 📚 DAZ Library docker's title opens *Import Daz content*:
+1. **The library to import into** - one of your library folders, or **📂 Another…**. **＋ New library folder…** makes a new
+   one (pick where it goes, give it a name, **Create**) with Daz's own layout (data, People, Props, Environments, Runtime
+   with Textures / Libraries / Support, Light / Render / Shader / Camera Presets, Scripts, Documentation). **▦ Make the
+   library folders here** adds that layout to the folder picked (nothing is removed). With *add it to my library folders*
+   ticked, the docker reads it from then on.
+2. **Where your zips are** - **＋ Add a folder…** (as many as you like: Downloads, a backup drive …), *its subfolders too*,
+   then **🔍 Find the zips**. Each zip is listed with what it holds: 📦 a DIM package (the Install Manager's kind, with
+   `Content/` inside), 🧬 Daz content, 🗜 zips inside; one that is not Daz content or cannot be read is left un-ticked.
+3. **⤓ Import** - each ticked zip is unpacked into the library: whatever wraps the library folders in the zip (`Content/`,
+   `My Library/`, the product's own folder) is dropped, so `data/`, `People/`, `Runtime/` … land where Daz Studio expects
+   them; a zip inside a zip is opened too; readmes and the DIM notes are left out. Files already there are kept unless you
+   tick *replace files that are there*. **■ Stop** ends after the current zip. When it is done the library is read again.
+   It is not Daz Studio's Install Manager (no product list, no uninstall) - light tasks.
 
 1. **📁 Folders…** - bitGen finds the usual library folders itself; add others one a line (your Install Manager / manual
    library). Daz Connect's **encrypted** items (`.duf.enc`) can only be read by Daz Studio - they are counted and skipped.

@@ -131,7 +131,7 @@
     css();
     // 2.983.0: the 📚 DAZ Library = a FLOATING docker over the Sketcher's view (drag its title, size its corner)
     const L = doc.createElement("div"); L.id = "dzLib"; L.className = "dzdock dz-el"; L.setAttribute("role", "dialog"); L.setAttribute("aria-label", "DAZ Library");
-    L.innerHTML = '<div class="dzhead" id="dzLibHead" title="Drag to move - the corner sizes it"><b>📚 DAZ Library</b><button type="button" class="ghost dzx" id="dzFolders" title="Your Daz content folders">📁</button><button type="button" class="ghost dzx" id="dzRefresh" title="Read the library again">↻</button><button type="button" class="ghost dzx" id="dzLibMin" title="Fold it to its title">▁</button></div>'
+    L.innerHTML = '<div class="dzhead" id="dzLibHead" title="Drag to move - the corner sizes it"><b>📚 DAZ Library</b><button type="button" class="ghost dzx" id="dzFolders" title="Your Daz content folders">📁</button><button type="button" class="ghost dzx" id="dzImport" title="⤓ Import Daz content: a new library folder, then the product zips from your folders unpacked into it (2.993.0)">⤓</button><button type="button" class="ghost dzx" id="dzRefresh" title="Read the library again">↻</button><button type="button" class="ghost dzx" id="dzLibMin" title="Fold it to its title">▁</button></div>'
       + '<div id="dzRootsBox" hidden><span class="hint">Your Daz content folders, one a line (each holds data/, People/, Runtime/…):</span><textarea id="dzRoots" spellcheck="false"></textarea><div style="display:flex;gap:6px"><button type="button" class="primary" id="dzRootsSave">Save</button><button type="button" class="ghost" id="dzRootsFind">Find them</button></div></div>'
       + '<div class="dznote" role="note">' + esc(NOTE) + "</div><div class=\"dztabs\" id=\"dzTabs\">" + KINDS.map(([k, l]) => '<button type="button" class="ghost" data-kind="' + k + '">' + l + "</button>").join("") + "</div>"
       + '<input type="search" id="dzQ" placeholder="Search the library…"><div id="dzEnc" class="hint" style="padding:0 6px"></div><div id="dzGrid" title="Drag a figure into the 3D view to place it; clothes, hair, poses onto a character"></div>';
@@ -230,6 +230,7 @@
     let qt = 0; $("dzQ").oninput = () => { clearTimeout(qt); qt = setTimeout(list, 300); };
     let dq = 0; $("dzDialQ").oninput = () => { clearTimeout(dq); dq = setTimeout(() => dialsLoad(true), 300); };
     $("dzRefresh").onclick = list;
+    $("dzImport").onclick = () => { if (root.H3DazImport) root.H3DazImport.open(); };   // 2.993.0 (ppdazimport.js)
     $("dzFolders").onclick = () => { const b = $("dzRootsBox"); b.hidden = !b.hidden; if (!b.hidden) loadRoots(); };
     $("dzOpts").querySelectorAll("[data-drape]").forEach((x) => { x.onchange = () => { const c = cur(); if (!c) return; const k = x.dataset.drape; c.drape.kinds = c.drape.kinds.filter((y) => y !== k).concat(x.checked ? [k] : []); keep(); }; });
     $("dzFrames").onchange = () => { const c = cur(); if (c) { c.drape.frames = Math.max(5, Math.min(240, +$("dzFrames").value || 45)); keep(); } };
