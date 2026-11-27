@@ -1415,6 +1415,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🙂 用臉部特寫做出真正的 3D 頭部** — 🙂 Head ▸「用特寫做 3D 頭部」：3D 引擎把特寫變成 3D 形狀，放到角色頭上，只讓頭部貼合它（頸部過渡，眼睛/牙齒/舌頭不動）——儲存為自訂形變，臉部再繪製上去。按 Shift 使用 👤 Make this person 時會用這個。*位置：* 🧭 DAZ Explorer ▸ 📷 Body from a photo ▸ 🙂 Head；References ▸ 👤（Shift）。*版本：* 3.0.0
 - **💾 Save song（Edit Booth）與 SoulX / Seed-VC 修復** — 時間軸的 💾 Save song 把所有圖層（效果、自動化、關鍵影格、限幅器）混成一首 MP3（320 kb/s）或 WAV（16 位元），存入 Sound assets 和圖庫，並複製一份到下載資料夾；🎤 Sing in my voice 的安裝為 Numba 把 NumPy 保持在 2.4 以下，並檢查 Seed-VC 自己的 inference.py。*位置：* 🎛 Edit Booth ▸ 時間軸 ▸ 💾 Save song；Settings ▸ Add-ons ▸ 🎤 Sing in my voice。*版本：* 3.1.0
 - **🤗 Hugging Face downloads（hf_xet）** — 位於 Settings ▸ Add-ons 的第一項：把 hf_xet 裝進應用程式的 Python 和每個附加元件的 Python 環境，讓以 Xet 儲存的 Hugging Face 模型下載更快、可續傳，而不是退回一般 HTTP；之後安裝的附加元件會自動帶上它。*位置：* Settings ▸ Add-ons ▸ 🤗 Hugging Face downloads。*版本：* 3.3.0
+- **🔑 PlatoKeys — 為風格換用更輕的文字編碼器** — Basic Settings ▸ Text encoder（圖片與影片各一個，首項為 Style's own）列出 ComfyUI 中有 PlatoKeys 金鑰可對應到某風格的文字編碼器；選取後 MiniMax H3、MOSS-Image、Krea 2、Z-Image 的算圖會載入它（如 Qwen3.5-2B）取代原編碼器，由 Patch CLIP (Plato Key) 節點對應 — 更快、更省顯存；沒有金鑰的風格維持原樣。Settings ▸ Add-ons ▸ 🔑 PlatoKeys 安裝節點、Qwen3.5-2B、公開金鑰及 bitGen 更新版 Viggle Remake 節點。*位置：* Basic Settings、Settings ▸ Add-ons。*版本：* 3.4.0
 
 ### 雷射切割和雕刻
 

@@ -1470,6 +1470,11 @@ def queue(base, graph, client_id=None):
         apply_sampler_pick(base, graph)                   # 2.781.0: Basic Settings' sampler / scheduler (if sent)
     except Exception:                       # noqa: BLE001 - never stops a render
         pass
+    try:
+        import plato_keys_apply                           # 3.4.0: Basic Settings ▸ Text encoder (PlatoKeys, if picked)
+        plato_keys_apply.apply_text_encoder(base, graph)
+    except Exception:                       # noqa: BLE001 - never stops a render
+        pass
     print_meta(graph)
     try:
         mark_log(base)                                    # 2.781.2: ComfyUI's console before this render (load_report)

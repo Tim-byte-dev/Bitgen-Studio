@@ -28,14 +28,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.route("**/api/samplers*", (r) => r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ samplers: ["euler", "dpmpp_2m", "my_pack_sampler"], schedulers: ["simple", "karras"], from: "comfyui" }) }));
     await p.route(/\/api\/genimage$/, (r) => { heads.push(r.request().headers()["x-bitgen-sampler"] || ""); return r.fulfill({ status: 400, contentType: "application/json", body: '{"error":"test stop"}' }); });
     await p.goto(URL0);
-    await p.waitForFunction(() => window.H3Samplers && document.getElementById("imgSampler") && document.getElementById("vidSampler") && document.getElementById("imgSampler").options.length === 4, null, { timeout: 60000 });
+    await p.waitForFunction(() => window.H3Samplers && document.getElementById("imgSampler") && document.getElementById("vidSampler") && document.getElementById("imgSampler").options.length === 4 && (!window.H3StyleBasic || window.H3StyleBasic.ready()) && (!window.H3BasicCfg || window.H3BasicCfg.state().started), null, { timeout: 90000 });
     const a = await ev(() => {
       const after = (id, target) => { const row = document.getElementById(id).closest(".samplerRow"); let n = row.nextElementSibling, i = 0; while (n && i < 4) { if (n.contains(document.getElementById(target)) || n.id === target || n.getAttribute("for") === target) return i; n = n.nextElementSibling; i++; } return -1; };
       return { img: [...document.getElementById("imgSampler").options].map((o) => o.value || o.textContent), sch: [...document.getElementById("imgScheduler").options].map((o) => o.value || o.textContent),
         labels: [...document.querySelectorAll(".samplerRow")].map((r) => r.dataset.kind + ":" + [...r.querySelectorAll("label")].map((l) => l.firstChild.textContent.trim()).join("/")),
         imgAbove: after("imgSampler", "useImgModel"), vidAbove: after("vidSampler", "useVidModel") };
     });
-    check("two rows - pictures and video - each Sampler / Scheduler", a.labels.slice().sort().join() === "image:Sampler/Scheduler,video:Sampler/Scheduler", a.labels);
+    check("two rows - pictures and video - each Sampler / Scheduler (+ 3.4.0 Text encoder)", a.labels.slice().sort().join() === "image:Sampler/Scheduler/Text encoder,video:Sampler/Scheduler/Text encoder", a.labels);
     check("…above the checkpoint and the video model (right above their Use model tick)", a.imgAbove === 0 && a.vidAbove === 0, a);
     check("…Style's own first, then ComfyUI's own list (a pack's sampler too)", a.img.join() === "— Style's own —,euler,dpmpp_2m,my_pack_sampler" && a.sch.join() === "— Style's own —,simple,karras", a);
     await ev(() => { const s = document.getElementById("imgSampler"); s.value = "dpmpp_2m"; s.dispatchEvent(new Event("change")); const c = document.getElementById("imgScheduler"); c.value = "karras"; c.dispatchEvent(new Event("change")); });
@@ -45,8 +45,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await ev(() => { const o = document.getElementById("ovrStyle"); o.checked = true; o.dispatchEvent(new Event("change", { bubbles: true })); });
     await send();
     check("a picture render: no pick while Override style is off; with it on, X-Bitgen-Sampler = dpmpp_2m / karras", heads[0] === "" && heads[1] === '{"sampler":"dpmpp_2m","scheduler":"karras"}', heads);
+    await sleep(6500);                       // 3.4.0: the style's own copy (static/stylebasic.js, a look every 5 s) keeps the pick before the reload
     await p.reload();
-    await p.waitForFunction(() => window.H3Samplers && document.getElementById("imgSampler") && document.getElementById("imgSampler").options.length === 4, null, { timeout: 60000 }); await sleep(1500);
+    await p.waitForFunction(() => window.H3Samplers && document.getElementById("imgSampler") && document.getElementById("imgSampler").options.length === 4 && (!window.H3StyleBasic || window.H3StyleBasic.ready()) && (!window.H3BasicCfg || window.H3BasicCfg.state().started), null, { timeout: 90000 }); await sleep(1500);
     const k = await ev(() => [document.getElementById("imgSampler").value, document.getElementById("imgScheduler").value, document.getElementById("vidSampler").value]);
     check("kept after a reload (the video one still the style's own)", k.join() === "dpmpp_2m,karras,", k);
     await ev(() => { ["imgSampler", "imgScheduler"].forEach((i) => { const s = document.getElementById(i); s.value = ""; s.dispatchEvent(new Event("change")); }); const o = document.getElementById("ovrStyle"); o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); });

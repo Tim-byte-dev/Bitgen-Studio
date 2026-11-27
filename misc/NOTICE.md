@@ -382,3 +382,17 @@ software. Daz 3D's End User License Agreement covers the content: renders and an
 3D models themselves may not be shared or distributed (that needs Daz's Interactive License). Encrypted Daz Connect files
 are not read. Daz, Daz Studio, Genesis and dForce are names of Daz Productions, Inc.; bitGen's cloth is its own and is not
 dForce.
+
+## PlatoKeys + Viggle Remake nodes (3.4.0)
+
+Settings ▸ Add-ons ▸ 🔑 PlatoKeys clones [Nynxz/ComfyUI-PlatoKeys](https://github.com/Nynxz/ComfyUI-PlatoKeys)
+(Apache-2.0) into ComfyUI's custom_nodes and downloads keys from [nynxz/PlatoKeys](https://huggingface.co/nynxz/PlatoKeys)
+(Apache-2.0) and Qwen3.5-2B from [Comfy-Org/Qwen3.5](https://huggingface.co/Comfy-Org/Qwen3.5) (Apache-2.0). bitGen Studio
+adds plato_keys.Load / plato_keys.PatchCLIP (or a user's PlatosKeyPatchCLIP node) to the graphs it sends when Basic Settings ▸
+Text encoder picks an encoder (scripts/plato_keys_apply.py). Nothing of PlatoKeys is copied into bitGen.
+
+comfy_nodes/ComfyUI-Viggle-Remake is Viggle Remake's ComfyUI node pack ([Viggle/Viggle-Remake](https://huggingface.co/Viggle/Viggle-Remake),
+SPDX Apache-2.0 - the header of its nodes.py), in the copy Tim updated to work with a PlatoKeys-patched text encoder
+(tokenize_segments). It is shipped unchanged apart from that and copied into ComfyUI's custom_nodes (lib/setupPacks.js).
+Powered by Viggle Remake (https://huggingface.co/Viggle/Viggle-Remake). The Viggle Remake model weights are not shipped and are
+under their own licence (the MiniMax-H3 Community License).

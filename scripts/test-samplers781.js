@@ -48,7 +48,7 @@ const rd = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
     UI.kindOfUrl("/api/genimage") === "image" && UI.kindOfUrl("http://x:1/api/aiedit/compose?a=1") === "image" && UI.kindOfUrl("/api/generate") === "video" && UI.kindOfUrl("/api/ltx") === "video" && UI.kindOfUrl("/api/genmusic") === "" && UI.kindOfUrl("/api/generated") === "");
   check("…the header: both style's own = none; a kept pick ComfyUI no longer lists stays shown", UI.headerOf({ sampler: "", scheduler: "" }) === "" && UI.headerOf({ sampler: "euler" }) === '{"sampler":"euler","scheduler":""}' && UI.merge(["a"], "z").join() === "z,a" && UI.merge(["a"], "a").join() === "a");
   const P = rd("static/samplerset.js");
-  check("…the rows above the checkpoint / video model (above the Use model tick); only while Override style is on", /\["image", "imgSampler", "imgScheduler", "useImgModel", "imgCkptCombo"\]/.test(P) && /\["video", "vidSampler", "vidScheduler", "useVidModel", "vidModel"\]/.test(P) && /root\.ovrStyleOn\(\)/.test(P) && /<script src="\/static\/samplerset\.js">/.test(rd("static/index.html")));
+  check("…the rows above the checkpoint / video model (above the Use model tick); only while Override style is on", /\["image", "imgSampler", "imgScheduler", "useImgModel", "imgCkptCombo"(, "imgTextEnc")?\]/.test(P) && /\["video", "vidSampler", "vidScheduler", "useVidModel", "vidModel"(, "vidTextEnc")?\]/.test(P) && /root\.ovrStyleOn\(\)/.test(P) && /<script src="\/static\/samplerset\.js">/.test(rd("static/index.html")));
   check("the standard names agree (lib/samplers.js = static/samplerset.js)", JSON.stringify(S.BUILTIN) === JSON.stringify(UI.BUILTIN));
 
   const py = require("child_process").spawnSync("python3", [path.join(__dirname, "test-samplers781.py")], { encoding: "utf8" });

@@ -1672,6 +1672,9 @@
     // to 15 steps but it is still rendering 20 steps"): Override style + its Steps / CFG ride with every board ▶
     // (lib/renderSettings: ON = they beat the ⚙ and the workflow)
     var ov = document.getElementById("ovrStyle"), stp = document.getElementById("steps"), cf = document.getElementById("cfg");
+    // 3.4.0: Basic Settings ▸ Text encoder (PlatoKeys) rides with every board ▶ while picked - Override style or not
+    var W0 = typeof window !== "undefined" ? window : {}, sp0 = W0.H3Samplers && W0.H3Samplers.pick ? W0.H3Samplers.pick("video") : null;
+    if (sp0) out.text_encoder = sp0.text_encoder || "";      // "" = Style's own (clears a kept one)
     if (ov) {
       out.override = !!ov.checked;
       out.steps = stp ? parseInt(stp.value, 10) || 0 : 0;

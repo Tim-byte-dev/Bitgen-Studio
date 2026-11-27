@@ -70,6 +70,12 @@
       "provides": ["ImageDetailContrast"] },
     { "id": "orionfx", "folder": "Orion4D_FXMax", "url": "https://github.com/orion4d/Orion4D_FXMax",
       "for": "OpenJutsu 🎨 Fix colours (2.949.0): the DCTL tone mapper (MIT)",
-      "provides": ["Orion4D_FXMax_DCTLToneMapper"] }
+      "provides": ["Orion4D_FXMax_DCTLToneMapper"] },
+    { "id": "platokeys", "folder": "ComfyUI-PlatoKeys", "url": "https://github.com/Nynxz/ComfyUI-PlatoKeys",
+      "for": "Basic Settings ▸ Text encoder (3.4.0): a lighter text encoder in place of a style's own through a PlatoKeys key (Apache-2.0)",
+      "provides": ["plato_keys.Load", "plato_keys.PatchCLIP", "plato_keys.Encode", "plato_keys.Apply", "plato_keys.Compose"] },
+    { "id": "viggle_remake", "folder": "ComfyUI-Viggle-Remake", "bundled": "comfy_nodes/ComfyUI-Viggle-Remake", "url": "https://huggingface.co/Viggle/Viggle-Remake",
+      "for": "Viggle Remake on ComfyUI's MiniMax H3 - the copy bundled with bitGen, works with a PlatoKeys text encoder too (3.4.0, Apache-2.0)",
+      "provides": ["RemakeConditioning", "RemakeKeyframeUntil", "RemakeNoise", "RemakePrefix"] }
   ]
 }

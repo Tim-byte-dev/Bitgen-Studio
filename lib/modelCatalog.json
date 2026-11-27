@@ -104,6 +104,10 @@
     {
       "id": "openjutsu",
       "label": "Video - OpenJutsu swap (the ⇄ Swap dialog's OpenJutsu engine: SAM 3.1 + the DMAD 4-step LoRA; Settings ▸ Add-ons ▸ OpenJutsu swap)"
+    },
+    {
+      "id": "platokeys",
+      "label": "PlatoKeys - a lighter text encoder for a style"
     }
   ],
   "models": [
@@ -1930,6 +1934,66 @@
       "dest": "comfy/sams",
       "size": 375042383,
       "for": "OpenJutsu 🙂 Fix faces (opt-in): the face masks (Apache-2.0)"
+    },
+    {
+      "id": "pk_moss_comfy",
+      "group": "platokeys",
+      "label": "PlatoKeys key: Qwen3.5-2B -> MOSS-Image (stock ComfyUI loader)",
+      "repo": "nynxz/PlatoKeys",
+      "file": "moss_image/qwen35_2b_comfy_to_qwen35_9b_moss_ridge.safetensors",
+      "dest": "comfy/plato_keys/moss_image",
+      "size": 16803084,
+      "for": "Qwen3.5-2B in place of the MOSS-Image styles' Qwen3.5-9B (Basic Settings ▸ Text encoder)"
+    },
+    {
+      "id": "pk_moss",
+      "group": "platokeys",
+      "label": "PlatoKeys key: Qwen3.5-2B -> MOSS-Image",
+      "repo": "nynxz/PlatoKeys",
+      "file": "moss_image/qwen35_2b_to_qwen35_9b_moss_image_ridge.safetensors",
+      "dest": "comfy/plato_keys/moss_image",
+      "size": 16803436,
+      "for": "the PlatoKeys card's recommended MOSS-Image key (calibrated on the Hugging Face model)"
+    },
+    {
+      "id": "pk_krea2_2b",
+      "group": "platokeys",
+      "label": "PlatoKeys key: Qwen3.5-2B -> Krea 2",
+      "repo": "nynxz/PlatoKeys",
+      "file": "krea2/qwen35_2b_to_qwen3vl_4b_krea2_ridge.safetensors",
+      "dest": "comfy/plato_keys/krea2",
+      "size": 126052192,
+      "for": "Qwen3.5-2B in place of the Krea 2 styles' Qwen3-VL-4B"
+    },
+    {
+      "id": "pk_krea2_9b",
+      "group": "platokeys",
+      "label": "PlatoKeys key: Qwen3.5-9B -> Krea 2",
+      "repo": "nynxz/PlatoKeys",
+      "file": "krea2/qwen35_9b_to_qwen3vl_4b_krea2_ridge.safetensors",
+      "dest": "comfy/plato_keys/krea2",
+      "size": 251979624,
+      "for": "Qwen3.5-9B (a stronger encoder) in place of Krea 2's Qwen3-VL-4B"
+    },
+    {
+      "id": "pk_zimage",
+      "group": "platokeys",
+      "label": "PlatoKeys key: Qwen3-VL-4B -> Z-Image",
+      "repo": "nynxz/PlatoKeys",
+      "file": "z_image/qwen3vl_4b_to_zimage_qwen3_4b_ridge.safetensors",
+      "dest": "comfy/plato_keys/z_image",
+      "size": 13129012,
+      "for": "Qwen3-VL-4B (the Krea 2 encoder) in place of Z-Image's Qwen3-4B - one encoder for both"
+    },
+    {
+      "id": "pk_te_2b",
+      "group": "platokeys",
+      "label": "Qwen3.5-2B text encoder (bf16, Comfy-Org)",
+      "repo": "Comfy-Org/Qwen3.5",
+      "file": "text_encoders/qwen3.5_2b_bf16.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 4540000000,
+      "for": "the light encoder the PlatoKeys keys map from (Apache-2.0)"
     }
   ]
 }

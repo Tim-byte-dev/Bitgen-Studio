@@ -3566,6 +3566,11 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                 _cc.apply_sampler_pick(base, graph, say=say)
             except Exception:                   # noqa: BLE001 - never stops a render
                 pass
+            try:                                # 3.4.0: Basic Settings ▸ Text encoder (PlatoKeys) - scripts/plato_keys_apply.py
+                import plato_keys_apply
+                plato_keys_apply.apply_text_encoder(base, graph, say=say)
+            except Exception:                   # noqa: BLE001 - never stops a render
+                pass
         if _cc is not None:                    # 2.384.0: the job's metadata (seed, steps, cfg, models, loras)
             _cc.print_meta(graph)
         if _cc is not None:

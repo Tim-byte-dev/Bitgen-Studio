@@ -1,0 +1,60 @@
+{
+  "_comment": "bitGen Studio 3.4.0 - PlatoKeys (github.com/Nynxz/ComfyUI-PlatoKeys, Apache-2.0): which style text encoders a lighter encoder can stand in for, through a key in ComfyUI/models/plato_keys. Read by lib/platoKeys.js (the Basic Settings list) AND scripts/plato_keys_apply.py (the graph a render sends) - one set of rules. families: a CLIPLoader whose type is in 'types' and whose clip_name matches 'native' is that family's own encoder; a key belongs to the family when its target part (after _to_, or the whole name for a key without _to_) holds one of 'target'. skip: keys never picked (ablations). sourceType: the CLIPLoader type a key's source encoder loads as with the official PlatoKeys nodes (calibrate_comfy.py's default --source-clip-type is qwen_image); a family's own type is kept for a key the PlatosKeyPatchCLIP node uses.",
+  "families": [
+    {
+      "id": "h3",
+      "label": "MiniMax H3",
+      "types": [
+        "minimax"
+      ],
+      "native": "minimax_h3",
+      "target": [
+        "minimax_h3"
+      ]
+    },
+    {
+      "id": "moss",
+      "label": "MOSS-Image",
+      "types": [
+        "moss_image"
+      ],
+      "native": "qwen3\\.?5_9b",
+      "target": [
+        "qwen35_9b_moss"
+      ]
+    },
+    {
+      "id": "krea2",
+      "label": "Krea 2",
+      "types": [
+        "krea2"
+      ],
+      "native": "qwen3vl_4b",
+      "target": [
+        "qwen3vl_4b_krea2"
+      ]
+    },
+    {
+      "id": "zimage",
+      "label": "Z-Image",
+      "types": [
+        "lumina2"
+      ],
+      "native": "qwen_?3_4b",
+      "target": [
+        "zimage_qwen3_4b"
+      ]
+    }
+  ],
+  "skip": "procrustes|_norm(?![a-z])|pca\\d|(^|[\\\\/])ablations[\\\\/]|_metrics",
+  "sourceType": {
+    "qwen": "qwen_image"
+  },
+  "patch": {
+    "contrast": 1.0,
+    "scale_multiplier": 1.0,
+    "norm_match": "off",
+    "honor_key_template": true,
+    "honor_key_layer": true
+  }
+}

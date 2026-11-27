@@ -163,6 +163,7 @@ function mount(app) {
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
   app.use(require("../lib/samplers").middleware);
   require("../lib/samplers").mount(app);
+  require("./platoKeys").mount(app);   // 3.4.0: Basic Settings ▸ Text encoder - GET /api/platokeys (lib/platoKeys.js)
   require("./remoteLlm").mount(app);
   require("./llmRepos").mount(app);   // 2.782.0: your LLMs from Hugging Face for your pod (lib/llmRepos.js)
   // 2.769.1: pods bitGen made that were never set up are watched again after a restart (lib/podMade.js)

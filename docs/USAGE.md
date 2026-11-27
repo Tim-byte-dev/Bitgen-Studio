@@ -4106,6 +4106,13 @@ and the install log appears in the tab. One install runs at a time.
   `hf_xet` into the app's own Python and every add-on's Python environment already here (huggingface_hub itself is left as
   each add-on pinned it); add-ons installed afterwards get it on their own. A gated model still needs your Hugging Face
   token.
+- **🔑 PlatoKeys - a lighter text encoder for a style (3.4.0)** - second in the list. What **Basic Settings ▸ Text encoder**
+  needs in ComfyUI: the PlatoKeys nodes (github.com/Nynxz/ComfyUI-PlatoKeys), bitGen's updated **Viggle Remake** nodes (an
+  older copy in custom_nodes is refreshed - they work with a PlatoKeys encoder), **Qwen3.5-2B** (4.5 GB) and the keys you
+  tick from huggingface.co/nynxz/PlatoKeys (2B → MOSS-Image, 2B → Krea 2; optional 9B → Krea 2, Qwen3-VL-4B → Z-Image) into
+  ComfyUI/models/plato_keys. There is no public key for MiniMax H3: a key of your own (e.g.
+  `minimax_h3_32b_pk_ridge_qwen3.5_2b.safetensors`) in models/plato_keys is found by its name and used through the
+  PlatosKeyPatchCLIP node your H3 PlatoKeys workflows use. Restart ComfyUI after installing. Apache-2.0.
 - **YuE2 music**: the "YuE2" style in the Music docker (songs from lyrics plus a style caption).
   - ⤓ Install makes its own Python environment in the app's `yue2` folder.
   - It then installs PyTorch 2.10 with CUDA for your card and the pinned YuE2 pipeline (yue2-infer 0.1.6), about 5 GB.
@@ -9709,6 +9716,22 @@ A render waiting for a pod opens ＋ Create pod, filled in for its style.
 **A pod that never starts.** On a new pod's first start bitGen watches it for signs of life: RunPod's state, its container, its Jupyter, its ComfyUI and the install lines. If nothing changes for 5 minutes, the pod looks faulty: bitGen terminates it and makes a new one the same way (the same GPU, disks, template and styles; the renders waiting for it move over). It tries this twice at most, then leaves it for you. Once a pod has installed and run, only ⏹ Terminate ends it.
 
 A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel) is now waited for instead of failing the render.
+
+## Basic Settings ▸ Text encoder - a lighter encoder for a style (3.4.0)
+
+Under **Sampler / Scheduler** (pictures and video each) is **Text encoder**. **— Style's own —** (the top choice) leaves the
+workflow as it is. The other choices are the text encoders your ComfyUI has that a **PlatoKeys** key maps onto a style, each
+with the styles it works for - for example `qwen3.5_2b_bf16.safetensors → MiniMax H3, MOSS-Image, Krea 2`.
+
+- Pick one and every render of that kind uses it, **Override style on or off**: a MiniMax H3, MOSS-Image, Krea 2 or Z-Image
+  style loads your encoder in place of its own and a **Patch CLIP (Plato Key)** node maps it onto what the model expects
+  (the prompts, the negative, the H3 / Viggle Remake conditioning all take it). A smaller encoder loads faster and needs
+  less VRAM (Qwen3.5-2B instead of the 9B, 4B or 32B); the prompt following is close to the style's own, not the same.
+- A style with no key for your pick keeps its own encoder - the job's log says so ("[text encoder] … its own encoder kept").
+- Settings ▸ Add-ons ▸ **🔑 PlatoKeys** installs the nodes, Qwen3.5-2B and the keys. MiniMax H3 needs a key of your own in
+  ComfyUI/models/plato_keys (none is public). The list is empty (with a note saying why) until ComfyUI answers and has the
+  nodes and a key.
+- Your pick is kept for next time (and with each style, like the other Basic Settings), and the StoryBoard's renders keep it.
 
 ## A new pod's first start takes time; models on a newer ComfyUI (2.781.1)
 
