@@ -49,9 +49,10 @@
       place: c.place && typeof c.place === "object" ? { x: +c.place.x || 0, y: +c.place.y || 0, rot: +c.place.rot || 0 } : { x: 0, y: 0, rot: 0 },
       pose: c.pose && typeof c.pose === "object" ? Object.fromEntries(Object.entries(c.pose).filter(([, r]) => r && typeof r === "object").map(([k, r]) => [k, { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }])) : {},
       custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "",
+      fromRefs: (Array.isArray(c.fromRefs) ? c.fromRefs : []).filter((r) => r && typeof r === "object").slice(0, 4).map((r) => ({ url: typeof r.url === "string" && !/^data:/.test(r.url) ? r.url.slice(0, 400) : "", name: typeof r.name === "string" ? r.name.slice(0, 200) : "" })),   // 3.0.0: kept over a reload (2.999.0's 👤)
       // 2.985.0: a pose preset's hips move + the whole figure's turn / move (kept - a sitting pose stays seated after a reload), the pieces hidden, the build's warnings
       hips: v3(c.hips), figPose: { rot: { x: +(c.figPose && c.figPose.rot && c.figPose.rot.x) || 0, y: +(c.figPose && c.figPose.rot && c.figPose.rot.y) || 0, z: +(c.figPose && c.figPose.rot && c.figPose.rot.z) || 0 }, move: v3(c.figPose && c.figPose.move) },
-      face: c.face && typeof c.face === "object" && typeof c.face.picture === "string" ? { picture: c.face.picture, where: typeof c.face.where === "string" ? c.face.where : "" } : null,   // 2.988.0: 🙂 the head's photo
+      face: c.face && typeof c.face === "object" && typeof c.face.picture === "string" ? Object.assign({ picture: c.face.picture, where: typeof c.face.where === "string" ? c.face.where : "" }, c.face.head === false ? { head: false } : {}) : null,   // 2.988.0: 🙂 the head's photo (3.0.0: head false = a 3D head made the shape)
       hidePieces: (Array.isArray(c.hidePieces) ? c.hidePieces : []).map(String).slice(0, 80), warn: (Array.isArray(c.warn) ? c.warn : []).map((w) => String(w).slice(0, 300)).slice(0, 6) }));
     return { chars, sel: chars.some((c) => c.id === s.sel) ? s.sel : (chars[0] ? chars[0].id : "") };
   }
@@ -168,7 +169,7 @@
       + '<label class="dzrow">Way <select id="dzRoute">' + Object.entries(ROUTES).map(([k, v]) => '<option value="' + k + '">' + k + " - " + v + "</option>").join("") + "</select></label>"
       + '<label class="dzrow" title="Optional - the person\'s real height makes the fit exact in size">Height <input type="number" id="dzHeight" min="50" max="250" placeholder="cm"></label>'
       // 2.988.0 (Tim: "can we add head, so the character looks like our character"): the head too - its face painted on top, its width / height / chin from the face
-      + '<label class="dzrow" title="The head too: the face painted on top of the body, the head\'s width, its top and the chin shaped like the person\'s (the Vision model finds the eyes, mouth, chin, cheeks, top of the head)">🙂 Head <select id="dzHead"><option value="photo">from the photo\'s face</option><option value="close">from a close-up of the face (sharper)</option><option value="none">leave the figure\'s head</option></select></label><div id="dzHeadPick" hidden></div>'
+      + '<label class="dzrow" title="The head too: the face painted on top of the body, the head\'s width, its top and the chin shaped like the person\'s (the Vision model finds the eyes, mouth, chin, cheeks, top of the head)">🙂 Head <select id="dzHead"><option value="photo">from the photo\'s face</option><option value="close">from a close-up of the face (sharper)</option><option value="scan3d" title="3.0.0: the close-up (or the photo) made into a 3D shape by the 3D engine and the figure\'s HEAD wrapped onto it - its real shape, not just its proportions; the face painted on top">a 3D head from the close-up (closer - the 3D engine)</option><option value="none">leave the figure\'s head</option></select></label><div id="dzHeadPick" hidden></div>'
       + '<label class="dzrow">Paint <select id="dzPaint"><option value="body">the photo into the whole body\'s textures</option><option value="face">the face only</option><option value="none">nothing (shape only)</option></select></label>'
       + '<div id="dzBOpts" hidden><label class="dzrow">3D engine <select id="dzEngine"><option value="auto">auto</option><option value="hunyuan">Hunyuan3D 2.1</option><option value="trellis">TRELLIS.2</option></select></label><label><input type="checkbox" id="dzTurn"> the scan faces away (turn it)</label></div>'
       + '<div class="hint">Light, not exact: a standing person, head to feet, facing the camera; loose clothing reads as body. The photo\'s clothes are painted too.</div>'
@@ -262,8 +263,8 @@
     // 2.981.0: 📷 a body from a photo
     $("dzPhoto").addEventListener("toggle", () => { if ($("dzPhoto").open && !st.pick && root.H3PicPick) st.pick = root.H3PicPick.mount($("dzPhotoPick"), { title: "The photo (a person standing, head to feet)", onPick: (it) => { st.photo = it; say("📷 " + it.name + " - ▶ Try it"); } }); });
     $("dzHead").value = LS.get("head", "photo");
-    $("dzHead").onchange = () => { LS.set("head", $("dzHead").value); $("dzHeadPick").hidden = $("dzHead").value !== "close"; if ($("dzHead").value === "close" && !st.headPick && root.H3PicPick) st.headPick = root.H3PicPick.mount($("dzHeadPick"), { title: "A close-up of the face (looking at the camera)", onPick: (it) => { st.headPhoto = it; say("🙂 the face: " + (it.name || "picked")); } }); };
-    $("dzHeadPick").hidden = $("dzHead").value !== "close";
+    $("dzHead").onchange = () => { LS.set("head", $("dzHead").value); $("dzHeadPick").hidden = !/^(close|scan3d)$/.test($("dzHead").value); if (/^(close|scan3d)$/.test($("dzHead").value) && !st.headPick && root.H3PicPick) st.headPick = root.H3PicPick.mount($("dzHeadPick"), { title: "A close-up of the face (looking at the camera)", onPick: (it) => { st.headPhoto = it; say("🙂 the face: " + (it.name || "picked")); } }); };
+    $("dzHeadPick").hidden = !/^(close|scan3d)$/.test($("dzHead").value);
     $("dzBackOn").onchange = () => { $("dzBackPick").hidden = !$("dzBackOn").checked; if ($("dzBackOn").checked && !st.backPick && root.H3PicPick) st.backPick = root.H3PicPick.mount($("dzBackPick"), { title: "The back photo", onPick: (it) => { st.back = it; } }); };
     $("dzRoute").onchange = () => { $("dzBOpts").hidden = $("dzRoute").value !== "B"; LS.set("route", $("dzRoute").value); };
     $("dzRoute").value = LS.get("route", "A") === "B" ? "B" : "A"; $("dzBOpts").hidden = $("dzRoute").value !== "B";
@@ -382,7 +383,7 @@
     try {
       const j = await jpost("/api/dazlib/build", { root: c.fig.root, rel: c.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })),
         wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim(),
-        custom: c.custom || [], paint: c.paint || null, face: c.face && c.face.picture ? { picture: c.face.picture, where: c.face.where } : null });
+        custom: c.custom || [], paint: c.paint || null, face: c.face && c.face.picture ? { picture: c.face.picture, where: c.face.where, head: c.face.head !== false } : null });
       c.last = j.model; c.inScene = true; c.warn = (j.info.warnings || []).slice(0, 6); keep();
       const mu = j.info.muscles || {};
       try { if (sceneV() && root.H3DazScene) { await root.H3DazScene.put(c); root.H3DazScene.select(c.id); } } catch (e) { say("⚠ " + e.message); }
@@ -393,6 +394,15 @@
   }
   /* ---------------- 📷 a body from a photo: A fit the dials / B scan + wrap (lib/dazBodyFit.js) - each try = a new character */
   const sleep = (ms) => new Promise((r) => root.setTimeout(r, ms));
+  /** a 3D-engine job followed to its end (3.0.0: shared by 📷 B and the 🙂 3D head) */
+  async function waitScan(job, what) {
+    for (let t = 0; ; t++) {
+      let j = null; try { j = await jget("/api/jobs/" + encodeURIComponent(job)); } catch (e) { j = null; }
+      if (j && j.status === "done") return j;
+      if (j && /failed|cancel/.test(j.status)) throw new Error("the 3D shape did not come (the job " + job + " " + j.status + (j.error ? ": " + j.error : "") + ")");
+      say(what + " (" + ((j && j.status) || "queued") + ", " + t * 2 + " s)…"); await sleep(2000);
+    }
+  }
   async function tryIt(route) {
     const base = cur(); if (!base) { say("pick a character first - its figure is the one shaped (click a figure in the 📚 DAZ Library)"); return; }
     if (!st.photo) { say("📷 pick the photo first (🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder, 📄 a file)"); return; }
@@ -433,8 +443,17 @@
       st.scene.chars.push(c); st.scene.sel = c.id; keep(); st.busy = false; tree(); dialsLoad(); list();
       // 2.988.0: 🙂 the head - the photo's face (or a close-up): its face painted on top, its head shaped (dazFace)
       const head = $("dzHead").value;
-      if (head === "close" && !st.headPhoto) say("🙂 no close-up picked - the head from the photo's face");
-      c.face = head === "none" ? null : await (async () => { const hp = head === "close" && st.headPhoto ? await PP.toProject(st.headPhoto) : ph; return { picture: hp.name, where: hp.where }; })();
+      if (/^(close|scan3d)$/.test(head) && !st.headPhoto) say("🙂 no close-up picked - the head from the photo's face");
+      c.face = head === "none" ? null : await (async () => { const hp = /^(close|scan3d)$/.test(head) && st.headPhoto ? await PP.toProject(st.headPhoto) : ph; return { picture: hp.name, where: hp.where }; })();
+      // 3.0.0: 🙂 a REAL 3D head - the close-up -> a 3D shape (the 3D engine) -> only the head wrapped onto it (lib/dazHeadFit.js)
+      if (head === "scan3d" && c.face) {
+        const hj = await jpost("/api/dazlib/body/scan", { picture: c.face.picture, where: c.face.where, engine: $("dzEngine").value, name: base.name + " head" });
+        await waitScan(hj.job, "🙂 making the 3D head from the close-up");
+        say("🙂 wrapping " + c.name + "'s head onto the 3D head…");
+        const hw = await jpost("/api/dazlib/head/wrap", { root: base.fig.root, rel: base.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })), scan: hj.model, custom: c.custom || [], name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim() + " head" });
+        c.custom = (c.custom || []).concat([hw.custom]); c.face.head = false;   // the 3D head IS the shape - the face step only paints
+        report += " · 🙂 3D head: " + hw.moved_vertices + " vertices moved (your morph \"" + hw.custom + "\")";
+      }
       if (c.face && c.paint && c.paint.mode === "face") c.paint = null;          // the head step does the face
       keep();
       say("📷 " + report + (c.face ? " + 🙂 the head" : "") + " - building…");
@@ -464,7 +483,7 @@
     const keepPick = { photo: st.photo, headPhoto: st.headPhoto };
     const pic = (r, i) => ({ url: r.url, name: refName(r) || "reference_" + i + ".png" });
     st.photo = pic(pr.body, 1); st.headPhoto = pr.face ? pic(pr.face, 2) : null;
-    $("dzHead").value = pr.face ? "close" : "photo"; $("dzPaint").value = "body"; $("dzBackOn").checked = false;
+    $("dzHead").value = pr.face ? (route === "B" ? "scan3d" : "close") : "photo"; $("dzPaint").value = "body"; $("dzBackOn").checked = false;   // 3.0.0: B = the 3D head too
     const before = st.scene.chars.length;
     try { await tryIt(route === "B" ? "B" : "A"); }
     finally { ids.forEach((k) => { const e = $(k); if (e && k in was) { if (e.type === "checkbox") e.checked = was[k]; else e.value = was[k]; } }); st.photo = keepPick.photo; st.headPhoto = keepPick.headPhoto; }

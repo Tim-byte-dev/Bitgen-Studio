@@ -68,7 +68,7 @@ function mount(app) {
         let lm = b.face.landmarks || null;
         if (!lm) { const t = (await require("../lib/captioner").describe(core, [{ path: pic, prompt: FACE_PROMPT, max_tokens: 300 }]))[0]; lm = require("../lib/dazFace").parseLandmarks(t); }
         if (!lm) return res.status(422).json({ error: "the Vision model found no face in that photo (is a Vision model chosen in the prompt docker?)" });
-        face = { photo: pic, landmarks: lm };
+        face = { photo: pic, landmarks: lm, head: b.face.head !== false };   // 3.0.0: head false = a 3D head made the shape - paint only
       }
       // 2.981.0: 📷 paint {mode "photo" | "face", photos [{picture, where, points, side}]} | {mode "scan", scan, align}; custom = the project's own morphs
       let paint = null; const pt = b.paint || null;

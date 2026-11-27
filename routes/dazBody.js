@@ -101,6 +101,25 @@ function mount(app) {
     const b = req.body || {};
     try { const pic = picture(b.picture, b.where), j = require("../lib/to3d").queue(pic, { engine: b.engine, model_name: BF.safeName((b.name || "body") + "_scan").replace(/ /g, "_") }); res.json({ job: j.id, model: j.model }); } catch (e) { fail(res, e); }
   });
+  // 3.0.0: 🙂 a REAL 3D head - the figure's head (only) wrapped onto a 3D scan of a face close-up (lib/dazHeadFit.js); the
+  // character's other custom morphs (📷 B's body wrap) are in the base first, so the two add up
+  app.post("/api/dazlib/head/wrap", J, (req, res) => {
+    const b = req.body || {};
+    try {
+      const HF = require("../lib/dazHeadFit"), { fig, set } = figureOf(b), f = path.join(require("../lib/m3d").dir(), path.basename(String(b.scan || "")));
+      if (!b.scan || !fs.existsSync(f)) throw bad("the head scan is not in the project's 3D models: " + b.scan, 404);
+      const scan = BF.readGlbMesh(fs.readFileSync(f)); if (!scan.tris.length) throw bad("the head scan has no triangles");
+      const body = shaped(fig, set), n = body.pos.length / 3;
+      for (const nm of Array.isArray(b.custom) ? b.custom : []) { const m = BF.readMorph(nm); if (m && m.vertices === n) for (const d of m.deltas || []) for (let k = 0; k < 3; k++) body.pos[d[0] * 3 + k] += d[k + 1] * D.CM; }
+      const mask = HF.maskOf(fig, n, body.tris), box = HF.headBox(body.pos, mask);
+      if (!box) throw bad("this figure's head could not be found from its bones (no head bone weights)");
+      const align = HF.alignHead(scan.pos, box, !!b.turn), sp = BF.applyAlign(scan.pos, align);
+      const r = HF.wrapHead({ pos: body.pos, tris: body.tris, mask, scan: { pos: sp, tris: scan.tris } });
+      const deltas = []; for (let i = 0; i < n; i++) { const d = [0, 1, 2].map((k) => (r.pos[i * 3 + k] - body.pos[i * 3 + k]) / D.CM); if (Math.hypot(d[0], d[1], d[2]) > 0.02) deltas.push([i, +d[0].toFixed(3), +d[1].toFixed(3), +d[2].toFixed(3)]); }
+      const name = BF.saveMorph(b.name || "head", { figure: b.rel, vertices: n, deltas, scan: path.basename(f), align, head: true, made: Date.now() });
+      res.json({ custom: name, moved_mm: +(r.moved * 1000).toFixed(1), moved_vertices: deltas.length, head_vertices: box.n, vertices: n, align, scan: path.basename(f) });
+    } catch (e) { fail(res, e); }
+  });
   app.post("/api/dazlib/body/wrap", J, (req, res) => {
     const b = req.body || {};
     try {

@@ -36,7 +36,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const want = { BodyWide: 0.6, LegsLength: 0.4, ArmsLength: 0.3, CTRLHeight: 0.5 }, mk = BF.marks(fig, posOf({}), 1), tp = BF.measure(mk.sets, posOf(want));
   const points = Object.fromEntries(Object.entries(tp).map(([k, q]) => [k, [(300 + q[0] * 2.8) / 600 * 1000, (1160 - q[1] * 2.8) / 1200 * 1000]]));
   // the scan: the doll wider (BodyWide 0.9), in metres x 1.7, with UVs + a blue picture
-  const sc = posOf({ BodyWide: 0.9 }), d0 = doll(), T3 = []; for (const q of d0.p) { const vs = q.slice(2); T3.push(vs[0], vs[1], vs[2], vs[0], vs[2], vs[3]); }
+  const sc = posOf({ BodyWide: 0.9, FaceNose: 1 }) /* 3.0.0: + a nose - the head scan differs from the head */, d0 = doll(), T3 = []; for (const q of d0.p) { const vs = q.slice(2); T3.push(vs[0], vs[1], vs[2], vs[0], vs[2], vs[3]); }
   const pos = Float32Array.from(sc, (x) => x * 0.017), idx = Uint32Array.from(T3), uv = new Float32Array(pos.length / 3 * 2).fill(0.5), png = fs.readFileSync(stex);
   const pad = (b) => Buffer.concat([b, Buffer.alloc((4 - (b.length % 4)) % 4)]), parts = [pad(Buffer.from(pos.buffer)), pad(Buffer.from(idx.buffer)), pad(Buffer.from(uv.buffer)), pad(png)];
   let off = 0; const views = parts.map((b, i) => { const v = { buffer: 0, byteOffset: off, byteLength: [pos.byteLength, idx.byteLength, uv.byteLength, png.length][i] }; off += b.length; return v; });
@@ -89,6 +89,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     // ✨ Photo: the references the 👤 character carries stay out of step 1
     const ra = await ev(() => { const R = H3SketcherReal, t = R.refTiles(refs), f = R.refsForAngle(R.plan("", false, t).subject, 10, H3DazTools.carried()), p0 = R.plan("", false, t); p0.carriedOut = f.carriedOut; p0.faceOut = []; return { keep: f.keep.length, out: f.carriedOut.length, use: R.refUse(p0, t) }; });
     check("✨ Photo: both pictures left out of step 1 (the character carries that face), said so", ra.keep === 0 && ra.out === 2 && ra.use.every((u) => /the 👤 character in the scene was made from it/.test(u)), ra);
+    // 3.0.0: 🙂 a REAL 3D head - the doll's scan (its whole body, wider: a "bust" - the head band found above the shoulders)
+    const up = await (await p.request.post(URL_ + "api/tlcanvas/model?name=ui999_headscan.glb", { data: scanGlb, headers: { "Content-Type": "application/octet-stream" } })).json();
+    made.push(["models3d", up.name || "ui999_headscan.glb"]);
+    const hw = await (await p.request.post(URL_ + "api/dazlib/head/wrap", { data: { root: lib, rel: "People/Doll/Doll.duf", dials: [], scan: up.name || "ui999_headscan.glb", name: "ui999 head" } })).json();
+    const mf = (() => { try { const d = path.join(ROOT, "projects"); for (const pr of fs.readdirSync(d)) { const f = path.join(d, pr, "dazmorphs", hw.custom + ".json"); if (fs.existsSync(f)) return f; } } catch (e) { /* none */ } return null; })();
+    const morph = mf ? JSON.parse(fs.readFileSync(mf, "utf8")) : null; if (mf) made.push(["dazmorphs", hw.custom + ".json"]);
+    check("3.0.0 POST /api/dazlib/head/wrap on the doll: its head found from its bones, the scan's head band put on it, ONLY the head (and its neck) moved - a custom morph (head: true)",
+      hw.custom && hw.head_vertices > 0 && hw.moved_vertices > 0 && hw.moved_vertices < hw.vertices / 3 && morph && morph.head === true && morph.deltas.length === hw.moved_vertices && hw.align.s > 0, { hw, n: morph && morph.deltas.length });
+    const bad = await (await p.request.post(URL_ + "api/dazlib/head/wrap", { data: { root: lib, rel: "People/Doll/Doll.duf", scan: "nope.glb" } }));
+    check("…a scan that is not there: 404, said", bad.status() === 404 && /not in the project's 3D models/.test((await bad.json()).error));
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + e.message); }
   try { await ev(() => { refs.length = 0; Object.keys(localStorage).filter((k) => /^h3\.daztools\./.test(k)).forEach((k) => localStorage.removeItem(k)); }); } catch (e) { /* fine */ }

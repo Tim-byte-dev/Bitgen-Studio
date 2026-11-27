@@ -32,7 +32,7 @@ check("apply(): the head shaped from the cheeks / top (clamped 0.85 - 1.2) and r
 check("build(): the face / head step runs after the body paint too (was skipped), the textures merged", /baseTextures: faceInfo \? faceInfo\.textures : null/.test(dl) && /Object\.assign\(\{\}, faceInfo\.textures, fi\.textures\)/.test(dl) && !/if \(!faceInfo && s\.face && s\.face\.photo\)/.test(dl));
 check("the Vision model is asked for the cheeks and the top of the head too", /left_cheek/.test(rt) && /top_of_head/.test(rt));
 const dt = rd("ext/pushpulldock/ppdaztools.js");
-check("📷 Body from a photo: 🙂 Head (the photo's face / a close-up / leave it), kept; the try sends face {picture, where}; buildChar sends it", /id="dzHead"/.test(dt) && /value="close"/.test(dt) && /LS\.set\("head"/.test(dt) && /c\.face = head === "none" \? null/.test(dt) && /face: c\.face && c\.face\.picture \? \{ picture: c\.face\.picture, where: c\.face\.where \} : null/.test(dt));
+check("📷 Body from a photo: 🙂 Head (the photo's face / a close-up / leave it), kept; the try sends face {picture, where}; buildChar sends it", /id="dzHead"/.test(dt) && /value="close"/.test(dt) && /LS\.set\("head"/.test(dt) && /c\.face = head === "none" \? null/.test(dt) && /face: c\.face && c\.face\.picture \? \{ picture: c\.face\.picture, where: c\.face\.where(, head: c\.face\.head !== false)? \} : null/.test(dt));
 const DT = require(path.join(ROOT, "ext/pushpulldock/ppdaztools.js"));
 check("cleanScene keeps the head's photo", DT.cleanScene({ chars: [{ id: "a", fig: { rel: "x.duf" }, face: { picture: "me.png", where: "images" } }] }).chars[0].face.picture === "me.png" && DT.cleanScene({ chars: [{ id: "b", fig: { rel: "y.duf" }, face: { picture: 5 } }] }).chars[0].face === null);
 

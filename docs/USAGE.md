@@ -1391,6 +1391,11 @@ one you don't keep.
   person's (a little - 85 % to 120 %), and the face is painted on top of the body's painted picture. The message after the
   build says what changed ("🙂 head: width ×1.06, top ×0.97, chin ×1.02"). Light, not exact - Daz Studio's own face tools
   go much further.
+- **🙂 Head ▸ a 3D head from the close-up (3.0.0)** - the head's real shape, not only its proportions: the close-up (or the
+  photo) is made into a 3D shape by the 3D engine (Hunyuan3D 2.1 / TRELLIS.2, as 📷 B), that shape is put on the figure's
+  head (its top on the head's top, its nose on the face's front - a bust scan's shoulders are left out) and only the head
+  is pulled onto it - the neck blends in, the eyes, teeth and tongue never move. It is saved as one of your custom morphs,
+  like 📷 B's, and the face is painted on top. 👤 Make this person with **Shift** does this when there is a face close-up.
 
 **📏 Height & weight (2.982.0)** - in the 🧭 DAZ Explorer: type a **height** (cm) and / or a **weight** (kg), and the tape
 measurements if you have them (**chest** at the armpits, the narrowest **waist**, the widest **hips**, all round the body),

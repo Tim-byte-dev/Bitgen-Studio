@@ -15294,6 +15294,8 @@ node scripts/test-998.js > /tmp/t998.log 2>&1 && ok "2.998.0 units: the steps' p
 # ---- 2.999.0 (👤 Make this person; ✨ Photo's angle fix)
 node scripts/test-999.js > /tmp/t999.log 2>&1 && ok "2.999.0 units: faceAngle, refsForAngle (+ carried), personRefs, pickG9, makePerson wiring" || { bad "2.999.0 units"; grep -a "^FAIL" -A1 /tmp/t999.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui999-ui.js > /tmp/ui999.log 2>&1 && ok "2.999.0 browser test: 👤 the References dock's person -> a Genesis 9 character through the real fit + build; ✨ Photo leaves it out" || { bad "2.999.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui999.log | head -8; }
+# ---- 3.0.0 (🙂 a real 3D head from a face close-up)
+node scripts/test-3000.js > /tmp/t3000.log 2>&1 && ok "3.0.0 units: headMask, headBox, alignHead (head-only / bust), wrapHead (only the head moves), the route + 🙂 scan3d wiring" || { bad "3.0.0 units"; grep -a "^FAIL" -A1 /tmp/t3000.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui994-ui.js > /tmp/ui994.log 2>&1 && ok "2.994.0 browser test: ⛰ Depth - the first-time download box (non-commercial), the job, the bent spheres, stepping round, VR stereo" || { bad "2.994.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui994.log | head -8; }
 
 say "======================="

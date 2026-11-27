@@ -1412,6 +1412,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **アドオンが必要な Python を自分で用意** — 🦴 Rig it（UniRig：Python 3.11 のみ）、⛰ Panorama depth と 👗 Garment designer（3.10 - 3.12）は、合えばアプリの Python を使い、合わなければこのパソコンにある別の合う Python（py ランチャー、通常のフォルダー）を探し、それもなければアプリの runtime フォルダーに uv を入れてその Python をそこにダウンロードします。どれもだめなときだけ、直し方を示してインストールを止めます。*場所：* Settings ▸ Add-ons ▸ Install。*バージョン：* 2.997.0
 - **✨ Photo：ギャラリーには完成写真だけ** — 各ステップの画像（ステップ 1、ステップ 2、やり直し）は写真の完成時にギャラリーから外し、完成写真をギャラリーと Image assets に入れます。*場所：* Sketcher ▸ ✨ Photo、プロンプトドッカー ▸ ✏ Edit (Sketcher)。*バージョン：* 2.998.0
 - **👤 Make this person と ✨ Photo の角度対策** — References ドックの 👤 で、person（体）の参照画像と顔のクローズアップから Genesis 9 キャラクターを Sketcher に作ります（ダイヤル合わせ、Shift でスキャン＋ラップ）。✨ Photo はその画像を使わなくなります（頭がすでにその顔）。カメラから見た顔の角度が正面から 40° を超えるときも顔の参照画像を外します。*場所：* References ドック ▸ 👤、Sketcher ▸ ✨ Photo。*バージョン：* 2.999.0
+- **🙂 顔のクローズアップから本物の 3D の頭** — 🙂 Head ▸「クローズアップから 3D の頭」：3D エンジンがクローズアップを 3D 形状にし、フィギュアの頭に合わせて頭だけをそれに沿わせます（首はなじませ、目・歯・舌は動かさない）- カスタムモーフとして保存し、顔はその上に描きます。👤 Make this person を Shift で使うとこれになります。*場所：* 🧭 DAZ Explorer ▸ 📷 Body from a photo ▸ 🙂 Head、References ▸ 👤（Shift）。*バージョン：* 3.0.0
 
 ### レーザー加工
 

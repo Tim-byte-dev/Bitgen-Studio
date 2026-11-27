@@ -1412,6 +1412,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **附加元件自己準備所需的 Python** — 🦴 Rig it（UniRig：僅限 Python 3.11）、⛰ Panorama depth 和 👗 Garment designer（3.10 - 3.12）在應用程式自帶的 Python 合適時直接使用；否則尋找本機上其他合適的 Python（py 啟動器、常見安裝資料夾）；再沒有就把 uv 裝進應用程式的 runtime 資料夾，由它把該版本 Python 下載到那裡。只有全部失敗時才停止安裝，並說明如何解決。*位置：* Settings ▸ Add-ons ▸ Install。*版本：* 2.997.0
 - **✨ Photo：圖庫只顯示最終照片** — 各步驟自己的圖片（第 1 步、第 2 步、重試）在照片完成後移出圖庫；最終照片放入圖庫和 Image assets。*位置：* Sketcher ▸ ✨ Photo；提示詞面板 ▸ ✏ Edit (Sketcher)。*版本：* 2.998.0
 - **👤 Make this person 與 ✨ Photo 的角度修正** — References 面板中的 👤 把類型為 person（身體）的參考圖和臉部特寫做成 Sketcher 中的 Genesis 9 角色（擬合參數，或 Shift = 掃描＋包覆），之後 ✨ Photo 不再傳送這些圖片（頭部已帶有那張臉）；當相機看到角色臉部偏離正面超過 40° 時，也會不傳送臉部參考圖。*位置：* References 面板 ▸ 👤；Sketcher ▸ ✨ Photo。*版本：* 2.999.0
+- **🙂 用臉部特寫做出真正的 3D 頭部** — 🙂 Head ▸「用特寫做 3D 頭部」：3D 引擎把特寫變成 3D 形狀，放到角色頭上，只讓頭部貼合它（頸部過渡，眼睛/牙齒/舌頭不動）——儲存為自訂形變，臉部再繪製上去。按 Shift 使用 👤 Make this person 時會用這個。*位置：* 🧭 DAZ Explorer ▸ 📷 Body from a photo ▸ 🙂 Head；References ▸ 👤（Shift）。*版本：* 3.0.0
 
 ### 雷射切割和雕刻
 
