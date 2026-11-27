@@ -649,6 +649,11 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**The prompt's place replaces the empty background (2.990.0)** - with words in the prompt ("a woman standing in a park"),
+picture 1 is drawn on a flat grey with no sky or ground, and the edit model is told the grey is empty space to fill with the
+place your prompt describes - its ground, its surroundings, its sky (before, it kept the plain background). A backdrop or
+360° sky you set in the Sketcher stays as it is.
+
 **The prompt is followed in full (2.989.0)** - with words in the prompt docker, ✨ Photo and ✏ Edit (Sketcher) no longer tell
 the edit model to "add nothing else": the place, the setting, the time of day, the weather and any other people, animals or
 things your prompt names are added around the model, which keeps its shapes and camera angle. With no words: the scene

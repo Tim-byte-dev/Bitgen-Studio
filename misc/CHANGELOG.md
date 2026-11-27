@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.990.0** — ✨ Photo Puts the Prompt's Place Round the Model (the Empty Background Filled, Not Kept White)
 - **2.989.0** — ✨ Photo and ✏ Edit (Sketcher) Follow the Whole Prompt (Location, Setting, Other People); → Image Editor With a Transparent Background
 - **2.988.0** — 🙂 a Head Like the Person's for a DAZ Character From a Photo (Its Width, Top and Chin; the Face Painted Over the Body) and the UI Size Zooming the Whole App (60 - 250 %)
 - **2.987.0** — 🌐 Panorama 3D in the Image Preview (Look Round, Zoom, 👓 VR Side by Side / Top-Bottom, Stereo Panoramas per Eye) and the Sketcher's ✨ Photo With the Prompt Docker's Reference Pictures and Prompt

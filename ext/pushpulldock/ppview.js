@@ -420,12 +420,14 @@
       // 2.989.0: a clear background = no sky / backdrop and no ground either (the model alone, for the image editor)
       const tr0 = o.transparent ? { bg: scene.background, gr: ground.visible } : null;
       if (o.transparent) { R.setClearColor(0x000000, 0); scene.background = null; ground.visible = false; }
+      const fill0 = o.fill != null ? { bg: scene.background, gr: ground.visible } : null;   // 2.990.0: a flat colour round the model (no sky / backdrop / ground)
       // 2.627.0: a PHOTO source (no lines, shadows, a daylight sky) / a DEPTH map (near = white, far = black) for the edit model
       // 2.629.0: + a NORMAL map; o.camera's depth is linear (0.3 m .. the model's size) - the House builder's shader
       const lines = [], hadSh = R.shadowMap.enabled, fit = { near: persp.near, far: persp.far };
       // 2.652.0: the model's backdrop / 360° sky (ppmatpick.js) - in the photo (fitted to the shot's shape), never in a depth / normal map
       const bg0 = scene.background; if (o.depth || o.normal) scene.background = null; else if (bg0 && V.bgFit) V.bgFit(w / h);
-      if (o.photo) { if (!hadSh) shadows(true); R.setClearColor(0xc9dcec, 1); }      // (shadows() rebuilds - the lines are hidden after it)
+      if (o.photo) { if (!hadSh) shadows(true); R.setClearColor(0xc9dcec, 1); }
+      if (fill0) { scene.background = null; ground.visible = false; R.setClearColor(o.fill, 1); }      // (shadows() rebuilds - the lines are hidden after it)
       if (o.photo || o.depth || o.normal) scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
       const { c: bc, r: br } = fitBox();
       if (o.depth) {
@@ -442,6 +444,7 @@
       if (o.normal) { ground.visible = false; scene.overrideMaterial = new T.MeshNormalMaterial({ side: T.DoubleSide }); R.setClearColor(0x8080ff, 1); }
       R.render(scene, C);
       if (tr0) { scene.background = tr0.bg; ground.visible = tr0.gr; }
+      if (fill0) { scene.background = fill0.bg; ground.visible = fill0.gr; }
       if (o.depth || o.normal) { scene.overrideMaterial = null; persp.near = fit.near; persp.far = fit.far; persp.updateProjectionMatrix(); ground.visible = R.shadowMap.enabled; }
       if (o.photo && !hadSh) shadows(false);
       scene.background = bg0; if (bg0 && V.bgFit) V.bgFit();

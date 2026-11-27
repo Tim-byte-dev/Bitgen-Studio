@@ -90,13 +90,17 @@
   /* 2.989.0 (Tim: "when photo button is pressed or edit in sketcher button in prompt docker is pressed then follow the full
      prompt, location, setting, other characters etc."): with the user's words the lead no longer says "add nothing else" -
      the model's shapes and camera stay, the PROMPT decides the place, the setting, the light, the people and things around */
+  // 2.990.0 (Tim: "woman standing in a park ... it just renders a white background not a park"): with words, picture 1 is drawn
+  // on a flat grey (no sky, no ground) and the model is told that grey is EMPTY - to be replaced by the prompt's place
+  const EMPTY = "In {img1} the flat plain grey around the 3D model is empty space, not a wall or a backdrop: replace all of it with the place the prompt describes - its ground, its surroundings and its sky - never keep a plain, grey or white background.";
+  const FILL = 0x808080;
   const FOLLOW = "Follow the prompt below in full: its location, setting, surroundings, time of day, weather, lighting, mood and any other people, animals or objects it names are added around the 3D model - the model itself keeps its shapes, layout and camera angle.";
   function promptFor(text, board, scene) {
     const t = String(text || "").trim();
     if (t && t !== DEFAULT) {
       const lead = (scene ? leadFor(scene) : LEAD).replace(" Show only what is in the render and add nothing else.", "");
       const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
-      return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + " " + FOLLOW + "\nThe prompt: " + t;
+      return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + " " + FOLLOW + (board && board.bg ? "" : " " + EMPTY) + "\nThe prompt: " + t;   // a backdrop / sky of your own stays
     }
     const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
     return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
@@ -168,7 +172,7 @@
     });
     return c;
   }
-  const api = { FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { EMPTY, FILL, FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -253,7 +257,8 @@
       const cv = V.canvas, sz = shotSize(cv.clientWidth, cv.clientHeight, 1024);
       V.setSel({ f: [], e: [], k: [] }); if (P.state.A && P.state.A.setSel) P.state.A.setSel(null);
       // 2.627.0: a CLEAN render (no outlines / grid, shadows, a daylight sky) = picture 1, its DEPTH map = picture 2
-      const c = V.shot(sz.w, sz.h, { clean: true, photo: true }), dm = V.shot(sz.w, sz.h, { clean: true, depth: true }); V.setSel(P.state.sel);
+      const words = String(text || "").trim() && String(text).trim() !== DEFAULT && !usedPictures(P.state.M.arch, P.state.M.f).bg;   // (a backdrop / sky you set stays)   // 2.990.0: words = the model on a flat grey (the place comes from the prompt)
+      const c = V.shot(sz.w, sz.h, Object.assign({ clean: true, photo: true }, words ? { fill: FILL } : {})), dm = V.shot(sz.w, sz.h, { clean: true, depth: true }); V.setSel(P.state.sel);
       const blob = await new Promise((ok) => c.toBlob(ok, "image/png")), dblob = await new Promise((ok) => dm.toBlob(ok, "image/png"));
       S.shots = { photo: c, depth: dm };
       // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3

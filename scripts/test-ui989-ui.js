@@ -28,10 +28,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const r = await ev(() => {
       const V = H3PushPull.state.V, alpha = (c) => { const t = document.createElement("canvas"); t.width = c.width; t.height = c.height; const g = t.getContext("2d"); g.drawImage(c, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data; let clear = 0, solid = 0; for (let i = 3; i < d.length; i += 4) { if (d[i] === 0) clear++; else if (d[i] === 255) solid++; } return { clear, solid, n: d.length / 4, corner: d[3] }; };
       const tr = alpha(V.shot(320, 240, { clean: true, transparent: true })), op = alpha(V.shot(320, 240, { clean: true }));
-      return { tr, op, groundAfter: V.ground.visible };
+      const fc = V.shot(320, 240, { clean: true, photo: true, fill: 0x808080 }), t2 = document.createElement("canvas"); t2.width = 320; t2.height = 240; const g2 = t2.getContext("2d"); g2.drawImage(fc, 0, 0); const k = [...g2.getImageData(2, 2, 1, 1).data].slice(0, 3);
+      return { tr, op, groundAfter: V.ground.visible, fill: k };
     });
     check("→ the image editor's picture: a TRANSPARENT background (no sky, no ground) with the model solid in it", r.tr.corner === 0 && r.tr.clear > r.tr.n * 0.4 && r.tr.solid > 500, r.tr);
     check("…the view keeps its own background and ground (put back after the shot)", r.op.corner === 255 && r.op.clear === 0 && r.groundAfter === true, r);
+    check("2.990.0 a photo with words: the model on a flat grey round it (no sky / ground) - the place comes from the prompt", r.fill.every((v) => Math.abs(v - 128) <= 3) && r.groundAfter === true, r.fill);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("ran without throwing", false, String(e && e.stack || e)); }
   await b.close();
