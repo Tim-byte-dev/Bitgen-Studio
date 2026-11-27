@@ -108,6 +108,10 @@
     {
       "id": "platokeys",
       "label": "PlatoKeys - a lighter text encoder for a style"
+    },
+    {
+      "id": "pih3",
+      "label": "Video - pi-H3 (MiniMax H3 in 2 / 4 steps; Settings ▸ Add-ons ▸ π pi-H3)"
     }
   ],
   "models": [
@@ -1994,6 +1998,48 @@
       "dest": "comfy/text_encoders",
       "size": 4540000000,
       "for": "the light encoder the PlatoKeys keys map from (Apache-2.0)"
+    },
+    {
+      "id": "pih3_dwd2",
+      "group": "pih3",
+      "label": "pi-H3 2-step DWD adapter (int8)",
+      "repo": "Lakonik/pi-H3",
+      "file": "pi_h3_2step_dwd_adapter_int8_convrot.safetensors",
+      "dest": "comfy/loras",
+      "size": 2192176240,
+      "for": "the pi-H3 (2 steps) style (MiniMax H3 Community License)"
+    },
+    {
+      "id": "pih3_dwd4",
+      "group": "pih3",
+      "label": "pi-H3 4-step DWD adapter (int8)",
+      "repo": "Lakonik/pi-H3",
+      "file": "pi_h3_4step_dwd_adapter_int8_convrot.safetensors",
+      "dest": "comfy/loras",
+      "size": 2192176240,
+      "for": "the pi-H3 (4 steps) style (MiniMax H3 Community License)"
+    },
+    {
+      "id": "pih3_dwd2_bf16",
+      "group": "pih3",
+      "label": "pi-H3 2-step DWD adapter (bf16)",
+      "repo": "Lakonik/pi-H3",
+      "file": "pi_h3_2step_dwd_adapter/diffusion_pytorch_model.safetensors",
+      "as": "pi_h3_2step_dwd_adapter.safetensors",
+      "dest": "comfy/loras",
+      "size": 3806541560,
+      "for": "the pi-H3 (2 steps) style at full precision (MiniMax H3 Community License)"
+    },
+    {
+      "id": "pih3_dwd4_bf16",
+      "group": "pih3",
+      "label": "pi-H3 4-step DWD adapter (bf16)",
+      "repo": "Lakonik/pi-H3",
+      "file": "pi_h3_4step_dwd_adapter/diffusion_pytorch_model.safetensors",
+      "as": "pi_h3_4step_dwd_adapter.safetensors",
+      "dest": "comfy/loras",
+      "size": 3806541560,
+      "for": "the pi-H3 (4 steps) style at full precision (MiniMax H3 Community License)"
     }
   ]
 }

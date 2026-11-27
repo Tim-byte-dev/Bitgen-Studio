@@ -120,6 +120,14 @@ try:
 except Exception:                  # noqa: BLE001 - the shipped FastH3 Omni graph carries the recipe itself
     _f3 = None
 
+# 3.5.0 (Tim: "can u add https://hanshengchen.com/blog/pi-h3/"): pi-H3 - H3 in 2 / 4 steps with a DWD adapter (no VAE
+# decode); its sparse attention swapped for the best this ComfyUI has (Spark-Attn > Kijai's Sol-Attn > built-in) -
+# scripts/pih3.py
+try:
+    import pih3 as _pi
+except Exception:                  # noqa: BLE001 - the shipped pi-H3 graphs render with their built-in attention
+    _pi = None
+
 # 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax"): 16 GB mode - DENO's R2V Turbo 8+2 recipe
 # (text encoder unload, 8-step pass, latent upscale + 2 refine steps with sparse attention) on any native H3 render -
 # scripts/h3_16gb.py; engine.comfy.vram16 {mode off | on | auto, scale, turbo}.
@@ -3415,7 +3423,19 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
             elif float(cfg_val or 1) > 1:
                 say(f"[comfy] FastH3: cfg {cfg_val} -> 1 (the model is distilled with guidance built in)")
                 cfg_val = 1.0
-        if not rp:                             # 2.708.0: 16 GB mode (Settings ▸ ComfyUI ▸ 16 GB mode)
+        is_pi = _pi is not None and _pi.detect(g)
+        if is_pi:                              # 3.5.0: pi-H3 - its attention, cfg 1 (distilled), no 16 GB mode
+            try:
+                att = str((((cfg.get("engine") or {}).get("comfy") or {}).get("pih3_attention")) or "auto")
+                g, pinotes = _pi.apply(g, _pi.info(base), attention=att)
+                for n in pinotes:
+                    say(f"[comfy] {n}")
+            except Exception as e:             # noqa: BLE001 - the graph's own attention stays
+                say(f"[comfy] pi-H3: attention check skipped ({e}) - the graph's built-in Sol-Attn renders")
+            if float(cfg_val or 1) > 1 and not cfg_kept:
+                say(f"[comfy] pi-H3: cfg {cfg_val} -> 1 (a 2 / 4-step distilled model)")
+                cfg_val = 1.0
+        if not rp and not is_pi:               # 2.708.0: 16 GB mode (Settings ▸ ComfyUI ▸ 16 GB mode); 3.5.0: not pi-H3
             o16 = _vram16_opts(base, cfg, upscale_stage=bool(params.get("upscale_stage")))
             if o16 is not None and int(params.get("steps", 0) or 0) > 0 and params.get("cfg_override") is not None:
                 o16["steps"] = int(params.get("steps"))       # 2.905.0: Override style's steps win in pass 1

@@ -302,6 +302,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **H3_Viggle 風格** — 由一段動作影片驅動動作，由一張圖片指定表演者。 *Where:* 影片風格清單。 *Since:* 2.352.0
 - **MiniMax H3 的 16 GB 模式** — 在你的 H3 渲染中使用 DENO 的 R2V Turbo 8+2 方案：取樣前解除安裝文字編碼器，第一遍以你設定的尺寸執行 8 步，然後進行潛在空間放大（×1.0-2.0），再用稀疏注意力進行 2 步精修，並保留聲音；Auto 會為顯示記憶體 16 GB 或以下的顯示卡自動開啟，ComfyUI 缺少的部分會被省略並附上說明。 *Where:* Settings > ComfyUI > 16 GB mode；所需檔案位於 Settings > Add-ons > 16 GB mode。 *Since:* 2.708.0
 - **FastH3 Omni** — 以 8 步完成 MiniMax H3 的參考圖生影片（FastVideo）：一種影片風格、一個 StoryBoard Workflow、一個負責下載的附加元件，以及在任何載入它的 H3 工作流圖上應用的配方（shift 12/3、VSA、8 步）。 *Where:* Settings ▸ Add-ons ▸ FastH3 Omni；StoryBoard ▸ Workflow ▸ FastH3 Omni。 *Since:* 2.573.0
+- **π pi-H3 — 2 / 4 步的 MiniMax H3** — pi-H3 (2 steps) / (4 steps) 影片風格：Hansheng Chen 對 H3 FL2VA 模型的蒸餾版，無需 VAE 解碼即可產生影格（DWD）—— 文字、首影格和 / 或尾影格產生帶聲音的影片；使用 ComfyUI 中最好的稀疏注意力（Spark-Attn、Kijai 的 Sol-Attn，否則內建）；缺少轉接器時下載框讓你勾選要下載的內容（2 / 4 步、int8 / bf16、Kijai 的 Sol-Attn）。*位置：* 提示詞停靠欄 ▸ 影片風格、Settings ▸ Add-ons ▸ π pi-H3。*版本：* 3.5.0
 - **SolarRenderer** — 結構影片（+ 首幀、六段式提示詞）-> 在 MiniMax H3 上以 4 步生成片段：節點包 + LoRA 作為附加元件提供，其工作流通過 ⤒ Import & check 匯入。 *Where:* Settings ▸ Add-ons ▸ SolarRenderer；Settings ▸ ComfyUI ▸ Graphs ▸ ☀ SolarRenderer。 *Since:* 2.588.0
 - **🎞 H3 Long Video（40 秒及更長）** — 一個提示詞產生一段長的 MiniMax H3 影片：第一段是場景 + 風格，之後每段一個鏡頭，每個鏡頭從上一個鏡頭的最後一格開始，因此面孔和畫面流程保持一致；Characters: 段落保持每張面孔；可選 2K 處理。 *Where:* H3 Long Video (40 s) 影片風格、StoryBoard 的 ⚙ Long video、Settings ▸ Add-ons ▸ H3 Long Video。 *Since:* 2.872.0
 

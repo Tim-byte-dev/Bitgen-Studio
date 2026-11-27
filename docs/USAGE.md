@@ -7012,6 +7012,17 @@ orange line shows where it will go - and let go.
   Override style ▸ Model) gets its recipe automatically: sigma shift 12/3, VSA sparse attention, 8 steps, cfg 1, the
   base model's turbo LoRA taken out; Sage / Spectrum / Veda are skipped (they would replace VSA). Omni is a
   reference-to-video model - First / Cont / Trans (fl2va) scenes should stay on H3's own fl2va model.
+- 3.5.0: **π pi-H3** - Hansheng Chen's (Stanford / Luma AI) distillation of MiniMax H3's FL2VA model to **2 or 4 steps**;
+  its DWD adapters make the frames at the last step, so there is no VAE decode. Text, a First frame, a Last frame or both
+  into video with sound, up to 1344 x 768. Pick the video style **pi-H3 (2 steps)** (fastest) or **pi-H3 (4 steps)** (more
+  detail). When its adapter is not there yet, Generate opens the Download box with **every item to tick**: the nodes and
+  H3's model / text encoder / VAEs are needed (locked, skipped when you have them), and you choose the adapters - 2-step,
+  4-step, int8 (2.2 GB) or full-precision bf16 (3.8 GB, used when the int8 one is not there) - and, optionally, Kijai's
+  Sol-Attn (Triton). Settings ▸ Add-ons ▸ π pi-H3 has the same list. The sparse attention is the best your ComfyUI has:
+  Spark-Attn (install the Spark-H3 release for your GPU from github.com/zechengtang/Spark-H3 yourself - the fastest),
+  then Kijai's Sol-Attn, else ComfyUI's built-in one (INT8, a little softer); the job's log says which. cfg is 1 and 16 GB
+  mode is skipped (it is already 2 / 4 steps). Needs ComfyUI 0.45 or newer, restarted after installing. The adapters are
+  under the MiniMax H3 Community License, like MiniMax H3 itself.
 - 2.574.0: **theme edit mode ▸ Text on any words** - a docker's title bar (pick it: Text shows its title, aimed at that
   docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
   given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old

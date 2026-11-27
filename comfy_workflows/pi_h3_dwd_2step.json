@@ -1,0 +1,239 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "MiniMax H3 FL2VA (int8)"
+  }
+ },
+ "2": {
+  "class_type": "Load LakonLab Adapter",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "adapter_name": "pi_h3_2step_dwd_adapter_int8_convrot.safetensors",
+   "adapter_strength": 1.0
+  },
+  "_meta": {
+   "title": "pi-H3 2-step DWD adapter"
+  }
+ },
+ "3": {
+  "class_type": "MiniMaxH3SigmaShift",
+  "inputs": {
+   "model": [
+    "2",
+    0
+   ],
+   "shift_video": 12,
+   "shift_audio": 3
+  }
+ },
+ "4": {
+  "class_type": "BlockSparseAttention",
+  "inputs": {
+   "model": [
+    "3",
+    0
+   ],
+   "selection": "sol-attn",
+   "selection.tau": 1,
+   "start_percent": 0,
+   "end_percent": 1,
+   "dense_blocks": "0, 1",
+   "min_tokens": 12288,
+   "extra_tokens": 0,
+   "sink_conditioning": "exact_kv_and_rows",
+   "verbose": false
+  },
+  "_meta": {
+   "title": "pi-H3 sparse attention (scripts/pih3.py picks the best this ComfyUI has)"
+  }
+ },
+ "5": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+   "type": "minimax",
+   "device": "default"
+  }
+ },
+ "6": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+  },
+  "_meta": {
+   "title": "H3 video VAE (encodes the first / last frame only)"
+  }
+ },
+ "7": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+  }
+ },
+ "8": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "First frame (optional)"
+  }
+ },
+ "9": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "Last frame (optional)"
+  }
+ },
+ "10": {
+  "class_type": "MiniMaxH3ImageToVideo",
+  "inputs": {
+   "prompt": "",
+   "width": 1344,
+   "height": 768,
+   "length": 124,
+   "clip": [
+    "5",
+    0
+   ],
+   "vae": [
+    "6",
+    0
+   ],
+   "first_frame": [
+    "8",
+    0
+   ],
+   "last_frame": [
+    "9",
+    0
+   ]
+  }
+ },
+ "11": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "12": {
+  "class_type": "pi-Flow Scheduler",
+  "inputs": {
+   "model": [
+    "4",
+    0
+   ],
+   "steps": 2,
+   "min_raw_t": 0.0,
+   "max_raw_t": 0.93,
+   "final_step_size_scale": 0.6
+  }
+ },
+ "13": {
+  "class_type": "BasicGuider",
+  "inputs": {
+   "model": [
+    "4",
+    0
+   ],
+   "conditioning": [
+    "10",
+    0
+   ]
+  }
+ },
+ "14": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 42
+  }
+ },
+ "15": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "14",
+    0
+   ],
+   "guider": [
+    "13",
+    0
+   ],
+   "sampler": [
+    "11",
+    0
+   ],
+   "sigmas": [
+    "12",
+    0
+   ],
+   "latent_image": [
+    "10",
+    1
+   ]
+  }
+ },
+ "16": {
+  "class_type": "DWD Decode",
+  "inputs": {
+   "samples": [
+    "15",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "DWD Decode (the frames, no VAE decoder)"
+  }
+ },
+ "17": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "15",
+    0
+   ],
+   "vae": [
+    "7",
+    0
+   ]
+  }
+ },
+ "18": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24,
+   "bit_depth": 8,
+   "images": [
+    "16",
+    0
+   ],
+   "audio": [
+    "17",
+    0
+   ]
+  }
+ },
+ "19": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "video/pi-H3-2step",
+   "format": "auto",
+   "codec": "auto",
+   "video": [
+    "18",
+    0
+   ]
+  }
+ }
+}

@@ -396,3 +396,11 @@ SPDX Apache-2.0 - the header of its nodes.py), in the copy Tim updated to work w
 (tokenize_segments). It is shipped unchanged apart from that and copied into ComfyUI's custom_nodes (lib/setupPacks.js).
 Powered by Viggle Remake (https://huggingface.co/Viggle/Viggle-Remake). The Viggle Remake model weights are not shipped and are
 under their own licence (the MiniMax-H3 Community License).
+
+## pi-H3 (3.5.0)
+
+Settings ▸ Add-ons ▸ π pi-H3 clones [Lakonik/ComfyUI-piFlow](https://github.com/Lakonik/ComfyUI-piFlow) (Apache-2.0, Hansheng
+Chen) into ComfyUI's custom_nodes and downloads the pi-H3 adapters you tick from [Lakonik/pi-H3](https://huggingface.co/Lakonik/pi-H3)
+(MiniMax H3 Community License - the same terms as MiniMax H3; not for the EU, the UK, South Korea or the USA without MiniMax's
+own licence) and, optionally, [kijai/ComfyUI-SolAttn_triton](https://github.com/kijai/ComfyUI-SolAttn_triton). The pi-H3 graphs
+(comfy_workflows/pi_h3_dwd_*.json) are bitGen's API versions of the pack's pi-H3-DWD workflow. bitGen ships no pi-H3 weights.

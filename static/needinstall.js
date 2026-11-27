@@ -15,7 +15,12 @@
  *                 run) and shows its progress bar and last log line until it is done - then the caller goes on by itself.
  *                 Cancel (or Esc, or Enter - it has the focus: a 2 GB download is never one stray key away) = false; an
  *                 install already running keeps going in the Queue.
- *   status(which) -> Promise<bool>   is it installed */
+ *   status(which) -> Promise<bool>   is it installed
+ *   3.5.0 (Tim: "can u add https://hanshengchen.com/blog/pi-h3/ , when asking the user to download, let user choose which model
+ *   to dl"): a part with choose: true lists its add-on's items (GET /api/addons) as ticks in the box - the ones it must have
+ *   ticked and locked, the ones already here marked ✓, the rest as the add-on suggests (or opts.pick) - and ⬇ Download sends
+ *   the ticked ones. ensure(which, why, opts) - opts = {pick: [item ids ticked first], ready: fn(status json) -> bool (is
+ *   what THIS render needs there - else the box opens though the add-on counts as installed)}. pickedOf(items, pick) (pure). */
 (function (root) {
   "use strict";
   var doc = root.document;
@@ -57,11 +62,24 @@
     pager: { name: "⛰ Panorama depth (PaGeR) - non-commercial use only", desc: "Finds the shape of a 360° panorama - how far away everything is, the ground, the sky - for a walk-in depth view and a stereo 360 for VR. Its model weights are CC BY-NC 4.0: for NON-COMMERCIAL use only (personal, research, education) - not for paid or commercial work.",
       hint: "about 11 GB, once: the PaGeR code (Apache-2.0), PyTorch and its packages in their own Python, its weights (~5 GB, CC BY-NC 4.0) and CLIP ViT-B-32; an NVIDIA card with 12 GB or more",
       status: "/api/panodepth", addon: "pager" },
+    // 3.5.0: π pi-H3 (Settings ▸ Add-ons ▸ π pi-H3) - the user ticks which adapters to download
+    pih3: { name: "pi-H3 (MiniMax H3 in 2 or 4 steps)", desc: "MiniMax H3 distilled to 2 or 4 steps - text, a first frame, a last frame or both into video with sound, the frames made without a VAE decode.",
+      hint: "tick what to download below - the ComfyUI-piFlow nodes, the adapter(s) you want (2.2 GB int8 / 3.8 GB bf16 each) and MiniMax H3's FL2VA model, text encoder and VAEs when you do not have them yet (~46 GB); ComfyUI 0.45 or newer, restarted once afterwards",
+      status: "/api/pih3", addon: "pih3", choose: true },
     garment: { name: "Garment designer (GarmentCode)", desc: "Makes sewing patterns - tops, hoodies, dresses, skirts, trousers - to the mannequin's or your own measurements.",
       hint: "about 150 MB: GarmentCode's pattern programs (MIT) and numpy, scipy and matplotlib in their own Python - no graphics card needed",
       status: "/api/garment", addon: "garment" },
   };
   var open = null;                                       // one box at a time: a second ask for the same part shares it
+  /** 3.5.0: which items start ticked (pure): the needed ones; of the rest, opts.pick if given, else the add-on's defaults;
+   *  an item already here is not downloaded again (unticked, shown ✓) */
+  function pickedOf(items, pick) {
+    return (items || []).filter(function (i) {
+      if (i.present) return false;
+      if (i.need) return true;
+      return Array.isArray(pick) && pick.length ? pick.indexOf(i.id) >= 0 : !!i.dflt;
+    }).map(function (i) { return i.id; });
+  }
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function log(t) { try { if (typeof root.logLine === "function") root.logLine("[install] " + t); } catch (e) { /* no console */ } }
   function css() {
@@ -81,7 +99,11 @@
       + "@media (prefers-reduced-motion: reduce){.nidlg .nibar.busy i{animation:none;width:100%;opacity:.5}}"
       + ".nidlg .niline{font-family:var(--mono);font-size:.7rem;opacity:.8;min-height:1.2em;word-break:break-all}"
       + ".nidlg .nierr{font-size:.76rem;color:#e66}"
-      + ".nidlg .rowbtns{display:flex;gap:6px;justify-content:flex-end}";
+      + ".nidlg .rowbtns{display:flex;gap:6px;justify-content:flex-end}"
+      + ".nidlg .nipick{display:flex;flex-direction:column;gap:3px;margin-top:4px;max-height:40vh;overflow:auto}"
+      + ".nidlg .nipick label{display:flex;gap:6px;align-items:flex-start;font-size:.76rem;cursor:pointer}"
+      + ".nidlg .nipick label.off{opacity:.65;cursor:default}"
+      + ".nidlg .nipick .nisub{opacity:.75;font-size:.7rem}";
     doc.head.appendChild(s);
   }
   function status(which) {
@@ -96,7 +118,8 @@
   /** queue the install and follow its job; resolves {ok, error} */
   /** 2.870.0: an add-on part - its Settings ▸ Add-ons install, followed line by line; resolves {ok, error} */
   function installAddon(P, ui) {
-    return root.fetch("/api/addons/" + encodeURIComponent(P.addon) + "/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(P.items ? { items: P.items } : {}) })   // 2.965.0: one item of an add-on
+    var items = ui && ui.items ? ui.items() : P.items;   // 3.5.0: the ticked ones (a choose part)
+    return root.fetch("/api/addons/" + encodeURIComponent(P.addon) + "/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(items ? { items: items } : {}) })   // 2.965.0: one item of an add-on
       .then(function (r) { return r.json(); })
       .then(function (j) {
         if (j.error || !j.ok) throw new Error(j.error || "the install could not be started");
@@ -141,7 +164,33 @@
         });
       });
   }
-  function ask(which, why) {
+  /** 3.5.0: the add-on's items as ticks (a choose part) -> the box's list element + items() */
+  function picker(P, opts) {
+    var box = el("div", "nipick"); box.id = "niPick";
+    var state = { list: [] };
+    root.fetch("/api/addons").then(function (r) { return r.json(); }).then(function (j) {
+      var a = ((j && j.addons) || []).find(function (x) { return x.id === P.addon; });
+      var items = (a && a.items) || [];
+      var on = pickedOf(items, opts && opts.pick);
+      items.forEach(function (i) {
+        var lb = el("label"), cb = el("input"), tx = el("span");
+        cb.type = "checkbox"; cb.value = i.id; cb.dataset.item = i.id;
+        cb.checked = on.indexOf(i.id) >= 0;
+        if (i.need || i.present) { cb.disabled = true; lb.className = "off"; }
+        tx.textContent = (i.present ? "✓ " : "") + i.label + (i.size ? " - " + i.size : "") + (i.present ? " (already here)" : i.need ? " (needed)" : "");
+        var sub = el("div", "nisub"); sub.textContent = i.for || "";
+        var col = el("span"); col.appendChild(tx); col.appendChild(sub);
+        lb.appendChild(cb); lb.appendChild(col); box.appendChild(lb);
+        state.list.push({ item: i, cb: cb });
+      });
+      if (!items.length) box.textContent = "(the add-on's list did not load - ⬇ Download installs its usual set)";
+    }).catch(function () { box.textContent = "(the add-on's list did not load - ⬇ Download installs its usual set)"; });
+    return { el: box, items: function () {
+      if (!state.list.length) return P.items || null;
+      return state.list.filter(function (x) { return x.cb.checked && !x.item.present; }).map(function (x) { return x.item.id; });
+    } };
+  }
+  function ask(which, why, opts) {
     var P = PARTS[which];
     css();
     return new Promise(function (resolve) {
@@ -153,6 +202,8 @@
       var part = el("div", "nipart"), nm = el("div", "niname"), ds = el("div", "nidoes"), sz = el("div", "nisize");
       nm.textContent = P.name; ds.textContent = P.desc; sz.textContent = "Download: " + P.hint + ".";
       part.appendChild(nm); part.appendChild(ds); part.appendChild(sz);
+      var pick = P.choose ? picker(P, opts) : null;           // 3.5.0: choose what to download
+      if (pick) part.appendChild(pick.el);
       var bar = el("div", "nibar"), fill = el("i"); bar.appendChild(fill);
       var line = el("div", "niline", ""), err = el("div", "nierr", "");
       var btns = el("div", "rowbtns");
@@ -172,6 +223,7 @@
         no.textContent = "Close";
         no.title = "Close this box - the install keeps going in the Queue";
         install(which, {
+          items: pick ? pick.items : null,
           gone: function () { return closed; },
           progress: function (pct, text) {
             if (pct != null) { bar.classList.remove("busy"); fill.style.width = Math.max(2, Math.min(100, pct)) + "%"; }
@@ -194,15 +246,17 @@
     });
   }
   function test(k, v) { try { if (root.H3TestEvent) root.H3TestEvent(k, v); } catch (e) { /* the 🧪 list */ } }
-  function ensure(which, why) {
+  function ensure(which, why, opts) {
     if (!PARTS[which]) return Promise.resolve(true);
-    return status(which).then(function (ok) {
+    var ready = opts && typeof opts.ready === "function" ? root.fetch(PARTS[which].status).then(function (r) { return r.json(); }).then(function (j) { return !!opts.ready(j || {}); }).catch(function () { return true; })
+      : status(which);
+    return ready.then(function (ok) {
       if (ok) return true;
       if (open && open.which === which) return open.p;
-      var p = ask(which, why);
+      var p = ask(which, why, opts);
       open = { which: which, p: p };
       return p;
     });
   }
-  root.H3NeedInstall = { ensure: ensure, status: status, PARTS: PARTS };
+  root.H3NeedInstall = { ensure: ensure, status: status, PARTS: PARTS, pickedOf: pickedOf };
 })(typeof window !== "undefined" ? window : globalThis);

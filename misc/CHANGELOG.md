@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.5.0** — π pi-H3: MiniMax H3 in 2 or 4 Steps (No VAE Decode) as Two Video Styles; the Download Box Lets You Tick What to Download (2 / 4-Step, int8 / bf16, Kijai's Sol-Attn); the Best Sparse Attention Your ComfyUI Has
 - **3.4.1** — 🎤 SoulX-Singer and Seed-VC Load: Their Environments Made With Python 3.10 - 3.12 (Their Pinned Packages Have No 3.13 Builds), an Old 3.13 One Made Again; transformers Kept Below 5; the Install Check Says Where It Broke
 - **3.4.0** — 🔑 Basic Settings ▸ Text Encoder: a Lighter Encoder for a Style Through PlatoKeys (Style's Own First); the PlatoKeys Add-on; Tim's Updated Viggle Remake Nodes Bundled
 - **3.3.0** — 🤗 Hugging Face Downloads First in Settings ▸ Add-ons: hf_xet in the App's Python and Every Add-on's (Faster, Resumable); New Add-ons Get It on Their Own

@@ -3637,7 +3637,8 @@
 <script src="/static/garment.js"></script>  <!-- 2.932.0: 👗 the Garment designer dialog (H3Garment, routes/garment.js) -->
 <script src="/static/h3longgen.js"></script>  <!-- 2.872.0: an H3 Long Video style -> POST /api/h3long (chained MiniMax H3 shots) -->
 <script src="/static/pan2gen.js"></script>  <!-- 2.890.0: a PAN 2 style -> POST /api/pan2 (the LLM writes its caption first) -->
-<script src="/static/longcatgen.js"></script>  <!-- 2.918.0: a LongCat Avatar style -> POST /api/longcat (the reference sound is the speech) -->
+<script src="/static/longcatgen.js"></script>
+<script src="/static/pih3gen.js"></script>  <!-- 3.5.0: a pi-H3 style asks for its adapter (tick what to download) -->  <!-- 2.918.0: a LongCat Avatar style -> POST /api/longcat (the reference sound is the speech) -->
   <!-- 2.740.0: a part not installed (demucs, Whisper) - ⬇ Download / Cancel, installed in place (H3NeedInstall) -->  <!-- 2.719.0: models not found before a render - ⬇ Download / Cancel (H3ModelsFound - lib/modelsFound.js, misc/models_found.json) -->
 <script src="/static/mmsrc.js"></script>  <!-- 2.790.0: 🧩 Model manager ☐ Local ☐ RunPod ☐ OpenRouter ☐ All + 🗑 by place (H3MmSrc - routes/mmSources.js) -->
 <script src="/static/mmor.js"></script>  <!-- 2.790.0: 🧩 Model manager ▸ ☁ OpenRouter tab, ＋ with its endpoint (H3MmOr) -->
@@ -5848,6 +5849,8 @@ async function ensureComfyReady(opts) {
 }
 
 async function submitJob(promptText) {
+  // 3.5.0: a pi-H3 style - its nodes + adapter there, else the box with what to download ticked (static/pih3gen.js)
+  if (window.H3PiH3 && H3PiH3.style() && !(await H3PiH3.ensure())) return null;
   // 2.719.0: are the files the video style loads in a model path? - not found = ⬇ Download / Cancel
   if (window.H3ModelsFound) {
     const rp0 = window.RefRoles ? RefRoles.plan(mode, refs) : { mode };
@@ -13672,7 +13675,8 @@ async function refreshVideoStyles(selectId) {
     videoStyles.forEach((st) => { st.swap = !!((vj.swap_styles || {})[st.id]); st.ltx = /^ltx-2\.[35]$/.test(String(st.arch || "")); st.ltx23 = st.arch === "ltx-2.3"; });   // 2.338.0: + LTX; 2.402.0: + LTX 2.3
     if (window.H3LongGen) H3LongGen.paint();   // 2.872.0: the 2K tick beside the select, for an H3 Long Video style
     if (window.H3Pan2Gen) H3Pan2Gen.paint();   // 2.890.0: the PAN 2 hint beside the select
-    if (window.H3LongCatGen) H3LongCatGen.paint();   // 2.918.0: the LongCat hint beside the select
+    if (window.H3LongCatGen) H3LongCatGen.paint();
+    if (window.H3PiH3) H3PiH3.paint();   // 3.5.0: the pi-H3 hint beside the select   // 2.918.0: the LongCat hint beside the select
     ltxModePaint();
   } catch { videoStyles = []; }
   const list = $("s_vslist");
