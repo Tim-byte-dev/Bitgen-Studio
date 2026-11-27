@@ -59,6 +59,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
         const m = s.match(/^\/api\/jobs\/(ui996_\d+)/); if (m) return J(window.__hold ? { status: "running" } : { status: "done", outputs: [m[1] + ".png"] });
         const mo = s.match(/^\/outputs\/(ui996_\d+)\.png/);
         if (mo) { const rec = window["__job_" + mo[1]]; return new Response(await draw(rec, window.__answer(rec)), { headers: { "Content-Type": "image/png" } }); }
+        if (s === "/api/sketcher/photo") { window.__gal = { drop: JSON.parse(o.body.get("drop")), name: o.body.get("name"), size: o.body.get("file").size }; return J({ name: "ui996_done.png", dropped: window.__gal.drop.length }); }
         if (s === "/api/passets" && o && o.method === "POST") { window.__saved.push(o.body.get("file")); return J({ name: "ui996_photo_" + window.__saved.length + ".png" }); }
         return real(u, o);
       };
@@ -88,6 +89,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       && sent[1].fill === "1" && /\nThe place and the scene: a woman standing in a park$/.test(sent[1].prompt) && !sent[1].ref0, { err, sent });
     check("…picture 1 on the flat grey; step 2's picture: the grey GREEN, the model = step 1's answer; the saved photo: the place round it, step 1's model kept",
       near(g1.pts[0], [128, 128, 128], 4) && near(g2.pts[0], [0, 255, 0], 2) && near(g2.pts[3], g1.pts[3].map((v) => Math.abs(v - 48))) && near(sv.pts[0], [16, 48, 224], 40) && near(sv.pts[2], [16, 48, 224], 40) && near(sv.pts[3], g1.pts[3].map((v) => Math.abs(v - 48))), { g1, g2, sv });
+    const gal = await ev(() => window.__gal);
+    check("2.998.0 the gallery: the finished photo sent to /api/sketcher/photo, its 2 steps' outputs dropped (only the finished one shows)", gal && gal.drop.length === 2 && gal.drop.every((n) => /^ui996_\d+\.png$/.test(n)) && gal.size > 1000 && last.gallery === "ui996_done.png" && last.steps.join() === gal.drop.join(), { gal, last: { gallery: last.gallery, steps: last.steps } });
     check("…the record: mode fill, step 1 passed its check (kept the outlines, changed), step 2 filled, no warning", last.mode === "fill" && last.ok === true && last.corr > 0.25 && last.change > 9 && last.step2 === "filled" && !last.notes.length && !/⚠/.test(last.msg), last);
 
     // ---- B: a park photo left as Type "person" -> step 1 only (the model's look), never the fill; the message says so
@@ -103,6 +106,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("step 1 came back as the reference (other outlines): sent again ALONE (no board, retryPrompt), that one kept, then the fill",
       !err && sent.length === 3 && sent[0].board && !sent[1].board && !sent[1].fill && /^Make \{img1\} a real photograph/.test(sent[1].prompt) && sent[2].fill === "1" && last.retried && last.ok && last.corr > 0.25, { sent, last });
     const sc = await px("window.__saved[0]", CORNERS), c1 = await px("window.__sent[0].crop", CORNERS);
+    check("2.998.0 …with a second try: all 3 steps' outputs dropped (the first try, the retry, the fill)", (await ev(() => window.__gal.drop.length)) === 3);
     check("…the saved photo is NOT the reference: the model from the second try in the middle, the fill round it", near(sc.pts[3], c1.pts[3].map((v) => Math.abs(v - 48))) && near(sc.pts[0], [16, 48, 224], 40), { sc, c1 });
 
     // ---- D: step 1 hands back the render (Tim's "mannequin") -> once more; still the render -> said with ⚠

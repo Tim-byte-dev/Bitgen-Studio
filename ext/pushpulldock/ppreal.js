@@ -424,13 +424,14 @@
     c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); return blobOf(c);
   }
   /** send one picture job to /api/aiedit and wait for it -> {blob, job} (throws the server's / the job's words) */
-  async function aiJob(fd, label) {
+  async function aiJob(fd, label, R) {
     const res = await root.fetch("/api/aiedit", { method: "POST", body: fd }), j = await res.json();
     if (!res.ok) { const e = new Error(j.error || "refused"); e.refused = true; throw e; }
     if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }   // it is in the queue
     const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
     const out = await waitJob(id, label);
-    return { blob: await (await root.fetch("/outputs/" + encodeURIComponent(out))).blob(), job: id };
+    if (R) (R.outs = R.outs || []).push(out);   // 2.998.0: a step's picture - taken out of the gallery when the photo is done
+    return { blob: await (await root.fetch("/outputs/" + encodeURIComponent(out))).blob(), job: id, out };
   }
   /** step 2: `base` (RGBA data) with `sel` painted GREEN, filled under a noise mask by the edit model (/api/aiedit fill_edit -
    *  the Krita AI plugin's "fill the green"); outside sel stays base's pixels exactly. o = {prompt(withRef, strict), ref (blob |
@@ -458,13 +459,13 @@
     };
     say(o.label + "…");
     let got;
-    try { got = await aiJob(form(!!o.ref, false), o.label); }
-    catch (e) { if (!(e.refused && o.ref && /picture\(s\)|takes \d|at most|reference/i.test(e.message || ""))) throw e; got = await aiJob(form(false, false), o.label); }
+    try { got = await aiJob(form(!!o.ref, false), o.label, R); }
+    catch (e) { if (!(e.refused && o.ref && /picture\(s\)|takes \d|at most|reference/i.test(e.message || ""))) throw e; got = await aiJob(form(false, false), o.label, R); }
     let f2 = await dataOf(got.blob, w, h); if (!f2) throw new Error("the filled photo could not be read");
     let left = greyLeft(f2.d.data, sel, FILL >> 16, o.greenOnly), job = got.job, again = false;
     if (left > GREY_LEFT) {
       say(tag + " the place came back " + Math.round(left * 100) + "% plain / green - filling it once more…"); again = true;
-      try { const g2 = await aiJob(form(false, true), o.label + " (again)"), f3 = await dataOf(g2.blob, w, h);
+      try { const g2 = await aiJob(form(false, true), o.label + " (again)", R), f3 = await dataOf(g2.blob, w, h);
         if (f3) { const l3 = greyLeft(f3.d.data, sel, FILL >> 16, o.greenOnly); if (l3 < left) { f2 = f3; left = l3; job = g2.job; } } }
       catch (e) { /* the first fill stays */ }
     }
@@ -534,10 +535,10 @@
     const label = tag + " step 1" + (steps > 1 ? " of 2" : "") + ": the model made real";
     say(tag + " queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")" + (uses.length ? " - " + uses.join(" · ") : "") + "…");
     let board = !!bblob, got;
-    try { got = await aiJob(form(board), label); }
+    try { got = await aiJob(form(board), label, R); }
     catch (e) {
       if (!(e.refused && bblob && /picture\(s\)|takes \d|at most/i.test(e.message || ""))) throw e;   // this edit model takes two pictures: without the board
-      board = false; got = await aiJob(form(false), label);
+      board = false; got = await aiJob(form(false), label, R);
       say(tag + " queued without the materials / references board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
     }
     const sent = c.getContext("2d").getImageData(0, 0, w, h).data;
@@ -548,7 +549,7 @@
     if (!best.ok) {   // a copied reference (other outlines) or the render back (a grey mannequin): once more, alone, short words
       retried = true;
       say(tag + (best.why === "shape" ? " the photo did not keep the model's shape (a reference copied?)" : " the photo still looks like the 3D model") + " - once more, without the references…");
-      try { best = better(best, await look(await aiJob(form(false, retryPrompt(text, p)), label + " (again)"))); } catch (e) { /* the first stays */ }
+      try { best = better(best, await look(await aiJob(form(false, retryPrompt(text, p)), label + " (again)", R))); } catch (e) { /* the first stays */ }
     }
     const notes = best.ok ? [] : [best.why === "shape" ? "step 1 did not keep the model's shape - try another edit model" : "it still looks like the 3D model - try another edit model or more words"];
     // ---- STEP 2: the place
@@ -584,11 +585,16 @@
     if (!saved || !saved.name) throw new Error((saved && saved.error) || "it could not be filed in the Image assets");
     if (typeof root.refreshAssets === "function") try { root.refreshAssets(); } catch (e) { /* fine */ }
     if (typeof root.loadPAssets === "function") try { root.loadPAssets(); } catch (e) { /* fine */ }
+    // 2.998.0: the gallery shows the FINISHED photo only - its steps' pictures out of output/ (routes/sketcherPhoto.js)
+    let gal = null;
+    try { const gf = new FormData(); gf.append("file", new File([pic], R.name, { type: "image/png" }), R.name); gf.append("name", R.name); gf.append("drop", JSON.stringify(R.outs || []));
+      gal = await (await root.fetch("/api/sketcher/photo", { method: "POST", body: gf })).json(); } catch (e) { gal = null; }
+    if (typeof root.refreshGallery === "function") try { root.refreshGallery(); } catch (e) { /* fine */ }
     const url = "/passets/images/" + encodeURIComponent(saved.name), IE = root.imageEditorInstance && root.imageEditorInstance.E;
     if (IE && shown("imageeditdock")) try { IE.load(url, "📷 " + saved.name, !!(IE.S && IE.S.w)); } catch (e) { /* fine */ }
     say(tag + (notes.length ? " ⚠ " : " ") + "a real photo of the model - in the Image assets as " + saved.name + (notes.length ? " (" + notes.join("; ") + ")" : "") + (S.runs > 1 ? " · " + (S.runs - 1) + " more being made" : ""));
     S.last = { k: R.k, asset: saved.name, url, job: best.job, fillJob: fill ? fill.job : null, mode: p.mode, step2, change: best.change, corr: best.corr, ok: best.ok, why: best.why, retried,
-      left: fill ? fill.left : null, fillAgain: !!(fill && fill.again), notes, uses };
+      left: fill ? fill.left : null, fillAgain: !!(fill && fill.again), notes, uses, gallery: gal && gal.name, steps: (R.outs || []).slice() };
     try { if (root.H3TestEvent) root.H3TestEvent("sketcher_real", saved.name); } catch (e) { /* fine */ }
     return S.last;
   }

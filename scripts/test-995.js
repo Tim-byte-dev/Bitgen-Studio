@@ -49,7 +49,7 @@ check("one way in: the ✨ Photo button and the prompt docker both call run -> c
 check("several at once: no busy lock ('still making the last one' gone), a running count on both buttons, the shots taken at the click",
   !/S\.busy/.test(PR) && !/still making the last one/.test(PR) && /S\.runs\+\+; paintBusy\(\);/.test(PR) && /S\.runs = Math\.max\(0, S\.runs - 1\)/.test(PR)
   && /"✏ Edit \(Sketcher\)" \+ \(S\.runs \? " · " \+ S\.runs \+ " making" : ""\)/.test(PR) && /"✨ Photo" \+ \(S\.runs \? " · " \+ S\.runs : ""\)/.test(PR) && /shots: \{ photo, depth, model \}/.test(PR));
-check("…each job goes in the queue (refreshJobs after every /api/aiedit), each run's own tag (📷 #n)", /async function aiJob\(fd, label\)[\s\S]{0,400}root\.refreshJobs\(\)/.test(PR) && /tag = "📷 #" \+ R\.k/.test(PR));
+check("…each job goes in the queue (refreshJobs after every /api/aiedit), each run's own tag (📷 #n)", /async function aiJob\(fd, label(, R)?\)[\s\S]{0,400}root\.refreshJobs\(\)/.test(PR) && /tag = "📷 #" \+ R\.k/.test(PR));
 check("the model's coverage from a SILHOUETTE shot (the renderer has alpha: false - a 'transparent' clear was opaque black on a real GPU)",
   /alpha: false/.test(PV) && /if \(o\.mask\) \{ ground\.visible = false; R\.setClearColor\(0x000000, 1\); scene\.overrideMaterial = new T\.MeshBasicMaterial\(\{ color: 0xffffff, side: T\.DoubleSide \}\); \}/.test(PV)
   && /if \(o\.transparent && !o\.mask\) \{[\s\S]{0,200}mask: true/.test(PV) && /d\.data\[i\] = md\[i - 3\]/.test(PV));

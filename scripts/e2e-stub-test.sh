@@ -15289,6 +15289,8 @@ node scripts/test-996.js > /tmp/t996.log 2>&1 && ok "2.996.0 units: step 1 = the
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui996-ui.js > /tmp/ui996.log 2>&1 && ok "2.996.0 browser test: ✨ Photo - the reference back / the render back retried alone, an environment = cut out onto it, a failed step said, several at once" || { bad "2.996.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui996.log | head -8; }
 # ---- 2.997.0 (an add-on's Python of the version it needs - UniRig / PaGeR / Garment designer)
 node scripts/test-997.js > /tmp/t997.log 2>&1 && ok "2.997.0 units: the app's Python, the venv there, another Python on this computer, else uv (found or installed into runtime/uv) fetches it into runtime/uv-python" || { bad "2.997.0 units"; grep -a "^FAIL" -A1 /tmp/t997.log | head -8; }
+# ---- 2.998.0 (✨ Photo: only the finished photo in the gallery)
+node scripts/test-998.js > /tmp/t998.log 2>&1 && ok "2.998.0 units: the steps' pictures moved out of output/, the finished one written there, mounted from routes/index.js" || { bad "2.998.0 units"; grep -a "^FAIL" -A1 /tmp/t998.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui994-ui.js > /tmp/ui994.log 2>&1 && ok "2.994.0 browser test: ⛰ Depth - the first-time download box (non-commercial), the job, the bent spheres, stepping round, VR stereo" || { bad "2.994.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui994.log | head -8; }
 
 say "======================="

@@ -250,6 +250,7 @@ function mount(app) {
   require("./dazLibrary").mount(app);  // 2.977.0: 📚 the Daz library read by bitGen itself (lib/dazLib.js) - not a replacement for Daz Studio
   require("./panoDepth").mount(app);   // 2.994.0: ⛰ Panorama depth - PaGeR (non-commercial weights; lib/pagerAddon.js)
   require("./dazImport").mount(app);   // 2.993.0: ⤓ Import Daz content zips into a library folder (lib/dazImport.js)
+  require("./sketcherPhoto").mount(app);   // 2.998.0: ✨ Photo - the finished picture in the gallery, its steps out of it
   require("./dazBody").mount(app);     // 2.981.0: 📷 a Daz body from a photo - A fit the dials / B scan + wrap (lib/dazBodyFit.js)
   require("./segment").mount(app);     // 2.390.0: Segment Anything (SAM + CLIPSeg) for the image editor - select / mask / layers
   require("./psd").mount(app);         // 2.390.0: the image editor's PSD files kept in the project (projects/<p>/psd)

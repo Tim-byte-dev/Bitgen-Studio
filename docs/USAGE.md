@@ -670,6 +670,8 @@ With **Select**:
   looking like the 3D render (a grey mannequin), it is made once more on its own, without the references, and the better
   one is kept. If step 2 leaves the grey, the green or a plain studio backdrop, it is filled once more. Whatever still went
   wrong is in the last message, marked ⚠ (a step that failed is never hidden behind "done").
+- **The gallery shows the finished photo only (2.998.0)** - each step's own picture is moved out of the gallery (to the
+  project's temp folder) when the photo is done; the finished one goes into the gallery and the Image assets.
 - **Press it again while one is being made**: each press takes its own picture of the view at that moment and adds its
   jobs to the queue. The buttons count them (*✨ Photo · 2*, *✏ Edit (Sketcher) · 2 making*); each message is numbered.
 
