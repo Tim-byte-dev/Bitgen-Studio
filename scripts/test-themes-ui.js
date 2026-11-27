@@ -72,7 +72,7 @@ const KEY = "chatdock+timelinedock";
     /* 3 the UI size: fonts and the whole UI, 60 - 175 %, the dock's slider in step */
     await p.fill("#s_uiscale", "150"); await p.dispatchEvent("#s_uiscale", "input"); await p.waitForTimeout(100);
     const sz = await ev(() => ({ root: getComputedStyle(document.documentElement).fontSize, dock: document.getElementById("uiscale").value, v: document.getElementById("s_uiscalev").textContent, min: document.getElementById("s_uiscale").min, max: document.getElementById("s_uiscale").max, body: getComputedStyle(document.body).fontSize }));
-    check("UI size 150 %: the root font 21 px (every rem-sized font and panel with it), the left dock's slider in step; 60 - 175 %", sz.root === "21px" && sz.dock === "150" && sz.v === "150%" && sz.min === "60" && sz.max === "175" && sz.body === "21px", sz);
+    check("UI size 150 %: the root font 21 px (every rem-sized font and panel with it), the left dock's slider in step; 60 - 250 % (2.988.0)", sz.root === "21px" && sz.dock === "150" && sz.v === "150%" && sz.min === "60" && sz.max === "250" && sz.body === "21px", sz);
     await p.click("#s_uiscalereset"); await p.waitForTimeout(100);
     check("...Reset = 100 % (14 px)", await ev(() => getComputedStyle(document.documentElement).fontSize) === "14px");
     await ev(() => document.getElementById("settings").close());

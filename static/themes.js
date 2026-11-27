@@ -72,7 +72,7 @@
     for (const k of VARS) o["--th-" + k] = o["--" + k];
     return o;
   }
-  const clampScale = (v) => Math.min(175, Math.max(60, parseInt(v, 10) || 100));
+  const clampScale = (v) => Math.min(250, Math.max(60, parseInt(v, 10) || 100));   // 2.988.0: 250 % (a projector across the room)
 
   /* ================================ the page ================================ */
   const get = (k, d) => { try { const v = root.localStorage.getItem("h3." + k); return v == null ? d : v; } catch (e) { return d; } };

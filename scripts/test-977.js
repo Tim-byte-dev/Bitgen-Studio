@@ -131,6 +131,12 @@ function makeLib(dir) {
     const bv = J2.json.bufferViews[img.bufferView], png = J2.bin.slice(bv.byteOffset, bv.byteOffset + bv.byteLength), pf = path.join(tmp, "face.png"); fs.writeFileSync(pf, png);
     const px = FC.readRgba(pf), blue = [...Array(px.w * px.h).keys()].filter((i) => px.d[i * 4 + 2] > px.d[i * 4] + 20).length;
     check("the face texture: the photo's colour blended into the skin (matched toward the skin colour, never a hard paste)", img.mimeType === "image/png" && blue > 50 && blue < px.w * px.h * 0.9, { blue, of: px.w * px.h });
+    // 2.988.0: 🙂 the head - wider cheeks + a taller head in the "photo" than the Mini has -> its head is widened / raised; with a
+    // body paint first, the face still goes on (on top of the painted picture)
+    const f3 = await D.build({ root: lib.dir, rel: "People/Mini/Mini.duf", face: { photo, landmarks: { left_eye: [580, 400], right_eye: [420, 400], mouth: [500, 560], chin: [500, 700], left_cheek: [720, 470], right_cheek: [280, 470], top_of_head: [500, 80] } }, maxTex: 256 });
+    check("2.988.0 build() + face with cheeks / top of head: the head's width and top moved to the photo's (clamped 0.85 - 1.2)", f3.info.face && f3.info.face.head_width > 1 && f3.info.face.head_width <= 1.2 && f3.info.face.head_top >= 0.85 && f3.info.face.head_top <= 1.2 && !f3.info.warnings.length, f3.info.face);
+    const W = (g) => { const J = G.parse(g.glb), acc = J.json.accessors[J.json.meshes[0].primitives[0].attributes.POSITION]; return acc.max[0] - acc.min[0]; };
+    check("…the head is really wider in the model (the figure's x extent grows - the head is its widest part here, or equal)", W(f3) >= W(f2) - 1e-6, [W(f2), W(f3)]);
   } finally { core.getConfig = realCfg; core.setConfig = realSet; fs.rmSync(tmp, { recursive: true, force: true }); void realM3d; }
 
   /* wiring + the words */

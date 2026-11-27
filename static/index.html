@@ -1581,7 +1581,7 @@
     <div class="dockfoot">
       <div class="scale">
         <span>UI</span>
-        <input type="range" id="uiscale" min="60" max="175" step="5" value="100">
+        <input type="range" id="uiscale" min="60" max="250" step="5" value="100">
         <b id="uiscalev" style="font-family:var(--mono)">100%</b>
       </div>
     </div>
@@ -2003,7 +2003,7 @@
     <div id="s_thmsg" class="hint" aria-live="polite" style="margin-top:4px"></div>
     <label class="f" style="margin-top:14px">UI size</label>
     <div class="scale" style="gap:8px">
-      <input type="range" id="s_uiscale" min="60" max="175" step="5" value="100" aria-label="UI size">
+      <input type="range" id="s_uiscale" min="60" max="250" step="5" value="100" aria-label="UI size">
       <b id="s_uiscalev" style="font-family:var(--mono)">100%</b>
       <button class="ghost" id="s_uiscalereset" type="button">Reset</button>
     </div>
@@ -3735,6 +3735,7 @@
 <script src="/static/lbframe.js"></script>  <!-- 2.903.0: a video in the preview - ⏴ ⏵ one frame, the frame number, 📷 Capture frame (H3LbFrame) -->
 <script src="/static/lbrestyle.js"></script>  <!-- 2.676.0: the image preview's 🎨 Style ▾ - Photoreal, Pixar, 2.5D, Anime, Cartoon (H3Restyle) -->
 <script src="/static/lbpano.js"></script>  <!-- 2.987.0: the image preview's 🌐 Panorama 3D - look round, 👓 VR side by side / top-bottom (H3LbPano) -->
+<script src="/static/uizoom.js"></script>  <!-- 2.988.0: the UI size zooms the WHOLE UI - buttons, icons, dockers, text (H3UiZoom) -->
 <script src="/static/pinmenu.js"></script>  <!-- 2.675.0: right-click a 📌 pin ▸ ↺ Reset pin / 📌 Pin at this size (H3PinMenu) -->
 <script src="/static/seedctl.js"></script>  <!-- 2.598.0: the seed's 🎲 Random / 📌 Fixed toggle - Basic Settings + the style editors (H3Seed) -->
 <script src="/static/socialfmt.js"></script>  <!-- 2.600.0: Basic Settings ▸ Format ▸ social media - Aspect follows, the line under it says what happens (H3SocialFmt) -->
@@ -14854,8 +14855,9 @@ document.querySelectorAll("h2.sec.drop").forEach(h =>
    Both inputs write through applyUiScale so they can never disagree; whichever
    one you did not touch is updated to match. */
 function applyUiScale(v, from) {
-  v = window.H3Theme ? H3Theme.clampScale(v) : Math.min(175, Math.max(60, parseInt(v, 10) || 100));   // 2.432.0: 60 - 175 %
-  R.fontSize = (14 * v / 100) + "px";
+  v = window.H3Theme ? H3Theme.clampScale(v) : Math.min(250, Math.max(60, parseInt(v, 10) || 100));   // 2.432.0: 60 - 175 %; 2.988.0: 250
+  // 2.988.0 (Tim: "when user changes ui size can you change the entire ui sizes, buttons, text etc."): the WHOLE UI zoomed (static/uizoom.js)
+  if (window.H3UiZoom) H3UiZoom.apply(v); else R.fontSize = (14 * v / 100) + "px";
   $("uiscalev").textContent = v + "%";
   if ($("s_uiscalev")) $("s_uiscalev").textContent = v + "%";
   if (from !== "dock") $("uiscale").value = v;

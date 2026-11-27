@@ -1335,6 +1335,13 @@ one you don't keep.
 - Light, not exact: loose clothing reads as body, and the photo's clothes are painted onto the skin too - a photo in
   fitted clothes works best. Daz Studio (Face Transfer, its shaping) does far more.
 
+- **🙂 Head** (2.988.0): so the character looks like the person - *from the photo's face*, *from a close-up of the face*
+  (sharper: pick a face photo, looking at the camera) or *leave the figure's head*. The Vision model finds the eyes, mouth,
+  chin, the cheeks and the top of the head: the head's width, its height above the eyes and the chin are moved to the
+  person's (a little - 85 % to 120 %), and the face is painted on top of the body's painted picture. The message after the
+  build says what changed ("🙂 head: width ×1.06, top ×0.97, chin ×1.02"). Light, not exact - Daz Studio's own face tools
+  go much further.
+
 **📏 Height & weight (2.982.0)** - in the 🧭 DAZ Explorer: type a **height** (cm) and / or a **weight** (kg), and the tape
 measurements if you have them (**chest** at the armpits, the narrowest **waist**, the widest **hips**, all round the body),
 pick a **build** and press **▶ Make**. The picked character's own body dials are turned until its numbers match - a NEW
@@ -8072,8 +8079,10 @@ Off = the standard fonts only.
 - **Accent colour**: any colour for the buttons, the lit tabs and the sliders
   instead of the theme's own; Reset = the theme's.
 - **UI size**: one slider for every font and every panel together, 60 % to
-  175 % (it moved here from General; the slider in the left dock's corner is the
-  same one).
+  250 % (it moved here from General; the slider in the left dock's corner is the
+  same one). 2.988.0: in the app it zooms the WHOLE UI - buttons, icons, dockers, the 3D views and the text - for a
+  projector across the room; in a browser it sizes the text, and the browser's own zoom (Ctrl + / Ctrl −) does the
+  whole page.
 
 The theme, the accent and the size are kept in this browser and are on the page
 before it paints, so a light theme never flashes dark.

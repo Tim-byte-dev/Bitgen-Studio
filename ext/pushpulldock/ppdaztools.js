@@ -51,6 +51,7 @@
       custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "",
       // 2.985.0: a pose preset's hips move + the whole figure's turn / move (kept - a sitting pose stays seated after a reload), the pieces hidden, the build's warnings
       hips: v3(c.hips), figPose: { rot: { x: +(c.figPose && c.figPose.rot && c.figPose.rot.x) || 0, y: +(c.figPose && c.figPose.rot && c.figPose.rot.y) || 0, z: +(c.figPose && c.figPose.rot && c.figPose.rot.z) || 0 }, move: v3(c.figPose && c.figPose.move) },
+      face: c.face && typeof c.face === "object" && typeof c.face.picture === "string" ? { picture: c.face.picture, where: typeof c.face.where === "string" ? c.face.where : "" } : null,   // 2.988.0: 🙂 the head's photo
       hidePieces: (Array.isArray(c.hidePieces) ? c.hidePieces : []).map(String).slice(0, 80), warn: (Array.isArray(c.warn) ? c.warn : []).map((w) => String(w).slice(0, 300)).slice(0, 6) }));
     return { chars, sel: chars.some((c) => c.id === s.sel) ? s.sel : (chars[0] ? chars[0].id : "") };
   }
@@ -145,6 +146,8 @@
       + '<div id="dzPhotoPick"></div><label><input type="checkbox" id="dzBackOn"> ＋ a back photo (paints the back)</label><div id="dzBackPick" hidden></div>'
       + '<label class="dzrow">Way <select id="dzRoute">' + Object.entries(ROUTES).map(([k, v]) => '<option value="' + k + '">' + k + " - " + v + "</option>").join("") + "</select></label>"
       + '<label class="dzrow" title="Optional - the person\'s real height makes the fit exact in size">Height <input type="number" id="dzHeight" min="50" max="250" placeholder="cm"></label>'
+      // 2.988.0 (Tim: "can we add head, so the character looks like our character"): the head too - its face painted on top, its width / height / chin from the face
+      + '<label class="dzrow" title="The head too: the face painted on top of the body, the head\'s width, its top and the chin shaped like the person\'s (the Vision model finds the eyes, mouth, chin, cheeks, top of the head)">🙂 Head <select id="dzHead"><option value="photo">from the photo\'s face</option><option value="close">from a close-up of the face (sharper)</option><option value="none">leave the figure\'s head</option></select></label><div id="dzHeadPick" hidden></div>'
       + '<label class="dzrow">Paint <select id="dzPaint"><option value="body">the photo into the whole body\'s textures</option><option value="face">the face only</option><option value="none">nothing (shape only)</option></select></label>'
       + '<div id="dzBOpts" hidden><label class="dzrow">3D engine <select id="dzEngine"><option value="auto">auto</option><option value="hunyuan">Hunyuan3D 2.1</option><option value="trellis">TRELLIS.2</option></select></label><label><input type="checkbox" id="dzTurn"> the scan faces away (turn it)</label></div>'
       + '<div class="hint">Light, not exact: a standing person, head to feet, facing the camera; loose clothing reads as body. The photo\'s clothes are painted too.</div>'
@@ -236,6 +239,9 @@
     $("dzChanged").onchange = () => { st.changedOnly = $("dzChanged").checked; dialsPaint(); };
     // 2.981.0: 📷 a body from a photo
     $("dzPhoto").addEventListener("toggle", () => { if ($("dzPhoto").open && !st.pick && root.H3PicPick) st.pick = root.H3PicPick.mount($("dzPhotoPick"), { title: "The photo (a person standing, head to feet)", onPick: (it) => { st.photo = it; say("📷 " + it.name + " - ▶ Try it"); } }); });
+    $("dzHead").value = LS.get("head", "photo");
+    $("dzHead").onchange = () => { LS.set("head", $("dzHead").value); $("dzHeadPick").hidden = $("dzHead").value !== "close"; if ($("dzHead").value === "close" && !st.headPick && root.H3PicPick) st.headPick = root.H3PicPick.mount($("dzHeadPick"), { title: "A close-up of the face (looking at the camera)", onPick: (it) => { st.headPhoto = it; say("🙂 the face: " + (it.name || "picked")); } }); };
+    $("dzHeadPick").hidden = $("dzHead").value !== "close";
     $("dzBackOn").onchange = () => { $("dzBackPick").hidden = !$("dzBackOn").checked; if ($("dzBackOn").checked && !st.backPick && root.H3PicPick) st.backPick = root.H3PicPick.mount($("dzBackPick"), { title: "The back photo", onPick: (it) => { st.back = it; } }); };
     $("dzRoute").onchange = () => { $("dzBOpts").hidden = $("dzRoute").value !== "B"; LS.set("route", $("dzRoute").value); };
     $("dzRoute").value = LS.get("route", "A") === "B" ? "B" : "A"; $("dzBOpts").hidden = $("dzRoute").value !== "B";
@@ -354,11 +360,12 @@
     try {
       const j = await jpost("/api/dazlib/build", { root: c.fig.root, rel: c.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })),
         wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim(),
-        custom: c.custom || [], paint: c.paint || null });
+        custom: c.custom || [], paint: c.paint || null, face: c.face && c.face.picture ? { picture: c.face.picture, where: c.face.where } : null });
       c.last = j.model; c.inScene = true; c.warn = (j.info.warnings || []).slice(0, 6); keep();
       const mu = j.info.muscles || {};
       try { if (sceneV() && root.H3DazScene) { await root.H3DazScene.put(c); root.H3DazScene.select(c.id); } } catch (e) { say("⚠ " + e.message); }
-      say("✔ " + j.model + " - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (mu.kind === "jcm" ? ", 💪 " + mu.shapes + " JCMs" : mu.kind === "flex" ? ", 💪 our flex" : "") + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
+      const fs0 = j.info.face && (j.info.face.face || j.info.face), hw = fs0 && fs0.chin_scale != null ? " · 🙂 head: width ×" + (fs0.head_width || 1) + ", top ×" + (fs0.head_top || 1) + ", chin ×" + fs0.chin_scale : "";   // 2.988.0
+      say("✔ " + j.model + hw + " - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (mu.kind === "jcm" ? ", 💪 " + mu.shapes + " JCMs" : mu.kind === "flex" ? ", 💪 our flex" : "") + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
     } catch (e) { say("⚠ " + e.message); }
     st.busy = false; tree();
   }
@@ -402,7 +409,13 @@
         if (paint === "body") c.paint = { mode: "scan", scan: sj.model, align: w.align }; else if (paint === "face" && front) c.paint = { mode: "face", photos: [front] };
       }
       st.scene.chars.push(c); st.scene.sel = c.id; keep(); st.busy = false; tree(); dialsLoad(); list();
-      say("📷 " + report + " - building…");
+      // 2.988.0: 🙂 the head - the photo's face (or a close-up): its face painted on top, its head shaped (dazFace)
+      const head = $("dzHead").value;
+      if (head === "close" && !st.headPhoto) say("🙂 no close-up picked - the head from the photo's face");
+      c.face = head === "none" ? null : await (async () => { const hp = head === "close" && st.headPhoto ? await PP.toProject(st.headPhoto) : ph; return { picture: hp.name, where: hp.where }; })();
+      if (c.face && c.paint && c.paint.mode === "face") c.paint = null;          // the head step does the face
+      keep();
+      say("📷 " + report + (c.face ? " + 🙂 the head" : "") + " - building…");
       await buildChar();
       say("📷 " + c.name + " - " + report + ". Compare it with the other try (🕺 Pose), ✕ the one you don't keep. " + ($("dzMsg").textContent.indexOf("⚠") >= 0 ? $("dzMsg").textContent : ""));
       st.lastTry = { route, name: c.name, report };

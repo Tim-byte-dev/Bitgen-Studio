@@ -27,15 +27,15 @@ const v = T.varsFor("light", "#2266DD");
 check("varsFor: the theme's variables (+ the same as --th-*, what the image editor reads); an accent of your own replaces --tiger (lower case) and --tiger-deep (a darker shade)", v["--panel"] === "#ffffff" && v["--tiger"] === "#2266dd" && v["--tiger-deep"] === T.shade("#2266DD", -0.22) && Object.keys(v).length === T.VARS.length * 2 && v["--th-tiger"] === "#2266dd");
 check("...no accent / a bad one = the theme's; an unknown theme = Dark", T.varsFor("slate", "")["--tiger"] === T.THEMES.slate.tiger && T.varsFor("slate", "blue")["--tiger"] === T.THEMES.slate.tiger && T.varsFor("nope")["--ink"] === T.THEMES.dark.ink);
 check("shade: darker / lighter / bad in = out", T.shade("#808080", -0.5) === "#404040" && T.shade("#000000", 0.5) === "#808080" && T.shade("red", 0.3) === "red");
-check("clampScale: 60 - 175 %, junk = 100", T.clampScale(10) === 60 && T.clampScale(300) === 175 && T.clampScale("150") === 150 && T.clampScale("x") === 100);
+check("clampScale: 60 - 250 % (2.988.0), junk = 100", T.clampScale(10) === 60 && T.clampScale(300) === 250 && T.clampScale("150") === 150 && T.clampScale("x") === 100);
 
 /* ---- 2 */
 const IX = read("static", "index.html"), IE = read("ext", "imageeditdock", "imageedit.js");
 check("themes.js is loaded in <head> (the kept theme on <html> before the page paints)", IX.indexOf('<script src="/static/themes.js"></script>') > 0 && IX.indexOf('<script src="/static/themes.js"></script>') < IX.indexOf("</head>"));
 check("Settings: a Themes tab after General - the cards (#s_themes), the accent (#s_accent + Reset), the UI size slider (moved from General)",
-  /<button data-stab="general" class="active">General<\/button>\s*<button data-stab="themes">Themes<\/button>/.test(IX) && /<div class="stab" id="stab-themes">[\s\S]*?id="s_themes"[\s\S]*?id="s_accent"[\s\S]*?id="s_accentreset"[\s\S]*?id="s_uiscale" min="60" max="175"/.test(IX)
+  /<button data-stab="general" class="active">General<\/button>\s*<button data-stab="themes">Themes<\/button>/.test(IX) && /<div class="stab" id="stab-themes">[\s\S]*?id="s_themes"[\s\S]*?id="s_accent"[\s\S]*?id="s_accentreset"[\s\S]*?id="s_uiscale" min="60" max="250"/.test(IX)
   && (IX.match(/id="s_uiscale"/g) || []).length === 1 && IX.indexOf('id="s_uiscale"') > IX.indexOf('id="stab-themes"') && IX.indexOf('id="s_uiscale"') < IX.indexOf('id="stab-general"'));
-check("...the left dock's slider 60 - 175 % too; applyUiScale clamps through H3Theme", /id="uiscale" min="60" max="175"/.test(IX) && /v = window\.H3Theme \? H3Theme\.clampScale\(v\)/.test(IX));
+check("...the left dock's slider 60 - 250 % too; applyUiScale clamps through H3Theme", /id="uiscale" min="60" max="250"/.test(IX) && /v = window\.H3Theme \? H3Theme\.clampScale\(v\)/.test(IX));
 check("the image editor's bitGen theme is built from the app's variables (it follows the theme)", /\.kx\[data-theme=bitgen\]\{--pc-bg:var\(--th-ink,#14120f\);--pc-panel:var\(--th-panel,#1d1a15\);[^}]*--pc-accent:var\(--th-tiger,#f59e2c\);--pc-hover:var\(--th-ui-hover,#2f2a21\);--pc-canvas:var\(--th-ui-canvas,#0f0d0b\);--pc-on:var\(--th-ui-on,#4a3414\);/.test(IE));
 
 /* ---- 3 */

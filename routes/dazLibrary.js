@@ -20,8 +20,10 @@ const core = require("../lib/core");
 const D = require("../lib/dazLib");
 
 const FACE_PROMPT = "Find the face in this photo. Answer ONLY with JSON giving points as [x, y] with coordinates from 0 to 1000 "
-  + "(0,0 = top left): {\"left_eye\": [x, y], \"right_eye\": [x, y], \"mouth\": [x, y], \"chin\": [x, y]} - left_eye is the "
-  + "PERSON'S left eye (on the right side of the picture), the centre of each eye, the middle of the mouth, the bottom of the chin.";
+  + "(0,0 = top left): {\"left_eye\": [x, y], \"right_eye\": [x, y], \"mouth\": [x, y], \"chin\": [x, y], \"left_cheek\": [x, y], "
+  + "\"right_cheek\": [x, y], \"top_of_head\": [x, y]} - left_eye is the PERSON'S left eye (on the right side of the picture), the "
+  + "centre of each eye, the middle of the mouth, the bottom of the chin, the face's left / right edge at the cheekbones (the "
+  + "person's left = the picture's right), the top of the head (the hair's top).";   // 2.988.0: + the head's size
 function fail(res, e) { res.status((e && e.status) || 500).json({ error: String((e && e.message) || e) }); }
 
 function mount(app) {

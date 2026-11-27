@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.988.0** — 🙂 a Head Like the Person's for a DAZ Character From a Photo (Its Width, Top and Chin; the Face Painted Over the Body) and the UI Size Zooming the Whole App (60 - 250 %)
 - **2.987.0** — 🌐 Panorama 3D in the Image Preview (Look Round, Zoom, 👓 VR Side by Side / Top-Bottom, Stereo Panoramas per Eye) and the Sketcher's ✨ Photo With the Prompt Docker's Reference Pictures and Prompt
 - **2.986.0** — The Sketcher's ✂ Separate Into Parts (a Group per Mesh or Loose Piece) and Its Arrow Keys (Pan; Ctrl+↑ / ↓ Zoom, Ctrl+← Everything in View, Ctrl+→ Zoom to the Picked)
 - **2.985.0** — The Sketcher's 🔍 Zoom Tool and 🏛 Architecture Button (Hide / Show Every Building Tool); Delete Removes a Picked DAZ Character (↶ Undo); the Explorer Lists Every Piece Built With 👁; 🎨 Material Presets; Poses That Turn or Move the Whole Figure, Kept; ✨ Photo Keeps the Characters and Says Why a Render Failed

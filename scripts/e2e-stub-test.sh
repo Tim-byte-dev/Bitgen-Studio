@@ -15268,6 +15268,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui986-ui.js > /tmp/ui986.log 2>&
 node scripts/test-987.js > /tmp/t987.log 2>&1 && ok "2.987.0 units: ✨ Photo's references / prompt (the four cases), 🌐 Panorama 3D's layouts / eyes / viewports" || { bad "2.987.0 units"; grep -a "^FAIL" -A1 /tmp/t987.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui987-ui.js > /tmp/ui987.log 2>&1 && ok "2.987.0 browser test: ✨ Photo sends the references / prompt as asked, 🌐 Panorama 3D looks round, 👓 side by side / top-bottom, a stereo picture per eye" || { bad "2.987.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui987.log | head -8; }
 
+node scripts/test-988.js > /tmp/t988.log 2>&1 && ok "2.988.0 units: 🙂 the head (headWarp / headSize, the cheeks + top of the head, the face over a painted body) and the UI size zoom" || { bad "2.988.0 units"; grep -a "^FAIL" -A1 /tmp/t988.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui988-ui.js > /tmp/ui988.log 2>&1 && ok "2.988.0 browser test: the UI size - the app's whole-UI zoom (a stand-in shell), a browser's text, 250 % at most, kept; 🙂 Head row" || { bad "2.988.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui988.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
