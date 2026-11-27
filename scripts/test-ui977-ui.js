@@ -37,7 +37,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); localStorage.setItem("h3.dockmax.off", "1"); H3PushPullFrame.toggleMaxed(true); });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.V, null, { timeout: 40000 });
     await ev(() => { H3PushPull.newModel && H3PushPull.newModel(); });
-    await p.click("#ppDazLib");
+    await p.evaluate(() => H3DazLib.open());   // 2.983.0: the 📚 button toggles the DAZ dockers - the dialog by its API
     await p.waitForSelector("#pdlDlg[open] .pdl-it", { timeout: 10000 });
     const d0 = await ev(() => ({ note: document.querySelector("#pdlDlg .pdl-note").textContent, roots: document.getElementById("pdlRoots").textContent, items: [...document.querySelectorAll(".pdl-it span")].map((x) => x.textContent), img: document.querySelector(".pdl-it img").naturalWidth, enc: document.getElementById("pdlEnc").textContent }));
     check("📚 opens: the words - not a replacement for Daz Studio, a very powerful character creator - at the top", /not a replacement for Daz Studio/.test(d0.note) && /very powerful character creator/.test(d0.note), d0.note);

@@ -16,7 +16,8 @@
 (function (root) {
   "use strict";
   const NOTE = "Not a replacement for Daz Studio - made for light tasks. Daz Studio is a very powerful character creator.";
-  const KINDS = [["figure", "🧍 Figures"], ["character", "🎭 Characters"], ["clothing", "👕 Clothing"], ["hair", "💇 Hair"], ["anatomy", "🫀 Anatomy"], ["other", "📦 Other"]];
+  const KINDS = [["figure", "🧍 Figures"], ["character", "🎭 Characters"], ["clothing", "👕 Clothing"], ["hair", "💇 Hair"], ["anatomy", "🫀 Anatomy"], ["pose", "🕴 Poses"], ["shape", "🎚 Shapes"], ["other", "📦 Other"]];
+  const WEAR = ["clothing", "hair", "anatomy", "other"];
   const TEMPLATE = "var(--c1) var(--s1) var(--c2) var(--s2) var(--c3) var(--s3) var(--dzl) 5px minmax(200px, 1fr) 5px var(--dzr) var(--s5) var(--c4) var(--s4) var(--c5)";
   /** the dials by their group (a group's name = the last part of the morph's group path), groups and dials A-Z */
   function groupDials(list) {
@@ -27,7 +28,7 @@
   let uid = 0;
   function newChar(it, n) {
     return { id: "c" + Date.now().toString(36) + (uid++), name: String(it.name || "Character") + (n > 1 ? " " + n : ""), fig: { root: it.root, rel: it.rel, name: it.name, kind: it.kind || "figure" },
-      wear: [], dials: {}, drape: { kinds: [], frames: 45 }, muscles: true, last: "" };
+      wear: [], dials: {}, drape: { kinds: [], frames: 45 }, muscles: true, last: "", pose: {}, place: { x: 0, y: 0, rot: 0 }, inScene: false, hidden: false };
   }
   /** wear / take off a component (by its file) - true = now worn */
   function wearToggle(c, it) {
@@ -41,7 +42,9 @@
       id: String(c.id || ("c" + (uid++))), name: String(c.name || c.fig.name || "Character").slice(0, 60), fig: { root: c.fig.root, rel: c.fig.rel, name: c.fig.name || "", kind: c.fig.kind || "figure" },
       wear: (Array.isArray(c.wear) ? c.wear : []).filter((w) => w && w.rel).slice(0, 60), dials: c.dials && typeof c.dials === "object" ? Object.fromEntries(Object.entries(c.dials).filter(([, v]) => isFinite(+v) && +v)) : {},
       drape: { kinds: (c.drape && Array.isArray(c.drape.kinds) ? c.drape.kinds : []).filter((k) => /^(clothing|hair|other)$/.test(k)), frames: Math.max(5, Math.min(240, +(c.drape && c.drape.frames) || 45)) },
-      muscles: c.muscles !== false, last: typeof c.last === "string" ? c.last : "",
+      muscles: c.muscles !== false, last: typeof c.last === "string" ? c.last : "", inScene: !!c.inScene, hidden: !!c.hidden,
+      place: c.place && typeof c.place === "object" ? { x: +c.place.x || 0, y: +c.place.y || 0, rot: +c.place.rot || 0 } : { x: 0, y: 0, rot: 0 },
+      pose: c.pose && typeof c.pose === "object" ? Object.fromEntries(Object.entries(c.pose).filter(([, r]) => r && typeof r === "object").map(([k, r]) => [k, { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }])) : {},
       custom: (Array.isArray(c.custom) ? c.custom : []).map(String).slice(0, 8), paint: c.paint && typeof c.paint === "object" ? c.paint : null, from: typeof c.from === "string" ? c.from : "" }));
     return { chars, sel: chars.some((c) => c.id === s.sel) ? s.sel : (chars[0] ? chars[0].id : "") };
   }
@@ -51,7 +54,11 @@
     c.drape = { kinds: base.drape.kinds.slice(), frames: base.drape.frames }; c.muscles = base.muscles; c.dials = Object.assign({}, base.dials); c.custom = (base.custom || []).slice(); c.from = route; return c;
   }
   const ROUTES = { A: "Fit the dials (fast - the figure's own body dials)", B: "Scan + wrap (closer - a 3D shape from the photo, the figure wrapped onto it)" };
-  const pure = { NOTE, KINDS, TEMPLATE, ROUTES, groupDials, newChar, wearToggle, cleanScene, tryChar };
+  /** 2.983.0: a free spot on the Sketcher's floor for a new character (1 m apart along x) */
+  function freeSpot(chars) { const used = (chars || []).filter((c) => c.inScene).map((c) => (c.place || {}).x || 0); let x = 0; while (used.some((u) => Math.abs(u - x) < 0.6)) x += 1; return { x, y: 0, rot: 0 }; }
+  /** a pose preset's bones kept only when the figure has them (a Genesis 8 pose on a Genesis 9 figure moves little) */
+  function posePick(pose, bones) { const out = {}; let n = 0; for (const [k, r] of Object.entries(pose || {})) if (bones && bones[k]) { out[k] = { x: +r.x || 0, y: +r.y || 0, z: +r.z || 0 }; n++; } return { pose: out, n }; }
+  const pure = { NOTE, KINDS, WEAR, TEMPLATE, ROUTES, groupDials, newChar, wearToggle, cleanScene, tryChar, freeSpot, posePick };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -67,10 +74,15 @@
   function css() {
     if ($("dzCss")) return;
     const s = doc.createElement("style"); s.id = "dzCss";
-    s.textContent = ":root{--dzl:290px;--dzr:330px}"
-      + "#app.dz-on:not([style*=grid-template-columns]){grid-template-columns:" + TEMPLATE + "}"
-      + "#app:not(.dz-on)>.dz-el{display:none!important}"
-      + "#dazTools.on{background:var(--tiger-deep,#a8601a);color:#fff}"
+    s.textContent = "#pushpulldock:not(.dz-on) .dz-el{display:none!important}.dz-el [hidden]{display:none!important}#dazTools.on,#ppDazLib.on{background:var(--tiger-deep,#a8601a);color:#fff}"
+      + "#dzSide{width:var(--dzr,330px);flex:none;display:flex;flex-direction:column;min-height:0;position:relative;border-left:1px solid var(--line,#3a352d);border-radius:6px;overflow:hidden}"
+      + "#dzSplitR{position:absolute;left:0;top:0;bottom:0;width:6px;cursor:col-resize;z-index:3}#dzSplitR:hover,#dzSplitR.drag{background:var(--tiger-deep,#a8601a)}"
+      + "#dzLib{position:absolute;left:var(--dzlx,76px);top:var(--dzly,6px);width:var(--dzlw,300px);height:var(--dzlh,70%);min-width:200px;min-height:160px;z-index:7;resize:both;border:1px solid var(--line,#3a352d);border-radius:7px;box-shadow:0 8px 26px #000b}"
+      + "#dzLib .dzhead{cursor:move;user-select:none}#dzRootsBox{padding:4px 6px;display:flex;flex-direction:column;gap:4px}#dzRootsBox textarea{width:100%;min-height:54px;font:11px monospace}"
+      + "#dzParTabs{display:flex;gap:3px}#dzParTabs button{padding:1px 7px;font-size:11px}#dzParTabs button.on{outline:2px solid #38e1ff}.dzpane{flex:1 1 0;display:flex;flex-direction:column;min-height:0;overflow:auto}"
+      + "#dzPlace{display:flex;gap:6px;align-items:center;padding:3px 6px;flex-wrap:wrap}#dzPlace input[type=number]{width:58px}"
+      + ".dzax{display:flex;gap:6px;align-items:center;padding:1px 6px}.dzax span{width:62px}.dzax input[type=range]{flex:1}.dzax output{width:44px;text-align:right}#dzBone{margin:0 6px;width:calc(100% - 12px)}#dzBoneQ{margin:0 6px 3px;width:calc(100% - 12px)}"
+      + ".dzact{display:flex;gap:6px;align-items:center;font-size:11px;padding:0 6px}.dzact span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dzact em{width:70px;background:#0006;border-radius:3px}.dzact i{display:block;height:6px;background:#38e1ff;border-radius:3px}"
       + ".dzdock{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;background:var(--panel,#1b1915);font-size:12px}"
       + ".dzhead{display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid var(--line,#3a352d);font-weight:600}.dzhead b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
       + ".dznote{margin:4px 6px;padding:4px 6px;border-left:3px solid var(--tiger,#f59e2c);background:#2a2418;border-radius:3px;font-size:11px}"
@@ -78,9 +90,9 @@
       + "#dzQ,#dzDialQ{margin:0 6px 4px;width:calc(100% - 12px)}"
       + "#dzGrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:5px;padding:4px 6px;align-content:start}"
       + ".dzit{border:2px solid transparent;border-radius:5px;padding:2px;cursor:pointer;background:#0006;text-align:center}.dzit.fig{border-color:#38e1ff}.dzit.worn{border-color:#7bd389}"
-      + ".dzit img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;background:#000;display:block}.dzit span{display:block;font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
-      + "#dzExp{flex:0 0 var(--dzeh,46%);display:flex;flex-direction:column;min-height:90px;overflow:hidden}#dzShape{flex:1 1 0;display:flex;flex-direction:column;min-height:80px;overflow:hidden}"
-      + "#dzTree{flex:1;overflow:auto;padding:3px 6px}.dzc{border-radius:4px;padding:2px 4px;cursor:pointer;display:flex;gap:5px;align-items:center}.dzc.sel{background:#38e1ff22;outline:1px solid #38e1ff}"
+      + ".dzit img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;background:#000;display:block;pointer-events:none;-webkit-user-drag:none}.dzit span{display:block;font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
+      + "#dzExp{flex:0 0 var(--dzeh,46%);display:flex;flex-direction:column;min-height:90px;overflow:auto}#dzPar{flex:1 1 0;display:flex;flex-direction:column;min-height:80px;overflow:hidden}#dzShape{flex:1 1 0;display:flex;flex-direction:column;min-height:0;overflow:hidden}"
+      + "#dzTree{flex:1 0 60px;overflow:auto;padding:3px 6px}.dzc{border-radius:4px;padding:2px 4px;cursor:pointer;display:flex;gap:5px;align-items:center}.dzc.sel{background:#38e1ff22;outline:1px solid #38e1ff}"
       + ".dzc span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dzc input{flex:1;min-width:0}.dzcomp{padding:1px 4px 1px 22px;display:flex;gap:5px;align-items:center;opacity:.9}.dzcomp span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
       + "#dzChars{max-width:46%;min-width:0}#dzGrid>.hint{grid-column:1/-1}.dzx{padding:0 5px;font-size:11px;line-height:16px}.dzopts{display:flex;flex-wrap:wrap;gap:4px 8px;padding:4px 6px;border-top:1px solid var(--line,#3a352d)}.dzopts input[type=number]{width:52px}"
       + ".dzbtns{display:flex;flex-wrap:wrap;gap:4px;padding:4px 6px}.dzbtns button{padding:3px 7px;font-size:11px}"
@@ -98,7 +110,7 @@
     let b = $("dazTools"); const mb = $("menubar"); if (!mb) return null;
     if (!b) {
       b = doc.createElement("button"); b.type = "button"; b.id = "dazTools"; b.className = "ghost"; b.textContent = "🧬 DAZ Tools";
-      b.title = "DAZ Tools - the Daz library (left docker), the explorer and shape controls (right docker). " + NOTE;
+      b.title = "DAZ Tools - in the Sketcher: the Daz library (a floating docker), the explorer and the parameters (dockers on the right). " + NOTE;
       b.setAttribute("aria-pressed", "false"); b.onclick = () => toggle();
     }
     const strip = $("appStrip"), pb = mb.querySelector(".projbtns"), after = strip || pb;
@@ -107,18 +119,20 @@
   }
   /* ---------------- the dockers */
   function build() {
-    const app = $("app"), main = $("maincol"); if (!app || !main) return false;
-    if ($("dzLeft")) return true;
+    const host = $("ppMain"); if (!host) return false;
+    if ($("dzLib")) return true;
     css();
-    const L = doc.createElement("aside"); L.id = "dzLeft"; L.className = "dock dzdock dz-el"; L.setAttribute("aria-label", "DAZ Library");
-    L.innerHTML = '<div class="dzhead"><b>📚 DAZ Library</b><button type="button" class="ghost dzx" id="dzFolders" title="The Daz content folders (📚 dialog)">📁</button><button type="button" class="ghost dzx" id="dzRefresh" title="Read the library again">↻</button></div>'
+    // 2.983.0: the 📚 DAZ Library = a FLOATING docker over the Sketcher's view (drag its title, size its corner)
+    const L = doc.createElement("div"); L.id = "dzLib"; L.className = "dzdock dz-el"; L.setAttribute("role", "dialog"); L.setAttribute("aria-label", "DAZ Library");
+    L.innerHTML = '<div class="dzhead" id="dzLibHead" title="Drag to move - the corner sizes it"><b>📚 DAZ Library</b><button type="button" class="ghost dzx" id="dzFolders" title="Your Daz content folders">📁</button><button type="button" class="ghost dzx" id="dzRefresh" title="Read the library again">↻</button><button type="button" class="ghost dzx" id="dzLibMin" title="Fold it to its title">▁</button></div>'
+      + '<div id="dzRootsBox" hidden><span class="hint">Your Daz content folders, one a line (each holds data/, People/, Runtime/…):</span><textarea id="dzRoots" spellcheck="false"></textarea><div style="display:flex;gap:6px"><button type="button" class="primary" id="dzRootsSave">Save</button><button type="button" class="ghost" id="dzRootsFind">Find them</button></div></div>'
       + '<div class="dznote" role="note">' + esc(NOTE) + "</div><div class=\"dztabs\" id=\"dzTabs\">" + KINDS.map(([k, l]) => '<button type="button" class="ghost" data-kind="' + k + '">' + l + "</button>").join("") + "</div>"
-      + '<input type="search" id="dzQ" placeholder="Search the library…"><div id="dzEnc" class="hint" style="padding:0 6px"></div><div id="dzGrid"></div>';
-    const sl = doc.createElement("div"); sl.className = "vsplit dzsplit dz-el"; sl.dataset.resize = "dzl"; sl.id = "dzSplitL"; sl.title = "Drag to size the DAZ Library";
-    const sr = doc.createElement("div"); sr.className = "vsplit dzsplit dz-el"; sr.dataset.resize = "dzr"; sr.id = "dzSplitR"; sr.title = "Drag to size the DAZ Explorer";
-    const R = doc.createElement("aside"); R.id = "dzRight"; R.className = "dock right dzdock dz-el"; R.setAttribute("aria-label", "DAZ Explorer and shape controls");
-    R.innerHTML = '<div id="dzExp"><div class="dzhead"><b>🧭 DAZ Explorer</b><select id="dzChars" title="A character you saved (💾)"><option value="">📂 Saved…</option></select></div>'
+      + '<input type="search" id="dzQ" placeholder="Search the library…"><div id="dzEnc" class="hint" style="padding:0 6px"></div><div id="dzGrid" title="Drag a figure into the 3D view to place it; clothes, hair, poses onto a character"></div>';
+    // the 🧭 DAZ Explorer + the 🎚 Parameters: their own dockers in a column right of the view (like Daz Studio)
+    const R = doc.createElement("div"); R.id = "dzSide"; R.className = "dzdock dz-el"; R.setAttribute("aria-label", "DAZ Explorer and Parameters");
+    R.innerHTML = '<div id="dzSplitR" role="separator" aria-orientation="vertical" title="Drag to size the DAZ dockers"></div><div id="dzExp"><div class="dzhead"><b>🧭 DAZ Explorer</b><select id="dzChars" title="A character you saved (💾)"><option value="">📂 Saved…</option></select></div>'
       + '<div id="dzTree" role="tree" aria-label="Characters and their components"></div>'
+      + '<div id="dzPlace" hidden title="Where the picked character stands in the Sketcher (metres) - or drag it from the library"><label><input type="checkbox" id="dzShow" checked> 👁</label><label>X <input type="number" id="dzPX" step="0.1"></label><label>Y <input type="number" id="dzPY" step="0.1"></label><label>Turn <input type="number" id="dzPR" step="15"></label></div>'
       + '<div class="dzopts" id="dzOpts"><label title="Our own cloth - a light drape, not dForce"><input type="checkbox" data-drape="clothing"> 💨 Clothing</label><label><input type="checkbox" data-drape="hair"> Hair</label><label><input type="checkbox" data-drape="other"> Other</label>'
       + '<label title="Settle frames">frames <input type="number" id="dzFrames" min="5" max="240" value="45"></label><label title="The figure\'s own JCMs (or our own flex) - 🕺 Pose plays them"><input type="checkbox" id="dzMuscle" checked> 💪 Muscles</label></div>'
       + '<details id="dzPhoto"><summary title="Make this character\'s body from a photo - pick a way, ▶ Try; each try is a new character: try both, keep the better one">📷 Body from a photo</summary><div class="dzph">'
@@ -134,49 +148,82 @@
       + '<label title="Round the chest at the armpits">Chest <input type="number" id="dzMC" min="30" max="250" placeholder="cm"></label><label title="Round the narrowest waist">Waist <input type="number" id="dzMWa" min="30" max="250" placeholder="cm"></label><label title="Round the widest hips">Hips <input type="number" id="dzMHi" min="30" max="250" placeholder="cm"></label></div>'
       + '<label class="dzrow" title="One weight fits many bodies - which dials carry it">Build <select id="dzMBuild"><option value="average">average</option><option value="slim">slim</option><option value="athletic">athletic</option><option value="soft">soft</option></select></label>'
       + '<div id="dzMNow" class="hint"></div><div style="display:flex;gap:6px"><button type="button" class="ghost" id="dzMRead" title="The picked character\'s height, weight and tape measurements now">📏 Measure it</button><button type="button" class="primary" id="dzMMake">▶ Make</button></div></div></details>'
-      + '<div class="dzbtns"><button type="button" class="primary" id="dzBuild">🧍 Build</button><button type="button" class="ghost" id="dzPose" disabled>🕺 Pose</button><button type="button" class="ghost" id="dzOpen" disabled title="Into the Sketcher model (plain faces)">⤒ Open</button><button type="button" class="ghost" id="dzSave">💾 Save</button></div></div>'
+      + '<div class="dzbtns"><button type="button" class="primary" id="dzBuild">🧍 Build</button><button type="button" class="ghost" id="dzPose" disabled title="The 🕺 Pose tab">🕺 Pose</button><button type="button" class="ghost" id="dzOpen" disabled title="A copy as plain Sketcher faces (static, no rig)">⤒ As faces</button><button type="button" class="ghost" id="dzSave">💾 Save</button></div></div>'
       + '<div class="dzhs" id="dzHSplit" role="separator" aria-orientation="horizontal" title="Drag to share the height"></div>'
-      + '<div id="dzShape"><div class="dzhead"><b>🎚 Shape controls</b><label style="font-weight:400" title="Only the dials that are not 0"><input type="checkbox" id="dzChanged"> changed</label><button type="button" class="ghost dzx" id="dzReset" title="Every dial of this character back to 0">↺</button></div>'
-      + '<input type="search" id="dzDialQ" placeholder="Find a dial (e.g. height, nose, muscular)…"><div id="dzDials"></div></div><div id="dzMsg" role="status"></div>';
-    app.insertBefore(L, main); app.insertBefore(sl, main);
-    app.insertBefore(sr, main.nextSibling); app.insertBefore(R, sr.nextSibling);
+      + '<div id="dzPar"><div class="dzhead"><b>🎚 Parameters</b><span id="dzParTabs" role="tablist"><button type="button" class="ghost on" data-tab="shape" role="tab">🎚 Shape</button><button type="button" class="ghost" data-tab="pose" role="tab">🕺 Pose</button><button type="button" class="ghost" data-tab="motion" role="tab">🎬 Motion</button></span></div>'
+      + '<div id="dzShape" class="dzpane" data-pane="shape"><div class="dzrow" style="padding:3px 6px"><label title="Only the dials that are not 0"><input type="checkbox" id="dzChanged"> changed</label><button type="button" class="ghost dzx" id="dzReset" title="Every dial of this character back to 0">↺ all</button><button type="button" class="ghost dzx" id="dzApply" title="Build it again with these dials">🧍 Apply</button></div>'
+      + '<input type="search" id="dzDialQ" placeholder="Find a dial (e.g. height, nose, muscular)…"><div id="dzDials"></div></div>'
+      + '<div id="dzPosePane" class="dzpane" data-pane="pose" hidden><div class="hint" style="padding:3px 6px">Click the character in the view to pick a bone - or find it here:</div><input type="search" id="dzBoneQ" placeholder="Find a bone (e.g. forearm, thigh)…"><select id="dzBone" size="6"></select><div id="dzAxes"></div>'
+      + '<div class="dzrow" style="padding:3px 6px;flex-wrap:wrap"><label><input type="checkbox" id="dzMirror" checked> Mirror</label><label title="The figure\'s own muscle shapes (JCMs) follow the joints"><input type="checkbox" id="dzPMus" checked> 💪 Muscles</label><button type="button" class="ghost dzx" id="dzPRBone">↺ bone</button><button type="button" class="ghost dzx" id="dzPRAll">↺ pose</button></div><div id="dzActive"></div></div>'
+      + '<div id="dzMotionPane" class="dzpane" data-pane="motion" hidden><div class="hint" style="padding:3px 6px">From mixamo.com (a free Adobe ID): pick an animation, ⤓ Download - Format <b>FBX</b>, Skin <b>Without Skin</b>. Royalty free in your projects; bitGen never shares the file.</div>'
+      + '<div class="dzrow" style="padding:3px 6px"><button type="button" class="ghost" id="dzFbxB">📂 Mixamo .fbx…</button><input type="file" id="dzFbx" accept=".fbx" hidden></div>'
+      + '<div class="dzax" id="dzMRow" hidden><button type="button" class="ghost dzx" id="dzMPlay">▶</button><input type="range" id="dzMTime" min="0" max="1" step="0.001" value="0"><output id="dzMTimeV">0.0 s</output></div>'
+      + '<div class="dzrow" id="dzMOpts" hidden style="padding:3px 6px;flex-wrap:wrap"><label><input type="checkbox" id="dzMInPlace"> In place</label><label>Speed <select id="dzMSpeed"><option>0.5</option><option selected>1</option><option>2</option></select></label><button type="button" class="ghost dzx" id="dzMBake" title="A copy of the character with this motion (glTF) - the timeline\'s 3D layers / Blender play it">⤓ Bake</button><button type="button" class="ghost dzx" id="dzMOff">✕</button></div></div>'
+      + '</div><div id="dzMsg" role="status"></div>';
+    host.appendChild(L); host.appendChild(R);
     wire(); sizes(LS.get("w", {}));
     return true;
   }
   function sizes(w) {
-    const r = doc.documentElement.style;
-    if (w.l) r.setProperty("--dzl", Math.max(180, Math.min(800, w.l)) + "px");
-    if (w.r) r.setProperty("--dzr", Math.max(200, Math.min(800, w.r)) + "px");
-    if (w.eh) { const e = $("dzRight"); if (e) e.style.setProperty("--dzeh", Math.max(15, Math.min(85, w.eh)) + "%"); }
+    const d = $("pushpulldock"), side = $("dzSide"), lib = $("dzLib");
+    if (d && w.r) d.style.setProperty("--dzr", Math.max(220, Math.min(800, w.r)) + "px");
+    if (side && w.eh) side.style.setProperty("--dzeh", Math.max(15, Math.min(85, w.eh)) + "%");
+    if (lib && w.lib) { const L = w.lib; if (isFinite(L.x)) lib.style.setProperty("--dzlx", L.x + "px"); if (isFinite(L.y)) lib.style.setProperty("--dzly", L.y + "px"); if (L.w) lib.style.width = L.w + "px"; if (L.h) lib.style.height = L.h + "px"; }
+    if (lib) lib.classList.toggle("folded", !!(w.lib && w.lib.folded));
   }
-  function regrid() { try { if (root.H3DGDock && root.H3DGDock.regrid) root.H3DGDock.regrid(); } catch (e) { /* the stylesheet's template */ } try { root.dispatchEvent(new Event("resize")); } catch (e) { /* old */ } }
-  function splitter(sp, key) {
-    sp.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return; e.preventDefault();
-      const el = key === "l" ? $("dzLeft") : $("dzRight"), x0 = e.clientX, w0 = el.getBoundingClientRect().width; sp.classList.add("drag");
-      const mv = (m) => { const w = Math.round(w0 + (key === "l" ? m.clientX - x0 : x0 - m.clientX)), W = LS.get("w", {}); W[key] = Math.max(180, Math.min(800, w)); LS.set("w", W); sizes(W); };
-      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); sp.classList.remove("drag"); regrid(); };
-      root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
-    });
-  }
+  function regrid() { try { const V = sceneV(); if (V && V.size) V.size(); } catch (e) { /* fine */ } try { root.dispatchEvent(new Event("resize")); } catch (e) { /* old */ } }
+  const sceneV = () => { const P = root.H3PushPull; return P && P.state && P.state.V ? P.state.V : null; };
+  const drag = (el, onMove, onUp) => (e) => {
+    if (e.button !== 0) return; e.preventDefault(); el.classList.add("drag"); const x0 = e.clientX, y0 = e.clientY;
+    const mv = (m) => onMove(m.clientX - x0, m.clientY - y0, m), up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); el.classList.remove("drag"); if (onUp) onUp(); };
+    root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
+  };
   function wire() {
-    splitter($("dzSplitL"), "l"); splitter($("dzSplitR"), "r");
-    $("dzHSplit").addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return; e.preventDefault();
-      const R = $("dzRight").getBoundingClientRect(), hs = $("dzHSplit"); hs.classList.add("drag");
-      const mv = (m) => { const W = LS.get("w", {}); W.eh = Math.round((m.clientY - R.top) / R.height * 100); LS.set("w", W); sizes(W); };
-      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); hs.classList.remove("drag"); };
-      root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
+    const sp = $("dzSplitR"); let w0 = 0;
+    sp.addEventListener("pointerdown", (e) => { w0 = $("dzSide").getBoundingClientRect().width; drag(sp, (dx) => { const W = LS.get("w", {}); W.r = Math.max(220, Math.min(800, Math.round(w0 - dx))); LS.set("w", W); sizes(W); }, regrid)(e); });
+    const hs = $("dzHSplit");
+    hs.addEventListener("pointerdown", (e) => { const R = $("dzSide").getBoundingClientRect(); drag(hs, (dx, dy, m) => { const W = LS.get("w", {}); W.eh = Math.round((m.clientY - R.top) / R.height * 100); LS.set("w", W); sizes(W); })(e); });
+    // the floating library: its title moves it (kept inside the Sketcher), its corner sizes it (kept)
+    const lib = $("dzLib"), head = $("dzLibHead"); let p0 = null;
+    head.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button")) return;
+      const hr = $("ppMain").getBoundingClientRect(), lr = lib.getBoundingClientRect(); p0 = [lr.left - hr.left, lr.top - hr.top];
+      drag(head, (dx, dy) => { const W = LS.get("w", {}); W.lib = Object.assign({}, W.lib, { x: Math.round(Math.max(0, Math.min(hr.width - 80, p0[0] + dx))), y: Math.round(Math.max(0, Math.min(hr.height - 30, p0[1] + dy))) }); LS.set("w", W); sizes(W); })(e);
     });
+    head.addEventListener("dblclick", (e) => { if (!e.target.closest("button")) foldLib(); });
+    $("dzLibMin").onclick = foldLib;
+    try { new root.ResizeObserver(() => { if (!st.on || lib.classList.contains("folded")) return; const W = LS.get("w", {}), r = lib.getBoundingClientRect(); if (r.width < 50) return; W.lib = Object.assign({}, W.lib, { w: Math.round(r.width), h: Math.round(r.height) }); LS.set("w", W); }).observe(lib); } catch (e) { /* old browsers: not kept */ }
+    $("dzRootsSave").onclick = saveRoots; $("dzRootsFind").onclick = () => { $("dzRoots").value = (st.detected || []).join("\n"); };
+    $("dzParTabs").querySelectorAll("[data-tab]").forEach((b) => { b.onclick = () => tab(b.dataset.tab); });
+    // 🕺 the pose tab
+    let bq = 0; $("dzBoneQ").oninput = () => { clearTimeout(bq); bq = setTimeout(boneList, 200); };
+    $("dzBone").onchange = () => pickBone($("dzBone").value);
+    $("dzPMus").onchange = () => { const c = cur(); if (!c) return; c.muscles = $("dzPMus").checked; keep(); if (root.H3DazScene) root.H3DazScene.pose(c.id, null, { muscles: c.muscles }); activePaint(); };
+    $("dzPRBone").onclick = () => { const c = cur(); if (!c || !st.bone) return; delete c.pose[st.bone]; const o = $("dzMirror").checked && mirrorOf(st.bone); if (o) delete c.pose[o]; poseApply(); axes(); };
+    $("dzPRAll").onclick = () => { const c = cur(); if (!c) return; c.pose = {}; poseApply(); axes(); };
+    // 🎬 the motion tab
+    $("dzFbxB").onclick = () => $("dzFbx").click();
+    $("dzFbx").onchange = async () => { const f = $("dzFbx").files[0]; $("dzFbx").value = ""; if (f) motionOpen(await f.arrayBuffer(), f.name).catch((e) => say("⚠ " + e.message)); };
+    $("dzMPlay").onclick = () => { const M = mot(); if (M) motionPlay(!M.playing); };
+    $("dzMTime").oninput = () => { const M = mot(); if (!M) return; motionPlay(false); root.H3DazScene.motion.at(+$("dzMTime").value * M.dur); };
+    $("dzMInPlace").onchange = () => { const M = mot(); if (M) { M.inPlace = $("dzMInPlace").checked; root.H3DazScene.motion.at(M.t); } };
+    $("dzMSpeed").onchange = () => { const M = mot(); if (M) M.speed = +$("dzMSpeed").value || 1; };
+    $("dzMBake").onclick = async () => { try { say("⤓ baking…"); const j = await root.H3DazScene.motion.bake(); say("⤓ " + j.model + " - " + j.frames + " frames, in the project's 3D models (the timeline's 3D layers / Blender play it)"); st.lastBake = j; } catch (e) { say("⚠ " + e.message); } };
+    $("dzMOff").onclick = () => { const M = mot(); root.H3DazScene.motion.off(); const c = M && st.scene.chars.find((x) => x.id === M.id); if (c) { c.pose = st.prePose || {}; root.H3DazScene.pose(c.id, c.pose); keep(); } motionUi(); axes(); say("✕ the motion is off - the pose it had before is back"); };
+    // 🧭 the place of the picked character
+    const placeIn = () => { const c = cur(); if (!c) return; c.place = { x: +$("dzPX").value || 0, y: +$("dzPY").value || 0, rot: +$("dzPR").value || 0 }; keep(); if (root.H3DazScene) root.H3DazScene.place(c.id, c.place); };
+    ["dzPX", "dzPY", "dzPR"].forEach((id) => { $(id).onchange = placeIn; });
+    $("dzShow").onchange = () => { const c = cur(); if (!c) return; c.hidden = !$("dzShow").checked; keep(); if (root.H3DazScene) root.H3DazScene.show(c.id, !c.hidden); };
+    $("dzApply").onclick = buildChar;
     $("dzTabs").querySelectorAll("[data-kind]").forEach((b) => { b.onclick = () => { st.kind = b.dataset.kind; list(); }; });
     let qt = 0; $("dzQ").oninput = () => { clearTimeout(qt); qt = setTimeout(list, 300); };
     let dq = 0; $("dzDialQ").oninput = () => { clearTimeout(dq); dq = setTimeout(() => dialsLoad(true), 300); };
     $("dzRefresh").onclick = list;
-    $("dzFolders").onclick = () => { if (root.H3DazLib) { root.H3DazLib.open(); setTimeout(() => { const b = $("pdlFolders"); if (b) b.click(); }, 50); } };
+    $("dzFolders").onclick = () => { const b = $("dzRootsBox"); b.hidden = !b.hidden; if (!b.hidden) loadRoots(); };
     $("dzOpts").querySelectorAll("[data-drape]").forEach((x) => { x.onchange = () => { const c = cur(); if (!c) return; const k = x.dataset.drape; c.drape.kinds = c.drape.kinds.filter((y) => y !== k).concat(x.checked ? [k] : []); keep(); }; });
     $("dzFrames").onchange = () => { const c = cur(); if (c) { c.drape.frames = Math.max(5, Math.min(240, +$("dzFrames").value || 45)); keep(); } };
     $("dzMuscle").onchange = () => { const c = cur(); if (c) { c.muscles = $("dzMuscle").checked; keep(); } };
-    $("dzBuild").onclick = buildChar; $("dzPose").onclick = pose; $("dzOpen").onclick = openIt; $("dzSave").onclick = saveChar;
+    $("dzBuild").onclick = buildChar; $("dzPose").onclick = () => tab("pose"); $("dzOpen").onclick = openIt; $("dzSave").onclick = saveChar;
     $("dzChars").onchange = () => { const v = $("dzChars").value; $("dzChars").value = ""; if (v) loadChar(v); };
     $("dzChanged").onchange = () => { st.changedOnly = $("dzChanged").checked; dialsPaint(); };
     // 2.981.0: 📷 a body from a photo
@@ -199,12 +246,13 @@
     g.innerHTML = j.items.length ? "" : '<span class="hint">nothing here - ' + (j.roots.length ? "another kind or search" : "📁 to point bitGen at your Daz library") + "</span>";
     const c = cur();
     j.items.forEach((it) => {
-      const b = doc.createElement("div"); b.className = "dzit"; b.title = it.rel + (["figure", "character"].includes(it.kind) ? " - click: a new character in the explorer" : " - click: worn by the picked character (again = taken off)");
+      const b = doc.createElement("div"); b.className = "dzit"; b.title = it.rel + (["figure", "character"].includes(it.kind) ? " - drag it into the 3D view (or click) - a new character in the scene" : it.kind === "pose" ? " - click / drag onto a character: its pose" : it.kind === "shape" ? " - click: its dials on the picked character" : " - click / drag onto a character: worn (again = taken off)");
       b.dataset.rel = it.rel;
-      b.innerHTML = (it.thumb ? '<img loading="lazy" alt="" src="/api/dazlib/thumb?root=' + encodeURIComponent(it.root) + "&rel=" + encodeURIComponent(it.thumb) + '">' : '<img alt="">') + "<span>" + esc(it.name) + "</span>";
+      b.innerHTML = (it.thumb ? '<img loading="lazy" alt="" draggable="false" src="/api/dazlib/thumb?root=' + encodeURIComponent(it.root) + "&rel=" + encodeURIComponent(it.thumb) + '">' : '<img alt="" draggable="false">') + "<span>" + esc(it.name) + "</span>";
       if (c && c.fig.rel === it.rel) b.classList.add("fig");
       if (c && c.wear.some((w) => w.rel === it.rel)) b.classList.add("worn");
       b.onclick = () => libClick(it);
+      b.draggable = true; b.addEventListener("dragstart", (e) => { st.dragIt = it; try { e.dataTransfer.setData("application/x-h3-daz", JSON.stringify(it)); e.dataTransfer.setData("text/plain", it.name); e.dataTransfer.effectAllowed = "copy"; } catch (x) { /* fine */ } });
       g.appendChild(b);
     });
   }
@@ -212,14 +260,35 @@
   function marks() {
     const c = cur(); for (const b of doc.querySelectorAll("#dzGrid .dzit")) { b.classList.toggle("fig", !!c && c.fig.rel === b.dataset.rel); b.classList.toggle("worn", !!c && c.wear.some((w) => w.rel === b.dataset.rel)); }
   }
-  function libClick(it) {
+  /** a library item used: a figure / character = a new character placed in the scene (at = [x, y] where it was dropped);
+   *  a pose / shape preset = on the picked (or dropped-on) character; anything else = worn by it (again = taken off) */
+  async function libClick(it, at, onId) {
     if (["figure", "character"].includes(it.kind)) {
       const n = st.scene.chars.filter((c) => c.fig.rel === it.rel).length + 1, c = newChar(it, n);
-      st.scene.chars.push(c); st.scene.sel = c.id; keep(); tree(); dialsLoad(); list(); say("🧍 " + c.name + " added - now pick what it wears, then 🧍 Build");
-      return;
+      c.place = at ? { x: +at[0].toFixed(3), y: +at[1].toFixed(3), rot: 0 } : freeSpot(st.scene.chars); c.inScene = true;
+      st.scene.chars.push(c); st.scene.sel = c.id; keep(); tree(); dialsLoad(); list();
+      say("🧍 " + c.name + " - building it into the scene…"); await buildChar(); return c;
     }
-    const c = cur(); if (!c) { say("pick a figure or a character first (🧍 Figures / 🎭 Characters)"); return; }
-    const on = wearToggle(c, it); keep(); tree(); marks(); say((on ? "👕 " + c.name + " wears " : "✕ " + c.name + " took off ") + it.name);
+    if (onId && onId !== st.scene.sel) { st.scene.sel = onId; keep(); tree(); dialsLoad(); }
+    const c = cur(); if (!c) { say("pick a character first (drag a 🧍 figure into the 3D view)"); return null; }
+    if (it.kind === "pose") return applyPreset(c, it);
+    if (it.kind === "shape") return applyPreset(c, it);
+    const on = wearToggle(c, it); keep(); tree(); marks(); say((on ? "👕 " + c.name + " wears " : "✕ " + c.name + " took off ") + it.name + (c.last ? " - building…" : ""));
+    if (c.last) rebuildSoon(c);
+    return c;
+  }
+  let rebuildT = 0;
+  function rebuildSoon(c) { clearTimeout(rebuildT); rebuildT = root.setTimeout(() => { if (cur() === c) buildChar(); }, 450); }
+  async function applyPreset(c, it) {
+    let j; try { j = await jget("/api/dazlib/preset?root=" + encodeURIComponent(it.root) + "&rel=" + encodeURIComponent(it.rel)); } catch (e) { say("⚠ " + e.message); return null; }
+    if (j.kind === "shape") { j.dials.forEach((d) => { if (+d.value) c.dials[d.url] = +d.value; else delete c.dials[d.url]; }); keep(); dialsPaint(); say("🎚 " + it.name + ": " + j.dials.length + " dial(s) on " + c.name + (c.last ? " - building…" : "")); if (c.last) rebuildSoon(c); return c; }
+    const r = root.H3DazScene && root.H3DazScene.rig(c.id);
+    if (!r) { say("🕴 build " + c.name + " into the scene first - a pose needs its bones"); return null; }
+    const pk = posePick(j.pose, r.daz.bones); c.pose = pk.pose; keep();
+    root.H3DazScene.pose(c.id, c.pose, { hips: j.hips ? j.hips.map((v) => v * 0.01) : [0, 0, 0] });
+    tab("pose"); axes(); activePaint();
+    say("🕴 " + it.name + ": " + pk.n + " of " + j.n + " bone turn(s) on " + c.name + (pk.n < j.n ? " (the rest are for another figure)" : ""));
+    return c;
   }
   /* ---------------- 🧭 the explorer */
   function tree() {
@@ -229,9 +298,9 @@
     chars.forEach((c) => {
       const row = doc.createElement("div"); row.className = "dzc" + (c.id === st.scene.sel ? " sel" : ""); row.setAttribute("role", "treeitem"); row.dataset.char = c.id;
       row.innerHTML = "<span title=\"Double-click to rename\">🧍 " + esc(c.name) + (c.last ? ' <small style="opacity:.6">✔</small>' : "") + '</span><button type="button" class="ghost dzx" data-del title="Remove this character from the explorer">✕</button>';
-      row.onclick = (e) => { if (e.target.closest("[data-del]")) return; if (st.scene.sel !== c.id) { st.scene.sel = c.id; keep(); tree(); dialsLoad(); list(); } };
+      row.onclick = (e) => { if (e.target.closest("[data-del]")) return; if (st.scene.sel !== c.id) pickChar(c.id); };
       row.ondblclick = () => rename(row, c);
-      row.querySelector("[data-del]").onclick = () => { st.scene.chars = st.scene.chars.filter((x) => x !== c); if (st.scene.sel === c.id) st.scene.sel = st.scene.chars[0] ? st.scene.chars[0].id : ""; keep(); tree(); dialsLoad(); list(); };
+      row.querySelector("[data-del]").onclick = () => { st.scene.chars = st.scene.chars.filter((x) => x !== c); if (root.H3DazScene) root.H3DazScene.remove(c.id); if (st.scene.sel === c.id) st.scene.sel = st.scene.chars[0] ? st.scene.chars[0].id : ""; keep(); tree(); dialsLoad(); list(); if (root.H3DazScene) root.H3DazScene.select(st.scene.sel); };
       t.appendChild(row);
       const comps = [{ name: c.fig.name, kind: c.fig.kind, fig: true }].concat(c.wear);
       comps.forEach((w) => {
@@ -246,6 +315,9 @@
     $("dzOpts").querySelectorAll("[data-drape]").forEach((x) => { x.checked = !!c && c.drape.kinds.includes(x.dataset.drape); x.disabled = !c; });
     $("dzFrames").value = c ? c.drape.frames : 45; $("dzMuscle").checked = !c || c.muscles !== false;
     $("dzBuild").disabled = !c || st.busy; $("dzPose").disabled = !c || !c.last; $("dzOpen").disabled = !c || !c.last; $("dzSave").disabled = !c;
+    const inS = !!(c && root.H3DazScene && root.H3DazScene.rig(c.id)); $("dzPlace").hidden = !inS;
+    if (inS) { $("dzPX").value = c.place.x; $("dzPY").value = c.place.y; $("dzPR").value = c.place.rot; $("dzShow").checked = !c.hidden; }
+    $("dzPMus").checked = !c || c.muscles !== false;
   }
   function rename(row, c) {
     const sp = row.querySelector("span"), inp = doc.createElement("input"); inp.value = c.name; sp.replaceWith(inp); inp.focus(); inp.select();
@@ -260,8 +332,9 @@
       const j = await jpost("/api/dazlib/build", { root: c.fig.root, rel: c.fig.rel, dials: Object.keys(c.dials).filter((u) => +c.dials[u]).map((u) => ({ url: u, value: +c.dials[u] })),
         wear: c.wear.map((w) => ({ root: w.root, rel: w.rel })), drape: c.drape.kinds.length ? { kinds: c.drape.kinds, frames: c.drape.frames } : false, muscles: c.muscles !== false, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim(),
         custom: c.custom || [], paint: c.paint || null });
-      c.last = j.model; keep();
+      c.last = j.model; c.inScene = true; keep();
       const mu = j.info.muscles || {};
+      try { if (sceneV() && root.H3DazScene) { await root.H3DazScene.put(c); root.H3DazScene.select(c.id); } } catch (e) { say("⚠ " + e.message); }
       say("✔ " + j.model + " - " + j.info.pieces.length + " piece(s), " + j.info.bones + " bones" + (mu.kind === "jcm" ? ", 💪 " + mu.shapes + " JCMs" : mu.kind === "flex" ? ", 💪 our flex" : "") + (j.info.warnings.length ? " · ⚠ " + j.info.warnings.slice(0, 2).join("; ") : ""));
     } catch (e) { say("⚠ " + e.message); }
     st.busy = false; tree();
@@ -337,7 +410,7 @@
     say(rep + " · " + ($("dzMsg").textContent.indexOf("⚠") >= 0 ? $("dzMsg").textContent : "built - 🕺 Pose to see it"));
     st.lastMeasure = j; return j;
   }
-  function pose() { const c = cur(); if (c && c.last && root.H3DazPose) root.H3DazPose.open(c.last); }
+  function pose() { tab("pose"); }
   async function openIt() {
     const c = cur(), P = root.H3PushPull; if (!c || !c.last) return;
     if (!P || !P.importModel || !P.state || !P.state.V) { say("open the Sketcher first (📏) - its 3D view loads with it"); return; }
@@ -394,15 +467,101 @@
       box.appendChild(det);
     });
   }
+  /* ---------------- 2.983.0: the scene, the tabs, posing, motion */
+  function foldLib() { const W = LS.get("w", {}); W.lib = Object.assign({}, W.lib, { folded: !(W.lib && W.lib.folded) }); LS.set("w", W); const lib = $("dzLib"); if (W.lib.folded) { lib.dataset.h = lib.style.height; lib.style.height = "auto"; lib.style.resize = "none"; } else { lib.style.height = lib.dataset.h || ""; lib.style.resize = ""; } [...lib.children].forEach((x) => { if (x.id !== "dzLibHead") x.style.display = W.lib.folded ? "none" : ""; }); if (!W.lib.folded) $("dzRootsBox").hidden = true; }
+  async function loadRoots() { try { const j = await jget("/api/dazlib"); st.detected = j.detected || []; $("dzRoots").value = (j.roots || []).join("\n"); } catch (e) { say("⚠ " + e.message); } }
+  async function saveRoots() { try { await jpost("/api/dazlib/roots", { roots: $("dzRoots").value.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) }); $("dzRootsBox").hidden = true; say("📁 saved - reading the library…"); list(); } catch (e) { say("⚠ " + e.message); } }
+  function tab(t) {
+    st.tab = ["shape", "pose", "motion"].includes(t) ? t : "shape";
+    $("dzParTabs").querySelectorAll("[data-tab]").forEach((b) => { b.classList.toggle("on", b.dataset.tab === st.tab); b.setAttribute("aria-selected", b.dataset.tab === st.tab ? "true" : "false"); });
+    doc.querySelectorAll("#dzPar [data-pane]").forEach((p) => { p.hidden = p.dataset.pane !== st.tab; });
+    if (st.tab === "pose") { boneList(); axes(); activePaint(); } if (st.tab === "motion") motionUi();
+  }
+  const rigOf = (c) => (c && root.H3DazScene ? root.H3DazScene.rig(c.id) : null);
+  function mirrorOf(id) { const c = cur(), r = rigOf(c), F = root.H3DazFormula; if (!r || !F) return ""; const m = F.mirrorName(id); return m && r.daz.bones[m] ? m : ""; }
+  function boneList() {
+    const sel = $("dzBone"), r = rigOf(cur()), q = ($("dzBoneQ").value || "").toLowerCase(); if (!r || !root.H3DazPose) { sel.innerHTML = ""; return; }
+    const T = root.H3DazPose.boneTree(r.daz.bones).filter((x) => !q || (x.id + " " + (r.daz.bones[x.id].label || "")).toLowerCase().includes(q)), c = cur();
+    sel.innerHTML = T.map((x) => '<option value="' + esc(x.id) + '"' + (x.id === st.bone ? " selected" : "") + ">" + "\u00a0\u00a0".repeat(Math.min(12, q ? 0 : x.depth)) + esc(r.daz.bones[x.id].label || x.id) + (c.pose[x.id] ? " •" : "") + "</option>").join("");
+  }
+  function pickBone(id) { const r = rigOf(cur()); if (!r || !r.daz.bones[id]) return; st.bone = id; tab("pose"); say("🦴 " + (r.daz.bones[id].label || id) + (mirrorOf(id) ? " (mirrored: " + mirrorOf(id) + ")" : "")); }
+  function axes() {
+    const box = $("dzAxes"), c = cur(), r = rigOf(c); if (!box) return;
+    if (!r || !st.bone || !r.daz.bones[st.bone]) { box.innerHTML = '<span class="hint" style="padding:0 6px">' + (r ? "pick a bone" : "build the character into the scene first") + "</span>"; return; }
+    const v = c.pose[st.bone] || {};
+    box.innerHTML = root.H3DazPose.axisRows(r.daz.bones[st.bone]).map((a) => '<label class="dzax"><span>' + a.label + '</span><input type="range" data-ax="' + a.ax + '" min="' + a.min + '" max="' + a.max + '" step="0.5" value="' + (+v[a.ax] || 0) + '"><output>' + (+v[a.ax] || 0).toFixed(1) + "°</output></label>").join("");
+    box.querySelectorAll("input[data-ax]").forEach((inp) => {
+      inp.oninput = () => { const rr = Object.assign({ x: 0, y: 0, z: 0 }, c.pose[st.bone]); rr[inp.dataset.ax] = +inp.value; c.pose[st.bone] = rr; const o = $("dzMirror").checked && mirrorOf(st.bone); if (o) c.pose[o] = root.H3DazFormula.mirrorRot(rr); inp.nextElementSibling.textContent = (+inp.value).toFixed(1) + "°"; poseApply(); };
+      inp.ondblclick = () => { inp.value = 0; inp.oninput(); };
+    });
+  }
+  let keepT = 0;
+  function poseApply() { const c = cur(); if (!c || !root.H3DazScene) return; root.H3DazScene.pose(c.id, c.pose); activePaint(); clearTimeout(keepT); keepT = root.setTimeout(keep, 300); }
+  function activePaint() {
+    const r = rigOf(cur()), box = $("dzActive"); if (!box) return;
+    const top = r && root.H3DazPose ? root.H3DazPose.topActive(r.weights, 6) : [];
+    box.innerHTML = top.length ? '<div class="hint" style="padding:0 6px">💪 working now:</div>' + top.map((t) => '<div class="dzact"><span>' + esc(t.id) + '</span><em><i style="width:' + Math.min(100, Math.abs(t.v) * 100).toFixed(0) + '%"></i></em></div>').join("") : "";
+  }
+  const mot = () => (root.H3DazScene ? root.H3DazScene.motion.state() : null);
+  async function motionOpen(buf, name) {
+    const c = cur(); if (!rigOf(c)) throw new Error("pick a character in the scene first (drag a 🧍 figure into the 3D view)");
+    st.prePose = JSON.parse(JSON.stringify(c.pose || {}));
+    const M = await root.H3DazScene.motion.load(c.id, buf, name); M.inPlace = $("dzMInPlace").checked; M.speed = +$("dzMSpeed").value || 1;
+    motionUi(); say("🎬 " + name + " on " + c.name + " - " + M.mapped + " bones matched - ▶ plays it"); motionPlay(true); return M;
+  }
+  function motionPlay(on) { root.H3DazScene.motion.play(on); motionUi(); }
+  function motionUi() { const M = mot(); ["dzMRow", "dzMOpts"].forEach((id) => { $(id).hidden = !M; }); if (M) $("dzMPlay").textContent = M.playing ? "⏸" : "▶"; }
+  function sceneChanged(why) {
+    const M = mot(); if (M && (why === "motion")) { const t = $("dzMTime"); if (t && doc.activeElement !== t) t.value = M.dur ? M.t / M.dur : 0; $("dzMTimeV").textContent = M.t.toFixed(1) + " s"; if (st.tab === "pose" && !M.playing) activePaint(); }
+  }
+  function pickChar(id) {
+    if (!st.scene.chars.some((c) => c.id === id)) return;
+    st.scene.sel = id; keep(); tree(); dialsLoad(); marks(); if (root.H3DazScene) root.H3DazScene.select(id);
+    if (st.tab === "pose") { st.bone = ""; boneList(); axes(); activePaint(); }
+  }
+  /** the characters that were in the scene, back in it (the Sketcher's view up) */
+  async function restore() {
+    const S = root.H3DazScene; if (!S || !sceneV()) return;
+    for (const c of st.scene.chars) if (c.inScene && c.last && !S.rig(c.id)) { try { await S.put(c); } catch (e) { c.inScene = false; } }
+    if (st.scene.sel) S.select(st.scene.sel); tree();
+  }
+  /** the 3D view: drops from the library, a click picks a character (or, in 🕺 Pose, its bone) */
+  function hookView() {
+    const V = sceneV(), view = $("ppView"); if (!V || !view || view.dataset.dzHooked) return !!(V && view);
+    view.dataset.dzHooked = "1";
+    view.addEventListener("dragover", (e) => { if (!st.on) return; const ok = [...(e.dataTransfer.types || [])].includes("application/x-h3-daz") || st.dragIt; if (ok) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+    view.addEventListener("drop", (e) => {
+      if (!st.on) return; let it = st.dragIt; try { const d = e.dataTransfer.getData("application/x-h3-daz"); if (d) it = JSON.parse(d); } catch (x) { /* fine */ }
+      st.dragIt = null; if (!it) return; e.preventDefault(); e.stopPropagation();
+      const S = root.H3DazScene, at = S.ground(e), onId = S.pickChar(e);
+      libClick(it, at, onId || "");
+    });
+    view.addEventListener("dragend", () => { st.dragIt = null; });
+    let down = null;
+    V.canvas.addEventListener("pointerdown", (e) => { down = [e.clientX, e.clientY]; }, true);
+    V.canvas.addEventListener("pointerup", (e) => {
+      if (!st.on || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return; down = null;
+      const S = root.H3DazScene, id = S.pickChar(e); if (!id) return;
+      if (st.tab === "pose" && id === st.scene.sel) { const b = S.pickBone(e, id); if (b) { pickBone(b); return; } }
+      pickChar(id); say("🧍 " + ((cur() || {}).name || "") + " picked - use clothes, hair, poses on it from the library");
+    }, true);
+    return true;
+  }
   /* ---------------- on / off */
+  /** on: the Sketcher shown (if it was closed), the three DAZ dockers in it, the characters back in its scene; off: the dockers hidden (the characters stay in the scene) */
   function toggle(force) {
-    const on = force != null ? !!force : !st.on, app = $("app"), b = button();
+    const on = force != null ? !!force : !st.on, d = $("pushpulldock"), b = button(), b2 = $("ppDazLib");
+    if (on && d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") { try { root.toggleDockGone("pushpulldock", "tX_pushpulldock"); } catch (e) { /* the menu's own way */ } }
     if (on && !build()) return false;
     st.on = on; LS.set("on", on);
-    if (app) app.classList.toggle("dz-on", on);
-    if (b) { b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }
+    if (d) d.classList.toggle("dz-on", on);
+    for (const x of [b, b2]) if (x) { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); }
     regrid();
-    if (on) { tree(); list(); dialsLoad(); chars(); root.setTimeout(() => { const m = $("maincol"); if (m && m.getBoundingClientRect().width < 360) say("The window is narrow - hide a side docker (References, Assets, Queue) to give the main column room, or drag these dockers narrower"); }, 300); }
+    if (on) {
+      if (root.H3DazScene) root.H3DazScene.onChange(sceneChanged);
+      tree(); list(); dialsLoad(); chars(); tab(st.tab || "shape");
+      let n = 0; const wait = () => { if (!st.on) return; if (hookView()) { restore(); return; } if (n++ < 80) root.setTimeout(wait, 250); }; wait();
+    }
     return on;
   }
   function boot() {
@@ -410,6 +569,6 @@
     root.setTimeout(button, 1500);   // after the app strip has built itself
     if (LS.get("on", false)) toggle(true);
   }
-  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
+  root.H3DazTools = Object.assign({ toggle, list, tree, libClick, buildChar, dialsLoad, tryIt, measureIt, makeFromMeasures, tab, pickChar, pickBone, motionOpen, restore, state: st, cur, info: () => ({ on: st.on, chars: st.scene.chars.length, sel: (cur() || {}).name || "", dials: st.dialList.length, wear: (cur() || { wear: [] }).wear.map((w) => w.name) }) }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1252,19 +1252,25 @@ Good to know:
 
 ## 📚 The Daz library (the Sketcher, 2.977.0)
 
-**🧬 DAZ Tools (2.980.0)** - the same library as dockers: press **🧬 DAZ Tools** on the top menu bar. The **📚 DAZ
-Library** opens as a docker left of the main column; the **🧭 DAZ Explorer** and **🎚 Shape controls** open as a docker
-right of it. Press it again to hide both (it remembers on / off, the widths and your characters).
-- **📚 DAZ Library**: the kinds, the search and the thumbnails. Click a **figure or character** = a new character in the
-  explorer; click **clothing, hair or anatomy** = the picked character wears it (click again to take it off). 📁 sets the
-  content folders.
-- **🧭 DAZ Explorer**: each character with its components (🦴 the figure, 👕 clothing, 💇 hair, 🫀 anatomy - ✕ takes one
-  off). Click a character to pick it, double-click to rename it. Below: 💨 physics (clothing / hair / other, frames) and
-  💪 muscles, then **🧍 Build**, **🕺 Pose** (the 🧍 Pose view), **⤒ Open** (into the Sketcher model) and **💾 Save**;
-  **📂 Saved…** brings a saved character back.
-- **🎚 Shape controls**: the picked character's dials by group - search them, tick *changed* to see only the ones you
-  moved, ↺ puts them all back to 0, double-click a slider for 0. 🧍 Build makes the new shape.
-- Drag the dockers' inner edges to size them, and the bar between the explorer and the shape controls to share the height.
+**The DAZ dockers in the Sketcher (2.983.0)** - press **📚 Daz library** in the Sketcher's toolbar (or **🧬 DAZ Tools** on
+the top menu bar - it opens the Sketcher too). Like Daz Studio's layout: the **📚 DAZ Library** floats over the 3D view (drag
+its title to move it, its corner to size it, ▁ folds it), the **🧭 DAZ Explorer** and the **🎚 Parameters** dock on the right of
+the view (drag their left edge to size them, the bar between them to share the height). Press it again to hide the dockers -
+the characters stay in the scene. Your characters, their places and poses, and the dockers' sizes are kept.
+- **Put a character in the scene**: drag a 🧍 figure or 🎭 character from the library into the 3D view - it is built and
+  stands where you dropped it, picked (a blue box). Clicking a figure puts it beside the others. It is a real rigged
+  character in the Sketcher's scene (not the Sketcher's own faces - **⤒ As faces** makes a static copy of those).
+- **Dress and pose the picked character**: click a 👕 clothing (shoes too), 💇 hair or 🫀 anatomy item - it is worn (click
+  again to take it off) and the character is rebuilt in place; or drag the item onto any character in the view. 🕴 **Poses**
+  (your pose presets) turn its bones - a pose for another figure generation moves only the bones they share (the message says
+  how many). 🎚 **Shapes** (shape presets) set its dials. **Click a character** in the view to pick it.
+- **🧭 DAZ Explorer**: the characters and their parts (✕ takes one off), **X / Y / Turn** (where it stands, metres and
+  degrees), 👁 hide it, 💨 physics, 💪 muscles, 🧍 Build, 💾 Save / 📂 Saved…, 📷 Body from a photo, 📏 Height & weight.
+- **🎚 Parameters**: **🎚 Shape** (the dials by group - search, *changed* only, ↺ all, 🧍 Apply builds them), **🕺 Pose** (click
+  the character's body in the view to pick a bone, or find it in the list; its three sliders, Mirror, 💪 Muscles, ↺ bone / pose
+  - the figure's own JCMs follow), **🎬 Motion** (a Mixamo FBX on the picked character: ▶, the time bar, In place, Speed,
+  ⤓ Bake; ✕ brings back the pose it had before).
+- Not here (yet): material presets (they are listed under 📦 Other but not applied).
 
 **📷 Body from a photo (2.981.0)** - in the 🧭 DAZ Explorer: shape the picked character to a photo of a person. It stays your
 own Daz figure, so its UVs, rig, muscle shapes and clothing fit come with it, and the photo is painted into those UVs.

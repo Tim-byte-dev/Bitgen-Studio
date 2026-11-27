@@ -15253,6 +15253,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui981-ui.js > /tmp/ui981.log 2>&
 node scripts/test-982.js > /tmp/t982.log 2>&1 && ok "2.982.0 units: 📏 height / weight / tapes fitted with the doll's dials + 🎬 the Mixamo retarget (T / A rest, the walk, the JCMs) + the glTF bake" || { bad "2.982.0 units"; grep -a "^FAIL" -A1 /tmp/t982.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui982-ui.js > /tmp/ui982.log 2>&1 && ok "2.982.0 browser test: 📏 Measure / Make, 🎬 a Mixamo-like FBX through the real FBXLoader on the doll, ⤓ Bake loaded back with its clip" || { bad "2.982.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui982.log | head -8; }
 
+node scripts/test-983.js > /tmp/t983.log 2>&1 && ok "2.983.0 units: the DAZ dockers in the Sketcher - pose / shape presets read, the doll's wardrobe, places, the wiring" || { bad "2.983.0 units"; grep -a "^FAIL" -A1 /tmp/t983.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui983-ui.js > /tmp/ui983.log 2>&1 && ok "2.983.0 browser test: the doll dragged into the Sketcher's scene, dressed / posed / shaped / placed / moved, picked by a click, kept over a reload" || { bad "2.983.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui983.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

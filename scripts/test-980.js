@@ -23,11 +23,11 @@ check("TEMPLATE: the library column + its splitter before the main column, a spl
 check("the words: not a replacement for Daz Studio", /Not a replacement for Daz Studio/.test(T.NOTE) && /very powerful character creator/.test(T.NOTE));
 const ui = src("ext/pushpulldock/ppdaztools.js");
 check("the button #dazTools on the menu bar (after the app strip), aria-pressed; on = #app.dz-on, kept (h3.daztools.on)", /id = "dazTools"/.test(ui) && /\$\("appStrip"\)/.test(ui) && /aria-pressed/.test(ui) && /classList\.toggle\("dz-on", on\)/.test(ui) && /LS\.set\("on", on\)/.test(ui));
-check("the dockers: #dzLeft (📚 DAZ Library) before #maincol, #dzRight (🧭 DAZ Explorer + 🎚 Shape controls) after it; hidden when off", /app\.insertBefore\(L, main\)/.test(ui) && /app\.insertBefore\(sr, main\.nextSibling\)/.test(ui) && /📚 DAZ Library/.test(ui) && /🧭 DAZ Explorer/.test(ui) && /🎚 Shape controls/.test(ui) && /#app:not\(\.dz-on\)>\.dz-el\{display:none!important\}/.test(ui));
+check("2.983.0: the dockers live in the Sketcher (#ppMain: the floating #dzLib, the #dzSide column) - hidden when off", /\$\("ppMain"\)/.test(ui) && /L\.id = "dzLib"/.test(ui) && /R\.id = "dzSide"/.test(ui) && /📚 DAZ Library/.test(ui) && /🧭 DAZ Explorer/.test(ui) && /🎚 Parameters/.test(ui) && /#pushpulldock:not\(\.dz-on\) \.dz-el\{display:none!important\}/.test(ui));
 check("static/dgdock.js knows the two columns (a docked ▣ column regrids with them)", /dzLeft: "var\(--dzl\)", dzRight: "var\(--dzr\)"/.test(src("static/dgdock.js")) && /dzl: "5px", dzr: "5px"/.test(src("static/dgdock.js")));
 check("the build route passes 💪 muscles on (lib/dazLib build({muscles}))", /muscles: b\.muscles !== false/.test(src("routes/dazLibrary.js")));
 const EJ = JSON.parse(src("ext/pushpulldock/ext.json")).scripts;
-check("ext.json: ppdaztools.js right after ppdazpose.js", EJ.indexOf("ppdaztools.js") === EJ.indexOf("ppdazpose.js") + 1);
+check("ext.json: ppdaztools.js after ppdazpose.js (2.983.0: ppdazscene.js between them)", EJ.indexOf("ppdaztools.js") === EJ.indexOf("ppdazpose.js") + 2 && EJ.indexOf("ppdazscene.js") === EJ.indexOf("ppdazpose.js") + 1);
 check("the docs: USAGE (🧬 DAZ Tools) + CHANGELOG 2.980.0 + FEATURES", /🧬 DAZ Tools/.test(src("docs/USAGE.md")) && /2\.980\.0/.test(src("misc/CHANGELOG.md")) && /DAZ Tools/.test(src("docs/FEATURES.md")));
 console.log(`\n${P} passed, ${F} failed`);
 process.exit(F ? 1 : 0);

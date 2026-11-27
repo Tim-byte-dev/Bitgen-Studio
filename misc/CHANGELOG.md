@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.983.0** — The DAZ Dockers in the Sketcher Itself (a Daz Studio-Like Layout: the 📚 Library Floating Over the 3D View, the 🧭 Explorer and 🎚 Parameters - Shape / Pose / Motion - Docked Beside It, One Button); Characters Dragged Into the 3D View as Rigged Objects; Clothes, Shoes, Hair, Anatomy, Pose and Shape Presets Clicked or Dropped Onto the Picked Character; a Click on Its Body Picks a Bone
 - **2.982.0** — 📏 A Daz Body From Height, Weight and Tape Measurements (the Figure's Own Dials, a Build to Choose, the Weight From the Body's Volume) and 🎬 Mixamo Motion on a Daz Character in 🕺 Pose (Genesis 3 / 8 / 9 Bones, the T / A Rest Pose Corrected, the Walk Scaled or In Place, the Muscle Shapes Following, ⤓ Baked Into a glTF Animation)
 - **2.981.0** — 📷 A Daz Body From a Photo, Two Ways - A Fit the Figure's Own Body Dials to the Photo's Proportions, B a 3D Scan of the Photo With the Figure Wrapped Onto It - the Photo / the Scan Painted Into the Figure's Own UVs; Each Try a New Character: Try Both, Keep the Better One
 - **2.980.0** — 🧬 DAZ Tools on the Top Menu Bar: the 📚 DAZ Library as a Left Docker, the 🧭 DAZ Explorer (Characters and Their Components) and 🎚 Shape Controls as a Right Docker - Shown When On, Hidden When Off; Build, Pose, Open and Save From the Explorer

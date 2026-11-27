@@ -61,6 +61,16 @@ function mount(app) {
       res.json({ dials, changed: r.changed, target, before: r.before, after: r.after, error: r.error, height_cm: { before: r.height.before, after: r.height.after }, tried: r.dials, note: D.NOT_DAZ });
     } catch (e) { fail(res, e); }
   });
+  // 2.983.0: a pose / shape preset for the picked character in the Sketcher -> {kind, pose, hips, n} | {kind, dials}
+  app.get("/api/dazlib/preset", (req, res) => {
+    try {
+      const f = D.abs(String(req.query.root || ""), String(req.query.rel || "")), j = D.readDson(f), P = require("../lib/dazPreset");
+      const t = String((j.asset_info && j.asset_info.type) || "").toLowerCase(), kind = D.kindOf(String(req.query.rel || ""), j);
+      if (kind === "pose" || /pose/.test(t)) { const p = P.parsePose(j); return res.json(Object.assign({ kind: "pose" }, p)); }
+      const dials = P.parseShape(j); if (dials.length) return res.json({ kind: "shape", dials });
+      res.status(422).json({ error: "not a pose or a shape preset bitGen can use (" + (t || kind) + ")" });
+    } catch (e) { fail(res, e); }
+  });
   // 2.982.0: 📏 height / weight / tape measurements -> the figure's own body dials (measure_only: just the numbers now)
   app.post("/api/dazlib/body/measures", J, (req, res) => {
     const b = req.body || {};

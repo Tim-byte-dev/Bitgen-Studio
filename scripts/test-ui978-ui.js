@@ -75,7 +75,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => document.getElementById("pscDlg").close());
 
     /* 📚 the face photo picker + 💾 a character */
-    await p.click("#ppDazLib");
+    await p.evaluate(() => H3DazLib.open());   // 2.983.0: the 📚 button toggles the DAZ dockers - the dialog by its API
     await p.waitForSelector("#pdlDlg[open] .pdl-it", { timeout: 10000 });
     await p.click(".pdl-it");
     await p.check("#pdlFaceOn");

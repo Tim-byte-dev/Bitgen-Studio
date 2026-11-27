@@ -35,7 +35,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.reload({ waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3DazTools && window.H3DazPose && document.getElementById("dazTools"), null, { timeout: 60000 });
     await p.click("#dazTools");
-    await p.waitForSelector("#dzLeft .dzit", { timeout: 15000 });
+    await p.waitForSelector("#dzLib .dzit", { timeout: 15000 });
     await p.click("#dzGrid .dzit");
     await p.click("#dzMeasure summary");
     await p.click("#dzMRead");
