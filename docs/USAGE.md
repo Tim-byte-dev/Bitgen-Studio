@@ -649,6 +649,11 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**One reference picture is sent whole (2.991.0)** - with a single reference in the prompt docker (and no materials of the
+model's own), ✨ Photo sends that picture itself - its whole shape, sharp - as picture 3 and asks for its place, ground,
+surroundings, sky and look around the model. Before, it went as a small captioned square cut from the picture, and the edit
+model often lost it. Several references, or references with the model's own materials, still go on one labelled board.
+
 **The prompt's place replaces the empty background (2.990.0)** - with words in the prompt ("a woman standing in a park"),
 picture 1 is drawn on a flat grey with no sky or ground, and the edit model is told the grey is empty space to fill with the
 place your prompt describes - its ground, its surroundings, its sky (before, it kept the plain background). A backdrop or

@@ -25,7 +25,7 @@ const M = RL.promptFor("", used(tiles, [{ src: "x", where: ["walls"] }]), null);
 check("materials + references on one board: both lines", /material board/.test(M) && /Reference/.test(M));
 check("boardCaptions: + the references", RL.boardCaptions(used(tiles)).join("|") === "Reference 1 (location)|Reference 2 (old brick wall)");
 const pr = rd("ext/pushpulldock/ppreal.js");
-check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /used\.refs = refTiles\(/.test(pr) && /used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length \? await boardPic\(used\)/.test(pr) && /\(the scene only\)/.test(pr));
+check("run(): the page's `refs` read into the board; a board for references alone; the message says what went", /used\.refs = refTiles\(/.test(pr) && /\(used\.tiles\.length \|\| used\.bg \|\| used\.refs\.length\) \? await boardPic\(used\)/.test(pr) && /\(the scene only\)/.test(pr));
 check("boardPic: blob: references drawn, a 3 × 3 board at most", /\/\^blob:\|\^data:\//.test(pr) && /\.slice\(0, 9\)\)\.slice\(0, 9\)/.test(pr));
 
 const P = require(path.join(ROOT, "static/lbpano.js"));

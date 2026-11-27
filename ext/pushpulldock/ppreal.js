@@ -30,6 +30,7 @@
   const BOARD = "{img3} is a material board: each tile is a real material or picture, with where it goes written under it - use exactly those materials, textures and colours on those parts of the building";
   /* 2.987.0 (Tim: "when rendering from sketcher use the reference images and prompt in prompt docker if there are any"): the
      prompt docker's reference pictures ride on the same board (picture 3), each marked "Reference n" */
+  const REF1 = "{img3} is the reference picture: give the whole picture its look - its place, ground, surroundings, sky, style, colours, lighting and mood - with the 3D model standing in it, its shapes kept";   // 2.991.0: ONE reference, sent whole
   const REFS = "{img3} also holds reference pictures (the tiles marked Reference): give the scene their look - their style, materials, colours, lighting and mood - while keeping the 3D render's shapes";
   const BOARD_BG = "; the tile marked Background is what surrounds the building (keep it as the scene's background)";
   /* 2.688.0 (Tim: "only add the objects in the scene to the photo generate - for example if there aren't any windows don't
@@ -100,10 +101,10 @@
     if (t && t !== DEFAULT) {
       const lead = (scene ? leadFor(scene) : LEAD).replace(" Show only what is in the render and add nothing else.", "");
       const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
-      return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + " " + FOLLOW + (board && board.bg ? "" : " " + EMPTY) + "\nThe prompt: " + t;   // a backdrop / sky of your own stays
+      return lead + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + (board.single ? REF1 : REFS) + "." : "") + " " + FOLLOW + (board && board.bg ? "" : " " + EMPTY) + "\nThe prompt: " + t;   // a backdrop / sky of your own stays
     }
     const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
-    return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
+    return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + (board.single ? REF1 : REFS) + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
   }
   /** the pictures the model uses and where (pure): [{id, src, name, where: [...]}] (+ {bg} the backdrop / sky) - faces = the
    *  model's own faces' materials (M.f) */
@@ -153,6 +154,12 @@
   const realName = (model) => "sketcher_real_" + String(model || "model").replace(/[^\w.-]+/g, "_").slice(0, 60) + ".png";
 
   /** 2.652.0: the material board picture (a canvas): up to 6 tiles, 3 a row, each picture cover-fitted + its caption */
+  /** 2.991.0: one reference picture, whole (its own shape, 1024 px at most) */
+  async function refPic(src) {
+    const im = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }); if (!im) return null;
+    const k = Math.min(1, 1024 / Math.max(im.width, im.height)), c = root.document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); return c;
+  }
   async function boardPic(u) {
     const items = u.tiles.map((t) => ({ src: t.src, cap: t.where.join(", ") })).concat(u.bg ? [{ src: u.bg.src, cap: "Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")" }] : []).slice(0, 6)
       .concat((u.refs || []).slice(0, 9)).slice(0, 9);                    // 2.987.0: + the prompt docker's references (a 3 × 3 board at most)
@@ -172,7 +179,7 @@
     });
     return c;
   }
-  const api = { EMPTY, FILL, FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { REF1, EMPTY, FILL, FOLLOW, REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -268,7 +275,10 @@
         daz: (() => { try { const D = root.H3DazScene; return D ? D.list().filter((id) => { const r = D.rig(id); return r && r.outer.visible; }).length : 0; } catch (e) { return 0; } })() });
       const used = usedPictures(P.state.M.arch, P.state.M.f);
       used.refs = refTiles((() => { try { return typeof refs !== "undefined" ? refs : root.refs; } catch (e) { return root.refs; } })());   // eslint-disable-line no-undef - the prompt docker's (index.html's top-level `refs`)
-      const bc = used.tiles.length || used.bg || used.refs.length ? await boardPic(used) : null;
+      // 2.991.0 (Tim: "after i changed the reference image it went now a gray background and not holding the reference image"):
+      // ONE reference and nothing else for the board = that picture itself, whole (a captioned 320 px tile cropped it and lost it)
+      used.single = used.refs.length === 1 && !used.tiles.length && !used.bg;
+      const bc = !used.single && (used.tiles.length || used.bg || used.refs.length) ? await boardPic(used) : used.single ? await refPic(used.refs[0].src) : null;
       const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
       S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
       const send = async (withBoard) => {

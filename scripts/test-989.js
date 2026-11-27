@@ -23,5 +23,9 @@ check("a transparent shot: no sky / backdrop and no ground either, put back afte
 // 2.990.0 (Tim: "woman standing in a park ... it just renders a white background not a park")
 check("2.990.0 with words: the grey round the model is EMPTY - replaced by the prompt's place (ground, surroundings, sky), never a plain / white background", withText.includes(R.EMPTY) && /never keep a plain, grey or white background/.test(R.EMPTY) && !none.includes(R.EMPTY) && R.FILL === 0x808080 && !R.promptFor("a park", { tiles: [], bg: { src: "x", kind: "sky" }, refs: [] }, sc).includes(R.EMPTY));   // a backdrop / sky of your own stays
 check("…picture 1 drawn on that flat grey (no sky / backdrop / ground) only when there are words", /Object\.assign\(\{ clean: true, photo: true \}, words \? \{ fill: FILL \} : \{\}\)/.test(rd("ext/pushpulldock/ppreal.js")) && /if \(fill0\) \{ scene\.background = null; ground\.visible = false; R\.setClearColor\(o\.fill, 1\); \}/.test(vw));
+// 2.991.0: ONE reference = the picture itself (whole), its own line - with words and without
+const one = { tiles: [], bg: null, refs: [{ src: "blob:x", cap: "Reference 1" }], single: true };
+check("2.991.0 one reference: \"{img3} is the reference picture\" (its place, surroundings, look) - not the tiles' line; both with and without words", R.promptFor("a park", one, sc).includes(R.REF1) && R.promptFor("", one, sc).includes(R.REF1) && !R.promptFor("a park", one, sc).includes("tiles marked Reference"));
+check("…sent whole (refPic, 1024 px at most) instead of a cropped board tile; several references / materials still a board", /used\.single = used\.refs\.length === 1 && !used\.tiles\.length && !used\.bg/.test(rd("ext/pushpulldock/ppreal.js")) && /async function refPic\(src\)/.test(rd("ext/pushpulldock/ppreal.js")));
 console.log("\nRESULT: " + pass + " passed, " + fail + " failed");
 process.exitCode = fail ? 1 : 0;

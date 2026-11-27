@@ -1402,6 +1402,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **🙂 A head like the person's + the UI size zooms everything** — 📷 Body from a photo shapes the head too (its width, its height above the eyes, the chin - from the photo's face or a close-up) and paints the face over the painted body; the UI size slider (60 - 250 %) zooms the whole app - buttons, icons, dockers, text - for a screen across the room. *(2.988.0)*
 - **✨ Photo follows the whole prompt; a transparent picture to the image editor** — with your words, ✨ Photo and ✏ Edit (Sketcher) add the place, setting, weather and other people or things your prompt names around the model (its shapes and camera kept); → Image editor sends the Sketcher's view with a transparent background. *(2.989.0)*
 - **✨ Photo puts the prompt's place round the model** — with words, the empty background is replaced by the place the prompt describes ("a woman standing in a park" gets the park) instead of a plain white one; your own backdrop / sky stays. *(2.990.0)*
+- **✨ Photo keeps your reference** — one reference picture goes to the edit model whole (not a cropped tile), its place and look around the model. *(2.991.0)*
 
 ### Laser cutting and engraving
 

@@ -47,9 +47,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       return { ref1: /name="ref1"/.test(sent || ""), prompt: field("prompt") || "", msg: await ev(() => document.getElementById("ppMsg").textContent) };
     };
     const A = await shoot("a red brick cottage at dusk", true);
-    check("prompt + a reference: picture 3 = the board with the reference, the prompt's words AND the reference line sent", A.ref1 && /a red brick cottage at dusk/.test(A.prompt) && /Reference/.test(A.prompt), A);
+    check("prompt + a reference: picture 3 = the reference itself (2.991.0 - one reference is sent whole), the prompt's words AND the reference line sent", A.ref1 && /a red brick cottage at dusk/.test(A.prompt) && /\{img3\} is the reference picture/.test(A.prompt), A);
     const B = await shoot("", true);
-    check("no prompt + a reference: the reference used (board + its line), no words of the user", B.ref1 && /Reference/.test(B.prompt) && !/cottage/.test(B.prompt), B);
+    check("no prompt + a reference: the reference used (board + its line), no words of the user", B.ref1 && /\{img3\} is the reference picture/.test(B.prompt) && !/cottage/.test(B.prompt), B);
     const C = await shoot("a red brick cottage at dusk", false);
     check("a prompt, no reference: the prompt used, no board", !C.ref1 && /cottage/.test(C.prompt) && !/Reference/.test(C.prompt), C);
     const D = await shoot("", false);
