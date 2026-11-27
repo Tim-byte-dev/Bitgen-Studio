@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.987.0** — 🌐 Panorama 3D in the Image Preview (Look Round, Zoom, 👓 VR Side by Side / Top-Bottom, Stereo Panoramas per Eye) and the Sketcher's ✨ Photo With the Prompt Docker's Reference Pictures and Prompt
 - **2.986.0** — The Sketcher's ✂ Separate Into Parts (a Group per Mesh or Loose Piece) and Its Arrow Keys (Pan; Ctrl+↑ / ↓ Zoom, Ctrl+← Everything in View, Ctrl+→ Zoom to the Picked)
 - **2.985.0** — The Sketcher's 🔍 Zoom Tool and 🏛 Architecture Button (Hide / Show Every Building Tool); Delete Removes a Picked DAZ Character (↶ Undo); the Explorer Lists Every Piece Built With 👁; 🎨 Material Presets; Poses That Turn or Move the Whole Figure, Kept; ✨ Photo Keeps the Characters and Says Why a Render Failed
 - **2.984.0** — The Sketcher's Arrow Keys Move the View (↑ / ↓ Zoom, ← / → Orbit Round Z; an Axis While a Tool Is Half-Way) and a Collapsible ⚙ Properties Docker Beside the Toolbox Where the Sketcher's Other Panels (🗂 Outline, 🧱 Wall Types, the DAZ Library / Explorer / Parameters) Dock as Tabs or Below

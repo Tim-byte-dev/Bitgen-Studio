@@ -15265,6 +15265,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui985-ui.js > /tmp/ui985.log 2>&
 node scripts/test-986.js > /tmp/t986.log 2>&1 && ok "2.986.0 units: ✂ Separate (by name / by loose pieces, edges, undo) and the arrow keys (pan, Ctrl zoom / reset / to the picked)" || { bad "2.986.0 units"; grep -a "^FAIL" -A1 /tmp/t986.log | head -8; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui986-ui.js > /tmp/ui986.log 2>&1 && ok "2.986.0 browser test: ✂ on a picked group and on an imported chair (by its meshes), ↑ ↓ ← → pan, Ctrl+arrows zoom / reset / to the picked" || { bad "2.986.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui986.log | head -8; }
 
+node scripts/test-987.js > /tmp/t987.log 2>&1 && ok "2.987.0 units: ✨ Photo's references / prompt (the four cases), 🌐 Panorama 3D's layouts / eyes / viewports" || { bad "2.987.0 units"; grep -a "^FAIL" -A1 /tmp/t987.log | head -8; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui987-ui.js > /tmp/ui987.log 2>&1 && ok "2.987.0 browser test: ✨ Photo sends the references / prompt as asked, 🌐 Panorama 3D looks round, 👓 side by side / top-bottom, a stereo picture per eye" || { bad "2.987.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui987.log | head -8; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -28,6 +28,9 @@
      model's PICTURE materials and its backdrop go to the edit model too - the edit models take 3 pictures (the render, its
      depth, one more), so they ride as ONE labelled MATERIAL BOARD (picture 3): a tile each, where it is used written under it */
   const BOARD = "{img3} is a material board: each tile is a real material or picture, with where it goes written under it - use exactly those materials, textures and colours on those parts of the building";
+  /* 2.987.0 (Tim: "when rendering from sketcher use the reference images and prompt in prompt docker if there are any"): the
+     prompt docker's reference pictures ride on the same board (picture 3), each marked "Reference n" */
+  const REFS = "{img3} also holds reference pictures (the tiles marked Reference): give the scene their look - their style, materials, colours, lighting and mood - while keeping the 3D render's shapes";
   const BOARD_BG = "; the tile marked Background is what surrounds the building (keep it as the scene's background)";
   /* 2.688.0 (Tim: "only add the objects in the scene to the photo generate - for example if there aren't any windows don't
      add windows to the prompt"): LEAD named "a building: real brick, timber, glass and concrete" for every model - the edit
@@ -86,7 +89,8 @@
   }
   function promptFor(text, board, scene) {
     const t = String(text || "").trim();
-    return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (board ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
+    const mats = board && ((board.tiles || []).length || board.bg), refs = board && (board.refs || []).length;
+    return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (mats ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (refs ? " " + REFS + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
   }
   /** the pictures the model uses and where (pure): [{id, src, name, where: [...]}] (+ {bg} the backdrop / sky) - faces = the
    *  model's own faces' materials (M.f) */
@@ -109,7 +113,12 @@
     return { tiles, bg };
   }
   /** the board's tile captions (pure): "Kitchen floor, Bed floor" … the background last */
-  function boardCaptions(u) { return u.tiles.map((t) => t.where.join(", ")).concat(u.bg ? ["Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")"] : []); }
+  function boardCaptions(u) { return u.tiles.map((t) => t.where.join(", ")).concat(u.bg ? ["Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")"] : []).concat((u.refs || []).map((r) => r.cap)); }
+  /** 2.987.0 (pure): the prompt docker's reference pictures as board tiles - pictures only, 6 at most, "Reference n (its words)" */
+  function refTiles(list) {
+    return (Array.isArray(list) ? list : []).filter((r) => r && r.url && !(r.file && r.file.type && !/^image\//.test(r.file.type))).slice(0, 6)
+      .map((r, i) => ({ src: r.url, cap: "Reference " + (i + 1) + (r.desc ? " (" + String(r.desc).slice(0, 40) + ")" : r.role && r.role !== "person" ? " (" + r.role + ")" : "") }));
+  }
   /** s = {sketcher, prompt, editor, maxed} (on screen) */
   function linkedNow(s) { return !!(s && s.sketcher && s.prompt && (s.maxed || !s.editor)); }
   /** 2.696.0 (Tim: "add a dropdown to the left of the photo button with image edit styles this will be exclusive to sketcher - keep
@@ -132,9 +141,10 @@
 
   /** 2.652.0: the material board picture (a canvas): up to 6 tiles, 3 a row, each picture cover-fitted + its caption */
   async function boardPic(u) {
-    const items = u.tiles.map((t) => ({ src: t.src, cap: t.where.join(", ") })).concat(u.bg ? [{ src: u.bg.src, cap: "Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")" }] : []).slice(0, 6);
+    const items = u.tiles.map((t) => ({ src: t.src, cap: t.where.join(", ") })).concat(u.bg ? [{ src: u.bg.src, cap: "Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")" }] : []).slice(0, 6)
+      .concat((u.refs || []).slice(0, 9)).slice(0, 9);                    // 2.987.0: + the prompt docker's references (a 3 × 3 board at most)
     if (!items.length) return null;
-    const url = (src) => String(src).replace(/^\/passets\/images\/(.*)$/, (m, n) => "/passets/images/" + encodeURIComponent(n));
+    const url = (src) => /^blob:|^data:/.test(String(src)) ? String(src) : String(src).replace(/^\/passets\/images\/(.*)$/, (m, n) => "/passets/images/" + encodeURIComponent(n));
     const imgs = await Promise.all(items.map((it) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = url(it.src); })));
     const cols = Math.min(3, items.length), rows = Math.ceil(items.length / cols), T = 320, CAP = 44, G = 8;
     const c = root.document.createElement("canvas"); c.width = cols * T + (cols + 1) * G; c.height = rows * (T + CAP) + (rows + 1) * G;
@@ -149,7 +159,7 @@
     });
     return c;
   }
-  const api = { sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { REFS, refTiles, sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -242,7 +252,9 @@
       const scene = sceneWords(P.state.M.arch, P.state.M.f, { furn: (t) => { try { const pc = root.PPFurn && root.PPFurn.pieces().find((x) => x.type === t); return pc ? pc.label : t; } catch (e) { return t; } },
         mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } },
         daz: (() => { try { const D = root.H3DazScene; return D ? D.list().filter((id) => { const r = D.rig(id); return r && r.outer.visible; }).length : 0; } catch (e) { return 0; } })() });
-      const used = usedPictures(P.state.M.arch, P.state.M.f), bc = used.tiles.length || used.bg ? await boardPic(used) : null;
+      const used = usedPictures(P.state.M.arch, P.state.M.f);
+      used.refs = refTiles((() => { try { return typeof refs !== "undefined" ? refs : root.refs; } catch (e) { return root.refs; } })());   // eslint-disable-line no-undef - the prompt docker's (index.html's top-level `refs`)
+      const bc = used.tiles.length || used.bg || used.refs.length ? await boardPic(used) : null;
       const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
       S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
       const send = async (withBoard) => {
@@ -256,11 +268,12 @@
         S.sent = { prompt: fields.prompt, board: !!withBoard, scene };
         const r = await root.fetch("/api/aiedit", { method: "POST", body: fd }); return { r, j: await r.json() };
       };
-      say("📷 a real photo of the model" + (bblob ? " (+ its materials board)" : "") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
+      const what = [used.tiles.length || used.bg ? "its materials" : "", used.refs.length ? used.refs.length + " reference picture" + (used.refs.length > 1 ? "s" : "") : "", String(text || "").trim() && text.trim() !== DEFAULT ? "your prompt" : ""].filter(Boolean);
+      say("📷 a real photo of the model" + (what.length ? " + " + what.join(" + ") : " (the scene only)") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
       let { r, j } = await send(!!bblob);
       if (!r.ok && bblob && /picture\(s\)|takes \d|at most/i.test(j.error || "")) {   // this edit model takes two pictures: without the board
         ({ r, j } = await send(false));
-        if (r.ok) say("📷 queued without the materials board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
+        if (r.ok) say("📷 queued without the materials / references board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
       }
       if (!r.ok) throw new Error(j.error || "refused");
       if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }

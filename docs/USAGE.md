@@ -649,6 +649,13 @@ With **Select**:
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
+**What ✨ Photo uses (2.987.0)** - the prompt docker's **reference pictures** and its **prompt**: both when there are
+both; the references alone when the prompt is empty; the prompt alone when there are no references; neither = the scene
+alone (the render, its depth map and the words written from the model). The references go to the edit model on one
+labelled board (picture 3, "Reference 1 …", beside the model's own material tiles) with a line asking for their style,
+materials, colours, lighting and mood on the render's shapes. An edit model that takes only two pictures gets the render
+and its depth without the board (the message says so).
+
 The docker is called **Sketcher** now (it was PushPull; the **Push/Pull** tool keeps its name).
 - **With the prompt docker open** (and the image editor not on screen - it has its own Edit link - unless the Sketcher is
   maximized): the prompt docker goes to **🖼 Image** with an **edit model** (Qwen Image Edit, FLUX Kontext, FLUX.2 Klein
@@ -1389,7 +1396,7 @@ opens in its own 3D view with its skeleton - the Sketcher's ⤒ Open makes plain
    **📂 .json…** save and load it as a file. ↺ resets the bone or the whole pose.
 
 **🎬 Motion (Mixamo) (2.982.0)** - in 🕺 Pose: put a Mixamo animation on the character.
-1. On **mixamo.com** (free with an Adobe ID) pick an animation, **⤓ Download**: Format **FBX**, Skin **Without Skin**. Mixamo's
+1. On **mixamo.com** (free with an account) pick an animation, **⤓ Download**: Format **FBX**, Skin **Without Skin**. Mixamo's
    animations are royalty free in your projects; bitGen never shares or downloads them for you.
 2. **📂 Mixamo .fbx…** - it plays at once. bitGen matches Mixamo's bones to your figure's (Genesis 3 / 8 / 9), corrects the
    rest pose (Mixamo stands in a T, Genesis 8 / 9 in an A) and scales the walk to your character's legs. The figure's own
@@ -2136,6 +2143,18 @@ vocal and its instrumental. Both buttons work on the **picked layer** (click its
   first if your voice sits too loud or too quiet.
 - **🎧** (2.967.0) - press it before 🎙 Record to hear yourself while you record a clip (it stays on until you press it
   again). Wear headphones: from the speakers your voice goes back into the microphone and howls.
+
+## 🌐 Panorama 3D in the image preview (2.987.0)
+
+Open a picture in the preview and press **🌐 Panorama 3D** (after 💾 Save): the picture is wrapped round you as a 360°
+panorama. **Drag** to look round, the **wheel** or **＋ / －** to zoom, the **arrow keys**, **W A S D** or the ◀ ▲ ▼ ▶ pad to
+turn (Shift: bigger steps), **⟲** straight ahead, **⟳ Auto** turns by itself (Space), **⛶** full screen (F), **Esc** or
+**✕** back to the picture (‹ › take the panorama to the next picture).
+- **View**: 🖥 Normal, **👓 VR side by side** (left eye | right eye) or **👓 VR top / bottom** (left eye over the right) - for a
+  phone in a headset or a VR player.
+- **Picture**: Auto, Mono 360°, Stereo side by side, Stereo top / bottom - a STEREO panorama (each eye its own half) is
+  shown as one, each eye seeing its own half. Auto reads 2:1 as mono, 1:1 as top / bottom, 4:1 as side by side.
+- A panorama is twice as wide as it is high (Image ▸ 🌐 360 Panorama makes one); other pictures are wrapped too, stretched.
 
 ## Save and Save as (preview dialog and gallery)
 
