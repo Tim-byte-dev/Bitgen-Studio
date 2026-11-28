@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.12.0** — 🧩 Ming Layered Design Runs in ComfyUI: Comfy-Org's Ming-Image Files (0.2 Design + 0.1 Design-Layer, int8 or bf16) in ComfyUI's Own Ming-Image Nodes (0.46.0+) - No Venv, No 80 GB Card; the Add-on Is "mingimage" (Settings ▸ Audio's Install Ming-3.0 TTS Opened It); ☁ OpenRouter Kept
 - **3.11.2** — 📌 the Height Pin (and ⇱ Float) on the Audio Docker's 🎹 Edit Booth Tab; pi-H3 Stops Before Queueing When ComfyUI Has Not Loaded Its Nodes (ComfyUI-piFlow) and Says What to Do - Any Missing Node Explained (Not "Fix the Template"); the 16 GB Note No Longer Says RunPod on a pi-H3 Render
 - **3.11.1** — The Sketcher's DAZ Library Finds Your Other Libraries and Folders: Every Top Folder Read (Animals - Daz Horse 3 -, Vehicles, Architecture …), an Animal's Load File Is a 🧍 Figure, 🔍 Find Adds Daz Studio's Own Content Folders (e.g. D:\daz3d\Content)
 - **3.11.0** — ✍ Continue in the Edit Booth's Piano Roll: the Anticipatory Music Transformer (Stanford, Apache-2.0) Writes the Next 1 - 8 Bars of Your Notes in the Same Style, on This Computer - 🎲 Again for Another Take, ↶ Take Back (Our Own Magenta, Step 2)

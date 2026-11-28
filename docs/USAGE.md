@@ -1210,10 +1210,10 @@ Good to know:
 - **Best results:** a static camera (added to the prompt for you), the performer framed with some margin, a
   View ° of 50–80, and a ✎ first frame.
 
-## 🧩 Ming layered design - a design made as separate layers (the image editor, 3.9.0)
+## 🧩 Ming layered design - a design made as separate layers (the image editor, 3.9.0; in ComfyUI since 3.12.0)
 
 The image editor's **Layer ▸ 🧩 Ming Layered Design…** asks for your layers and makes a design from them, each layer a separate
-transparent layer in the editor - with inclusionAI's Ming-Image (MIT).
+transparent layer in the editor - with inclusionAI's Ming-Image (MIT), run by ComfyUI's own Ming-Image nodes.
 
 - **The layers**: one row per layer, the **front at the top** and the background last (as in the Layers panel). Give each a
   **name** and say **what goes in it** - quote any words it should show (`"SUMMER SALE"`), give colours as `#hex`. **Where**
@@ -1227,10 +1227,13 @@ transparent layer in the editor - with inclusionAI's Ming-Image (MIT).
   layers** for the one flat picture only.
 - **✂ Split the open picture into these layers**: the picture that is open (every visible layer) is split into the layers you
   list - no new design. Two layers at least (the front ones and the background).
-- **🖥 This computer**: Settings ▸ Add-ons ▸ 🧩 Ming layered design (it opens by itself when missing) - tick the models: 0.2-Design
-  (makes designs), 0.1-Design-Layer (splits pictures). inclusionAI validated **one 80 GB card**; bitGen spreads Ming's language
-  model over all your NVIDIA cards (an RTX 5090 + 3090 = 56 GB is the way to try it - not validated by inclusionAI). **GPUs: first
-  card only** keeps it on one. Out of memory: try ~1 MP, layers at 512, or ☁ OpenRouter.
+- **🖥 ComfyUI on this computer** (3.12.0): ComfyUI **0.46.0 or newer** runs Ming-Image in its own nodes - no node pack. Settings
+  ▸ Add-ons ▸ 🧩 Ming layered design (it opens by itself when the files are missing) downloads Comfy-Org's repacked files into
+  ComfyUI's models folders - tick what you want: **0.2 Design int8** (makes designs) and **0.1 Design-Layer int8** (splits
+  pictures), each with its text encoder, plus the shared VAE; the **bf16** sets are optional and are used instead of int8 when
+  they are there. Restart ComfyUI after the download so it lists the new files. An older ComfyUI is told to update (Settings ▸
+  ComfyUI ▸ ⤓ Update ComfyUI). Out of memory: try ~1 MP, layers at 512, or ☁ OpenRouter. (3.9.0's own install in
+  `<app>/ming_image` is not used any more - the add-on's Remove deletes it.)
 - **☁ OpenRouter**: your OpenRouter key (🖥 GPU ▸ Remote generation ▸ OpenRouter). Ming 0.1 Design and Design-Layer are free
   there (November 2026); 0.2-Design is used instead of 0.1 when OpenRouter has it.
 - What comes back is only as good as the model: it may give a different number of layers than you asked (the message says so),

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""bitGen Studio — 🧩 MING LAYERED DESIGN worker (3.9.0): mode "ming" (lib/mingAddon.js, lib/mingLayers.js).
+"""bitGen Studio — 🧩 MING LAYERED DESIGN worker (3.9.0; 3.12.0 runs it in ComfyUI): mode "ming" (lib/mingAddon.js,
+lib/mingLayers.js, scripts/ming_graph.py).
 Tim: "can u add this to image editor please. https://huggingface.co/inclusionAI/Ming-Image-0.2-Design . with a dialog with add
 layer, this will have layer name and description of what goes in that layer for ming image. it is supposed to be able to
 generate separate layers"
+3.12.0 - Tim: "replace our ming image with this one, https://huggingface.co/Comfy-Org/Ming-Image"
 
 Two steps, each optional:
   1 the design    Ming-Image-0.2-Design from the layer list's JSON prompt (params.t2i_prompt) -> one flat picture
   2 the layers    Ming-Image-0.1-Design-Layer splits the flat picture (or params.input - a picture to split) by the plan
                   (params.layer_plan) -> N transparent PNGs, layer 1 the front-most
-engine "local":      the add-on's Python runs Ming-Image's own infer.py (cwd = its folder), offline, the language model spread
-                     over every NVIDIA card (--device-map balanced --num-gpus N; params.gpus 1 = the first card only)
+engine "comfy":      ComfyUI's own Ming-Image nodes (0.46.0 or newer) with Comfy-Org/Ming-Image's files (int8 unless the bf16
+                     ones are what params.precision asks for) - one graph per step (scripts/ming_graph.py), live step lines
 engine "openrouter": POST <base>/images (the key in job.json config.apis - lib/orRender.js jobApis); 0.2-Design when OpenRouter
                      has it, else 0.1-Design (said)
 Writes <name>_ming.png (the design) and <name>_ming_L01_<layer>.png … (front first) in the project's output folder:
@@ -20,7 +22,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -73,76 +74,125 @@ def count_note(got, want):
     return f" (asked for {want}, the model gave {got})"
 
 
-# ---------------------------------------------------------------- on this computer
-def gpu_count(py):
+# ---------------------------------------------------------------- in ComfyUI (3.12.0)
+def _comfy_mods():
+    sys.path.insert(0, str(HERE.parent / "scripts"))
+    import comfy_client as cc                              # noqa: E402
+    import comfy_progress as cp                            # noqa: E402
+    import ming_graph as mg                                # noqa: E402
+    return cc, cp, mg
+
+
+def listed(cc, base, class_type, key):
+    """ComfyUI's dropdown for one loader input ([] when it does not say)"""
     try:
-        r = subprocess.run([str(py), "-c", "import torch; print('NGPU', torch.cuda.device_count())"], capture_output=True, text=True, timeout=300)
-        m = re.search(r"NGPU (\d+)", r.stdout or "")
-        return int(m.group(1)) if m else 0
+        return cc.combo_values(base, class_type, key) or []
     except Exception:                                      # noqa: BLE001
-        return 0
+        return []
 
 
-def run_infer(py, src, args, tag):
-    cmd = [str(py), str(src / "infer.py")] + [str(a) for a in args]
-    env = dict(os.environ, PYTHONUTF8="1", HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", PYTHONPATH=str(src))
-    say("> " + " ".join(cmd))
-    pr = subprocess.Popen(cmd, cwd=str(src), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", env=env)
-    tail, oom = [], False
-    for line in pr.stdout:
-        line = line.rstrip()
-        if not line:
-            continue
-        say("[ming] " + line)
-        if re.search(r"out of memory|OutOfMemoryError|CUDA error", line, re.I):
-            oom = True
-        if "Error" in line or "ERROR" in line:
-            tail = (tail + [line])[-3:]
-    code = pr.wait()
-    if code != 0:
-        hint = (" - the cards ran out of memory: inclusionAI validated one 80 GB card; try ☁ OpenRouter in the dialog, a smaller size, "
-                "or both cards (GPUs: all)") if oom else ""
-        fail(f"Ming-Image ({tag}) stopped: " + (" | ".join(tail) or f"exit {code}") + hint)
-
-
-def local(p, work):
-    m = p.get("ming") or {}
-    py, src = Path(str(m.get("python") or "")), Path(str(m.get("src") or ""))
-    if not py.is_file() or not (src / "infer.py").is_file():
-        fail("🧩 Ming-Image is not installed - Settings ▸ Add-ons ▸ 🧩 Ming layered design (or ☁ OpenRouter in the dialog)")
-    n = 1 if p.get("gpus") == 1 else max(1, gpu_count(py))
-    say(f"[ming] {n} NVIDIA card(s) for the language model" + (" (spread over them)" if n > 1 else ""))
-    common = ["--local-files-only", "--attn-implementation", "eager", "--seed", p.get("seed", 42), "--device-map", "balanced", "--num-gpus", n]
-    if p.get("steps"):
-        common += ["--steps", p["steps"]]
+def comfy(p, job, work):
+    cc, cp, mg = _comfy_mods()
+    cfg = job.get("config") or {}
+    base = cc.base_url(cfg)
+    say(f"[worker] engine=comfy url={base}")
+    try:
+        cc.preflight(base)
+    except cc.ComfyError as e:
+        fail(f"{e} - 🧩 Ming runs in ComfyUI: start it (or pick ☁ OpenRouter in the dialog)")
+    gen, split = bool(p.get("generate")), bool(p.get("split"))
+    need = (["design"] if gen else []) + (["layer"] if split else [])
+    want = list(mg.REQUIRED) + (list(mg.REQUIRED_LAYERS) if split else [])
+    miss = cc.missing_classes(base, {str(i): {"class_type": c, "inputs": {}} for i, c in enumerate(want)})
+    if miss:
+        fail("this ComfyUI does not have " + ", ".join(miss) + " - " + mg.UPDATE + ".")
+    pk = mg.pick(listed(cc, base, "UNETLoader", "unet_name"), listed(cc, base, "CLIPLoader", "clip_name"),
+                 listed(cc, base, "VAELoader", "vae_name"), need, p.get("precision") or "int8")
+    if pk.get("error"):
+        fail(pk["error"])
+    for n in pk.get("notes") or []:
+        say(f"[ming] {n}")
+    seed = int(p.get("seed", 42) or 0)
+    total, step = len(need), 0
     flat, layers = None, []
-    total = int(bool(p.get("generate"))) + int(bool(p.get("split")))
-    step = 0
-    if p.get("generate"):
+
+    def render(graph, tag, name):
+        (work / f"{name}_queued.json").write_text(json.dumps(graph, indent=1), encoding="utf-8")
+        for nid, key, _old, new in cc.canonicalise_combos(base, graph):
+            say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")
+        try:
+            cc.clear_before_gen(base, cfg, say, graph)
+            _pid, outputs = cp.run(cc, base, graph, say, tag)
+        except cc.ComfyError as e:
+            fail(f"Ming-Image ({tag}) stopped in ComfyUI: {e}")
+        items = cc.output_images(outputs)
+        if not items:
+            fail(f"ComfyUI finished {tag} but saved no picture")
+        files = []
+        for i, it in enumerate(items):
+            f = work / f"{name}_{i:02d}.png"
+            cc.download(base, it, f)
+            if not f.is_file() or f.stat().st_size == 0:
+                fail(f"downloaded an empty picture for {it.get('filename')}")
+            files.append(f)
+        return files
+
+    if gen:
         step += 1
-        say(f"[ming] the design: step {step}/{total}")
-        pf = work / "prompt.json"
-        pf.write_text(p.get("t2i_prompt") or "", encoding="utf-8")
-        od = work / "gen"
-        run_infer(py, src, ["--model", m.get("gen"), "--task", "text-to-image", "--prompt", pf, "--width", p["width"], "--height", p["height"], "--output-dir", od] + common, "the design")
-        outs = sorted(od.glob("image_*.png"))
-        if not outs:
-            fail("Ming-Image made no picture")
-        flat = outs[0]
-    if p.get("split"):
+        say(f"[worker] step {step}/{total} - the design (Ming-Image 0.2 Design)")
+        say(f"[ming] model {pk['design']} · text encoder {pk['design_te']} · VAE {pk['vae']}")
+        try:
+            g, notes = mg.build_design({"model": pk["design"], "te": pk["design_te"], "vae": pk["vae"], "prompt": p.get("t2i_prompt") or "",
+                                        "width": p.get("width"), "height": p.get("height"), "seed": seed, "steps": p.get("steps"),
+                                        "prefix": "bitgen_ming/" + slug(p.get("name"), 30) + "_design"})
+        except ValueError as e:
+            fail(str(e))
+        for n in notes:
+            say(f"[ming] {n}")
+        flat = render(g, "the design", "design")[0]
+    if split:
         step += 1
-        say(f"[ming] the layers: step {step}/{total}")
+        rows = p.get("rows") or []
         src_img = flat or Path(str(p.get("input") or ""))
         if not src_img.is_file():
             fail("the picture to split is gone")
-        lf = work / "plan.txt"
-        lf.write_text(p.get("layer_plan") or "", encoding="utf-8")
-        od = work / "layers"
-        run_infer(py, src, ["--model", m.get("layer"), "--task", "layer-decompose", "--input-image", src_img, "--prompt", lf, "--resolution", p.get("layer_res", 1024), "--output-dir", od] + common, "the layers")
-        layers = sorted(od.glob("layer_*.png"))
-        if not layers:
-            fail("Ming-Image made no layers")
+        say(f"[worker] step {step}/{total} - the layers (Ming-Image 0.1 Design-Layer)")
+        say(f"[ming] model {pk['layer']} · text encoder {pk['layer_te']} · VAE {pk['vae']}")
+        try:
+            up = cc.upload_image(base, str(src_img))
+        except Exception as e:                             # noqa: BLE001
+            fail(f"could not upload the picture to ComfyUI: {e}")
+        lw, lh = layer_size(src_img, p.get("layer_res") or 1024, *((int(p.get("width") or 0), int(p.get("height") or 0)) if flat else
+                                                                   (int(p.get("input_w") or 0), int(p.get("input_h") or 0))))
+        try:
+            g, notes = mg.build_layers({"model": pk["layer"], "te": pk["layer_te"], "vae": pk["vae"], "prompt": p.get("layer_plan") or "",
+                                        "image": up, "layers": len(rows), "width": lw, "height": lh, "seed": seed,
+                                        "steps": p.get("steps"), "cfg": p.get("layer_cfg"),
+                                        "prefix": "bitgen_ming/" + slug(p.get("name"), 30) + "_layers"})
+        except ValueError as e:
+            fail(str(e))
+        for n in notes:
+            say(f"[ming] {n}")
+        got = render(g, "the layers", "layer")
+        layers = mg.layer_items(got, len(rows))
+        say(f"[ming] {len(got)} pictures back - the composite first, then the layers front first")
     return flat, layers
+
+
+def layer_size(img, res, w=0, h=0):
+    """the split's size: the picture's shape (w x h from the job - lib/mingAddon.js - else its PNG header) at about res x res
+    pixels, 16-px steps (no Pillow: the app's Python does not have it)"""
+    if not (w and h):
+        try:
+            head = Path(img).read_bytes()[:32]
+            if head[:8] == b"\x89PNG\r\n\x1a\n":
+                w, h = int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+        except OSError:
+            pass
+    w, h = (w, h) if w and h else (1024, 1024)
+    r = max(0.25, min(4.0, float(w) / float(h)))
+    L = 512 if int(res or 1024) == 512 else 1024
+    return max(256, int(round(L * r ** 0.5 / 16.0)) * 16), max(256, int(round(L / r ** 0.5 / 16.0)) * 16)
 
 
 # ---------------------------------------------------------------- on OpenRouter
@@ -238,7 +288,7 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     rows = p.get("rows") or []
     say(f"[worker] ming_worker.py engine={p.get('engine')} design={bool(p.get('generate'))} layers={len(rows) if p.get('split') else 0}")
-    flat, layers = openrouter(p, job, work) if p.get("engine") == "openrouter" else local(p, work)
+    flat, layers = openrouter(p, job, work) if p.get("engine") == "openrouter" else comfy(p, job, work)
     stem = slug(p.get("name") or "design", 40)
     outs = []
     if flat is not None:

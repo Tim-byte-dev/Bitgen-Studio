@@ -50,6 +50,10 @@
       "label": "Video - PAN 2 (MBZUAI's 29B world model, text / a first picture -> up to 20 s; Settings ▸ Add-ons ▸ PAN 2)"
     },
     {
+      "id": "mingimage",
+      "label": "Image editing - Ming-Image (the image editor's 🧩 Ming Layered Design: a design from your layer list, split into transparent layers; Settings ▸ Add-ons ▸ 🧩 Ming layered design)"
+    },
+    {
       "id": "longcat",
       "label": "Video - LongCat Avatar 1.6 (Meituan: a person talking / singing to a sound, as long as the sound; Settings ▸ Add-ons ▸ LongCat Avatar 1.6)"
     },
@@ -1640,6 +1644,94 @@
       "dest": "comfy/vae",
       "size": 1400000000,
       "for": "the PAN 2 video style (2.890.0; ComfyUI 0.46.0 or newer) (PAN 2 draws its video with the Wan 2.2 VAE)"
+    },
+    {
+      "id": "mingimage_design_int8",
+      "group": "mingimage",
+      "label": "Ming-Image 0.2 Design (int8, ≈6.5 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "diffusion_models/ming_image_0.2_design_int8_convrot.safetensors",
+      "as": "ming_image_0.2_design_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 6500000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - makes the design (fits a 16 GB card)"
+    },
+    {
+      "id": "mingimage_design_bf16",
+      "group": "mingimage",
+      "label": "Ming-Image 0.2 Design (bf16, ≈12 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "diffusion_models/ming_image_0.2_design_bf16.safetensors",
+      "as": "ming_image_0.2_design_bf16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 12300000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - makes the design, full precision (used when it is there)"
+    },
+    {
+      "id": "mingimage_design_te",
+      "group": "mingimage",
+      "label": "Ming-Image 0.2 text encoder (Ling-mini-2.0 int8, ≈17 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "text_encoders/ming_image_0.2_ling_mini_2.0_int8_convrot.safetensors",
+      "as": "ming_image_0.2_ling_mini_2.0_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 17000000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - reads the design's layer list (0.2 comes as int8 only)"
+    },
+    {
+      "id": "mingimage_layer_int8",
+      "group": "mingimage",
+      "label": "Ming-Image 0.1 Design-Layer (int8, ≈6.5 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "diffusion_models/ming_image_0.1_design_layer_int8_convrot.safetensors",
+      "as": "ming_image_0.1_design_layer_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 6500000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - splits a picture into its layers"
+    },
+    {
+      "id": "mingimage_layer_bf16",
+      "group": "mingimage",
+      "label": "Ming-Image 0.1 Design-Layer (bf16, ≈12 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "diffusion_models/ming_image_0.1_design_layer_bf16.safetensors",
+      "as": "ming_image_0.1_design_layer_bf16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 12300000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - splits a picture into its layers, full precision (used when it is there)"
+    },
+    {
+      "id": "mingimage_layer_te_int8",
+      "group": "mingimage",
+      "label": "Ming-Image Design-Layer text encoder (int8, ≈17 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "text_encoders/ming_image_0.1_ling_mini_2.0_layer_int8_convrot.safetensors",
+      "as": "ming_image_0.1_ling_mini_2.0_layer_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 17000000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - reads the layer plan and the picture"
+    },
+    {
+      "id": "mingimage_layer_te_bf16",
+      "group": "mingimage",
+      "label": "Ming-Image Design-Layer text encoder (bf16, ≈33 GB)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "text_encoders/ming_image_0.1_ling_mini_2.0_layer_bf16.safetensors",
+      "as": "ming_image_0.1_ling_mini_2.0_layer_bf16.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 33000000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - reads the layer plan and the picture, full precision"
+    },
+    {
+      "id": "mingimage_vae",
+      "group": "mingimage",
+      "label": "Ming-Image VAE (RGBA)",
+      "repo": "Comfy-Org/Ming-Image",
+      "file": "vae/ming_image_vae_bf16.safetensors",
+      "as": "ming_image_vae_bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 254000000,
+      "for": "the image editor's 🧩 Ming Layered Design (3.12.0; ComfyUI 0.46.0 or newer) - draws the pictures with their transparency"
     },
     {
       "id": "longcat_int8",

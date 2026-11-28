@@ -416,14 +416,16 @@ Meta's DINOv3 License, gated: you accept it on Hugging Face) and [ZhengPeng7/BiR
 stands in for flash-attn and Direct3D-V3's two compiled parts (third_party/voxelization, third_party/fill_holes) when they will not
 install - written for bitGen from their documented behaviour. bitGen ships none of Direct3D-V3 or its weights.
 
-## 🧩 Ming layered design - Ming-Image (3.9.0)
+## 🧩 Ming layered design - Ming-Image (3.9.0; in ComfyUI since 3.12.0)
 
-Settings ▸ Add-ons ▸ 🧩 Ming layered design fetches [inclusionAI/Ming-Image](https://github.com/inclusionAI/Ming-Image) (MIT,
-inclusionAI / Ant Group - checked with commit d5615110) into <app>/ming_image with its own Python and packages, and downloads the
-models you tick - [inclusionAI/Ming-Image-0.2-Design](https://huggingface.co/inclusionAI/Ming-Image-0.2-Design) and
-[inclusionAI/Ming-Image-0.1-Design-Layer](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design-Layer) (both MIT) - into the
-Hugging Face cache. ☁ OpenRouter runs inclusionAI's hosted models with your own OpenRouter key. bitGen ships none of Ming-Image's
-code or weights; misc/ming_worker.py runs its own infer.py unchanged.
+Settings ▸ Add-ons ▸ 🧩 Ming layered design downloads the files you tick from [Comfy-Org/Ming-Image](https://huggingface.co/Comfy-Org/Ming-Image)
+(MIT - Comfy-Org's repacks of inclusionAI / Ant Group's [Ming-Image-0.2-Design](https://huggingface.co/inclusionAI/Ming-Image-0.2-Design)
+and [Ming-Image-0.1-Design-Layer](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design-Layer), both MIT, with their Ling-mini-2.0
+text encoders and VAE) into ComfyUI's models folders. ComfyUI (GPL-3.0, a separate program bitGen talks to over HTTP) runs them in
+its own Ming-Image nodes. scripts/ming_graph.py (bitGen's own) builds the graphs - the design one after Comfy-Org's published
+template, the layer one from what ComfyUI's and inclusionAI's code ([inclusionAI/Ming-Image](https://github.com/inclusionAI/Ming-Image),
+MIT) do. ☁ OpenRouter runs inclusionAI's hosted models with your own OpenRouter key. bitGen ships none of Ming-Image's code or
+weights. (3.9.0 to 3.11.2 fetched inclusionAI's code into <app>/ming_image and ran its infer.py; that folder is no longer used.)
 
 ## ✍ Continue - the Anticipatory Music Transformer (3.11.0)
 

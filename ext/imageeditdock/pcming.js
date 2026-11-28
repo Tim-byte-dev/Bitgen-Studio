@@ -10,13 +10,16 @@
  *                         named as you named it, in a 🧩 group (the flat design kept below it, hidden). Untick "Separate layers"
  *                         for the one picture only.
  *     ✂ Split the picture  the picture that is open (every visible layer) split into the layers you list - no new design
- *   🖥 This computer (Settings ▸ Add-ons ▸ 🧩 Ming layered design - its Download box opens when it is missing) or ☁ OpenRouter
- *   (your key; Ming 0.1 Design + Design-Layer are free there - 0.2 is used when OpenRouter has it).
+ *   🖥 ComfyUI on this computer (3.12.0 - Tim: "replace our ming image with this one, https://huggingface.co/Comfy-Org/Ming-Image":
+ *   ComfyUI's own Ming-Image nodes with Comfy-Org's files; Settings ▸ Add-ons ▸ 🧩 Ming layered design, add-on "mingimage" - its
+ *   Download box opens when they are missing) or ☁ OpenRouter (your key; Ming 0.1 Design + Design-Layer are free there - 0.2 is
+ *   used when OpenRouter has it).
  *   POST /api/ming (routes/ming.js) -> a job (misc/ming_worker.py) -> its outputs.
- * Pure (Node: scripts/test-3900.js): DEFAULT_ROWS, check, sortOutputs.
+ * Pure (Node: scripts/test-31200.js): DEFAULT_ROWS, check, sortOutputs, ADDON.
  */
 (function (root) {
   "use strict";
+  const ADDON = "mingimage";          // 3.12.0 (3.9.0's "ming" is Ming-3.0 TTS's add-on)
   const DEFAULT_ROWS = [
     { name: "Headline", desc: "The title text \"YOUR TITLE\" in bold white sans-serif, centred near the top", where: "top" },
     { name: "Subject", desc: "The main subject or product, large and centred", where: "centre" },
@@ -37,7 +40,7 @@
     for (const n of outs || []) { const m = /_ming_L(\d\d)_/.exec(String(n)); if (m) L.push([+m[1], n]); else if (/\.png$/i.test(n)) flat.push(n); }
     return { flat: flat[0] || null, layers: L.sort((a, b) => a[0] - b[0]).map((x) => x[1]) };
   }
-  const pure = { DEFAULT_ROWS, check, sortOutputs };
+  const pure = { ADDON, DEFAULT_ROWS, check, sortOutputs };
 
   function install(E) {
     const { S, win, say, store } = E, doc = E.doc || win.document;
@@ -61,10 +64,13 @@
 
     async function dialog() {
       if (busy) return say("🧩 Ming is working - ■ Stop Ming in the Layer menu");
-      const st = (await status()) || { local: {}, openrouter: {}, where: { all: "Whole canvas" } };
-      const where = st.where || { all: "Whole canvas" }, eng = store.get("ming.engine", st.local && st.local.ready ? "local" : st.openrouter && st.openrouter.key ? "openrouter" : "local");
+      const st = (await status()) || { comfy: {}, openrouter: {}, where: { all: "Whole canvas" } };
+      const here = st.comfy || st.local || {};
+      // 3.12.0: "This computer" = ComfyUI (3.9.0 stored "local" - the same choice)
+      const e0 = store.get("ming.engine", here.ready ? "comfy" : st.openrouter && st.openrouter.key ? "openrouter" : "comfy");
+      const where = st.where || { all: "Whole canvas" }, eng = e0 === "openrouter" ? "openrouter" : "comfy";
       const mode = S.w && store.get("ming.mode", "make") === "split" ? "split" : "make";
-      const loc = st.local || {}, orr = st.openrouter || {};
+      const loc = here, orr = st.openrouter || {};
       const html = `<div class="kxrow" style="flex-wrap:wrap;gap:4px 16px">
           <label><input type="radio" name="pmMode" value="make"${mode === "make" ? " checked" : ""}> ✨ Make a design from these layers</label>
           <label title="${S.w ? "The picture that is open (every visible layer)" : "Open a picture first"}"><input type="radio" name="pmMode" value="split"${mode === "split" ? " checked" : ""}${S.w ? "" : " disabled"}> ✂ Split the open picture into these layers</label></div>
@@ -78,21 +84,20 @@
           <label>Layers at <select id="pmRes"><option value="1024">1024</option><option value="512"${store.get("ming.res", "1024") === "512" ? " selected" : ""}>512 (faster)</option></select></label>
           <label>Seed <input type="number" id="pmSeed" min="0" style="width:90px" value="${esc(store.get("ming.seed", "42"))}"></label></div>
         <div class="kxrow" style="flex-wrap:wrap;gap:4px 16px;margin-top:4px">
-          <label title="${esc(loc.note || "")}"><input type="radio" name="pmEng" value="local"${eng === "local" ? " checked" : ""}> 🖥 This computer ${loc.ready ? "✓" : "(not installed - its Download box opens)"}</label>
-          <label><select id="pmGpus" title="The language model spread over every NVIDIA card (5090 + 3090 = 56 GB), or the first card only"><option value="all">all cards</option><option value="1"${store.get("ming.gpus", "all") === "1" ? " selected" : ""}>first card only</option></select></label>
+          <label title="${esc(loc.note || "")}"><input type="radio" name="pmEng" value="comfy"${eng === "comfy" ? " checked" : ""}> 🖥 ComfyUI on this computer ${loc.ready ? "✓" : "(files not downloaded - its Download box opens)"}</label>
           <label title="Ming 0.1 Design + Design-Layer are free on OpenRouter (0.2 is used when OpenRouter has it)"><input type="radio" name="pmEng" value="openrouter"${eng === "openrouter" ? " checked" : ""}> ☁ OpenRouter ${orr.key ? "✓" : "(needs your key - 🖥 GPU ▸ Remote generation)"}</label></div>
-        <div style="color:var(--pc-dim);margin-top:6px">Ming-Image-0.2-Design draws the design from the list; Ming-Image-0.1-Design-Layer splits it into your layers (transparent, each named as here). inclusionAI ran them on one 80 GB card - here the language model is spread over all your cards; with less memory use ☁ OpenRouter.</div>
+        <div style="color:var(--pc-dim);margin-top:6px">Ming-Image-0.2-Design draws the design from the list; Ming-Image-0.1-Design-Layer splits it into your layers (transparent, each named as here). Both run in ComfyUI's own Ming-Image nodes (0.46.0 or newer) with Comfy-Org's files.</div>
         <div id="pmMsg" style="color:#e88;min-height:1em"></div>`;
       E.ui.dialog("🧩 Ming Layered Design", html, (d) => {
         const v = (id) => d.querySelector("#" + id), m = (d.querySelector('input[name="pmMode"]:checked') || {}).value || "make";
         const o = { mode: m, rows: readRows(d), hasPicture: !!S.w };
         const bad = check(o); if (bad) { v("pmMsg").textContent = "⚠ " + bad; return false; }
-        const e = (d.querySelector('input[name="pmEng"]:checked') || {}).value || "local";
+        const e = (d.querySelector('input[name="pmEng"]:checked') || {}).value || "comfy";
         store.set("ming.rows", JSON.stringify(o.rows)); store.set("ming.mode", m); store.set("ming.engine", e); store.set("ming.split", v("pmSplit").checked);
         store.set("ming.style", v("pmStyle").value); store.set("ming.light", v("pmLight").value); store.set("ming.level", v("pmLevel").value); store.set("ming.res", v("pmRes").value);
-        store.set("ming.seed", v("pmSeed").value); store.set("ming.gpus", v("pmGpus").value);
+        store.set("ming.seed", v("pmSeed").value);
         run({ mode: m, rows: o.rows, engine: e, split: m === "split" || v("pmSplit").checked, style: v("pmStyle").value, lighting: v("pmLight").value,
-          level: +v("pmLevel").value, layer_res: +v("pmRes").value, seed: v("pmSeed").value, gpus: v("pmGpus").value === "1" ? "1" : "all" }).catch((er) => say("🧩 " + er.message));
+          level: +v("pmLevel").value, layer_res: +v("pmRes").value, seed: v("pmSeed").value }).catch((er) => say("🧩 " + er.message));
         return true;
       }, { okLabel: "🧩 Go", wide: true, width: "880px", scroll: true, init: (d) => {
         const box = d.querySelector("#pmRows"), paintMode = () => { const mk = (d.querySelector('input[name="pmMode"]:checked') || {}).value !== "split"; d.querySelectorAll(".pmMake").forEach((x) => { x.style.display = mk ? "" : "none"; }); };
@@ -109,13 +114,13 @@
 
     async function needInstall() {
       const A = root.H3Addons;
-      if (A && A.act) { try { if (A.refresh) await A.refresh(); } catch (e) { /* the list */ } A.act("ming", "install"); }
-      say("🧩 Ming needs its add-on (Ming-Image) on this computer - its Download box is open (tick the models); or pick ☁ OpenRouter");
+      if (A && A.act) { try { if (A.refresh) await A.refresh(); } catch (e) { /* the list */ } A.act(ADDON, "install"); }
+      say("🧩 Ming needs Ming-Image's ComfyUI files - its Download box is open (tick the models); or pick ☁ OpenRouter");
     }
     async function run(o) {
       busy = true; stopIt = false;
       try {
-        const body = { rows: o.rows, engine: o.engine, split: o.split, w: S.w || 1024, h: S.h || 1024, level: o.level, layer_res: o.layer_res, style: o.style, lighting: o.lighting, seed: o.seed, gpus: o.gpus,
+        const body = { rows: o.rows, engine: o.engine, split: o.split, w: S.w || 1024, h: S.h || 1024, level: o.level, layer_res: o.layer_res, style: o.style, lighting: o.lighting, seed: o.seed,
           name: (o.rows[0] && o.rows[0].name) || "design" };
         if (o.mode === "split") body.image = E.flatten().toDataURL("image/png");
         say(o.mode === "split" ? `🧩 splitting the picture into ${o.rows.length} layers…` : `🧩 Ming is making the design${o.split ? " and its " + o.rows.length + " layers" : ""}…`);

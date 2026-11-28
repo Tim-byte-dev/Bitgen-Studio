@@ -2,7 +2,7 @@
 /* bitGen Studio — 3.9.0 in a REAL browser: Layer ▸ 🧩 Ming Layered Design… - the dialog's rows (＋ Add layer, ↑ ↓ ✕), what it
  * sends, a made design + its layers coming in as a 🧩 group (front on top, the flat design hidden below, one undo step), splitting
  * the open picture, and the add-on's Download box when it is not installed. /api/ming, the job and its pictures are stood in
- * for (the worker: scripts/test-ming-3900.py).
+ * for (the worker: scripts/test-ming-31200.py). 3.12.0: "This computer" = ComfyUI (engine "comfy"), the add-on "mingimage".
  * Tim: "can u add this to image editor please. https://huggingface.co/inclusionAI/Ming-Image-0.2-Design . with a dialog with add
  * layer, this will have layer name and description of what goes in that layer for ming image. it is supposed to be able to
  * generate separate layers. please check it" */
@@ -43,7 +43,7 @@ function png(w, h, rgba) {
   await p.route("**/api/ming", async (rt) => {
     if (rt.request().method() !== "POST") return rt.continue();
     posted = JSON.parse(rt.request().postData() || "{}"); polls = 0;
-    if (mode === "409") return rt.fulfill({ status: 409, contentType: "application/json", body: JSON.stringify({ error: "not installed", needs: "ming", missing: [{ id: "w_gen" }] }) });
+    if (mode === "409") return rt.fulfill({ status: 409, contentType: "application/json", body: JSON.stringify({ error: "not installed", needs: "mingimage", missing: [{ id: "design" }] }) });
     rt.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ job: { id: "mingtest", status: "queued" }, rows: posted.rows }) });
   });
   await p.route("**/api/jobs/mingtest*", (rt) => { polls++; rt.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(polls < 2 ? { id: "mingtest", status: "running" } : { id: "mingtest", status: "done", outputs: outs, output: outs[outs.length - 1] }) }); });
@@ -54,12 +54,12 @@ function png(w, h, rgba) {
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.imageEditorInstance && window.imageEditorInstance.E && window.imageEditorInstance.E.ming, null, { timeout: 90000 });
     await p.waitForTimeout(1200);
     await ev(() => { const d = document.getElementById("imageeditdock"); if (d.classList.contains("dockgone")) toggleDockGone("imageeditdock", "tIE"); if (d.classList.contains("collapsed")) toggleCollapse("imageeditdock"); });
-    await ev(() => { document.querySelectorAll(".h3fp.dfm-float, #promptdock").forEach((d) => { d.style.display = "none"; }); const d = document.getElementById("imageeditdock"); d.style.cssText += ";position:fixed;left:10px;top:40px;width:1660px;height:960px;z-index:50"; });
+    await ev(() => { document.querySelectorAll(".h3fp.dfm-float, .secfloat.dfm-float, #promptdock").forEach((d) => { d.style.display = "none"; }); const d = document.getElementById("imageeditdock"); d.style.cssText += ";position:fixed;left:10px;top:40px;width:1660px;height:960px;z-index:50"; });
     await ev(() => { localStorage.removeItem("ming.rows"); const E = window.imageEditorInstance.E; ["ming.rows", "ming.mode", "ming.engine"].forEach((k) => E.store.set(k, null)); });
     const inMenu = await ev(() => { const E = window.imageEditorInstance.E; return E.ui.CMD.has("layer.ming") && E.ui.CMD.has("layer.mingstop"); });
     check("Layer ▸ 🧩 Ming Layered Design… and ■ Stop Ming are commands", inMenu);
     const st = await ev(async () => (await fetch("/api/ming")).json());
-    check("GET /api/ming: this computer (not installed here), OpenRouter, the places", st.local && st.local.ready === false && st.openrouter && typeof st.openrouter.key === "boolean" && st.where && st.where.all === "Whole canvas" && st.max === 12, st);
+    check("GET /api/ming: ComfyUI here (its files not downloaded here; \"local\" kept for an old page), OpenRouter, the places", st.comfy && st.comfy.ready === false && st.comfy.addon === "mingimage" && st.local && st.local.ready === false && st.openrouter && typeof st.openrouter.key === "boolean" && st.where && st.where.all === "Whole canvas" && st.max === 12, st);
 
     // ---- the dialog, no picture open: make a design
     await run("layer.ming"); await dlg().waitFor({ timeout: 5000 });
@@ -105,12 +105,13 @@ function png(w, h, rgba) {
     await p.click("#pmAdd"); await p.click("#pmAdd");
     await p.locator(".kxdlg.pcd .pmrow").nth(0).locator(".pmName").fill("Front");
     await p.locator(".kxdlg.pcd .pmrow").nth(1).locator(".pmName").fill("Back");
-    await p.locator('.kxdlg.pcd input[name="pmEng"][value="local"]').check();
+    await p.locator('.kxdlg.pcd input[name="pmEng"][value="comfy"]').check();
+    const gpus = await ev(() => !!document.querySelector(".kxdlg.pcd #pmGpus"));
     outs = ["Mine_ming_L01_Front.png", "Mine_ming_L02_Back.png"];
     const n0 = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await p.click(".kxdlg.pcd .ok");
     await p.waitForFunction((n) => window.imageEditorInstance.E.S.layers.length >= n + 3, n0, { timeout: 20000 });
-    check("✂ Split: the style / size hidden; it sends the open picture (a PNG data URL) and your two layers, this computer", hid === "none" && /^data:image\/png;base64,/.test(posted.image || "") && posted.engine === "local" && posted.rows.map((r) => r.name).join() === "Front,Back", { hid, eng: posted.engine, rows: posted.rows });
+    check("✂ Split: the style / size hidden; it sends the open picture (a PNG data URL) and your two layers, ComfyUI (no card-spread choice any more)", hid === "none" && /^data:image\/png;base64,/.test(posted.image || "") && posted.engine === "comfy" && !("gpus" in posted) && !gpus && posted.rows.map((r) => r.name).join() === "Front,Back", { hid, eng: posted.engine, rows: posted.rows, gpus });
     const L2 = await ev(() => { const S = window.imageEditorInstance.E.S, Gs = S.layers.filter((L) => L.type === "group"); const G = Gs[Gs.length - 1]; return { n: Gs.length, name: G.name, kids: S.layers.filter((L) => L.parent === G.id).map((L) => L.name), flat: S.layers.filter((L) => /\(flat\)$/.test(L.name)).length, w: S.w }; });
     check("…a second 🧩 group with Back then Front; no new flat design; the picture's size kept", L2.n === 2 && L2.name === "🧩 Front" && L2.kids.join() === "Back,Front" && L2.flat === 1 && L2.w === 64, L2);
 
@@ -120,7 +121,7 @@ function png(w, h, rgba) {
     await run("layer.ming"); await dlg().waitFor({ timeout: 5000 });
     await p.locator('.kxdlg.pcd input[name="pmMode"][value="make"]').check();
     await p.click(".kxdlg.pcd .ok"); await p.waitForTimeout(800);
-    check("not installed (409 needs ming): the add-on's Download box opens", (await ev(() => window.__acts.join())) === "ming:install", await ev(() => window.__acts));
+    check("its files not downloaded (409 needs mingimage): the add-on's Download box opens - not Ming-3.0 TTS's", (await ev(() => window.__acts.join())) === "mingimage:install", await ev(() => window.__acts));
     mode = "ok";
     await run("layer.ming"); await dlg().waitFor({ timeout: 5000 });
     await ev(() => { document.querySelectorAll(".kxdlg.pcd .pmrow").forEach((r) => r.remove()); });
