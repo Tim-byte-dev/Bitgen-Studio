@@ -222,7 +222,10 @@
     head.addEventListener("dblclick", (e) => { if (!e.target.closest("button")) foldLib(); });
     $("dzLibMin").onclick = foldLib;
     try { new root.ResizeObserver(() => { if (!st.on || lib.classList.contains("folded") || lib.closest("#ppDockCol")) return; const W = LS.get("w", {}), r = lib.getBoundingClientRect(); if (r.width < 50) return; W.lib = Object.assign({}, W.lib, { w: Math.round(r.width), h: Math.round(r.height) }); LS.set("w", W); }).observe(lib); } catch (e) { /* old browsers: not kept */ }
-    $("dzRootsSave").onclick = saveRoots; $("dzRootsFind").onclick = () => { $("dzRoots").value = (st.detected || []).join("\n"); };
+    $("dzRootsSave").onclick = saveRoots; $("dzRootsFind").onclick = () => {   // 3.11.1: the folders found (Daz Studio's own Content Directory Manager list too) ADDED to yours
+      const have = $("dzRoots").value.split(/\r?\n/).map((x) => x.trim()).filter(Boolean), add = (st.detected || []).filter((d) => !have.some((h) => h.toLowerCase() === d.toLowerCase()));
+      $("dzRoots").value = have.concat(add).join("\n"); say(add.length ? "🔍 " + add.length + " more Daz folder" + (add.length > 1 ? "s" : "") + " found - 💾 Save to use them" : "🔍 no other Daz folders found - type yours (one a line), then 💾 Save");
+    };
     $("dzParTabs").querySelectorAll("[data-tab]").forEach((b) => { b.onclick = () => tab(b.dataset.tab); });
     // 🕺 the pose tab
     let bq = 0; $("dzBoneQ").oninput = () => { clearTimeout(bq); bq = setTimeout(boneList, 200); };

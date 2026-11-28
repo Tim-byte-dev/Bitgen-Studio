@@ -1532,6 +1532,11 @@ the Sketcher.
 
 1. **📁 Folders…** - bitGen finds the usual library folders itself; add others one a line (your Install Manager / manual
    library). Daz Connect's **encrypted** items (`.duf.enc`) can only be read by Daz Studio - they are counted and skipped.
+   (3.11.1) **🔍 Find** also reads the folders Daz Studio itself uses (its Content Directory Manager - on Windows the
+   registry), so a library such as `D:\daz3d\Content` is found, and ADDS what it finds to your list - then 💾 Save. Every top
+   folder of a library is read - **Animals** (Daz Horse 3 …), Vehicles, Architecture and the rest, not only People, Props and
+   Environments; an animal's own load file (`Animals/<product>/<name>.duf`) is listed under 🧍 Figures. Light, render, camera
+   and shader presets are left out.
 2. **Pick a figure or a character** (🧍 Figures / 🎭 Characters - thumbnails as in Daz). A character brings its own dial
    settings.
 3. **Shape dials** - search (height, nose, ...) and drag; they are kept in the model as shape keys too.
