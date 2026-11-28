@@ -1267,6 +1267,33 @@ editor** and **🎞 → Timeline** show it, and **⤓ Export ▸ .glb** (the pro
 carries it as a **real texture** - the projected parts are cut out of their faces with their own UVs and the picture is
 inside the .glb. `.obj` and `.stl` carry colours only. The Wire and X-ray face styles and the Mono look hide projections.
 
+## 💎 Fine detail - Direct3D-V3 (the Sketcher, 3.7.0)
+
+**💎 Fine detail** (beside 🦴 Rig on the Sketcher's bar) turns a rough 3D model of a picture into a **finely detailed** one -
+Direct3D-V3 (DreamTech / Nanjing University, SIGGRAPH Asia 2026) carves the detail in on signed-distance voxels, up to
+1536 a side. It does not make a shape from nothing: it needs the picture **and** a rough model of the same thing, turned the
+same way. bitGen's **🧊 Convert to 3D** (Hunyuan3D 2.1) makes exactly that, so it can do it for you.
+
+1. Click **💎 Fine detail** and pick the picture (🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder, 📄 a file). One thing,
+   whole, on a plain background works best; the background is taken out (BiRefNet).
+2. **Rough model**: *✨ Make it from the picture first* (Hunyuan3D 2.1 runs, then Direct3D-V3), or one of the project's 3D
+   models (.glb / .gltf / .obj / .ply / .stl) - it must be the picture's own object, the same way round (one made from it
+   by 🧊 Convert to 3D or 🧱 Picture → 3D scene).
+3. **Detail**: 512 (quick), 1024 (fine), 1536 (finest, the most graphics memory). Steps 15 and guidance 4 are its own
+   defaults. **Faces**: the finished mesh is simplified to 200 000 / 500 000 / 2 000 000 faces, or *all*. **Low memory**
+   uses a smaller detail budget (60 000 tokens instead of 150 000) for cards under 24 GB.
+4. **💎 Make it detailed**. It runs in the job list on this computer; `<name>_detail.glb` goes into the project's 3D
+   models at the rough model's size and place, and - ticked - into this Sketcher model as a group (⤒ Import).
+
+**The add-on** (Settings ▸ Add-ons ▸ 💎 Fine detail - the Download box opens by itself the first time): the code (MIT) with its
+own Python 3.12 and PyTorch, the weights, BiRefNet, and DINOv3 ViT-H+ - **DINOv3 is gated**: open
+huggingface.co/facebook/dinov3-vith16plus-pretrain-lvd1689m, accept Meta's DINOv3 licence, put your Hugging Face token in
+Settings ▸ Paths ▸ Hugging Face, then Install (if DINOv3 is refused the rest stays installed - Install again after). No CUDA
+toolkit or compiler is needed: Direct3D-V3 wants flash-attn and two parts that must be compiled; when they will not install,
+bitGen's own stand-ins do their sums (PyTorch's own attention, a sampled voxelizer, a hole filler) - slower, the same
+result - and the add-on's line says so. Direct3D-V3's code is MIT; check the weights' terms and Meta's DINOv3 licence before
+commercial use. It makes shape only (no colours yet - its texture model is not released).
+
 ## 🧱 Picture → 3D scene (the Sketcher, 2.975.0)
 
 The Sketcher's **🧱 Picture → 3D scene** turns one picture into a 3D scene: the things in it as 3D models standing

@@ -44,6 +44,7 @@
     "ppdazimport.js", "ppdocks.js", "pparchtoggle.js",
     "pprig.js",
     "ppscene.js",
+    "ppdetail.js",
     "ppreal.js",
     "ppsheetsdlg.js"
   ]

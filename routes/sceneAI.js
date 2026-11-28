@@ -15,15 +15,6 @@ const core = require("../lib/core");
 const AI = require("../lib/sceneAI");
 const mesh3d = require("../lib/mesh3d");
 
-function pictureOf(name, where) {
-  const n = path.basename(String(name || ""));
-  if (!n) return null;
-  const pd = core.projDir(core.getProject());
-  const dirs = { project: pd, output: core.pDir("output"), final: path.join(pd, "final"), images: core.pDir("images") };
-  const order = dirs[where] ? [dirs[where]] : [dirs.output, dirs.images, dirs.final, dirs.project];
-  for (const d of order) { const f = path.join(d, n); if (fs.existsSync(f) && fs.statSync(f).isFile()) return f; }
-  return null;
-}
 
 function mount(app) {
   const express = require("express");
@@ -43,7 +34,7 @@ function mount(app) {
   app.post("/api/mesh3d", J, (req, res) => {
     const b = req.body || {};
     try {
-      const pic = pictureOf(b.name, b.where);
+      const pic = require("../lib/to3d").pictureOf(b.name, b.where);   // 3.7.0: one copy, in lib/to3d.js
       if (!pic) return res.status(404).json({ error: "that picture is not in this project: " + String(b.name || "") });
       res.json(require("../lib/to3d").queue(pic, { engine: b.engine, seed: b.seed, model_name: b.model_name }));   // 2.594.0: one queue (lib/to3d.js)
     } catch (e) { fail(res, e); }
@@ -51,4 +42,4 @@ function mount(app) {
   app.get("/api/mesh3d/info", (_req, res) => res.json({ engines: mesh3d.ENGINES, names: mesh3d.ENGINE_NAME, files: mesh3d.FILES }));
 }
 
-module.exports = { mount, pictureOf };
+module.exports = { mount, pictureOf: (name, where) => require("../lib/to3d").pictureOf(name, where) };   // 3.7.0: the one copy lives in lib/to3d.js

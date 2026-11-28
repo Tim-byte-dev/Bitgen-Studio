@@ -248,7 +248,8 @@ function mount(app) {
   require("./aiedit").mount(app);      // 2.332.0: the image editor's AI (regenerate / refine / remove / Qwen Edit / Kontext)
   require("./pano360").mount(app);     // 2.971.0: 🌐 360 panoramas from pictures (the image editor's Image ▸ 360 Panorama)
   require("./picScene").mount(app);    // 2.975.0: 🧱 Picture → 3D scene (the Sketcher) - lib/picScene.js
-  require("./rig").mount(app);         // 2.976.0: 🦴 Rig it - UniRig skeleton + skin weights for a 3D model (lib/rigAddon.js)
+  require("./rig").mount(app);
+  require("./d3v3").mount(app);        // 3.7.0: 💎 Fine detail - Direct3D-V3 carves detail into a rough 3D model (lib/d3v3Addon.js)         // 2.976.0: 🦴 Rig it - UniRig skeleton + skin weights for a 3D model (lib/rigAddon.js)
   require("./dazLibrary").mount(app);  // 2.977.0: 📚 the Daz library read by bitGen itself (lib/dazLib.js) - not a replacement for Daz Studio
   require("./panoDepth").mount(app);   // 2.994.0: ⛰ Panorama depth - PaGeR (non-commercial weights; lib/pagerAddon.js)
   require("./dazImport").mount(app);   // 2.993.0: ⤓ Import Daz content zips into a library folder (lib/dazImport.js)

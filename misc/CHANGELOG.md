@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.7.0** — 💎 Fine Detail in the Sketcher: Direct3D-V3 Carves a Rough 3D Model of a Picture (Made for You by Hunyuan3D 2.1) Into a Finely Detailed One, up to 1536³ Voxels - an Add-on; bitGen's Own Stand-ins for flash-attn and the Parts That Need Compiling (No CUDA Toolkit Needed)
 - **3.6.0** — 📽 Project a Picture Onto Any Sketcher Model: the View Is the Projector - Walls (Each on Its Own), Floors, Roofs, Doors, Drawn Shapes and the Ground; Cut at Its Frame, Kept With the Model, in ✨ Photo and Inside the Exported .glb as a Real Texture
 - **3.5.0** — π pi-H3: MiniMax H3 in 2 or 4 Steps (No VAE Decode) as Two Video Styles; the Download Box Lets You Tick What to Download (2 / 4-Step, int8 / bf16, Kijai's Sol-Attn); the Best Sparse Attention Your ComfyUI Has
 - **3.4.1** — 🎤 SoulX-Singer and Seed-VC Load: Their Environments Made With Python 3.10 - 3.12 (Their Pinned Packages Have No 3.13 Builds), an Old 3.13 One Made Again; transformers Kept Below 5; the Install Check Says Where It Broke

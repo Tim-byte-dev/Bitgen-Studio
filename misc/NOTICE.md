@@ -404,3 +404,14 @@ Chen) into ComfyUI's custom_nodes and downloads the pi-H3 adapters you tick from
 (MiniMax H3 Community License - the same terms as MiniMax H3; not for the EU, the UK, South Korea or the USA without MiniMax's
 own licence) and, optionally, [kijai/ComfyUI-SolAttn_triton](https://github.com/kijai/ComfyUI-SolAttn_triton). The pi-H3 graphs
 (comfy_workflows/pi_h3_dwd_*.json) are bitGen's API versions of the pack's pi-H3-DWD workflow. bitGen ships no pi-H3 weights.
+
+## 💎 Fine detail - Direct3D-V3 (3.7.0)
+
+Settings ▸ Add-ons ▸ 💎 Fine detail fetches [DreamTechAI/Direct3D-V3](https://github.com/DreamTechAI/Direct3D-V3) (MIT, the
+Direct3D-V3 contributors - Shuang Wu, Jiachen Qian, Youtian Lin, Feihu Zhang, Philip Torr, Yao Yao, Xun Cao) into
+<app>/direct3d_v3 with its own Python and packages, and downloads its weights ([wushuang98/Direct3D-V3](https://huggingface.co/wushuang98/Direct3D-V3) -
+their own terms), the picture encoder DINOv3 ViT-H+ ([facebook/dinov3-vith16plus-pretrain-lvd1689m](https://huggingface.co/facebook/dinov3-vith16plus-pretrain-lvd1689m) -
+Meta's DINOv3 License, gated: you accept it on Hugging Face) and [ZhengPeng7/BiRefNet](https://huggingface.co/ZhengPeng7/BiRefNet)
+(MIT) into the Hugging Face cache. flash-attn (BSD-3-Clause) is installed when a wheel fits. misc/d3v3_shims (bitGen's own code)
+stands in for flash-attn and Direct3D-V3's two compiled parts (third_party/voxelization, third_party/fill_holes) when they will not
+install - written for bitGen from their documented behaviour. bitGen ships none of Direct3D-V3 or its weights.

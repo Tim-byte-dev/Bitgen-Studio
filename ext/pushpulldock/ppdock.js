@@ -467,6 +467,7 @@
     $("ppSend").onclick = () => sendMenu(); $("ppExport").onclick = () => exportMenu(); $("ppImport").onclick = () => S.V && importMenu();
     if ($("ppDazLib")) $("ppDazLib").onclick = () => (root.H3DazTools ? root.H3DazTools.toggle() : msg("📚 the Daz tools did not load (ppdaztools.js)"));   // 2.983.0: shows / hides the DAZ dockers (was the 📚 dialog)
     if ($("ppRig")) $("ppRig").onclick = (e) => (root.H3Rig ? root.H3Rig.menu(e.currentTarget) : msg("🦴 Rig it did not load (pprig.js)"));   // 2.976.0
+    if ($("ppDetail")) $("ppDetail").onclick = () => (root.H3Detail ? root.H3Detail.open() : msg("💎 Fine detail did not load (ppdetail.js)"));   // 3.7.0
     if ($("ppProj")) $("ppProj").onclick = (e) => (root.PPProject && root.PPProject.pop ? root.PPProject.pop(e.currentTarget, root.H3PushPull) : msg("📽 projecting did not load (ppproject.js)"));   // 3.6.0
     if ($("ppScene")) $("ppScene").onclick = () => (root.H3PicScene ? root.H3PicScene.open() : msg("🧱 Picture → 3D scene did not load (ppscene.js)"));   // 2.975.0
     $("ppCol").oninput = (e) => setColor(e.target.value);
