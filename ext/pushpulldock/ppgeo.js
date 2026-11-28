@@ -426,20 +426,32 @@
     const ok = (i) => Number.isInteger(i) && i >= 0 && i < M.v.length;
     M.f = (Array.isArray(o.f) ? o.f : []).filter((F) => F && Array.isArray(F.loops) && F.loops.length && F.loops.every((l) => Array.isArray(l) && l.length >= 3 && l.every(ok)))
       .map((F) => Object.assign({ id: +F.id || 0, loops: F.loops.map((l) => l.slice()), mat: typeof F.mat === "string" && (/^#[0-9a-f]{6}$/i.test(F.mat) || /^(mat:[a-z_]{2,24}|tex:[a-z0-9_]{1,24})$/.test(F.mat)) ? F.mat : null, grp: +F.grp || null },
-        typeof F.nm === "string" && F.nm.trim() ? { nm: F.nm.trim().slice(0, 60) } : {}));   // 2.667.0: a shape's name (the objects panel) rides on its faces
-    M.e = (Array.isArray(o.e) ? o.e : []).filter((E) => E && ok(E.a) && ok(E.b) && E.a !== E.b).map((E) => ({ id: +E.id || 0, a: E.a, b: E.b, grp: +E.grp || null }));
-    M.g = (Array.isArray(o.g) ? o.g : []).filter((g) => g && +g.id).map((g) => Object.assign({ id: +g.id, name: String(g.name || "Group").slice(0, 60) }, g.soft ? { soft: true } : {}));
+        typeof F.nm === "string" && F.nm.trim() ? { nm: F.nm.trim().slice(0, 60) } : {}, F.hid ? { hid: true } : {}));   // 2.667.0: a shape's name (the objects panel) rides on its faces; 3.8.0: 👁 hidden
+    M.e = (Array.isArray(o.e) ? o.e : []).filter((E) => E && ok(E.a) && ok(E.b) && E.a !== E.b).map((E) => Object.assign({ id: +E.id || 0, a: E.a, b: E.b, grp: +E.grp || null }, E.hid ? { hid: true } : {}));
+    M.g = (Array.isArray(o.g) ? o.g : []).filter((g) => g && +g.id).map((g) => Object.assign({ id: +g.id, name: String(g.name || "Group").slice(0, 60) }, g.soft ? { soft: true } : {}, g.hidden ? { hidden: true } : {}));
     let mx = 0; M.f.concat(M.e).concat(M.g).forEach((x) => { mx = Math.max(mx, x.id || 0); }); M.n = Math.max(+o.n || 1, mx + 1);
     M.f.concat(M.e).forEach((x) => { if (!x.id) x.id = M.n++; });
     // 2.620.0: the architecture (rooms, walls, doors, windows, roofs, lights - pparch.js) rides along
     if (o.arch && typeof o.arch === "object") M.arch = root.PPArch ? root.PPArch.clean(o.arch) : JSON.parse(JSON.stringify(o.arch));
     return M;
   }
+  /** 3.8.0 (Tim: "add an eye icon button to each object and object group to turn visibility on/off"): a face / line hidden
+      on its own (hid) or with its group (g.hidden) - not drawn, not picked, not exported. open: the group being edited inside
+      (V.group) is shown even when hidden. */
+  function hiddenGroups(M, open) { return new Set((M && M.g ? M.g : []).filter((g) => g.hidden && g.id !== open).map((g) => g.id)); }
+  function isHidden(M, x, hg) { return !!(x && (x.hid || (x.grp != null && (hg || hiddenGroups(M)).has(x.grp)))); }
+  /** 3.8.0: hide / show faces + lines (ids); on null = flip (hidden if any of them shows) -> the state set */
+  function setHidden(M, f, e, on) {
+    const F = M.f.filter((x) => (f || []).includes(x.id)), E = M.e.filter((x) => (e || []).includes(x.id)), all = F.concat(E);
+    const h = on == null ? all.some((x) => !x.hid) : !!on;
+    all.forEach((x) => { if (h) x.hid = true; else delete x.hid; });
+    return h;
+  }
   const toJson = (M) => Object.assign({ v: M.v, f: M.f, e: M.e, g: M.g, n: M.n }, M.arch ? { arch: M.arch } : {});
 
   const api = { partsOf, separate, EPS, newModel, vAt, face, newell, faceNormal, facePlane, faceArea, loopPts, basis, to2, inPoly2, neighbours, innerFaces, hostOf,
     addFace, addEdge, insertOnEdge, pushPull, offset, offsetLoop2, selVerts, move, rotateZ, scale, copyOf, remove, group, explode, gc, bbox,
-    closestOnLine, linesClosest, rectPts, circlePts, parseVcb, fmtLen, fromJson, toJson, edgeKey, faceEdgeKeys, loopEdges,
+    closestOnLine, linesClosest, hiddenGroups, isHidden, setHidden, rectPts, circlePts, parseVcb, fmtLen, fromJson, toJson, edgeKey, faceEdgeKeys, loopEdges,
     v3: { sub, add, mul, dot, cross, len, norm } };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPGeo = api;

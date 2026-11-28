@@ -148,7 +148,9 @@
       const soft = new Set((M.g || []).filter((x) => x.soft).map((x) => x.id)), byKey = new Map();
       if (soft.size) M.f.forEach((F) => { if (soft.has(F.grp)) F.loops.forEach((l) => g.loopEdges(l).forEach(([a, c]) => { const k = g.edgeKey(a, c); (byKey.get(k) || byKey.set(k, []).get(k)).push(F); })); });
       const hidden = (k) => { const L = byKey.get(k); if (!L || L.length !== 2) return false; return g.v3.dot(g.faceNormal(M, L[0]), g.faceNormal(M, L[1])) > 0.9995; };
+      const hg = g.hiddenGroups ? g.hiddenGroups(M, V.group) : new Set(), gone = (x) => (g.isHidden ? g.isHidden(M, x, hg) : false);   // 3.8.0: 👁 hidden in the outline
       M.f.forEach((F) => {
+        if (gone(F)) return;
         const col = sty === "mono" ? "#f4f4f4" : (F.mat || "#d8d2c4");
         const dim = V.group && F.grp !== V.group;
         const key = col + (dim ? "_d" : "");
@@ -157,7 +159,7 @@
         tri(F).forEach((t) => { t.forEach((p) => b.pos.push(p[0], p[1], p[2])); b.tri2f.push(F.id); });
         F.loops.forEach((l) => g.loopEdges(l).forEach(([a, c]) => { const k = g.edgeKey(a, c); if (seen.has(k)) return; seen.add(k); if (soft.has(F.grp) && hidden(k)) return; edges.push({ a, b: c, key: k, face: F.id, grp: F.grp }); }));
       });
-      M.e.forEach((E) => { const k = g.edgeKey(E.a, E.b); if (seen.has(k)) return; seen.add(k); edges.push({ a: E.a, b: E.b, key: k, line: E.id, grp: E.grp }); });
+      M.e.forEach((E) => { if (gone(E)) return; const k = g.edgeKey(E.a, E.b); if (seen.has(k)) return; seen.add(k); edges.push({ a: E.a, b: E.b, key: k, line: E.id, grp: E.grp }); });
       by.forEach((b) => {
         const geo = new T.BufferGeometry(); geo.setAttribute("position", new T.Float32BufferAttribute(b.pos, 3)); geo.computeVertexNormals();
         const lk = root.PPFurn ? root.PPFurn.look(T, b.col) : { color: b.col, map: null, rough: 0.9 };      // 2.629.0: "mat:<key>" = the House builder's material

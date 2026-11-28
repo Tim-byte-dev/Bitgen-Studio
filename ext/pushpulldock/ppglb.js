@@ -16,8 +16,9 @@
   "use strict";
   const DEF = "#d8d2c4";
   function meshes(M, tri) {
-    const by = new Map();
+    const by = new Map(), hg = new Set((M.g || []).filter((g) => g.hidden).map((g) => g.id));
     for (const F of M.f) {
+      if (F.hid || (F.grp != null && hg.has(F.grp))) continue;           // 3.8.0: 👁 hidden in the outline - not exported
       const col = F.mat || DEF, T = tri(F); if (!T || !T.length) continue;
       if (!by.has(col)) by.set(col, { color: col, pos: [], nrm: [], idx: [] });
       const g = by.get(col);

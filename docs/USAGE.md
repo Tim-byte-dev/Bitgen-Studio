@@ -547,6 +547,11 @@ With **Select**:
   Wall 1 … n, Floor 1, Ceiling 1, Skirting 1, Cornice 1, Floor slab 1, Door 1, Window 1 …; free-standing Walls, Roofs,
   Floors, Stairs, Lights, Furniture, Cameras. A click picks; **👁** hides / shows (undo-able, saved with the model).
 - **Room groups** - ＋ makes one, ⊞ on a room puts it in (or out); a group's 👁 hides / shows all its rooms.
+- **👁 on everything (3.8.0)** - every row has its own 👁: each shape and shape group under **Shapes** (a hidden shape is not
+  drawn, not picked, left out of Ctrl+A and of the .glb / .obj / .stl export - it is still in the model), every heading
+  (Rooms, Roofs, Furniture, Shapes, Construction …: its 👁 hides everything under it, or shows it all again - one ↶ undo),
+  and a **DAZ characters** heading listing each character in the scene (a click picks it) with what it is made of (the
+  figure, eyes, hair, clothes, props) - 👁 on the character or on any of its pieces.
 - **Skirting and cornice** - new rooms have both; the room's panel switches them, sets their size and colour.
 - **Walls** - a dragged wall moves across its own line (the walls beside it stretch or shorten; the floor, ceiling,
   skirting and cornice follow); **Alt+drag** moves it freely; **Shift+click** picks the whole room.
@@ -1398,6 +1403,18 @@ the characters stay in the scene. Your characters, their places and poses, and t
 - **What the model has** (2.985.0): under each character the explorer lists **In the model** - every piece really built:
   🧍 the figure, 👁 its eyes, 👄 its mouth, 🫀 grafts (anatomy), 💇 hair, 👕 clothes. Untick one to hide it in the 3D view
   (kept). An item you wore that is not in this list was not built - the ⚠ line under the character says why.
+- **Move, turn and pose in the view (3.8.0)**: the picked character (its blue box) has a **yellow ring** at its feet.
+  **Drag the character** to walk it over the floor (Shift: 10 cm steps); **drag the yellow ring** to turn it where it stands
+  (Shift: 15° steps). The X / Y / Turn boxes follow and the place is kept. In **🕺 Pose**, with a bone picked (click the body,
+  or the list), three **rings** go round that bone - **red / green / blue** are its own X / Y / Z turns, the same as its three
+  sliders: drag one round and the bone turns that way, held inside the slider's limits (Shift: 5° steps); the slider follows
+  and 🪞 Mirror turns the other side too. A ring lights up under the pointer. The view's orbit and the Sketcher's tools are
+  left alone everywhere else.
+- **Move an asset on its character (3.8.0)**: in **In the model**, **✥** beside a piece (a prop, hair, clothing - not the
+  figure) picks it to move: **drag it** in the view to slide it level over the character (**Shift + drag**: up / down), its
+  **green ring** (at its foot) turns it; ✥ again stops. It stays on the bones it was worn on, so it still poses with them;
+  the move is kept with the character (over a reload, a rebuild) and **⟲** puts it back where it was worn. Light tasks:
+  the move is in the character's standing frame, and ⤓ Bake / the built .glb file carry the piece where it was worn.
 - **Poses that move the whole figure** (2.985.0): a pose preset that turns or moves the figure itself (lying, kneeling,
   sitting on the floor) turns it, and the hips' move is used too; both stay with the character over a reload. ↺ pose
   stands it up again.

@@ -9,7 +9,9 @@
  * (static/dazmotion.js). The Sketcher draws on demand: every change calls V.draw().
  *   put(c) / remove(id) / select(id) / place(id, {x, y, rot}) / show(id, on) / pose(id, pose) / rig(id) / list()
  *   pickChar(ev) -> id | ""      pickBone(ev, id) -> bone id      ground(ev) -> [x, y] (the floor, z 0)
- *   motion.load(id, buf, name) / at(t) / play(on) / off() / bake()                         Pure: placeOf, groundHit */
+ *   motion.load(id, buf, name) / at(t) / play(on) / off() / bake()                         Pure: placeOf, groundHit, movesOf
+ * 3.8.0: moved / turned / posed by dragging in the view (ppdazgizmo.js); pieceMove(id, name, {pos, rot}) slides or turns an
+ *   asset on its character in its skin's bind matrix (it still poses with its bones), pieceBox / pieceNode / hitPiece. */
 (function (root) {
   "use strict";
   /** a kept place made safe: x / y metres on the floor, rot degrees round the Sketcher's Z */
@@ -21,7 +23,12 @@
   /** 2.985.0: the hips' move / the whole figure's turn + move of a pose made safe (metres, degrees) */
   const vec3 = (a) => (Array.isArray(a) && a.length === 3 && a.every((v) => isFinite(+v)) ? a.map(Number) : [0, 0, 0]);
   const figOf = (f) => ({ rot: { x: +(f && f.rot && f.rot.x) || 0, y: +(f && f.rot && f.rot.y) || 0, z: +(f && f.rot && f.rot.z) || 0 }, move: vec3(f && f.move) });
-  const pure = { placeOf, groundHit, pieceOf, figOf, vec3 };
+  /** 3.8.0: the assets' moves kept with a character {piece name: {pos [x, y, z] m in its Z-up frame, rot °}} made safe */
+  const movesOf = (o) => Object.fromEntries(Object.entries(o && typeof o === "object" && !Array.isArray(o) ? o : {}).slice(0, 80).map(([k, m]) => {
+    const pos = m && Array.isArray(m.pos) && m.pos.length === 3 && m.pos.every((x) => isFinite(+x)) ? m.pos.map((x) => Math.max(-3, Math.min(3, +x))) : [0, 0, 0];
+    return [String(k).slice(0, 120), { pos, rot: m && isFinite(+m.rot) ? ((+m.rot % 360) + 540) % 360 - 180 : 0 }];
+  }).filter(([, m]) => m.rot || m.pos.some((x) => x)));
+  const pure = { placeOf, groundHit, pieceOf, figOf, vec3, movesOf };
   if (!root.document) { if (typeof module !== "undefined") module.exports = pure; return; }
 
   const doc = root.document, rigs = new Map(), st = { sel: "", onChange: null, motion: null };
@@ -31,7 +38,12 @@
     return new Promise((ok, no) => { const sc = doc.createElement("script"); sc.src = src; sc.onload = () => (root[name] ? ok(root[name]) : no(new Error(src + " did not load"))); sc.onerror = () => no(new Error(src + " is missing")); doc.head.appendChild(sc); });
   }
   const F = () => script("/static/dazformula.js", "H3DazFormula");
-  const changed = (why) => { const v = V(); if (v) v.draw(); if (st.onChange) try { st.onChange(why); } catch (e) { /* the panels */ } };
+  const changed = (why) => {
+    const v = V();
+    if (root.H3DazGizmo) try { root.H3DazGizmo.refresh(); } catch (e) { /* the rings */ }                      // 3.8.0
+    if (v) v.draw();
+    if (root.PPOutline && /^(put|remove|show|piece|select)$/.test(why)) try { root.PPOutline.paint(); } catch (e) { /* the outline */ }   // 3.8.0: its DAZ rows
+    if (st.onChange) try { st.onChange(why); } catch (e) { /* the panels */ } };
   function group() {
     const v = V(); if (!v) return null;
     let g = v.scene.getObjectByName("pp-daz");
@@ -61,11 +73,11 @@
     g.scene.updateMatrixWorld(true);
     const restPos = new Map(), restLocal = new Map(); for (const [id, b] of bones) { const q = b.getWorldPosition(new T.Vector3()); restPos.set(id, [q.x, q.y, q.z]); restLocal.set(id, [b.position.x, b.position.y, b.position.z]); }
     const r = { id: c.id, model: c.last, name: c.name, outer, inner, root: g.scene, daz, bones, rest, meshes, restPos, restLocal, pose: (old && old.pose) || c.pose || {}, weights: {}, muscles: c.muscles !== false, box: null, F: f, T,
-      hips: vec3((old && old.hips) || c.hips), fig: figOf((old && old.fig) || c.figPose), hidden: new Set((old && old.hidden) || c.hidePieces || []) };
+      hips: vec3((old && old.hips) || c.hips), fig: figOf((old && old.fig) || c.figPose), hidden: new Set((old && old.hidden) || c.hidePieces || []), moves: movesOf((old && old.moves) || c.pieceMove) };
     if (old) { group().remove(old.outer); if (old.box) { group().remove(old.box); old.box.geometry.dispose(); } if (st.motion && st.motion.id === c.id) motionOff(true); }
     group().add(outer); rigs.set(c.id, r); setPlace(r, (old && old.place) || c.place);
     outer.visible = c.hidden ? false : true;
-    pieceVis(r);
+    pieceVis(r); moveVis(r);
     apply(r); if (st.sel === c.id) select(c.id, true); else changed("put");
     return r;
   }
@@ -102,6 +114,46 @@
   }
   function pieceVis(r) { r.root.traverse((o) => { const p = pieceOf((o.userData && o.userData.name) || ""); if (p) o.visible = !r.hidden.has(p.name); }); }
   function pieceShow(id, name, on) { const r = rigs.get(id); if (!r) return; if (on) r.hidden.delete(name); else r.hidden.add(name); pieceVis(r); changed("piece"); }
+  /* ---------------- 3.8.0: an asset slid / turned on its character (✥ - ppdazgizmo.js). The piece stays skinned to the bones
+     it was worn on: the move is made in the model's rest frame (its skin's bind matrix), so it still poses with them. */
+  function pieceNodes(r, name) { const out = []; r.root.traverse((o) => { const p = pieceOf((o.userData && o.userData.name) || ""); if (p && p.name === name) out.push(o); }); return out; }
+  function moveVis(r) {
+    const T = r.T, seen = new Set();
+    r.root.traverse((o) => {
+      const p = pieceOf((o.userData && o.userData.name) || ""); if (!p || seen.has(p.name)) return; seen.add(p.name);
+      const ms = []; pieceNodes(r, p.name).forEach((n) => n.traverse((m) => { if (m.isSkinnedMesh && !ms.includes(m)) ms.push(m); }));
+      if (!ms.length) return;
+      ms.forEach((m) => { if (!m.userData.bind0) m.userData.bind0 = m.bindMatrix.clone(); });
+      const mv = r.moves[p.name];
+      let O = null;
+      if (mv) {
+        if (!o.userData.c0) { const B = new T.Box3(); ms.forEach((m) => { m.geometry.computeBoundingBox(); B.union(m.geometry.boundingBox.clone().applyMatrix4(m.userData.bind0)); }); o.userData.c0 = B.getCenter(new T.Vector3()); }
+        const c = o.userData.c0, t = [mv.pos[0], mv.pos[2], -mv.pos[1]];                      // Z-up -> the glTF's Y-up
+        O = new T.Matrix4().makeTranslation(t[0] + c.x, t[1] + c.y, t[2] + c.z).multiply(new T.Matrix4().makeRotationY(mv.rot * Math.PI / 180)).multiply(new T.Matrix4().makeTranslation(-c.x, -c.y, -c.z));
+      }
+      ms.forEach((m) => { m.bindMatrix.copy(m.userData.bind0); if (O) m.bindMatrix.premultiply(O); m.boundingSphere = null; m.boundingBox = null; });
+    });
+  }
+  /** an asset's move (get) / set it -> {pos, rot} */
+  function pieceMove(id, name, mv) {
+    const r = rigs.get(id); if (!r) return null;
+    if (mv !== undefined) { const k = movesOf({ [name]: mv }); if (k[name]) r.moves[name] = k[name]; else delete r.moves[name]; moveVis(r); changed("asset"); }
+    return r.moves[name] || { pos: [0, 0, 0], rot: 0 };
+  }
+  const pieceNode = (id, name) => { const r = rigs.get(id); return r ? pieceNodes(r, name)[0] || null : null; };
+  /** where an asset is now (posed, moved) - world box {min, max} | null */
+  function pieceBox(id, name) {
+    const r = rigs.get(id); if (!r) return null;
+    const T = r.T, B = new T.Box3();
+    pieceNodes(r, name).forEach((n) => n.traverse((m) => { if (!m.isMesh || !m.visible) return; if (m.isSkinnedMesh) { m.computeBoundingBox(); B.union(m.boundingBox.clone().applyMatrix4(m.matrixWorld)); } else B.expandByObject(m); }));
+    return B.isEmpty() ? null : { min: B.min.toArray(), max: B.max.toArray() };
+  }
+  /** the asset under the pointer on a character -> {piece, kind, point [x, y, z]} | null */
+  function hitPiece(ev, id) {
+    const x = hit(ev, id); if (!x) return null;
+    let o = x.h.object, p = null; while (o && !p) { p = pieceOf((o.userData && o.userData.name) || ""); o = o.parent; }
+    return { piece: p ? p.name : "", kind: p ? p.kind : "", point: [x.h.point.x, x.h.point.y, x.h.point.z] };
+  }
   function ndc(ev, v) { const rc = v.canvas.getBoundingClientRect(); return new v.T.Vector2(((ev.clientX - rc.left) / rc.width) * 2 - 1, -((ev.clientY - rc.top) / rc.height) * 2 + 1); }
   function hit(ev, only) {
     const v = V(); if (!v || !rigs.size) return null;
@@ -177,7 +229,7 @@
     const j = await res.json().catch(() => ({})); if (!res.ok) throw new Error(j.error || res.statusText);
     return j;
   }
-  root.H3DazScene = Object.assign({ put, remove, clear, select, place, show, pose, apply, pickChar, pickBone, ground, pieces, pieceShow, box: box3,
+  root.H3DazScene = Object.assign({ put, remove, clear, select, place, show, pose, apply, pickChar, pickBone, ground, pieces, pieceShow, box: box3, pieceMove, pieceNode, pieceBox, hitPiece,
     rig: (id) => rigs.get(id) || null, list: () => [...rigs.keys()], sel: () => st.sel, onChange: (fn) => { st.onChange = fn; }, V,
     motion: { load: motionLoad, at: motionAt, play: motionPlay, off: motionOff, bake: motionBake, state: () => st.motion } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

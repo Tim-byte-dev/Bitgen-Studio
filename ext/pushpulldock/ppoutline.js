@@ -22,7 +22,12 @@
  *   RENAME        double-click any row's name (or F2 on the picked row): rooms, groups, walls, floors, roofs, lights, furniture,
  *                 cameras, shapes, planes, lines - Enter keeps it, Esc does not. Rows without a name of their own keep it in
  *                 arch.labels {key: name} (pparch.cleanLabels).
- * Pure (Node: scripts/test-outline639.js, test-cons667.js): tree(A, M), toggleKey(A, key), newGroup(A, name), setGroup(A,
+ * 3.8.0 (Tim: "add an eye icon button to each object and object group to turn visibility on/off"): 👁 on every shape and shape
+ *   group (faces' hid / M.g hidden - ppgeo.js; not drawn, picked or exported), on every heading and folder (everything under it
+ *   hidden, or all shown again - one undo step), and a DAZ characters heading (each character in the scene with its pieces -
+ *   H3DazTools.setHidden / pieceShow; a click picks it).
+ * Pure (Node: scripts/test-outline639.js, test-cons667.js, test-3800.js): tree(A, M, daz), shapeHidden, canEye, leaves,
+ *   leafHidden, setLeaf, setAll, toggleKey(A, key), newGroup(A, name), setGroup(A,
  * roomId, groupId), removeGroup(A, id), renameGroup(A, id, name), rename(A, M, node, name). */
 (function (root) {
   "use strict";
@@ -30,7 +35,7 @@
   const LABEL = { door: "Door", window: "Window", opening: "Opening" };
 
   /** the outline: [{key, label, icon, sel?, hide?, group?, children?}] - hide = the key 👁 toggles (null: nothing to hide) */
-  function tree(A, M) {
+  function tree(A, M, daz) {
     if (!A) return [];
     const lab = A.labels || {}, L = (key, def) => lab[key] || def;           // 2.667.0: a name given in the panel
     const closed = A.rooms.filter((R) => R.closed), nOf = {}; closed.forEach((R, i) => { nOf[R.id] = i + 1; });
@@ -64,7 +69,10 @@
     sec("sec:cams", "Cameras", "📷", (A.cams || []).map((x) => ({ key: "cam:" + x.id, label: x.name, icon: "📷", sel: { ak: "cam", id: x.id }, hide: "cam:" + x.id })));
     // 2.667.0: the shapes the drawing tools made, and the construction
     const CS = root.PPCons;
-    if (CS && M) sec("sec:shapes", "Shapes", "⬛", CS.shapes(M).map((sh) => ({ key: sh.key, label: CS.shapeName(M, sh), icon: { group: "▣", solid: "⬛", shape: "▭", lines: "╱" }[sh.kind], shape: sh })));
+    if (CS && M) sec("sec:shapes", "Shapes", "⬛", CS.shapes(M).map((sh) => ({ key: sh.key, label: CS.shapeName(M, sh), icon: { group: "▣", solid: "⬛", shape: "▭", lines: "╱" }[sh.kind], shape: sh, hidden: shapeHidden(M, sh) })));
+    // 3.8.0: the DAZ characters in the scene (ppdazscene.js) - each with what it is made of (figure, hair, clothes …)
+    sec("sec:daz", "DAZ characters", "🧍", (Array.isArray(daz) ? daz : []).map((c) => ({ key: "daz:" + c.id, label: c.name, icon: "🧍", daz: c.id, hidden: !!c.hidden, on: !!c.sel,
+      children: (c.pieces || []).map((q) => ({ key: "dazp:" + c.id + ":" + q.name, label: q.name, icon: DAZ_ICON[q.kind] || "📦", dazPiece: { id: c.id, name: q.name }, hidden: !q.shown })) })));
     const C = A.cons || { planes: [], lines: [] }, SP = root.PPSketchPlane && root.PPSketchPlane.get ? root.PPSketchPlane.get() : null;
     const kids = [];
     if (SP && !C.planes.some((P) => CS && CS.samePlane(P, SP.n, SP.p))) kids.push({ key: "cons:active", label: "Sketch plane - " + SP.label, icon: "✎", active: true });
@@ -73,6 +81,41 @@
     out.push({ key: "sec:cons", label: "Construction", icon: "📐", section: "cons", children: kids });
     return out;
   }
+  const DAZ_ICON = { figure: "🦴", eyes: "👁", mouth: "👄", graft: "🫀", hair: "💇", clothing: "👕", other: "📦" };
+  /** 3.8.0: a shape is hidden when its group is, or every face and line of it is */
+  function shapeHidden(M, sh) {
+    if (!M || !sh) return false;
+    if (sh.kind === "group") { const g = (M.g || []).find((x) => x.id === sh.grp); return !!(g && g.hidden); }
+    const xs = M.f.filter((F) => sh.f.includes(F.id)).concat((M.e || []).filter((E) => sh.e.includes(E.id)));
+    return xs.length > 0 && xs.every((x) => x.hid);
+  }
+  /** 3.8.0: rows that have an 👁 of their own */
+  const canEye = (n) => !!(n && (n.hide || n.group != null || n.cons || n.shape || n.daz || n.dazPiece));
+  /** 3.8.0: what a heading's / folder's 👁 hides and shows - every row under it with an eye (through folders) */
+  const leaves = (n) => (n.children || []).flatMap((k) => (canEye(k) ? [k] : k.children ? leaves(k) : []));
+  /** 3.8.0: a row hidden on its own (not with what it is in) */
+  function leafHidden(A, M, n) {
+    if (n.hide) return (A.hide || []).includes(n.hide);
+    if (n.group != null) { const g = (A.groups || []).find((x) => x.id === n.group); return !!(g && g.hidden); }
+    if (n.shape) return shapeHidden(M, n.shape);
+    return !!n.hidden;
+  }
+  /** 3.8.0: a row hidden (on true) or shown - the model's part of it (rooms, walls … shapes, groups, construction); the DAZ
+      rows are the page's (they are not in the model) -> true when it changed */
+  function setLeaf(A, M, n, on) {
+    on = !!on; if (leafHidden(A, M, n) === on) return false;
+    if (n.hide || n.group != null) { toggleKey(A, n.group != null ? "group:" + n.group : n.hide); return true; }
+    if (n.cons) { const C = A.cons || { planes: [], lines: [] }, x = (n.cons.kind === "plane" ? C.planes : C.lines).find((q) => q.id === n.cons.id); if (!x) return false; x.hidden = on; return true; }
+    if (n.shape && M) {
+      if (n.shape.kind === "group") { const g = (M.g || []).find((x) => x.id === n.shape.grp); if (!g) return false; if (on) g.hidden = true; else delete g.hidden; return true; }
+      const flag = (x) => { if (on) x.hid = true; else delete x.hid; }, fs = new Set(n.shape.f), es = new Set(n.shape.e);
+      M.f.forEach((x) => fs.has(x.id) && flag(x)); (M.e || []).forEach((x) => es.has(x.id) && flag(x));
+      return true;
+    }
+    return false;
+  }
+  /** 3.8.0: a heading's 👁: everything under it hidden when any of it shows, else everything shown -> the state set */
+  function setAll(A, M, n, on) { const L = leaves(n); if (on == null) on = L.some((k) => !leafHidden(A, M, k)); L.forEach((k) => setLeaf(A, M, k, on)); return on; }
   function toggleKey(A, key) {
     const g = /^group:(\d+)$/.exec(key);
     if (g) { const G = (A.groups || []).find((x) => x.id === +g[1]); if (G) G.hidden = !G.hidden; return G ? !G.hidden : null; }
@@ -102,6 +145,7 @@
   /** 2.667.0: rename what a row is (node from tree) - its own name where it has one, else arch.labels[key] */
   function rename(A, M, n, name) {
     const t = String(name == null ? "" : name).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 60); if (!t || !n || n.section || n.folder || n.active) return false;
+    if (n.daz || n.dazPiece) return false;                                   // 3.8.0: the DAZ Explorer names its characters
     if (n.group != null) return !!renameGroup(A, n.group, t);
     if (n.shape) return root.PPCons ? root.PPCons.renameShape(M, n.shape, t) : false;
     if (n.cons) { const C = A.cons || { planes: [], lines: [] }, x = (n.cons.kind === "plane" ? C.planes : C.lines).find((q) => q.id === n.cons.id); if (!x) return false; x.name = t; return true; }
@@ -110,7 +154,7 @@
     if (!/^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(n.key)) return false;
     A.labels = A.labels || {}; A.labels[n.key] = t; return true;
   }
-  const api = { tree, toggleKey, newGroup, setGroup, removeGroup, renameGroup, rename };
+  const api = { tree, shapeHidden, canEye, leaves, leafHidden, setLeaf, setAll, toggleKey, newGroup, setGroup, removeGroup, renameGroup, rename };
   if (typeof module !== "undefined" && module.exports && !root.document) { module.exports = api; return; }
 
   /* ---------------- the docker */
@@ -173,13 +217,14 @@
     const btn = $("ppOutlineBtn"); if (btn) btn.classList.toggle("on", on);
     if (!on) return;
     const h0 = H(), M0 = h0 && h0.state ? h0.state.M : null, gsel = h0 && h0.state ? h0.state.sel : null;
-    const A = arch() || P().empty(), hid = P().hiddenOf(A), sel = selNow(), T = tree(A, M0), rows = [];
+    const A = arch() || P().empty(), hid = P().hiddenOf(A), sel = selNow(), T = tree(A, M0, dazList()), rows = [];
     const shapeOn = (sh) => !!(gsel && !sel && sh.f.concat(sh.e).length && sh.f.every((id) => (gsel.f || []).includes(id)) && sh.e.every((id) => (gsel.e || []).includes(id)) && (gsel.f || []).length === sh.f.length);
     nodesByKey = {};
     const walk = (n, depth, parentHidden) => {
       nodesByKey[n.key] = n;
-      const kids = n.children || [], isOpen = open[n.key] != null ? open[n.key] : (n.section || n.folder || n.group != null || (n.room != null && kids.length < 40));
-      const me = n.group != null || n.cons ? !!n.hidden : n.hide ? hid(n.hide) : false, own = n.group != null || n.cons ? !!n.hidden : n.hide ? (A.hide || []).includes(n.hide) : false;
+      const kids = n.children || [], isOpen = open[n.key] != null ? open[n.key] : (n.section || n.folder || n.group != null || (n.room != null && kids.length < 40) || (n.daz != null && kids.length < 40));
+      const box = n.section || n.folder, L = box ? leaves(n) : [], allHid = L.length > 0 && L.every((k) => leafHidden(A, M0, k));
+      const me = box ? false : n.group != null || n.cons || n.shape || n.daz || n.dazPiece ? leafHidden(A, M0, n) : n.hide ? hid(n.hide) : false, own = box ? allHid : leafHidden(A, M0, n);
       const hiddenNow = parentHidden || me;
       const tools = n.section === "cons" ? '<button data-act="newcons" title="A construction plane: ground / front / side, or keep the sketch plane · a construction line: 📏 Tape measure with Ctrl">＋</button>'
         : n.active ? '<button data-act="keep" title="Keep this plane in Construction">📌</button>'
@@ -187,8 +232,9 @@
         : n.section === "groups" ? '<button data-act="newgroup" title="A new room group">＋</button>'
         : n.group != null ? '<button data-act="rename" title="Rename the group">✎</button><button data-act="delgroup" title="Delete the group (its rooms stay)">✕</button>'
         : n.room != null ? '<button data-act="group" title="Put this room in a group (or out of one)">⊞</button>' : "";
-      const eye = n.hide || n.group != null || n.cons ? `<button class="oeye${hiddenNow ? " off" : ""}" data-act="eye" title="${own ? "Show it" : hiddenNow ? "Hidden with what it is in - click to hide it on its own too" : "Hide it"}">${hiddenNow ? "🚫" : "👁"}</button>` : "";
-      const isOn = (sel && n.sel && sameSel(sel, n.sel)) || (n.shape && shapeOn(n.shape)) || (n.cons && (n.on || (n.cons.kind === "line" && root.PPCons && root.PPCons.selLine() === n.cons.id))) || n.active;
+      const eye = box ? (L.length ? `<button class="oeye${allHid || parentHidden ? " off" : ""}" data-act="eyeall" title="${allHid ? "Show all of them" : "Hide all of them"}">${allHid || parentHidden ? "🚫" : "👁"}</button>` : "")
+        : canEye(n) ? `<button class="oeye${hiddenNow ? " off" : ""}" data-act="eye" title="${own ? "Show it" : hiddenNow ? "Hidden with what it is in - click to hide it on its own too" : "Hide it"}">${hiddenNow ? "🚫" : "👁"}</button>` : "";
+      const isOn = (n.daz && n.on) || (sel && n.sel && sameSel(sel, n.sel)) || (n.shape && shapeOn(n.shape)) || (n.cons && (n.on || (n.cons.kind === "line" && root.PPCons && root.PPCons.selLine() === n.cons.id))) || n.active;
       rows.push(`<div class="orow${n.section ? " osec" : ""}${n.folder ? " ofold" : ""}${isOn ? " on" : ""}${hiddenNow ? " dim" : ""}" data-key="${esc(n.key)}" style="padding-left:${2 + depth * 11}px">`
         + `<span class="ocar" data-act="fold">${kids.length ? (isOpen ? "▾" : "▸") : ""}</span>${eye}<span>${n.icon || ""}</span><span class="olab" title="${esc(n.label)}${n.section || n.folder || n.active ? "" : " - double-click to rename"}">${esc(n.label)}${n.section || n.folder ? ` <span style="font-weight:400">(${n.section === "cons" ? kids.reduce((a, k) => a + ((k.children || []).length || (k.active ? 1 : 0)), 0) : kids.length})</span>` : ""}</span>${tools}</div>`);
       if (isOpen) kids.forEach((k) => walk(k, depth + 1, hiddenNow));
@@ -220,6 +266,9 @@
     // 2.667.0: the second click of a double-click lands on the row painted again by the first - rename from here
     if (e.detail === 2 && !act && !n.section && !n.folder && !n.active) { startRename(row); return; }
     if (act === "fold" || (!act && (n.section || n.folder))) { const kids = (n.children || []).length; if (kids || n.section) { const cur = open[n.key] != null ? open[n.key] : true; open[n.key] = !cur; paint(); } return; }
+    if (act === "eyeall") { eyeAll(n); return; }
+    if (n.daz || n.dazPiece) { dazRow(n, act); return; }
+    if (act === "eye" && n.shape) { edit("shown / hidden", (A) => setLeaf(A, H().state.M, n, !leafHidden(A, H().state.M, n))); return; }
     if (act === "eye" && n.cons) { edit("shown / hidden", (A) => { const C = A.cons || { planes: [], lines: [] }, x = (n.cons.kind === "plane" ? C.planes : C.lines).find((q) => q.id === n.cons.id); if (x) x.hidden = !x.hidden; }); if (root.PPCons) root.PPCons.paint(); return; }
     if (act === "eye") { edit(n.group != null ? "group shown / hidden" : "shown / hidden", (A) => toggleKey(A, n.group != null ? "group:" + n.group : n.hide)); return; }
     if (act === "newcons") { consMenu(e.target); return; }
@@ -233,6 +282,27 @@
     if (act === "delgroup") { edit("group", (A) => removeGroup(A, n.group)); return; }
     if (act === "group") { groupMenu(e.target, n.room); return; }
     if (n.sel) pick(n);
+  }
+  /* ---------------- 3.8.0: the DAZ characters (H3DazTools / H3DazScene) */
+  function dazList() {
+    const D = root.H3DazTools, S = root.H3DazScene; if (!D || !S || !D.state || !D.state.scene) return [];
+    return D.state.scene.chars.filter((c) => S.rig(c.id)).map((c) => ({ id: c.id, name: c.name, hidden: !!c.hidden, sel: S.sel() === c.id, pieces: S.pieces(c.id) }));
+  }
+  function dazRow(n, act) {
+    const D = root.H3DazTools; if (!D) return;
+    if (act === "eye" && n.daz) D.setHidden(n.daz, !n.hidden);
+    else if (act === "eye" && n.dazPiece) D.pieceShow(n.dazPiece.id, n.dazPiece.name, !!n.hidden);
+    else if (!act) { D.pickChar(n.daz || n.dazPiece.id); if (root.H3DazScene) root.H3DazScene.select(n.daz || n.dazPiece.id); }
+    paint();
+  }
+  /** a heading's / folder's 👁 - the model's rows in one undo step, the DAZ ones with them */
+  function eyeAll(n) {
+    const h = H(), A0 = arch() || P().empty(), M0 = h && h.state ? h.state.M : null, L = leaves(n), on = L.some((k) => !leafHidden(A0, M0, k));
+    const model = L.filter((k) => !k.daz && !k.dazPiece), daz = L.filter((k) => k.daz || k.dazPiece);
+    if (model.length) edit(on ? "all hidden" : "all shown", (A) => { model.forEach((k) => setLeaf(A, h.state.M, k, on)); });
+    const D = root.H3DazTools; if (D) daz.forEach((k) => { if (k.daz) D.setHidden(k.daz, on); else D.pieceShow(k.dazPiece.id, k.dazPiece.name, !on); });
+    if (model.some((k) => k.cons) && root.PPCons) root.PPCons.paint();
+    paint();
   }
   function consItem(n) { const A = arch(), C = A && A.cons ? A.cons : { planes: [], lines: [] }; return (n.cons.kind === "plane" ? C.planes : C.lines).find((q) => q.id === n.cons.id) || null; }
   function consMenu(at) {

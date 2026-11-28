@@ -494,7 +494,7 @@
       if (ctl && (k === "z" || k === "Z")) { done(); if (e.shiftKey) redo(); else undo(); return; }
       if (ctl && (k === "y" || k === "Y")) { done(); redo(); return; }
       if (ctl && (k === "s" || k === "S")) { done(); save(false); return; }
-      if (ctl && (k === "a" || k === "A")) { done(); const s = { f: S.M.f.filter((F) => !S.group || F.grp === S.group).map((F) => F.id), e: S.M.e.filter((E) => !S.group || E.grp === S.group).map((E) => E.id), k: [] }; S.sel = s; S.V.setSel(s); info(); return; }
+      if (ctl && (k === "a" || k === "A")) { done(); const hg = G().hiddenGroups(S.M, S.group), s = { f: S.M.f.filter((F) => (!S.group || F.grp === S.group) && !G().isHidden(S.M, F, hg)).map((F) => F.id), e: S.M.e.filter((E) => (!S.group || E.grp === S.group) && !G().isHidden(S.M, E, hg)).map((E) => E.id), k: [] }; S.sel = s; S.V.setSel(s); info(); return; }
       if (!ctl && k === "Z" && e.shiftKey) { done(); S.V.extents(); return; }
       if (!ctl && (k === "g" || k === "G") && !e.altKey) { done(); groupBtn(); return; }
       if (!ctl && e.altKey && e.code === "KeyG" && S.T.terrain) { done(); S.T.use("terrain"); return; }   // 2.653.0: ⛰ Terrain (G is Group; e.code - Alt+G types © on a Mac)
