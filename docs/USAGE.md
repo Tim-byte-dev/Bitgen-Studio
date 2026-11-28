@@ -10006,6 +10006,12 @@ PODS ▸ Create pod has **Sort GPUs** above the GPU list: **Cheapest** (the defa
 
 The Queue docker's **Pending** tab shows only the generations still queued or running. Finished, failed and cancelled ones go to the **Done** tab, with ↻ to make one again. The Pending count includes the queued ones.
 
+## Each queued generation keeps the Settings it was queued with (3.15.0)
+
+When you queue a generation, the studio keeps a copy of the Settings as they are at that moment, and that generation renders with that copy - even when it starts an hour later. Changing the Settings while the queue runs (a model, ComfyUI's memory options, the H3 size fit, a folder) reaches only the generations you queue after the change; the ones already waiting keep theirs.
+
+Your API keys are the one exception: a waiting generation uses the keys as they are when it starts, so a key you fix while it waits still works. When the Settings changed after a generation was queued, its log names what changed (for example "engine.comfy.low_vram, models.ref2va") and says it renders with the ones it was queued with. A generation still queued when the studio restarts uses the Settings as they are after the restart.
+
 ## Runs on: one dropdown per type in the Remote generation docker (2.785.0)
 
 The top of the 🖥 GPU docker is now **Runs on**: one dropdown for each type of work - Image, Video, Music, Text to speech, Speech to text, Song separation, LLM and Vision LLM. Each can be **Local**, **RunPod** (your pods) or **OpenRouter** (the LLM and Vision LLM for now - OpenRouter's paid picture and video models come next). **LAN** and **Team** are greyed until they work. **Set all** changes every row at once; a choice a row cannot take is skipped.

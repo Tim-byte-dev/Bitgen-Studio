@@ -120,6 +120,7 @@ The window, its dockers, the look of the app, projects and the files they hold.
 - **The queue** — one job at a time on the graphics card; pause, reorder, abort and retry, every job with its log. *Where:* the Queue. *Since:* 2.122.0
 - **Pending and Done tabs** — queued, running and interrupted jobs apart from finished ones, saved with the project; resume an interrupted job. *Where:* the Queue. *Since:* 2.113.0
 - **One running card** — the running render shows as one card with its prompt, mode, size, progress bar and chunk / step / time. *Where:* the Queue. *Since:* 2.400.0
+- **Each queued job keeps its Settings** — a job renders with the Settings as they were when it was queued; a change made while the queue runs reaches only the jobs queued after it (the API keys stay current; the job's log names what changed). *Where:* the Queue. *Since:* 3.15.0
 - **Clear finished jobs** — removes every done, failed and cancelled job from the list without deleting files. *Where:* the Queue header
 - **Abort dialog** — stop this render, retry it at the front of the queue, or stop everything. *Where:* the Abort button
 - **Seeds to reuse** — every finished job's details, with a button to put its seed back in Basic Settings. *Where:* the Queue's info button. *Since:* 2.384.0

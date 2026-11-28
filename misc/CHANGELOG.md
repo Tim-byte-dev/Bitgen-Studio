@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.15.0** — Every Queued Job Keeps the Settings It Was Queued With - a Change Made While the Queue Runs Reaches Only the Jobs Queued After It (the API Keys Stay Current; the Job's Log Says What Changed)
 - **3.14.1** — MMH3_NativeAudio_MV Renders From a Plain Generate: Its ComfyUI Graph (Converted From Its UI Export) Is Made Before Any Job of It Runs - ComfyUI Started First If Needed - Not Only From the Scene Board ("Workflow for ref2va Not Found")
 - **3.14.0** — Image Editor: 🏞 Scene in Layers - a Background, Each Object Whole on Its Own Layer, the Words as Text; 📷 Photo Composition (One Scene Pulled Apart by the Edit Model) or 🎨 Poster / Artwork (Each Layer Made on Its Own); 🤖 the LLM Plans It; 🛤 Ground & Perspective Tool - Drag an Object Along the Ground and It Shrinks Toward the Horizon, Its 🌑 Shadow With It
 - **3.13.2** — 🧩 Ming in ComfyUI: the Design Set Could Not Download - It Asked for a 0.2 Text Encoder That Comfy-Org's Repo Does Not Have (Their Template Names It); 0.1's Encoder Does Not Fit 0.2 (a Different Connector), So the Design Is 0.1 Design With Its Own Encoder, 0.2 Once a 0.2 Encoder Is Listed; Exact File Sizes
