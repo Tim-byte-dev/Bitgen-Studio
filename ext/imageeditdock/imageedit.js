@@ -3058,6 +3058,7 @@
     if (win.PCDimAuto && win.PCDimAuto.install) win.PCDimAuto.install(E);   // 2.458.0: auto / floorplan dimensions + the Chain Dimension tool
     if (win.PC3D && win.PC3D.install) win.PC3D.install(E);
     if (win.PCBlendLayer && win.PCBlendLayer.install) win.PCBlendLayer.install(E);   // 2.542.0: a Blender layer - the timeline's scene tools over the canvas   // 2.460.0: a Daz / Blender scene as a 3D layer (camera, pose, render, generate)
+    if (win.PCMing && win.PCMing.install) win.PCMing.install(E);   // 3.9.0: Layer ▸ 🧩 Ming Layered Design… - Ming-Image makes a design from your layer list, split into those layers (pcming.js)
     if (win.PCBlendAi && win.PCBlendAi.install) win.PCBlendAi.install(E);   // 2.855.0: 🟧 ✨ Model with AI + 🧰 Blender tools (the Blender skills, lib/blendSkills.js)
     if (win.PCSketchTools && win.PCSketchTools.install) win.PCSketchTools.install(E);   // 2.462.0: sketch layers (a CAD sketch: constraints + dimensions)
     if (win.PCSketchCADUI && win.PCSketchCADUI.install) win.PCSketchCADUI.install(E);   // 2.464.0: the sketch's Measure tool, units, DXF / SVG out, DXF in

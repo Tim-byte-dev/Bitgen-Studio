@@ -415,3 +415,12 @@ Meta's DINOv3 License, gated: you accept it on Hugging Face) and [ZhengPeng7/BiR
 (MIT) into the Hugging Face cache. flash-attn (BSD-3-Clause) is installed when a wheel fits. misc/d3v3_shims (bitGen's own code)
 stands in for flash-attn and Direct3D-V3's two compiled parts (third_party/voxelization, third_party/fill_holes) when they will not
 install - written for bitGen from their documented behaviour. bitGen ships none of Direct3D-V3 or its weights.
+
+## 🧩 Ming layered design - Ming-Image (3.9.0)
+
+Settings ▸ Add-ons ▸ 🧩 Ming layered design fetches [inclusionAI/Ming-Image](https://github.com/inclusionAI/Ming-Image) (MIT,
+inclusionAI / Ant Group - checked with commit d5615110) into <app>/ming_image with its own Python and packages, and downloads the
+models you tick - [inclusionAI/Ming-Image-0.2-Design](https://huggingface.co/inclusionAI/Ming-Image-0.2-Design) and
+[inclusionAI/Ming-Image-0.1-Design-Layer](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design-Layer) (both MIT) - into the
+Hugging Face cache. ☁ OpenRouter runs inclusionAI's hosted models with your own OpenRouter key. bitGen ships none of Ming-Image's
+code or weights; misc/ming_worker.py runs its own infer.py unchanged.

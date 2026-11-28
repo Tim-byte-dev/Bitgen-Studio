@@ -1210,6 +1210,32 @@ Good to know:
 - **Best results:** a static camera (added to the prompt for you), the performer framed with some margin, a
   View ° of 50–80, and a ✎ first frame.
 
+## 🧩 Ming layered design - a design made as separate layers (the image editor, 3.9.0)
+
+The image editor's **Layer ▸ 🧩 Ming Layered Design…** asks for your layers and makes a design from them, each layer a separate
+transparent layer in the editor - with inclusionAI's Ming-Image (MIT).
+
+- **The layers**: one row per layer, the **front at the top** and the background last (as in the Layers panel). Give each a
+  **name** and say **what goes in it** - quote any words it should show (`"SUMMER SALE"`), give colours as `#hex`. **Where**
+  places it (whole canvas, top, centre, a corner …). **＋ Add layer** adds a row above the background; **↑ ↓** reorder, **✕**
+  removes. Up to 12 layers. The dialog keeps your list for next time.
+- **✨ Make a design from these layers**: Ming-Image-0.2-Design draws the whole design from your list (a structured prompt -
+  background first, each layer's words, place, order and colours), then Ming-Image-0.1-Design-Layer splits it into your layers.
+  They come in as a **🧩 group** named after the front layer, each layer named as you named it (the front on top), with the
+  flat design kept **hidden** below it. One ↶ Undo takes them away. **Style** and **Lighting** describe the look; **Size**
+  ~1 MP (faster) or ~4 MP (2K) at the canvas's shape (a new document is made when no picture is open); untick **Separate
+  layers** for the one flat picture only.
+- **✂ Split the open picture into these layers**: the picture that is open (every visible layer) is split into the layers you
+  list - no new design. Two layers at least (the front ones and the background).
+- **🖥 This computer**: Settings ▸ Add-ons ▸ 🧩 Ming layered design (it opens by itself when missing) - tick the models: 0.2-Design
+  (makes designs), 0.1-Design-Layer (splits pictures). inclusionAI validated **one 80 GB card**; bitGen spreads Ming's language
+  model over all your NVIDIA cards (an RTX 5090 + 3090 = 56 GB is the way to try it - not validated by inclusionAI). **GPUs: first
+  card only** keeps it on one. Out of memory: try ~1 MP, layers at 512, or ☁ OpenRouter.
+- **☁ OpenRouter**: your OpenRouter key (🖥 GPU ▸ Remote generation ▸ OpenRouter). Ming 0.1 Design and Design-Layer are free
+  there (November 2026); 0.2-Design is used instead of 0.1 when OpenRouter has it.
+- What comes back is only as good as the model: it may give a different number of layers than you asked (the message says so),
+  and the layers are drawn by the model - check them before you rely on a cut-out.
+
 ## 🌐 A 360° panorama from your pictures (the image editor, 2.971.0)
 
 The image editor's **Image ▸ 🌐 360 Panorama…** turns one or more pictures into a full 360° picture - a world for
