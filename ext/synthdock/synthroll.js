@@ -121,6 +121,90 @@
     doc.getElementById("syRollZout").onclick = function () { R.zx = Math.max(12, R.zx / 1.4); draw(); };
     doc.getElementById("syRollPlay").onclick = function () { if (R.o.playClip) R.o.playClip(); else R.c.notes.forEach(function (n) { root.setTimeout(function () { hear(n.m, n.v); }, n.t * 1000); }); };
     doc.getElementById("syRollX").onclick = close;
+    wireCont();
+  }
+  /* ---------------- 3.11.0 ✍ CONTINUE (Tim: "okay let go with 1" - the Anticipatory Music Transformer, step 2 of "our own
+     Magenta"): the clip's notes in, the next 1 - 8 bars out in the same style, added to the clip (it grows to fit). POST
+     /api/amt/continue -> a job -> GET /api/amt/notes/:id. 🎲 Again = take the last ones back and write again (another seed);
+     ↶ Take back = the last ones gone. Not installed -> the add-on's Download box (H3Addons.act("amt", "install")). */
+  var CS = { busy: false, last: null, info: null };
+  var LSK = function (k, d) { try { var v = root.localStorage.getItem("h3.synth.amt." + k); return v == null ? d : v; } catch (e) { return d; } };
+  var LSS = function (k, v) { try { root.localStorage.setItem("h3.synth.amt." + k, String(v)); } catch (e) { /* fine */ } };
+  var INSTR = [[0, "Piano"], [4, "Electric piano"], [16, "Organ"], [24, "Guitar"], [33, "Bass"], [48, "Strings"], [61, "Brass"], [73, "Flute"], [80, "Synth lead"], [88, "Synth pad"]];
+  function contHtml() {
+    var opt = function (v, t, cur) { return '<option value="' + v + '"' + (String(v) === String(cur) ? " selected" : "") + ">" + t + "</option>"; };
+    return '<div class="syrollbar syrollcont" id="syRollContBox" hidden>'
+      + '<label>Bars <select id="syContBars">' + [1, 2, 4, 8].map(function (b) { return opt(b, b, LSK("bars", "2")); }).join("") + "</select></label>"
+      + '<label title="Small is fast (the CPU too); Large is the most musical">Model <select id="syContModel">' + opt("small", "Small", LSK("model", "small")) + opt("medium", "Medium", LSK("model", "small")) + opt("large", "Large", LSK("model", "small")) + "</select></label>"
+      + '<label title="The notes are played as this instrument for the model (the clip keeps its own sound)">As <select id="syContInstr">' + INSTR.map(function (x) { return opt(x[0], x[1], LSK("instr", "0")); }).join("") + "</select></label>"
+      + '<label title="Low = safer, closer to what is there; high = more surprises">Creativity <input type="range" id="syContTop" min="0.85" max="1" step="0.01" value="' + LSK("top", "0.97") + '"></label>'
+      + '<label title="Only this instrument (no drums or bass added by the model)"><input type="checkbox" id="syContOnly"' + (LSK("only", "1") === "1" ? " checked" : "") + "> one instrument</label>"
+      + '<button type="button" class="sydk" id="syContGo" title="Write the next bars after the last note">✨ Write</button>'
+      + '<button type="button" class="sydk" id="syContAgain" title="Take the last ones back and write again (another take)" disabled>🎲 Again</button>'
+      + '<button type="button" class="sydk" id="syContBack" title="Take the last ones back" disabled>↶ Take back</button>'
+      + '<span id="syContMsg" class="hint" style="margin-left:6px">a start you finish here - light tasks; runs on this computer, nothing leaves your PC</span></div>';
+  }
+  function contMsg(t, bad) { var m = doc.getElementById("syContMsg"); if (m) { m.textContent = t; m.style.color = bad ? "#ff8a8a" : ""; } }
+  function contPaint() {
+    var g = doc.getElementById("syContGo"), a = doc.getElementById("syContAgain"), b = doc.getElementById("syContBack");
+    if (g) g.disabled = CS.busy; if (a) a.disabled = CS.busy || !CS.last || !R || CS.last.c !== R.c; if (b) b.disabled = CS.busy || !CS.last || !R || CS.last.c !== R.c;
+  }
+  function wireCont() {
+    var bt = doc.getElementById("syRollCont"), box = doc.getElementById("syRollContBox");
+    bt.onclick = function () {
+      box.hidden = !box.hidden; bt.setAttribute("aria-expanded", box.hidden ? "false" : "true"); bt.classList.toggle("grvopen", !box.hidden);
+      if (!box.hidden) root.fetch("/api/amt").then(function (r) { return r.json(); }).then(function (j) { CS.info = j; if (!CS.busy && !j.ready) contMsg("✍ needs its add-on - ✨ Write opens its Download box"); }).catch(function () { /* fine */ });
+      draw();
+    };
+    [["syContBars", "bars"], ["syContModel", "model"], ["syContInstr", "instr"], ["syContTop", "top"]].forEach(function (x) { var e = doc.getElementById(x[0]); e.onchange = function () { LSS(x[1], e.value); }; });
+    doc.getElementById("syContOnly").onchange = function (e) { LSS("only", e.target.checked ? "1" : "0"); };
+    doc.getElementById("syContGo").onclick = function () { cont(); };
+    doc.getElementById("syContAgain").onclick = function () { if (takeBack()) cont(); };
+    doc.getElementById("syContBack").onclick = function () { takeBack(); };
+    contPaint();
+  }
+  function takeBack() {
+    var L = CS.last; if (!L || !R || L.c !== R.c) return false;
+    L.added.forEach(function (n) { var i = L.c.notes.indexOf(n); if (i >= 0) L.c.notes.splice(i, 1); });
+    L.c.len = L.len0; CS.last = null; R.sel = -1; changed(); draw(); contPaint(); contMsg("↶ taken back"); return true;
+  }
+  function sleep(ms) { return new Promise(function (ok) { root.setTimeout(ok, ms); }); }
+  function cont() {
+    if (CS.busy || !R) return Promise.resolve(null);
+    var c = R.c, o = R.o, v = function (id) { return doc.getElementById(id).value; };
+    var body = { notes: c.notes.map(function (n) { return { m: n.m, t: n.t, d: n.d, v: n.v }; }), bpm: o.bpm || 120, bars: +v("syContBars"), model: v("syContModel"),
+      instr: +v("syContInstr"), top_p: +v("syContTop"), only: doc.getElementById("syContOnly").checked };
+    CS.busy = true; contPaint(); contMsg("✍ writing " + body.bars + " bar" + (body.bars > 1 ? "s" : "") + " (" + body.model + ")… it waits its turn in the queue");
+    return root.fetch("/api/amt/continue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 409 && j.needs) {
+          var A = root.H3Addons; if (A && A.act) { Promise.resolve(A.refresh && A.refresh()).catch(function () {}).then(function () { A.act("amt", "install"); }); }
+          throw new Error("✍ Continue needs its add-on - its Download box is open (tick a model), then ✨ Write again");
+        }
+        if (!r.ok || !j.job) throw new Error(j.error || "not started");
+        return poll(j.job.id);
+      });
+    }).then(function (res) {
+      var len0 = c.len, added = res.notes.map(function (n) { return { m: n.m, t: n.t, d: n.d, v: n.v }; });
+      added.forEach(function (n) { c.notes.push(n); });
+      c.len = Math.max(c.len, res.to);
+      CS.last = { c: c, added: added, len0: len0 };
+      if (R && R.c === c) { R.sel = -1; changed(); R.sx = Math.max(0, X(res.from) + R.sx - KW - 40); draw(); }
+      else { c.notes.sort(function (a, b) { return a.t - b.t || a.m - b.m; }); if (o.changed) o.changed(); }
+      contMsg(added.length ? "✍ " + added.length + " new notes, " + res.from.toFixed(1) + " s - " + res.to.toFixed(1) + " s" + (res.device === "cpu" ? " (on the CPU)" : "") + " - 🎲 Again for another take, ↶ to take them back"
+        : "✍ the model wrote nothing there this time - 🎲 Again / ✨ Write");
+      return added;
+    }).catch(function (e) { contMsg(e.message || String(e), true); return null; })
+      .then(function (x) { CS.busy = false; contPaint(); return x; });
+  }
+  function poll(id) {
+    return sleep(900).then(function () { return root.fetch("/api/amt/notes/" + encodeURIComponent(id)); }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 202) { var pg = j.progress, pc = pg && pg.pct != null ? " " + Math.round(pg.pct) + "%" : ""; contMsg("✍ " + (j.status === "queued" ? "waiting in the queue…" : "writing…" + pc)); return poll(id); }
+        if (!r.ok) throw new Error("✍ " + (j.error || "it stopped"));
+        return j;
+      });
+    });
   }
   function open(c, o) {
     close();
@@ -132,13 +216,16 @@
       + '<label>Grid <select id="syRollGrid"><option value="1">1/4</option><option value="0.5">1/8</option><option value="0.25" selected>1/16</option><option value="0.125">1/32</option></select></label>'
       + '<button type="button" class="sydk" id="syRollQ" title="⌗ Quantize: every note onto the grid">⌗ Quantize</button><button type="button" class="sydk" id="syRollPlay" title="▶ Hear the clip">▶</button>'
       + '<button type="button" class="sydk" id="syRollZout" title="Zoom out">－</button><button type="button" class="sydk" id="syRollZin" title="Zoom in">＋</button>'
+      + '<button type="button" class="sydk" id="syRollCont" aria-expanded="false" title="✍ Continue: the next bars of these notes in the same style - the Anticipatory Music Transformer on this computer (an add-on)">✍ Continue</button>'
       + '<span class="hint">click = a note · drag = move · edge = length · right-click / Delete = gone · ↑↓←→ · wheel = pitches, Shift+wheel = time</span>'
       + '<button type="button" class="sydk" id="syRollX" title="Done (Esc)">✕ Done</button></div>'
+      + contHtml()
       + '<canvas id="syRollCv" aria-label="The notes"></canvas><canvas id="syRollVel" aria-label="Velocity"></canvas></div>';
     host.appendChild(back); wire(); draw(); doc.getElementById("syRoll").focus({ preventScroll: true });
     if (root.ResizeObserver) { R.ro = new root.ResizeObserver(draw); R.ro.observe(doc.getElementById("syRollCv")); }
   }
   function close() { var b = doc.getElementById("syRollBack"); if (b) b.remove(); if (R && R.ro) R.ro.disconnect(); var was = !!R; if (R && R.o.closed) R.o.closed(); R = null; return was; }
   root.H3SynthRoll = Object.assign({ open: open, close: close, draw: draw, isOpen: function () { return !!R; },
+    cont: function () { return cont(); }, takeBack: function () { return takeBack(); }, contState: function () { return { busy: CS.busy, last: CS.last ? CS.last.added.length : 0 }; },
     info: function () { return R ? { notes: R.c.notes.length, sel: R.sel, grid: R.grid, top: R.top, zx: R.zx, sx: R.sx, kw: KW, rh: R.rh, bpm: R.o.bpm } : null; } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -649,6 +649,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🧬 在 SFX 分頁複製聲音** — 開啟檔案、錄音或選專案裡的聲音；在波形上拖曳 START 和 END 標記（或拖曳兩者之間的部分、用 ← →、輸入秒數）選出要複製的部分，▶ 播放，✍ 寫出其中的話；🧬 Save voice 儲存後會在 🗣 Speech & dialog 裡被選為聲音來朗讀你的文字——朗讀的檔案現在也會放進圖庫的 Audio 分頁。*位置：* 音訊 ▸ 💥 SFX ▸ 🧬 Clone a voice。*版本：* 2.974.0
 - **🎛 Edit Booth：每個部分的高度** — Synth、Keyboard、Looper、Timeline 每個部分下方有一個拖曳條：拖曳（或 ↑ ↓）讓該部分變高或變矮，按兩下恢復原本的高度；儲存在這個瀏覽器裡。*位置：* 音訊 ▸ 🎹 Edit Booth。*版本：* 2.974.0
 - **🥁 Edit Booth：Drumify - 把節奏變成帶著你手感的鼓組** — 在步進音序器裡，聽一小節節拍器後敲出節奏（敲擊板、任意鍵、MIDI 鍵盤或鼓墊），或用音符片段、聲音（依低 / 中 / 高分出每一擊）-> 大鼓、小鼓和鈸，並補上鈸、反拍、第 1 拍大鼓和幽靈音；每一擊都保留力度與提前 / 拖後，Feel 決定聽到多少這種時值（0 = 對齊格線）。🎲 換一種、↶ 恢復原樣。這是我們自己寫的規則，不是 AI 模型，任何內容都不會離開你的電腦。*位置：* 音訊 ▸ 🎹 Edit Booth ▸ ▦ Steps ▸ 🥁 Drumify。*版本：* 2.992.0
+- **✍ Edit Booth：Continue - 續寫你的音符** — 在音符片段的 🎹 鋼琴卷簾中，✍ Continue 用 Anticipatory Music Transformer（Stanford CRFM，Apache-2.0，在本機執行）以相同風格續寫接下來的 1～8 小節 —— 可選音符的樂器、創造力、單一樂器或更多；🎲 Again 再寫一版，↶ Take back 撤回。Small／Medium／Large 模型（附加元件；Small 也可在 CPU 上執行）。*位置：* 音訊 ▸ 🎹 Edit Booth ▸ 音符片段的 🎹 鋼琴卷簾 ▸ ✍ Continue；Settings ▸ Add-ons ▸ ✍ Continue。*版本：* 3.11.0
 
 ## 時間軸
 

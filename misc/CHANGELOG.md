@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.11.0** — ✍ Continue in the Edit Booth's Piano Roll: the Anticipatory Music Transformer (Stanford, Apache-2.0) Writes the Next 1 - 8 Bars of Your Notes in the Same Style, on This Computer - 🎲 Again for Another Take, ↶ Take Back (Our Own Magenta, Step 2)
 - **3.10.0** — 🆕 New and 🧹 Clear on the Edit Booth Timeline: a New Song Starts Empty and Unnamed (the Old One Stays Saved); Clear Removes the Clips, Keyframes, Lanes and Markers but Keeps the Layers and the Name - Both Asked First, One ↶ Undo
 - **3.9.0** — 🧩 Ming Layered Design in the Image Editor: Name Each Layer and Say What Goes in It - Ming-Image-0.2-Design Makes the Design, Ming-Image-0.1-Design-Layer Splits It Into Those Layers (Each a Transparent Editor Layer); Also Splits the Open Picture; on This Computer (an Add-on, the Model Spread Over All Your Cards) or OpenRouter
 - **3.8.0** — 🧍 Move, Turn and Pose DAZ Characters Right in the Sketcher's View (Drag It, Its Yellow Ring Turns It; Red / Green / Blue Rings Round the Picked Bone), ✥ Slide or Turn an Asset on Its Character; 👁 on Every Shape, Shape Group, Heading and DAZ Character in the 🗂 Outline (Hidden Shapes Not Drawn, Picked or Exported)

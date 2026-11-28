@@ -2315,6 +2315,20 @@ the sequencer's bar) decides how much of that timing you hear: 1 = as played, 0 
 hand is plain and on the grid. Drumify is our own small set of rules in code - not an AI model: nothing is downloaded and
 nothing leaves your PC. It is for light tasks - it gives you a start and you finish it in the grid.
 
+**✍ Continue (3.11.0).** In a note clip's **🎹 piano roll**, **✍ Continue** writes the next bars of your notes in the same
+style - the **Anticipatory Music Transformer** (Stanford CRFM, Apache-2.0) on this computer, from Settings ▸ Add-ons ▸
+✍ Continue (its Download box opens by itself the first time; tick the models: **Small** - fast, runs on the CPU too, **Medium**,
+**Large** - the most musical, 3 GB). ✍ opens a row in the piano roll:
+- **Bars** - how much to write (1, 2, 4 or 8 bars at the clip's tempo), from where the music stops (the end of the last note,
+  up to the next beat). It reads up to the last 60 seconds of the clip.
+- **As** - the instrument the notes are, for the model (Piano, Bass, Strings, Synth lead …). The clip keeps its own sound.
+- **Creativity** - low keeps close to what is there, high gives more surprises. **One instrument** (on) keeps it to that
+  instrument - off, the model may add other parts (drums are left out).
+- **✨ Write** adds the new notes to the clip (it grows to fit) - it waits its turn in the queue. **🎲 Again** takes the last
+  ones back and writes another take; **↶ Take back** removes them. Then edit them like any notes.
+It is a start you finish in the piano roll (light tasks) - nothing leaves your PC. The new notes get the clip's average
+velocity (the model writes none).
+
 **The panel above the layers (2.963.0).** Top left, above the layers, a panel always shows what is picked: a clip = its
 file name with **Gain**, **Fade in** and **Fade out** (and its buttons); a keyframe, a tempo change or a take = theirs;
 nothing = the **picked layer**: its **name** (type a new one) with **Vol**, **Pan** and **Filter**. Click a layer's head (or

@@ -424,3 +424,13 @@ models you tick - [inclusionAI/Ming-Image-0.2-Design](https://huggingface.co/inc
 [inclusionAI/Ming-Image-0.1-Design-Layer](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design-Layer) (both MIT) - into the
 Hugging Face cache. ☁ OpenRouter runs inclusionAI's hosted models with your own OpenRouter key. bitGen ships none of Ming-Image's
 code or weights; misc/ming_worker.py runs its own infer.py unchanged.
+
+## ✍ Continue - the Anticipatory Music Transformer (3.11.0)
+
+Settings ▸ Add-ons ▸ ✍ Continue fetches [jthickstun/anticipation](https://github.com/jthickstun/anticipation) (Apache-2.0, John
+Thickstun, David Hall, Chris Donahue, Percy Liang - Stanford CRFM; checked with commit af373979) into <app>/amt with its own Python
+and packages, and downloads the models you tick - [stanford-crfm/music-small-800k](https://huggingface.co/stanford-crfm/music-small-800k),
+[music-medium-800k](https://huggingface.co/stanford-crfm/music-medium-800k) and [music-large-800k](https://huggingface.co/stanford-crfm/music-large-800k)
+(Apache-2.0; the large one was also trained on transcriptions of commercial records - their model card) - into the Hugging Face
+cache. misc/amt_run.py (bitGen's own) calls its generate() unchanged. bitGen ships none of its code or models.
+

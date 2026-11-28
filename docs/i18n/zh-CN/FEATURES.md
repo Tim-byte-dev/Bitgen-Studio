@@ -649,6 +649,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🧬 在 SFX 标签克隆声音** — 打开文件、录音或选项目里的声音；在波形上拖动 START 和 END 标记（或拖动两者之间的部分、用 ← →、输入秒数）选出要克隆的部分，▶ 播放，✍ 写出其中的话；🧬 Save voice 保存后会在 🗣 Speech & dialog 里被选为声音来朗读你的文字——朗读的文件现在也会放进图库的 Audio 标签。*位置：* 音频 ▸ 💥 SFX ▸ 🧬 Clone a voice。*版本：* 2.974.0
 - **🎛 Edit Booth：每个部分的高度** — Synth、Keyboard、Looper、Timeline 每个部分下方有一个拖动条：拖动（或 ↑ ↓）让该部分变高或变矮，双击恢复原来的高度；保存在这个浏览器里。*位置：* 音频 ▸ 🎹 Edit Booth。*版本：* 2.974.0
 - **🥁 Edit Booth：Drumify - 把节奏变成带着你手感的鼓组** — 在步进音序器里，听一小节节拍器后敲出节奏（敲击板、任意键、MIDI 键盘或鼓垫），或用音符片段、声音（按低 / 中 / 高分出每一击）-> 底鼓、军鼓和镲，并补上镲、反拍、第 1 拍底鼓和幽灵音；每一击都保留力度与提前 / 拖后，Feel 决定听到多少这种时值（0 = 对齐网格）。🎲 换一种、↶ 恢复原样。这是我们自己写的规则，不是 AI 模型，任何内容都不会离开你的电脑。*位置：* 音频 ▸ 🎹 Edit Booth ▸ ▦ Steps ▸ 🥁 Drumify。*版本：* 2.992.0
+- **✍ Edit Booth：Continue - 续写你的音符** — 在音符片段的 🎹 钢琴卷帘中，✍ Continue 用 Anticipatory Music Transformer（Stanford CRFM，Apache-2.0，在本机运行）以相同风格续写接下来的 1～8 小节 —— 可选音符的乐器、创造力、单一乐器或更多；🎲 Again 再写一版，↶ Take back 撤回。Small／Medium／Large 模型（附加组件；Small 也可在 CPU 上运行）。*位置：* 音频 ▸ 🎹 Edit Booth ▸ 音符片段的 🎹 钢琴卷帘 ▸ ✍ Continue；Settings ▸ Add-ons ▸ ✍ Continue。*版本：* 3.11.0
 
 ## 时间线
 
