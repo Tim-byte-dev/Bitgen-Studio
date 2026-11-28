@@ -7170,6 +7170,10 @@ orange line shows where it will go - and let go.
   once pi-H3 works), git-pulls a git copy, and fetches the newest; then restart ComfyUI. A stopped render now says which case
   it is: an old ComfyUI-piFlow loaded (with its folder and version), the copy there but not loaded (is the ComfyUI you run
   the one in Settings ▸ ComfyUI?), ComfyUI's own "IMPORT FAILED" lines for it, or that it is not in custom_nodes at all.
+  **3.12.2:** the real cause of those stops on a ComfyUI that HAD loaded ComfyUI-piFlow: bitGen asked ComfyUI for each pi-H3
+  node by its name, and "Load LakonLab Adapter" has spaces - the request was refused before it was sent and read as "not
+  loaded". The names are sent encoded now, so a ComfyUI with ComfyUI-piFlow 1.4+ renders (and the int8 / bf16 adapter swap
+  sees the adapters you have).
 - 2.574.0: **theme edit mode ▸ Text on any words** - a docker's title bar (pick it: Text shows its title, aimed at that
   docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
   given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old

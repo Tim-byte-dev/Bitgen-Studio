@@ -19,6 +19,7 @@ Pure apart from object_info (the tests pass info=): norm, parse_key, family_of_l
 import json
 import os
 import re
+import urllib.parse
 import urllib.request
 
 _RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib", "platoKeys.json")
@@ -112,7 +113,7 @@ def object_info(base, timeout=15):
 
     def ask(cls):
         try:
-            with urllib.request.urlopen(f"{base}/object_info/{cls}", timeout=timeout) as r:
+            with urllib.request.urlopen(f"{base}/object_info/{urllib.parse.quote(str(cls), safe='')}", timeout=timeout) as r:   # 3.12.2: encoded
                 return (json.loads(r.read().decode("utf-8")) or {}).get(cls)
         except Exception:                   # noqa: BLE001
             return None

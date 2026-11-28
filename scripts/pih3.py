@@ -23,6 +23,7 @@ Every other input of the node it puts in takes that node's own default (ComfyUI'
 Pure except info() (object_info + system_stats): detect, steps_of, spark_class, apply, missing (3.11.2).
 """
 import json
+import urllib.parse
 import urllib.request
 
 ADAPTER = "Load LakonLab Adapter"
@@ -119,7 +120,9 @@ def info(base, timeout=10):
             return None
     old = ("Load pi-Flow Model", "pi-Flow Sampler", "ModelSamplingPiFlow")   # 3.12.1: in every ComfyUI-piFlow - an OLD one loaded?
     for cls in SPARK + (KJ,) + PACK_NODES + old:
-        j = get(f"/object_info/{cls}")
+        # 3.12.2: the class name URL-encoded - "Load LakonLab Adapter" has spaces, and urllib refuses a URL with a space before
+        # it is sent; the error read as "this ComfyUI has not loaded the node" (Tim's ComfyUI had loaded ComfyUI-piFlow fine)
+        j = get("/object_info/" + urllib.parse.quote(str(cls), safe=""))
         if isinstance(j, dict) and j.get(cls):
             out["classes"][cls] = j[cls]
     st = get("/system_stats") or {}

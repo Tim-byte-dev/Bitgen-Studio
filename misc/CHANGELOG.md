@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.12.2** — π pi-H3 Renders Again on a ComfyUI That Has ComfyUI-piFlow: bitGen's Node Check Sent "Load LakonLab Adapter" Unencoded (Spaces), Which Was Refused Before It Was Sent and Read as "Not Loaded" / "an OLD ComfyUI-piFlow" - the Names Are Encoded Now (the Adapter Swap Sees Your Adapters Too)
 - **3.12.1** — π pi-H3: Install Replaces a ComfyUI-piFlow Older Than 1.4.0 (the Registry's comfyui-piflow Was Kept - It Has No pi-H3 Nodes, So Restarting Did Not Help) - Put Aside as .disabled, the Newest Fetched; a Stopped Render Says Which Case: an Old Copy Loaded, Where It Is, ComfyUI's IMPORT FAILED Lines, or Not Installed
 - **3.12.0** — 🧩 Ming Layered Design Runs in ComfyUI: Comfy-Org's Ming-Image Files (0.2 Design + 0.1 Design-Layer, int8 or bf16) in ComfyUI's Own Ming-Image Nodes (0.46.0+) - No Venv, No 80 GB Card; the Add-on Is "mingimage" (Settings ▸ Audio's Install Ming-3.0 TTS Opened It); ☁ OpenRouter Kept
 - **3.11.2** — 📌 the Height Pin (and ⇱ Float) on the Audio Docker's 🎹 Edit Booth Tab; pi-H3 Stops Before Queueing When ComfyUI Has Not Loaded Its Nodes (ComfyUI-piFlow) and Says What to Do - Any Missing Node Explained (Not "Fix the Template"); the 16 GB Note No Longer Says RunPod on a pi-H3 Render
