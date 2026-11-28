@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.13.1** — A ComfyUI That Crashes Mid-Render Is Said in Words - After Which Step, With the Last Error Lines of Its Console (comfy.log) - Instead of a Python Traceback (Tim's pi-H3 2-Step Render: ConnectionResetError After Step 2/2)
 - **3.13.0** — Image Editor: an Icon-Only ✂ at the Bottom of the Layers Panel Splits the Selected Layer Into Layers With Ming-Image (Just the Number of Layers, or a List; Cut to the Layer's Shape, the Layer Kept Hidden); ✨ Create With the AI ▸ 🧩 Layered Image - the LLM Plans the Layers, the Ming Box Opens With Them
 - **3.12.2** — π pi-H3 Renders Again on a ComfyUI That Has ComfyUI-piFlow: bitGen's Node Check Sent "Load LakonLab Adapter" Unencoded (Spaces), Which Was Refused Before It Was Sent and Read as "Not Loaded" / "an OLD ComfyUI-piFlow" - the Names Are Encoded Now (the Adapter Swap Sees Your Adapters Too)
 - **3.12.1** — π pi-H3: Install Replaces a ComfyUI-piFlow Older Than 1.4.0 (the Registry's comfyui-piflow Was Kept - It Has No pi-H3 Nodes, So Restarting Did Not Help) - Put Aside as .disabled, the Newest Fetched; a Stopped Render Says Which Case: an Old Copy Loaded, Where It Is, ComfyUI's IMPORT FAILED Lines, or Not Installed

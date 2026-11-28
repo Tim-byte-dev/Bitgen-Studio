@@ -111,6 +111,7 @@ def listen(base, client_id, stop, pidbox, g, seen, say):
                 ct = (g.get(nid) or {}).get("class_type", "")
                 say(f"[comfy] step {v}/{m}" + (f" — {ct}" if ct else ""))
                 seen["t"] = time.time()
+                seen["last"] = f"step {v}/{m}" + (f" of {ct}" if ct else "")      # 3.13.1: what a crash came after
             elif t == "executing" and d.get("node") is not None:
                 nid = str(d["node"])
                 if nid == last_node:
@@ -119,6 +120,7 @@ def listen(base, client_id, stop, pidbox, g, seen, say):
                 ct = (g.get(nid) or {}).get("class_type", "") or f"node {nid}"
                 say(f"[comfy] running {ct}")
                 seen["t"] = time.time()
+                seen["last"] = f"it started {ct}"
             elif t == "progress_state" and isinstance(d.get("nodes"), dict):
                 # ComfyUI >= 0.33 batches per-node progress into one message
                 run = [n for n in d["nodes"].values()
@@ -135,6 +137,7 @@ def listen(base, client_id, stop, pidbox, g, seen, say):
                 ct = (g.get(nid) or {}).get("class_type", "")
                 say(f"[comfy] step {v}/{m}" + (f" — {ct}" if ct else ""))
                 seen["t"] = time.time()
+                seen["last"] = f"step {v}/{m}" + (f" of {ct}" if ct else "")      # 3.13.1: what a crash came after
             elif t == "status":
                 q = (((d.get("status") or {}).get("exec_info") or {})
                      .get("queue_remaining"))

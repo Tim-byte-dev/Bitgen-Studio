@@ -133,6 +133,12 @@ try:
     import comfy_missing as _cm
 except Exception:                  # noqa: BLE001 - ComfyUI's own words stay
     _cm = None
+# 3.13.1 (Tim's pi-H3 2-step log: ConnectionResetError from the /history poll - ComfyUI had crashed): say so, with the end of
+# ComfyUI's console (<app>/comfy.log) - scripts/comfy_crash.py
+try:
+    import comfy_crash as _cx
+except Exception:                  # noqa: BLE001 - the raw error stays
+    _cx = None
 
 # 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax"): 16 GB mode - DENO's R2V Turbo 8+2 recipe
 # (text encoder unload, 8-step pass, latent upscale + 2 refine steps with sparse attention) on any native H3 render -
@@ -3667,10 +3673,24 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                  "exact inputs; fix them in the template or re-export from ComfyUI.")
         t0 = time.time()
         outputs = None
+        gone = 0                               # 3.13.1: /history polls in a row ComfyUI did not answer
         try:
             while True:
                 time.sleep(2)
-                hist = _http_json(f"{base}/history/{pid}", timeout=15).get(pid)
+                try:
+                    hist = _http_json(f"{base}/history/{pid}", timeout=15).get(pid)
+                    gone = 0
+                except Exception as e:         # noqa: BLE001
+                    # Tim's pi-H3 (2 steps): "step 2/2", then ConnectionResetError [WinError 10054] from this poll and a bare
+                    # Python traceback - ComfyUI had crashed. A miss or two is a blip; a run of them is ComfyUI gone.
+                    if _cx is None or not _cx.is_gone(e):
+                        raise
+                    gone += 1
+                    if gone < 5:
+                        continue
+                    stop_ws.set()
+                    fail(_cx.explain(seen.get("last", ""), _cx.log_tail(Path(__file__).resolve().parent.parent),
+                                     pi=bool(_pi is not None and _pi.detect(graph))))
                 if hist:
                     st = (hist.get("status") or {})
                     if st.get("status_str") == "error" or (st.get("completed") is False
