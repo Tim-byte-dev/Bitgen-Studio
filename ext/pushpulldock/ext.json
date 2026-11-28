@@ -6,6 +6,7 @@
   "scripts": [
     "ppgeo.js",
     "ppglb.js",
+    "ppproject.js",
     "ppview.js",
     "ppfurn.js",
     "ppjoinery.js",

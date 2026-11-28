@@ -30,6 +30,7 @@
     const furn = new T.Group(); furn.name = "pp-furniture"; scene.add(furn);
     const camsG = new T.Group(); camsG.name = "pp-cameras"; scene.add(camsG); V.hideOnShot = (V.hideOnShot || []).concat([camsG]);   // 2.629.0: 📷 (never in a picture)   // 2.628.0: 🛋 the furniture (ppfurn.js - geometry cached there, never disposed here)
     const A = { V, isNight: false, cutaway: false, meshes: [], tags: [], built: null, sel: null, hover: null };
+    V.archView = A;                                                    // 3.6.0: 📽 ppproject.js throws pictures on its meshes
     V.hideOnShot = (V.hideOnShot || []).concat([selG]);
     const mats = new Map();
     function clear2(g) { while (g.children.length) { const c = g.children.pop(); c.traverse((o) => { if (o.geometry && !o.userData.shared) o.geometry.dispose(); if (o.material && o.material.dispose) o.material.dispose(); }); } }   // 2.650.0: tints share the pieces' geometry

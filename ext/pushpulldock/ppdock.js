@@ -141,11 +141,13 @@
     need();
     const stem = "pp_" + nameNow().replace(/[^\w-]+/g, "_"), list = meshes();
     let body = null, name = stem + "." + (ext || "glb");
-    if (!ext || ext === "glb") body = new Blob([O().glb(list, nameNow(), o && o.lights ? lightsOut() : null)], { type: "model/gltf-binary" });
+    if (!ext || ext === "glb") return glbOut(list, o && o.lights).then((bytes) => post(name, new Blob([bytes], { type: "model/gltf-binary" })));   // 3.6.0: 📽 the projected pictures inside
     else if (ext === "obj") { const o = O().obj(list, stem); return post(stem + ".mtl", new Blob([o.mtl])).then(() => post(name, new Blob([o.obj]))); }
     return post(name, body);
     function post(n, b) { return fetch("/api/tlcanvas/model?name=" + encodeURIComponent(n), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: b }).then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || r.status); return j.name || n; })); }
   }
+  /** 3.6.0: the .glb with the 📽 projected pictures as real textures (ppproject.js splits the covered triangles) */
+  function glbOut(list, lights) { return (root.PPProject && root.PPProject.forGlb ? root.PPProject.forGlb(list) : Promise.resolve(list)).then((L) => O().glb(L, nameNow(), lights ? lightsOut() : null)); }
   function download(name, data, type) { const u = URL.createObjectURL(new Blob([data], { type: type || "application/octet-stream" })); const a = doc.createElement("a"); a.href = u; a.download = name; doc.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 30000); }
   function showDock(id, btn) {
     const d = $(id); if (!d) return false;
@@ -213,7 +215,7 @@
       { label: ".glb with the lights (glTF lights - Blender, Unreal, other 3D apps)", run: () => guard("Export", () => toProject("glb", { lights: true }).then((n) => msg("⤓ " + n + " (with " + lightsOut().length + " lights) in the project's 3D models"))) },
       { label: ".obj + .mtl", run: () => guard("Export", () => toProject("obj").then((n) => msg("⤓ " + n + " in the project's 3D models"))) },
       { head: "To this computer" },
-      { label: ".glb (with the lights)", run: () => guard("Export", () => { need(); download("pp_" + nameNow() + ".glb", O().glb(meshes(), nameNow(), lightsOut()), "model/gltf-binary"); }) },
+      { label: ".glb (with the lights)", run: () => guard("Export", () => { need(); return glbOut(meshes(), true).then((b) => download("pp_" + nameNow() + ".glb", b, "model/gltf-binary")); }) },
       { label: ".obj (+ .mtl)", run: () => guard("Export", () => { need(); const o = O().obj(meshes(), "pp_" + nameNow()); download("pp_" + nameNow() + ".obj", o.obj, "text/plain"); download("pp_" + nameNow().replace(/[^\w-]+/g, "_") + ".mtl", o.mtl, "text/plain"); }) },
       { label: ".stl (millimetres - 3D printing)", run: () => guard("Export", () => { need(); download("pp_" + nameNow() + ".stl", O().stl(meshes(), nameNow()), "model/stl"); }) },
     ]);
@@ -465,6 +467,7 @@
     $("ppSend").onclick = () => sendMenu(); $("ppExport").onclick = () => exportMenu(); $("ppImport").onclick = () => S.V && importMenu();
     if ($("ppDazLib")) $("ppDazLib").onclick = () => (root.H3DazTools ? root.H3DazTools.toggle() : msg("📚 the Daz tools did not load (ppdaztools.js)"));   // 2.983.0: shows / hides the DAZ dockers (was the 📚 dialog)
     if ($("ppRig")) $("ppRig").onclick = (e) => (root.H3Rig ? root.H3Rig.menu(e.currentTarget) : msg("🦴 Rig it did not load (pprig.js)"));   // 2.976.0
+    if ($("ppProj")) $("ppProj").onclick = (e) => (root.PPProject && root.PPProject.pop ? root.PPProject.pop(e.currentTarget, root.H3PushPull) : msg("📽 projecting did not load (ppproject.js)"));   // 3.6.0
     if ($("ppScene")) $("ppScene").onclick = () => (root.H3PicScene ? root.H3PicScene.open() : msg("🧱 Picture → 3D scene did not load (ppscene.js)"));   // 2.975.0
     $("ppCol").oninput = (e) => setColor(e.target.value);
     $("ppName").addEventListener("change", () => { const was = S.name; S.name = nameNow(); if (S.name !== was && S.M) save(false); });
@@ -506,5 +509,5 @@
   wire();
   root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, separate, tool: (n) => S.T && S.T.use(n), boot, setColor,
     setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s || {}); if (S.V) S.V.setSel(S.sel); info(); },   // 2.667.0: the objects panel picks a shape
-    zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot, leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); } };   // 2.663.0: + leavePlan (ppplane.js ⊥ Look at)   // 2.639.0: + commit / snapshot (ppoutline.js)
+    zoomSel, menu, msg, api, nameNow, glbOut, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot, leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); } };   // 2.663.0: + leavePlan (ppplane.js ⊥ Look at)   // 2.639.0: + commit / snapshot (ppoutline.js)
 })(typeof window !== "undefined" ? window : globalThis);

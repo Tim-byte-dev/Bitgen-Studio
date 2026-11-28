@@ -126,7 +126,7 @@
     Object.keys(o).slice(0, 5000).forEach((k) => { const v = String(o[k] == null ? "" : o[k]).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 60); if (v && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)) out[k] = v; });
     return out;
   }
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {}, joins: [], struct: { show: false, roof: "sheet", grade: "MGP10" } }; }   // 2.692.0: + struct (🪵 framing view, the roof's covering, the lintels' grade)   // 2.690.0: + joins (walls joined end to end)   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {}, joins: [], proj: [], struct: { show: false, roof: "sheet", grade: "MGP10" } }; }   // 2.692.0: + struct (🪵 framing view, the roof's covering, the lintels' grade)   // 2.690.0: + joins (walls joined end to end)   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length || (A.roads || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
@@ -188,6 +188,7 @@
     A.groups = (Array.isArray(o.groups) ? o.groups : []).map((g) => (g && typeof g === "object" ? { id: id(g.id), name: String(g.name || "Group").slice(0, 60), rooms: [...new Set((Array.isArray(g.rooms) ? g.rooms : []).map(Number).filter((r) => rid.has(r)))], hidden: !!g.hidden, open: g.open !== false } : null)).filter(Boolean);
     A.profiles = root.PPProfile ? root.PPProfile.cleanList(o.profiles) : (Array.isArray(o.profiles) ? o.profiles : []);   // 2.640.0: the profiles the model uses
     A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);
+    A.proj = root.PPProject ? root.PPProject.clean(o.proj) : (Array.isArray(o.proj) ? JSON.parse(JSON.stringify(o.proj)) : []);   // 3.6.0: 📽 pictures projected from a view (ppproject.js)
     // 2.653.0 (Tim: "terrain elevation tools like contour lines and shape the ground to match the contours"): ⛰ the ground (ppterrain.js)
     A.struct = root.PPStruct ? root.PPStruct.cleanStruct(o.struct) : (o.struct && typeof o.struct === "object" ? JSON.parse(JSON.stringify(o.struct)) : null);   // 2.692.0
     A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);

@@ -282,6 +282,7 @@
     (A.ops || []).forEach((o) => { const k = o.kind === "door" ? "door" : o.kind === "window" ? "window" : "opening"; use(o.col, k + (o.kind === "door" ? "" : " frame")); use(o.trimCol, k + " trim"); use(o.glass, k + " glass"); });
     (A.roofs || []).forEach((r) => use(r.col, "roof")); (A.stairs || []).forEach((x) => use(x.col, "stairs")); (A.slabs || []).forEach((x) => use(x.col, "floor slab"));
     (faces || []).forEach((F) => use(F && F.mat, "drawn shapes"));
+    if (root.PPProject && root.PPProject.tiles) root.PPProject.tiles(A).forEach((t) => { if (!used.has(t.id)) used.set(t.id, t); });   // 3.6.0: 📽 the projected pictures
     const tiles = [...used.values()].map((u) => Object.assign(u, { where: u.where.slice(0, 6) }));
     const bg = A.bg ? { src: A.bg.src, name: A.bg.name, kind: A.bg.kind } : null;
     return { tiles, bg };

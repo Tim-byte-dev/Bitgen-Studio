@@ -7,6 +7,8 @@
  *   glb(meshes, name, lights) -> Uint8Array   glTF 2.0 binary: Y up (glTF's own: x, z, -y), a PBR material per colour, both sides;
  *                   2.620.0: a mesh's alpha < 1 (glass) = a see-through material; lights [{name, type: point | spot, color, cd, p, ang}]
  *                   = KHR_lights_punctual nodes (Blender / Unreal bring the rooms' lights in)
+ *                   3.6.0: a mesh with uv + img {mime png | jpeg, bytes, key} (a 📽 projected picture - ppproject.js forGlb) =
+ *                   TEXCOORD_0 + the picture inside the .glb as its base colour texture (clamped; one image per key)
  *   obj(meshes, name) -> {obj, mtl}   text, a material per colour
  *   stl(meshes, name) -> Uint8Array   binary STL (millimetres - what printers expect)
  * Pure (Node: scripts/test-pushpull619.js). */
@@ -35,7 +37,7 @@
   const rgb = (hex0) => { const hex = root.PPFurn && root.PPFurn.hex ? root.PPFurn.hex(hex0) : hex0; const h = /^#[0-9a-f]{6}$/i.test(hex || "") ? hex : DEF; return [1, 3, 5].map((i) => parseInt(h.substr(i, 2), 16) / 255); };
   const yUp = (a) => { const o = new Float32Array(a.length); for (let i = 0; i < a.length; i += 3) { o[i] = a[i]; o[i + 1] = a[i + 2]; o[i + 2] = -a[i + 1]; } return o; };
   function glb(list, name, lights) {
-    const views = [], accessors = [], materials = [], primitives = [], chunks = [];
+    const views = [], accessors = [], materials = [], primitives = [], chunks = [], images = [], textures = [], imgIx = new Map();
     let off = 0;
     const view = (bytes, target) => { const pad = (4 - (bytes.length % 4)) % 4; const b = new Uint8Array(bytes.length + pad); b.set(bytes); views.push({ buffer: 0, byteOffset: off, byteLength: bytes.length, target }); chunks.push(b); off += b.length; return views.length - 1; };
     (list || []).forEach((g) => {
@@ -48,12 +50,20 @@
       const a = accessors.length - 3, c = rgb(g.color).map(lin);
       const al = g.alpha != null && g.alpha < 1 ? g.alpha : 1;
       materials.push(Object.assign({ name: "pp_" + String(g.color).replace("#", "") + (al < 1 ? "_glass" : ""), doubleSided: true, pbrMetallicRoughness: { baseColorFactor: c.concat([al]), metallicFactor: 0, roughnessFactor: al < 1 ? 0.05 : 0.85 } }, al < 1 ? { alphaMode: "BLEND" } : {}));
-      primitives.push({ attributes: { POSITION: a, NORMAL: a + 1 }, indices: a + 2, material: materials.length - 1, mode: 4 });
+      const att = { POSITION: a, NORMAL: a + 1 };
+      if (g.img && g.img.bytes && g.uv && g.uv.length === P.length / 3 * 2) {   // 3.6.0: 📽 a projected picture
+        const U = new Float32Array(g.uv); accessors.push({ bufferView: view(new Uint8Array(U.buffer), 34962), componentType: 5126, count: U.length / 2, type: "VEC2" }); att.TEXCOORD_0 = accessors.length - 1;
+        const k = g.img.key || g.src || ("img" + textures.length);
+        if (!imgIx.has(k)) { images.push({ bufferView: view(g.img.bytes), mimeType: g.img.mime === "image/jpeg" ? "image/jpeg" : "image/png", name: String(g.name || "picture").slice(0, 80) }); textures.push({ sampler: 0, source: images.length - 1 }); imgIx.set(k, textures.length - 1); }
+        const m = materials[materials.length - 1]; m.name = "pp_projected_" + imgIx.get(k); m.pbrMetallicRoughness.baseColorTexture = { index: imgIx.get(k) }; m.pbrMetallicRoughness.baseColorFactor = [1, 1, 1, 1];
+      }
+      primitives.push({ attributes: att, indices: a + 2, material: materials.length - 1, mode: 4 });
     });
     const bin = new Uint8Array(off); let p = 0; chunks.forEach((b) => { bin.set(b, p); p += b.length; });
     const nm = String(name || "model");
     const json = { asset: { version: "2.0", generator: "bitGen Studio Sketcher" }, scene: 0, scenes: [{ name: nm, nodes: [0] }], nodes: [{ name: nm, mesh: 0 }],
       meshes: [{ name: nm, primitives }], materials, accessors, bufferViews: views, buffers: [{ byteLength: bin.length }] };
+    if (images.length) Object.assign(json, { images, textures, samplers: [{ magFilter: 9729, minFilter: 9987, wrapS: 33071, wrapT: 33071 }] });   // 3.6.0: linear, clamped
     const LL = (lights || []).filter((L) => L && Array.isArray(L.p));
     if (LL.length) {
       json.extensionsUsed = ["KHR_lights_punctual"];

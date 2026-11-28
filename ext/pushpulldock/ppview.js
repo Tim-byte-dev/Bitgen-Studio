@@ -176,6 +176,7 @@
         if (dpts.length) { const dg = new T.BufferGeometry(); dg.setAttribute("position", new T.Float32BufferAttribute(dpts, 3)); model.add(new T.LineSegments(dg, new T.LineBasicMaterial({ color: 0x9aa0a8, transparent: true, opacity: 0.6 }))); }
       }
       if (V.after) try { V.after(); } catch (e) { console.warn("PushPull architecture:", e); }   // 2.620.0: pparchview.js
+      if (root.PPProject && root.PPProject.paint) try { root.PPProject.paint(V); } catch (e) { console.warn("Sketcher projections:", e); }   // 3.6.0: 📽 the pictures thrown on the model (ppproject.js)
       paintSel(); draw();
     }
     function paintSel() {
@@ -504,7 +505,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, orbitZ, panBy, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, faceMeshes: () => faceMeshes, view, lookAlong, extents: () => extents(), frameBox, zoomAt, orbitZ, panBy, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

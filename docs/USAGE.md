@@ -1242,6 +1242,31 @@ Good to know:
 - The way of placing pictures comes from ComfyUI-Panorama-Stickers (nomadoor, MIT). bitGen builds the green canvas
   itself, so that custom node pack is not needed - only ComfyUI's own nodes and the LoRA.
 
+## 📽 Project a picture onto a Sketcher model (3.6.0)
+
+**📽** on the Sketcher's bar (beside 🖼 Background) throws a picture onto the model **from the view you are looking
+through** - like a slide projector standing where your eye is. Anything the Sketcher builds can take it: drawn shapes,
+walls (each wall on its own, inside or outside), floors, ceilings, roofs, doors and windows, stairs and the ground.
+
+1. **Turn the view** so it looks at the model the way the picture should land (a mural straight at a wall, a texture
+   down onto a floor, a photo of a house front from where it was taken). Perspective or Parallel both work.
+2. Click **📽**, pick the picture - 🖼 Gallery, 🗂 Assets, 📌 References, 📁 a folder or 📄 a file of this computer (one from
+   this computer is saved in the project's images first).
+3. **Onto what this view sees** (the default) or **only what is picked** (pick a wall, a room, a floor or drawn faces
+   first). Press **▶ Project from this view**.
+
+The whole picture fits inside the view, never stretched; its frame is cut exactly where it ends, so beyond its edges the
+model keeps its own materials. Only the faces turned towards the projector take it (the back of a wall, the far side of
+a box and anything the view could not see keep theirs). A later projection wins where two overlap.
+
+The list under ▶ has every projection on the model: ☐ hides one (kept, not shown or exported), **👁** puts the view back
+where it was thrown from, **🗑** takes it off. Each is one undo step, saved with the model.
+
+Where it goes: **✨ Photo** sees it (the render shows it, and its materials board gets a tile per projection), **🖼 → Image
+editor** and **🎞 → Timeline** show it, and **⤓ Export ▸ .glb** (the project's 3D models, ➜ Blender, ➜ Unreal, this computer)
+carries it as a **real texture** - the projected parts are cut out of their faces with their own UVs and the picture is
+inside the .glb. `.obj` and `.stl` carry colours only. The Wire and X-ray face styles and the Mono look hide projections.
+
 ## 🧱 Picture → 3D scene (the Sketcher, 2.975.0)
 
 The Sketcher's **🧱 Picture → 3D scene** turns one picture into a 3D scene: the things in it as 3D models standing
