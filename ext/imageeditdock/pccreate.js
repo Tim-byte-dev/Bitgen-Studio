@@ -18,7 +18,7 @@
 (function (root) {
   "use strict";
   const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["letterhead", "✉", "Letterhead"], ["poster", "🪧", "Poster"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"],
-    ["layered", "🧩", "Layered image"]];   // 3.13.0: the LLM plans the layers, Ming-Image makes them (pcming.js)
+    ["layered", "🧩", "Layered image"], ["scene", "🏞", "Scene in layers"]];   // 3.14.0: + a scene as separate layers (pclayerscene.js)   // 3.13.0: the LLM plans the layers, Ming-Image makes them (pcming.js)
   // 2.875.0: these four ask for the business's details first (pcbizinfo.js - the Business details dialog)
   const BIZ_KINDS = ["card", "letterhead", "flyer", "poster"];
   /* 2.876.0 Tim (verbatim): "in the business card dialog add dropdown for size, cardboard or pvc those are common sizes".
@@ -266,6 +266,12 @@
         const r = await E.docAi.write({ ask, kind: kind === "story" ? "story" : a.docKind || "document", words: a.words || (kind === "story" ? 1500 : 800), pictures: !!a.pictures, tables: kind !== "story", charts: kind !== "story" });
         return `✨ ${kind === "story" ? "📖 the story" : "📄 the document"} "${(r && r.title) || ask.slice(0, 40)}" is written - edit it in its WP layer; File ▸ Export for Word / PDF`;
       }
+      // 3.14.0: a scene in layers - the 🏞 box opens with your words and the LLM plans its layers (pclayerscene.js)
+      if (kind === "scene") {
+        if (!E.layerScene || !E.layerScene.dialog) throw new Error("the 🏞 Scene in Layers box is not loaded");
+        E.layerScene.dialog({ ask, plan: true });
+        return "✨ 🏞 the LLM is planning the scene's layers - check them, pick 📷 Photo or 🎨 Poster, then 🏞 Make the layers";
+      }
       // 3.13.0: a layered image - the LLM plans the layers, the 🧩 Ming box opens with them (Ming-Image makes them)
       if (kind === "layered") {
         if (!E.ming || !E.ming.dialog) throw new Error("the 🧩 Ming Layered Design box is not loaded");
@@ -320,6 +326,7 @@
         <div class="kxrow pccr-o" data-for="invoice"><span>Make</span><select id="pccrInv"><option value="invoice">🧾 Invoice</option><option value="quote">📝 Quote</option><option value="receipt">🧾 Receipt</option></select></div>
         <div class="kxrow pccr-o" data-for="document story flyer brochure poster"><label><input type="checkbox" id="pccrPics"${store.get("create.pics", false) ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>
         <div class="pccr-o" data-for="website" style="color:var(--pc-dim)">3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website.</div>
+        <div class="pccr-o" data-for="scene" style="color:var(--pc-dim)">🏞 A scene made as separate layers: the background, each thing in it whole on its own layer (move the horse up the road - 🛤 it gets smaller toward the horizon), the words as text. 📷 Photo composition (one picture pulled apart - the light matches) or 🎨 Poster / artwork (each layer made on its own).</div>
         <div class="pccr-o" data-for="layered" style="color:var(--pc-dim)">🧩 The LLM plans the layers (a headline, the subject, a badge, the background …) and the 🧩 Ming Layered Design box opens with them to check: Ming-Image makes the design and splits it into those layers - each a separate transparent layer.</div>
         <div class="pccr-o" data-for="card" style="color:var(--pc-dim)">Front + back at 300 dpi - pick the size (cardboard or PVC) in the next box.</div>
         <div class="pccr-o" data-for="brochure" style="color:var(--pc-dim)">A4 landscape tri-fold: page 1 = the outside (flap, back, cover), page 2 = the inside; fold lines as layers.</div>

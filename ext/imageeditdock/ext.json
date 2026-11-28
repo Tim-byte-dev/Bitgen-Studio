@@ -83,7 +83,7 @@
     "pcsubject.js",
     "pcimgop.js",
     "pcaifill.js",
-    "pcblendlayer.js", "pcming.js", "pcblendai.js",
+    "pcblendlayer.js", "pcming.js", "pcground.js", "pclayerscene.js", "pcblendai.js",
     "pctablet.js",
     "pclive.js",
     "pcfocus.js",

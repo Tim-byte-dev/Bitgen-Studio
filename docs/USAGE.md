@@ -1210,6 +1210,32 @@ Good to know:
 - **Best results:** a static camera (added to the prompt for you), the performer framed with some margin, a
   View ° of 50–80, and a ✎ first frame.
 
+## 🏞 Scene in Layers and 🛤 Ground & Perspective (the image editor, 3.14.0)
+
+**Layer ▸ 🏞 Scene in Layers…** (or **✨ Create With the AI ▸ 🏞 Scene in layers**) makes a picture as separate layers: one
+**background**, each **object** in it on its own layer and made **whole** (a horse with all four legs, not cut by the road),
+and the **words** as real text layers. One row per layer: its name, kind, what it looks like (a text row: its words), where
+it goes, its size (an object: its height, % of the picture; a text: its letter height) and 🛤 whether it stands on the
+ground. **🤖 Plan with the AI** fills the rows from a sentence ("a horse on a road by a log cabin at a mountain lake, the
+title WILD COUNTRY") - the style, lighting, camera and horizon too. The pictures use the prompt docker's image style.
+
+- **📷 Photo composition** - ONE picture of the whole scene, so the light and the look match; then the edit model (the ✨ AI
+  panel's Edit model, or an edit style in the prompt docker) pulls it apart: the background with the objects taken out, and
+  each object alone - whole, its hidden parts finished - cut out where it stood. The scene itself is kept, hidden, at the
+  bottom of the group.
+- **🎨 Poster / artwork** - each layer made on its own: the background empty, each object alone on a plain backdrop, cut out
+  and put where its row says at the size it says.
+- Cutting out uses the AI matte when it is installed (Select ▸ Subject Settings ▸ ⬇ Install), else the plain backdrop is
+  keyed out, else the built-in subject finder.
+- Everything lands in one 🏞 group: the background at the bottom, the objects far to near, the words on top. Objects on the
+  ground get a 🌑 **shadow** layer just below them.
+
+**Layer ▸ 🛤 Ground & Perspective Tool** - drag an object along the ground: it moves, and its size follows how far its feet
+are below the **horizon** (the orange dashed line): up the road toward the horizon it gets smaller, down toward you bigger.
+Its 🌑 shadow goes with it; one undo puts it back. **Shift+drag** (or tick *Set the horizon*) puts the horizon where you
+drag; the options bar types it, turns *Size with distance* off, and adds a 🌑 Shadow to any picture layer (also **Layer ▸ 🌑
+Add Ground Shadow**). It works on any picture layer - a cut-out you already have, not only the 🏞 ones.
+
 ## 🧩 Ming layered design - a design made as separate layers (the image editor, 3.9.0; in ComfyUI since 3.12.0)
 
 The image editor's **Layer ▸ 🧩 Ming Layered Design…** asks for your layers and makes a design from them, each layer a separate

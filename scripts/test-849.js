@@ -54,7 +54,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
   /* ---- the wiring */
   const pc = src("ext/imageeditdock/pccreate.js");
   check("✨ Create: 9 kinds (2.875.0: + letterhead, poster); documents / stories into a new A4 WP layer (pcdocai write), invoices via pcdoctpl aiMake, websites in Web View as web pages; File ▸ ✨ Create With the AI…",
-    C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,letterhead,poster,website,invoice,layered" && /* 3.13.0: + layered */  /E\.docAi\.write\(/.test(pc) && /E\.docTpl\.aiMake\(ask/.test(pc) && /E\.views\.apply\("web"\)/.test(pc) && /"file\.createai", "✨ Create With the AI…"/.test(pc)
+    C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,letterhead,poster,website,invoice,layered,scene" && /* 3.13.0: + layered; 3.14.0: + scene */  /E\.docAi\.write\(/.test(pc) && /E\.docTpl\.aiMake\(ask/.test(pc) && /E\.views\.apply\("web"\)/.test(pc) && /"file\.createai", "✨ Create With the AI…"/.test(pc)
     && /aiMake/.test(src("ext/imageeditdock/pcdoctpl.js")) && /picture, files:/.test(src("ext/imageeditdock/pcdocai.js")));
   const ej = src("ext/imageeditdock/ext.json"), ie = src("ext/imageeditdock/imageedit.js");
   check("wiring: pccreate + pcquickbar in ext.json right after pcviews and installed after PCViews (every menu + docker exists); POST /api/create/plan from routes/index.js (not server.js)",
