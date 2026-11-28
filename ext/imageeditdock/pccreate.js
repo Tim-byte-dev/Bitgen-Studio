@@ -10,11 +10,15 @@
  *     brochure A4 landscape, 2 pages (outside: flap | back | cover, inside: 3 panels) with fold guides; business card
  *     front + back at 300 dpi in the size picked (2.876.0: CARD_SIZES - paper by country or PVC CR80 / 79 / 90 / 100); website 1440 × 900 web pages (Web View, then 🌐 Build Website).
  *     Pictures (ticked): made one at a time with the prompt docker's image style, each put in its box when ready.
+ * 3.13.0 (Tim: "add a template in ai generated dialog for layered image - use ming image for the layered image"): 🧩 Layered image
+ *   -> POST /api/ming/plan (lib/mingPlan.js: the LLM plans the layers - names, what is in each, where, the look, the shape), then
+ *   the 🧩 Ming Layered Design box opens with them to check; 🧩 Go = Ming-Image makes the design and splits it into those layers.
  * Pure (Node: scripts/test-849.js): textH, flyerLayout, brochureLayout, cardLayout, webLayout, kindOf, KINDS.
  */
 (function (root) {
   "use strict";
-  const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["letterhead", "✉", "Letterhead"], ["poster", "🪧", "Poster"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"]];
+  const KINDS = [["document", "📄", "Document"], ["story", "📖", "Story"], ["flyer", "📰", "Flyer"], ["brochure", "📑", "Brochure"], ["card", "💳", "Business card"], ["letterhead", "✉", "Letterhead"], ["poster", "🪧", "Poster"], ["website", "🌐", "Website"], ["invoice", "🧾", "Invoice / quote"],
+    ["layered", "🧩", "Layered image"]];   // 3.13.0: the LLM plans the layers, Ming-Image makes them (pcming.js)
   // 2.875.0: these four ask for the business's details first (pcbizinfo.js - the Business details dialog)
   const BIZ_KINDS = ["card", "letterhead", "flyer", "poster"];
   /* 2.876.0 Tim (verbatim): "in the business card dialog add dropdown for size, cardboard or pvc those are common sizes".
@@ -262,6 +266,14 @@
         const r = await E.docAi.write({ ask, kind: kind === "story" ? "story" : a.docKind || "document", words: a.words || (kind === "story" ? 1500 : 800), pictures: !!a.pictures, tables: kind !== "story", charts: kind !== "story" });
         return `✨ ${kind === "story" ? "📖 the story" : "📄 the document"} "${(r && r.title) || ask.slice(0, 40)}" is written - edit it in its WP layer; File ▸ Export for Word / PDF`;
       }
+      // 3.13.0: a layered image - the LLM plans the layers, the 🧩 Ming box opens with them (Ming-Image makes them)
+      if (kind === "layered") {
+        if (!E.ming || !E.ming.dialog) throw new Error("the 🧩 Ming Layered Design box is not loaded");
+        say("✨ the LLM is planning the layers…");
+        const { plan } = await api("/api/ming/plan", { ask });
+        await E.ming.dialog({ mode: "make", rows: plan.rows, style: plan.style, lighting: plan.lighting, w: plan.w, h: plan.h });
+        return `✨ 🧩 ${plan.rows.length} layers planned (${plan.rows.map((r) => r.name).join(", ")}) - check them in the 🧩 Ming box, then 🧩 Go`;
+      }
       // 2.852.0: a website = 🌐 Build Me a Website (the whole site: pages, pictures, shop, booking, the build)
       if (kind === "website" && E.webAi) { E.webAi.dialog(ask); return "🌐 the Build Me a Website box is open with your words"; }
       say(`✨ the LLM is writing the ${kind === "card" ? "business card" : kind}…`);
@@ -308,6 +320,7 @@
         <div class="kxrow pccr-o" data-for="invoice"><span>Make</span><select id="pccrInv"><option value="invoice">🧾 Invoice</option><option value="quote">📝 Quote</option><option value="receipt">🧾 Receipt</option></select></div>
         <div class="kxrow pccr-o" data-for="document story flyer brochure poster"><label><input type="checkbox" id="pccrPics"${store.get("create.pics", false) ? " checked" : ""}> 🖼 Pictures - made with the prompt docker's image style</label></div>
         <div class="pccr-o" data-for="website" style="color:var(--pc-dim)">3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website.</div>
+        <div class="pccr-o" data-for="layered" style="color:var(--pc-dim)">🧩 The LLM plans the layers (a headline, the subject, a badge, the background …) and the 🧩 Ming Layered Design box opens with them to check: Ming-Image makes the design and splits it into those layers - each a separate transparent layer.</div>
         <div class="pccr-o" data-for="card" style="color:var(--pc-dim)">Front + back at 300 dpi - pick the size (cardboard or PVC) in the next box.</div>
         <div class="pccr-o" data-for="brochure" style="color:var(--pc-dim)">A4 landscape tri-fold: page 1 = the outside (flap, back, cover), page 2 = the inside; fold lines as layers.</div>
         <div style="color:var(--pc-dim);margin-top:6px">The prompt docker's LLM writes it; bitGen lays it out as layers you can change.</div>`, (d) => {
@@ -331,7 +344,7 @@
       } });
     }
     const css = doc.createElement("style");
-    css.textContent = ".pccr-ks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}.pccr-k{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:1px solid var(--pc-line);border-radius:8px;cursor:pointer;font-size:11px;text-align:center}"
+    css.textContent = ".pccr-ks{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}.pccr-k{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:1px solid var(--pc-line);border-radius:8px;cursor:pointer;font-size:11px;text-align:center}"
       + ".pccr-k span{font-size:22px}.pccr-k input{position:absolute;opacity:0;pointer-events:none}.pccr-k:has(input:checked){border-color:var(--pc-accent);color:var(--pc-accent);background:var(--pc-on,rgba(245,158,44,.12))}";
     doc.head.appendChild(css);
     E.ui.addCmd("file.createai", "✨ Create With the AI…", "", () => dialog(), {}, ["File", "file.new"]);

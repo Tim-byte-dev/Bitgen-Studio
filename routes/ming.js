@@ -10,6 +10,9 @@
 //                     the picture to split instead of making one), w, h (the canvas), level 1024 | 2048, layer_res 512 | 1024,
 //                     style, lighting, steps, seed, name} -> {job, rows}
 //                    409 {needs: "mingimage", missing} when its files are not downloaded (the page opens its Download box)
+//                    3.13.0: auto (a split with just the number of layers)
+//   POST /api/ming/plan {ask} -> {plan: {rows, style, lighting, aspect, w, h}}   3.13.0: ✨ Create With the AI ▸ 🧩 Layered image -
+//                    the LLM plans the layers (lib/mingPlan.js)
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -37,13 +40,17 @@ function mount(app) {
         where: ML.WHERE_LABEL, max: ML.MAX });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
+  app.post("/api/ming/plan", require("express").json({ limit: "1mb" }), async (req, res) => {
+    try { res.json(await require("../lib/mingPlan").plan(req.body || {})); }
+    catch (e) { res.status(e.status || 500).json({ error: String(e.message || e) }); }
+  });
   app.post("/api/ming", J, (req, res) => {
     try {
       const b = req.body || {};
       let input = null;
       if (b.image) { input = saveInput(b.image); if (!input) return res.status(400).json({ error: "the picture to split did not come through (a PNG / JPEG / WebP data URL)" }); }
       const jp = A.jobParams({ rows: b.rows, engine: b.engine, split: b.split !== false, input, w: b.w, h: b.h, level: b.level, layer_res: b.layer_res,
-        style: b.style, lighting: b.lighting, steps: b.steps, seed: b.seed, name: b.name, orKey: b.engine === "openrouter" ? orKey() : "" });
+        style: b.style, lighting: b.lighting, steps: b.steps, seed: b.seed, name: b.name, auto: b.auto, orKey: b.engine === "openrouter" ? orKey() : "" });
       if (jp.error) return res.status(jp.status || 400).json({ error: jp.error, missing: jp.missing || null, needs: jp.status === 409 ? A.ID : null });
       const job = core.makeJob(jp.params); job.chunk = { i: 0, n: 1 };
       res.json({ job: core.jobDict(job), rows: jp.params.rows, generate: jp.params.generate, split: jp.params.split });

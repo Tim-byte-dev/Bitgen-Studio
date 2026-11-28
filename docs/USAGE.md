@@ -1238,6 +1238,14 @@ transparent layer in the editor - with inclusionAI's Ming-Image (MIT), run by Co
   there (November 2026); 0.2-Design is used instead of 0.1 when OpenRouter has it.
 - What comes back is only as good as the model: it may give a different number of layers than you asked (the message says so),
   and the layers are drawn by the model - check them before you rely on a cut-out.
+- **✂ Split a layer into layers** (3.13.0): the **✂** button at the bottom of the Layers panel (or **Layer ▸ ✂ Split Layer Into
+  Layers…**) opens this box on **✂ Split the selected layer**: the active layer alone - a picture, text, shapes or a group's
+  contents - is split by Ming-Image-0.1-Design-Layer. **Let Ming decide** (ticked at first) needs only the **number of layers**;
+  untick it to list what goes in each. The layers come in a 🧩 group right above that layer, **cut to its shape** (what was
+  transparent in it stays transparent), and the layer itself is kept, hidden, below them. Transparent parts are sent as white.
+- **✨ Create With the AI ▸ 🧩 Layered image** (3.13.0): say what it is for ("a gym poster with a lion logo and the words GYM
+  OPEN") - the prompt docker's LLM plans the layers (each one's name, what is in it and where, the style, lighting and shape)
+  and this box opens with them filled in to check; **🧩 Go** has Ming-Image make the design and split it into those layers.
 
 ## 🌐 A 360° panorama from your pictures (the image editor, 2.971.0)
 
@@ -10549,7 +10557,7 @@ Before a render, bitGen checks the models and LoRAs it needs:
 
 - **The icon toolbar** under the menus: New, Open, Save, Save As, Print, 🔍 Print Preview, Undo, Redo, Cut, Copy, Paste, ✨ Create.
 - **🔍 Print Preview** (Ctrl+F2): every page at its real size; 🖨 Print sends them all in one job.
-- **✨ Create With the AI**: pick a Document, Story, Flyer, Brochure (tri-fold), Business card, Website or Invoice, and say what it's for. The LLM writes it and bitGen lays it out as layers you can change. Tick 🖼 Pictures to have them made with your image style. Your names, prices and contact details are used and never made up.
+- **✨ Create With the AI**: pick a Document, Story, Flyer, Brochure (tri-fold), Business card, Website, Invoice or (3.13.0) 🧩 Layered image (Ming-Image - see 🧩 Ming layered design), and say what it's for. The LLM writes it and bitGen lays it out as layers you can change. Tick 🖼 Pictures to have them made with your image style. Your names, prices and contact details are used and never made up.
 
 ## 🛒 Websites - the shop: catalogue, cart and checkout (2.850.0)
 

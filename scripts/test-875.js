@@ -75,7 +75,7 @@ const PNG1 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzI
     && pp[0].find((e) => e && e.str === "Big Bake Day").size === Math.max(...pp[0].filter((e) => e && e.t === "text").map((e) => e.size)) && pp[0].some((e) => e && e.str === "Visit us"));
   const fl = C.flyerLayout(Object.assign({}, po, { kind: "flyer", hasLogo: true, back: { heading: "About us", text: "Family bakers" }, services: ["Bread"] }), 1240, 1754);
   check("flyer with a back: two pages - the back's heading, words, services, the contact, the logo", fl.length === 2 && fl[1].some((e) => e && e.str === "About us") && fl[1].some((e) => e && e.str === "•  Bread") && logos(fl[1]).length === 1);
-  check("kinds: letterhead + poster; the business four", C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,letterhead,poster,website,invoice" && C.BIZ_KINDS.join() === "card,letterhead,flyer,poster"
+  check("kinds: letterhead + poster; the business four", C.KINDS.map((k) => k[0]).join() === "document,story,flyer,brochure,card,letterhead,poster,website,invoice,layered" && /* 3.13.0: + layered */  C.BIZ_KINDS.join() === "card,letterhead,flyer,poster"
     && C.kindOf("make a letterhead for Acme") === "letterhead" && C.kindOf("design a poster for the fair") === "poster" && C.kindOf("make a flyer") === "flyer");
   const PC = src("ext/imageeditdock/pccreate.js");
   check("pccreate: a click on one of the four in ✨ Create opens the Business details dialog with what is typed; the logo laid in; the letter in a WP frame",
