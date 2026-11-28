@@ -1236,6 +1236,25 @@ Its 🌑 shadow goes with it; one undo puts it back. **Shift+drag** (or tick *Se
 drag; the options bar types it, turns *Size with distance* off, and adds a 🌑 Shadow to any picture layer (also **Layer ▸ 🌑
 Add Ground Shadow**). It works on any picture layer - a cut-out you already have, not only the 🏞 ones.
 
+## 🕳 Text Tunnel: 3D tunnel typography (the image editor, 3.16.0)
+
+The look of the "3D tunnel typography" posters: a word repeated in rows down four walls, big at the edge and smaller and smaller toward a hole in the middle - or round rings for a circle.
+
+**Layer ▸ 🕳 Text Tunnel Tool**, then drag a square or a rectangle on the picture (Shift keeps it a true square or circle, Alt draws it out from the middle). An orange guide shows the shape, the hole and the corner lines while you drag. Let go and the tunnel is drawn on a new layer above the active one. The hole stays see-through, so whatever is underneath shows in it.
+
+The options bar:
+
+- **Preset** - ⬛ Square tunnel, ⚪ Circle tunnel, ▭ Corridor, 🌀 Deep fade, ↗ Off-centre, 🎯 Two-colour rings and 🗼 Tower from above (the letters face outward, like looking down on a tower). A preset keeps your words, font and colours.
+- **Words**, ⬛ Square / ⚪ Circle, the font and its weight, the letters' colour, and **2nd** - every other row in a second colour.
+- **Rows** - how many rows down each wall (rings round a circle). **Hole %** - how big the hole is.
+- **Fade** - the rows fade away into the depth. **Shade** - the side and bottom walls darker, for more depth (square tunnels).
+- **Hole at** - moves the hole left / right and up / down (the vanishing point), as if you looked in from an angle.
+- **Per row** - words in each row (0 on a circle = as many as fit round). **Letters face the hole / out**. **Walls** - a colour behind the letters.
+
+Pick a tunnel layer and the options change **that** tunnel, live as you type or change a number - one undo for each change, and undo puts its settings back too. A tunnel you moved or scaled with the Move tool stays where you put it when you change it. Drag again for a new one.
+
+**Layer ▸ 🕳 Text Tunnel From Shape** turns the active shape layer into a tunnel: a rectangle into a square tunnel, an ellipse into a circle one, in the same place and size (the shape is hidden under it). With no shape layer picked it uses the selection's box. The tunnel layer's settings are saved in a .bgi project.
+
 ## 🧩 Ming layered design - a design made as separate layers (the image editor, 3.9.0; in ComfyUI since 3.12.0)
 
 The image editor's **Layer ▸ 🧩 Ming Layered Design…** asks for your layers and makes a design from them, each layer a separate

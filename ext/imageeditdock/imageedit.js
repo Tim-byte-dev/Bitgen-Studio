@@ -3060,6 +3060,7 @@
     if (win.PCBlendLayer && win.PCBlendLayer.install) win.PCBlendLayer.install(E);   // 2.542.0: a Blender layer - the timeline's scene tools over the canvas   // 2.460.0: a Daz / Blender scene as a 3D layer (camera, pose, render, generate)
     if (win.PCMing && win.PCMing.install) win.PCMing.install(E);   // 3.9.0: Layer ▸ 🧩 Ming Layered Design… - Ming-Image makes a design from your layer list, split into those layers (pcming.js)
     if (win.PCGround && win.PCGround.install) win.PCGround.install(E);   // 3.14.0: Layer ▸ 🛤 Ground & Perspective Tool, 🌑 Add Ground Shadow (pcground.js)
+    if (win.PCTunnel && win.PCTunnel.install) win.PCTunnel.install(E);   // 3.16.0: Layer ▸ 🕳 Text Tunnel Tool / From Shape - 3D tunnel typography (pctunnel.js)
     if (win.PCLayerScene && win.PCLayerScene.install) win.PCLayerScene.install(E);   // 3.14.0: Layer ▸ 🏞 Scene in Layers… - a scene made as separate layers (pclayerscene.js)
     if (win.PCBlendAi && win.PCBlendAi.install) win.PCBlendAi.install(E);   // 2.855.0: 🟧 ✨ Model with AI + 🧰 Blender tools (the Blender skills, lib/blendSkills.js)
     if (win.PCSketchTools && win.PCSketchTools.install) win.PCSketchTools.install(E);   // 2.462.0: sketch layers (a CAD sketch: constraints + dimensions)
