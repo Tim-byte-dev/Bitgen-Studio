@@ -572,7 +572,7 @@
   // the saved files. save the timeline file as filename.sfx, looper files _loop_ random name.sfx and keyboard as _key_random
   // name.sfx. add a save button to timeline, if save does not have a filename ask for filename(dialog) , if it does have a
   // filename overwrite the file loaded. add a save as button."
-  var FL = root.H3SynthFile;
+  var FL = root.H3SynthFile, TLC = root.H3SynthTLCore;   // 3.10.0: + TLC (🆕 New / 🧹 Clear)
   function postFile(name, data, overwrite) {
     return root.fetch("/api/synth/files", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, data: data, overwrite: !!overwrite }) })
       .then(function (r) { return r.json().then(function (j) { j.status = r.status; return j; }); });
@@ -612,6 +612,35 @@
       };
       return go(w.over);
     }).catch(function (e) { msg(e.message || String(e), true); return null; });
+  }
+  /* 3.10.0 (Tim: "add a "new" button to the edit booth timeline so user can work on a new song, add a clear button to clear the
+     edit booth timeline"): 🆕 New = an empty timeline with no name (💾 Save asks for one, 💾 Save song starts blank); 🧹 Clear =
+     the clips, keyframes, lane points and markers gone, the layers and the name kept. Both ask first when there is something
+     to lose, and both are one ↶ Undo step. The keyboard, the looper and the synth are not touched. */
+  function putTL(t) { TL.setTL(t); touch(); LS.set("tl", JSON.stringify(TL.tl())); }
+  function newSong() {
+    if (!TL || !TLC) return Promise.resolve(false);
+    var has = TLC.hasContent(TL.tl());
+    var ask = has ? FL.confirm({ title: "🆕 Start a new song?", text: "The timeline is emptied and the new song has no name yet (💾 Save asks for one)." + (G.tlFile ? " " + G.tlFile.replace(/\.sfx$/i, "") + " stays saved as it was." : " The timeline was not saved - ↶ Undo brings it back.") + " The keyboard, the looper and the synth keep their sounds.", yes: "🆕 New song" }) : Promise.resolve(true);
+    return ask.then(function (y) {
+      if (!y) return false;
+      var keep = TL.tl(), t = TLC.newTL(); t.zoom = keep.zoom; t.snap = keep.snap;
+      putTL(t);
+      G.tlFile = ""; LS.set("tlfile", ""); tlName();
+      var sn = $("sySongName"); if (sn) sn.value = "";
+      msg("🆕 A new song - an empty timeline" + (has ? " (↶ Undo brings the old one back)" : "") + "; 💾 Save names it");
+      return true;
+    });
+  }
+  function clearTL() {
+    if (!TL || !TLC) return Promise.resolve(false);
+    if (!TLC.hasContent(TL.tl())) { msg("🧹 The timeline is already empty"); return Promise.resolve(false); }
+    return FL.confirm({ title: "🧹 Clear the timeline?", text: "Every clip, keyframe, automation point and marker is removed. The layers (names, volume, pan, effects), the tempo and the song's name stay. ↶ Undo brings them back.", yes: "🧹 Clear" }).then(function (y) {
+      if (!y) return false;
+      putTL(TLC.cleared(TL.tl()));
+      msg("🧹 Timeline cleared (↶ Undo brings it back)" + (G.tlFile ? " - 💾 Save writes the empty timeline over " + G.tlFile.replace(/\.sfx$/i, "") : ""));
+      return true;
+    });
   }
   /** 🗂 Load: any file, anywhere - applied by its kind */
   function load(kind) {
@@ -754,6 +783,7 @@
     on("syPrev", function () { stepPreset(-1); }); on("syNext", function () { stepPreset(1); });
     on("syDkLoad", function () { load("key"); }); on("syLLoad", function () { load("loop"); }); on("syTLoad", function () { load("tl"); });
     on("syTSave", function () { saveTL(false); }); on("syTSaveAs", function () { saveTL(true); });
+    on("syTNew", function () { newSong(); }); on("syTClear", function () { clearTL(); });   // 3.10.0
     G.tlFile = LS.get("tlfile", "") || ""; tlName();
     on("syDkPrev", function () { stepPreset(-1); }); on("syDkNext", function () { stepPreset(1); });
     $("syPreset").onchange = function (e) { pickPreset(e.target.value); };

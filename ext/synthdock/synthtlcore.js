@@ -57,6 +57,21 @@
   }
   function layer(i) { return { name: "Layer " + (i + 1), vol: 1, pan: 0, mute: false, solo: false, clips: [], keys: [], fx: cleanFx(null), auto: cleanAuto(null), comps: {} }; }
   function newTL() { return { v: 1, zoom: 40, snap: true, layers: [0, 1, 2, 3].map(layer), markers: [], master: 1, loop: cleanLoop(null), tempo: [], tempoOn: false }; }
+  /** 3.10.0 (Tim: "add a clear button to clear the edit booth timeline"): the timeline emptied - every clip, keyframe, lane
+   *  point, take comp and marker gone, the ⟳ range off; the layers (names, volume, pan, mute / solo, effects), the tempo
+   *  track, the master, the zoom and ⌗ snap stay */
+  function cleared(tl) {
+    var o = JSON.parse(JSON.stringify(tl || newTL()));
+    o.layers = (o.layers || []).map(function (L) { return Object.assign(L, { clips: [], keys: [], auto: cleanAuto(null), comps: {} }); });
+    o.markers = []; o.loop = cleanLoop(null);
+    return o;
+  }
+  /** 3.10.0: anything on the timeline (clips, keyframes, lane points, markers)? */
+  function hasContent(tl) {
+    if (!tl) return false;
+    if ((tl.markers || []).length) return true;
+    return (tl.layers || []).some(function (L) { var a = L.auto || {}; return (L.clips || []).length || (L.keys || []).length || Object.keys(a).some(function (k) { return (a[k] || []).length; }); });
+  }
   /* ---------------- 2.962.0: step clips (a step sequencer on a layer) ---------------- */
   var DIVS = [2, 3, 4, 6, 8], MAXROWS = 8;
   function cleanStepRows(rows, n) {
@@ -458,7 +473,7 @@
   }
   // 2.973.0: rounded to tenths FIRST - 239.97 s was "3:60.0"
   function fmt(t) { var d = Math.round(Math.max(0, +t || 0) * 10), m = Math.floor(d / 600), s = (d - m * 600) / 10; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
-  var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
+  var api = { MAXL: MAXL, MIN: MIN, okSrc: okSrc, newTL: newTL, cleared: cleared, hasContent: hasContent, newLayer: layer, cleanTL: cleanTL, clipEnd: clipEnd, end: end, audible: audible, env: env, automation: automation,
               ROLES: ROLES, schedule: schedule, snap: snap, AUTO: AUTO, cleanAuto: cleanAuto, newSteps: newSteps, stepEvents: stepEvents, cleanStepRows: cleanStepRows, DIVS: DIVS, MAXROWS: MAXROWS, cleanTempo: cleanTempo, bpmAt: bpmAt, beatAt: beatAt, timeAt: timeAt, beatTimes: beatTimes, snapBeat: snapBeat, barBeat: barBeat, cleanLoop: cleanLoop, compAt: compAt, comp: comp, ranges: ranges, groups: groups, newest: newest, span: span, playable: playable, passRanges: passRanges, punchCut: punchCut, cleanComps: cleanComps, addTakes: addTakes, dropTake: dropTake, flatten: flatten, moveGroup: moveGroup, MAXTK: MAXTK, autoVal: autoVal, autoNorm: autoNorm, autoAt: autoAt, autoOps: autoOps, cleanFx: cleanFx, cleanMarkers: cleanMarkers, FX0: FX0, cleanNotes: cleanNotes, quantize: quantize, splitClip: splitClip, dupClip: dupClip, fades: fades, clipEnv: clipEnv, envAt: envAt, moveClip: moveClip, trimStart: trimStart, trimEnd: trimEnd, addKey: addKey, sortKeys: sortKeys, peaks: peaks, fmt: fmt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.H3SynthTLCore = api;

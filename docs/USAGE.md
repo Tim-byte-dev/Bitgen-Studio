@@ -2243,6 +2243,15 @@ keyframes and the master limiter, muted layers left out - saved as an **MP3** (3
 (song_<name>), with its title and date in the file's tags; with **⬇ a copy** ticked it is downloaded to this computer too.
 A second song with the same name gets "(2)" - nothing is overwritten. (⬇ WAV still downloads a quick WAV of the mix.)
 
+**🆕 New and 🧹 Clear (3.10.0).** In the timeline's bar, before the song's name:
+- **🆕 New** starts a new song: an empty timeline with four fresh layers and no name yet ("unsaved" - 💾 Save asks for
+  one, and 💾 Save song's name starts blank). The song you had stays saved as it was. Your zoom and ⌗ snap stay, and the
+  keyboard, the looper and the synth keep their sounds.
+- **🧹 Clear** empties the timeline: every clip, volume keyframe, automation point and marker is removed (and the ⟳ range
+  turned off). The layers stay as they are - their names, volume, pan, mute / solo and effects - and so do the tempo track
+  and the song's name (💾 Save then writes the empty timeline over it).
+Both ask first when there is something to lose, and **↶ Undo** brings the timeline back in one step.
+
 **Automation lanes, the Filter, bounce (2.959.0).** Under each layer's knobs a small picker says what the line drawn over
 the layer edits: **◆ Vol** (the volume keyframes, as before) or the **Pan**, **Filter** or **Rev** lane. With a lane
 picked, **double-click** the layer to put a point there - where you click is the time and the value (up = right / open /

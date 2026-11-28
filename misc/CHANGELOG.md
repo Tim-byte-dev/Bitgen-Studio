@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.10.0** — 🆕 New and 🧹 Clear on the Edit Booth Timeline: a New Song Starts Empty and Unnamed (the Old One Stays Saved); Clear Removes the Clips, Keyframes, Lanes and Markers but Keeps the Layers and the Name - Both Asked First, One ↶ Undo
 - **3.9.0** — 🧩 Ming Layered Design in the Image Editor: Name Each Layer and Say What Goes in It - Ming-Image-0.2-Design Makes the Design, Ming-Image-0.1-Design-Layer Splits It Into Those Layers (Each a Transparent Editor Layer); Also Splits the Open Picture; on This Computer (an Add-on, the Model Spread Over All Your Cards) or OpenRouter
 - **3.8.0** — 🧍 Move, Turn and Pose DAZ Characters Right in the Sketcher's View (Drag It, Its Yellow Ring Turns It; Red / Green / Blue Rings Round the Picked Bone), ✥ Slide or Turn an Asset on Its Character; 👁 on Every Shape, Shape Group, Heading and DAZ Character in the 🗂 Outline (Hidden Shapes Not Drawn, Picked or Exported)
 - **3.7.1** — 🧬 A Daz Character Shaped by bitGen Keeps Its Bones: the Skeleton Follows the Shape (📷 B's Scan, 🙂 the 3D Head, the Dials), the Eyes, Mouth, Clothes and Hair Carried With the Body; 📷 B's Wrap No Longer Mangles an Arm - Only Surface Facing the Same Way, 7 cm at Most, a Limb the Photo Holds Differently Kept, the Scan Centred on the Head
