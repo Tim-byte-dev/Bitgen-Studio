@@ -3830,4 +3830,4 @@ function mount(app) {
   });
 }
 
-module.exports = { mount, buildTmpStyle, applyScenes, syncTmp, TMP_STYLE, BASE_STYLE, wfPath };
+module.exports = { mount, buildTmpStyle, applyScenes, syncTmp, TMP_STYLE, BASE_STYLE, wfPath, CONVERT_STYLES, baseIsCurrent, ensureChainBase };   // 3.14.1: + the conversion (lib/styleConvert.js)
