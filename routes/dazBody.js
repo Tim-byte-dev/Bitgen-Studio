@@ -126,11 +126,11 @@ function mount(app) {
       const { fig, set } = figureOf(b), f = path.join(require("../lib/m3d").dir(), path.basename(String(b.scan || "")));
       if (!b.scan || !fs.existsSync(f)) throw bad("the scan is not in the project's 3D models: " + b.scan, 404);
       const scan = BF.readGlbMesh(fs.readFileSync(f)); if (!scan.tris.length) throw bad("the scan has no triangles");
-      const body = shaped(fig, set), align = BF.alignScan(scan.pos, body.pos, !!b.turn), sp = BF.applyAlign(scan.pos, align), n = body.pos.length / 3;
-      const r = BF.wrap({ pos: body.pos, tris: body.tris, trust: BF.trustOf(fig, n), scan: { pos: sp, tris: scan.tris } });
+      const body = shaped(fig, set), align = BF.alignScan(scan.pos, body.pos, !!b.turn, scan.tris, body.tris), sp = BF.applyAlign(scan.pos, align), n = body.pos.length / 3;
+      const r = BF.wrap({ pos: body.pos, tris: body.tris, trust: BF.trustOf(fig, n), scan: { pos: sp, tris: scan.tris }, parts: BF.limbsOf(fig, n) });   // 3.7.1: + a limb the photo holds differently keeps its own shape
       const deltas = []; for (let i = 0; i < n; i++) { const d = [0, 1, 2].map((k) => (r.pos[i * 3 + k] - body.pos[i * 3 + k]) / D.CM); if (Math.hypot(d[0], d[1], d[2]) > 0.05) deltas.push([i, +d[0].toFixed(3), +d[1].toFixed(3), +d[2].toFixed(3)]); }
       const name = BF.saveMorph(b.name || "wrap", { figure: b.rel, vertices: n, deltas, scan: path.basename(f), align, made: Date.now() });
-      res.json({ custom: name, moved_mm: +(r.moved * 1000).toFixed(1), moved_vertices: deltas.length, vertices: n, align, scan: path.basename(f) });
+      res.json({ custom: name, moved_mm: +(r.moved * 1000).toFixed(1), moved_vertices: deltas.length, vertices: n, align, scan: path.basename(f), kept: r.kept || [] });
     } catch (e) { fail(res, e); }
   });
 }

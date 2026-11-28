@@ -1432,6 +1432,15 @@ one you don't keep.
   are checked first, ⬇ Download if missing), then the figure is wrapped onto it: each part pulled to the scan's surface,
   smoothed, hands / feet / face held back. The result is a morph of your own (`<project>/dazmorphs/<name>.json`) on the
   new character. If the body comes out back to front, tick **the scan faces away** and try again.
+  3.7.1: a part only takes scan surface that faces its way and moves at most 7 cm (a body's shape differs by centimetres -
+  more is another pose); the scan is centred on the head, not its outline. **An arm or leg the photo holds differently**
+  (an arm down by the side while the figure's is out in its A-pose) keeps the figure's own shape, carried with its shoulder
+  or hip - the message names it (*the photo holds the right arm differently - the figure's own kept*). A photo standing
+  the figure's way (arms a little out, feet apart) wraps every limb.
+- **The skeleton follows the shape (3.7.1)**: whatever shapes the body - B's morph, 🙂 the 3D head, the face's head width,
+  the dials - its joints are moved with it (each by the body round it, the way Daz's "adjust rigging to shape" does), and
+  the eyes, mouth, clothes and hair (figures of their own) are carried with the body - before, they stayed at the stock
+  places: joints off the body, eyes out of their sockets. The build's message says how many joints moved.
 - **Paint**: *the whole body* (A: the front photo, + a back photo if you add one, projected into every skin texture;
   B: the scan's own colours baked in all round), *the face only*, or *nothing*.
 - Light, not exact: loose clothing reads as body, and the photo's clothes are painted onto the skin too - a photo in

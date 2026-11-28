@@ -429,6 +429,7 @@
         const w = await jpost("/api/dazlib/body/wrap", { root: base.fig.root, rel: base.fig.rel, dials: dialsNow, scan: sj.model, turn: $("dzTurn").checked, name: c.name.replace(/[^A-Za-z0-9 _-]+/g, " ").replace(/\s+/g, " ").trim() });
         c.custom = (c.custom || []).concat([w.custom]);
         report = "B: " + w.moved_vertices + " vertices moved (" + w.moved_mm + " mm on average) - your morph \"" + w.custom + "\"";
+        if ((w.kept || []).length) report += " · the photo holds the " + w.kept.map((k) => k.name).join(" and ") + " differently - the figure's own kept (3.7.1)";
         if (paint === "body") c.paint = { mode: "scan", scan: sj.model, align: w.align }; else if (paint === "face" && front) c.paint = { mode: "face", photos: [front] };
       }
       st.scene.chars.push(c); st.scene.sel = c.id; keep(); st.busy = false; tree(); dialsLoad(); list();
