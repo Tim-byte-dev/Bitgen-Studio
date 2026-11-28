@@ -1219,7 +1219,7 @@ transparent layer in the editor - with inclusionAI's Ming-Image (MIT), run by Co
   **name** and say **what goes in it** - quote any words it should show (`"SUMMER SALE"`), give colours as `#hex`. **Where**
   places it (whole canvas, top, centre, a corner …). **＋ Add layer** adds a row above the background; **↑ ↓** reorder, **✕**
   removes. Up to 12 layers. The dialog keeps your list for next time.
-- **✨ Make a design from these layers**: Ming-Image-0.2-Design draws the whole design from your list (a structured prompt -
+- **✨ Make a design from these layers**: Ming-Image Design draws the whole design from your list (a structured prompt -
   background first, each layer's words, place, order and colours), then Ming-Image-0.1-Design-Layer splits it into your layers.
   They come in as a **🧩 group** named after the front layer, each layer named as you named it (the front on top), with the
   flat design kept **hidden** below it. One ↶ Undo takes them away. **Style** and **Lighting** describe the look; **Size**
@@ -1229,11 +1229,16 @@ transparent layer in the editor - with inclusionAI's Ming-Image (MIT), run by Co
   list - no new design. Two layers at least (the front ones and the background).
 - **🖥 ComfyUI on this computer** (3.12.0): ComfyUI **0.46.0 or newer** runs Ming-Image in its own nodes - no node pack. Settings
   ▸ Add-ons ▸ 🧩 Ming layered design (it opens by itself when the files are missing) downloads Comfy-Org's repacked files into
-  ComfyUI's models folders - tick what you want: **0.2 Design int8** (makes designs) and **0.1 Design-Layer int8** (splits
+  ComfyUI's models folders - tick what you want: **0.1 Design int8** (makes designs) and **0.1 Design-Layer int8** (splits
   pictures), each with its text encoder, plus the shared VAE; the **bf16** sets are optional and are used instead of int8 when
   they are there. Restart ComfyUI after the download so it lists the new files. An older ComfyUI is told to update (Settings ▸
   ComfyUI ▸ ⤓ Update ComfyUI). Out of memory: try ~1 MP, layers at 512, or ☁ OpenRouter. (3.9.0's own install in
   `<app>/ming_image` is not used any more - the add-on's Remove deletes it.)
+- **Why 0.1 Design in ComfyUI** (3.13.2): Comfy-Org's repo has the 0.2 Design model but not its text encoder (their own
+  ComfyUI template names `ming_image_0.2_ling_mini_2.0_int8_convrot`, which is not there - 3.12.0 asked for it and its
+  download could not work). 0.1's encoder does not fit 0.2: the encoder file carries a connector that differs between the
+  two. So the design is 0.1 Design with its own encoder; bitGen switches to 0.2 by itself once ComfyUI lists a 0.2 encoder
+  (put it in ComfyUI's text_encoders folder). ☁ OpenRouter uses 0.2 when it has it.
 - **☁ OpenRouter**: your OpenRouter key (🖥 GPU ▸ Remote generation ▸ OpenRouter). Ming 0.1 Design and Design-Layer are free
   there (November 2026); 0.2-Design is used instead of 0.1 when OpenRouter has it.
 - What comes back is only as good as the model: it may give a different number of layers than you asked (the message says so),

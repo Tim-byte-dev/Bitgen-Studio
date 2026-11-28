@@ -56,6 +56,15 @@ check("pick: int8 first, the 0.2 text encoder for the design (not 0.1's, not the
 pb = MG.pick(UNETS, CLIPS, VAES, precision={"design": "bf16", "layer": "int8"})
 check("pick: bf16 for the model whose bf16 set is there (lib/mingAddon.js says which), int8 for the other",
       pb["design"] == UNETS[1] and pb["design_te"] == CLIPS[1] and pb["layer"] == UNETS[2] and pb["layer_te"] == CLIPS[2], pb)
+# 3.13.2: Comfy-Org publishes no 0.2 text encoder - 0.2 Design only with its own; else 0.1 Design with 0.1's
+U01 = ["ming_image_0.1_design_int8_convrot.safetensors", "ming_image_0.1_design_bf16.safetensors"]
+C_REAL = [CLIPS[0], "ming_image_0.1_ling_mini_2.0_int8_convrot.safetensors", "ming_image_0.1_ling_mini_2.0_w4a8.safetensors", CLIPS[2], CLIPS[3]]
+pr = MG.pick(UNETS + U01, C_REAL, VAES)
+check("3.13.2 pick, Comfy-Org's real files (no 0.2 encoder): 0.1 Design int8 with 0.1's int8 encoder (not the layer one, not 0.2 Design); said why",
+      pr["design"] == U01[0] and pr["design_te"] == C_REAL[1] and not pr["error"] and any("no 0.2 text encoder" in n for n in pr["notes"]), pr)
+check("…bf16 asked: 0.1 Design bf16 with the bf16 encoder", (lambda x: x["design"] == U01[1] and x["design_te"] == C_REAL[0])(MG.pick(UNETS + U01, C_REAL, VAES, precision={"design": "bf16", "layer": "int8"})))
+p2 = MG.pick(UNETS, C_REAL, VAES, need=("design",))
+check("…only 0.2 Design + 0.1's encoder: NOT paired (0.2's connector differs) - 0.1 Design named as missing", p2["error"] and p2["missing"] == [MG.HINT["design"]] and "0.1_design" in MG.HINT["design"], p2)
 pm = MG.pick(UNETS[:2], CLIPS[:2], VAES, need=("design", "layer"))
 check("pick: the layer files not listed -> said, with their names and the add-on", pm["error"] and "ming_image_0.1_design_layer_int8_convrot" in pm["error"] and "🧩 Ming layered design" in pm["error"]
       and pm["missing"] == [MG.HINT["layer"], MG.HINT["layer_te"]], pm)

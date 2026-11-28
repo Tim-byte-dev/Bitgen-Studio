@@ -419,7 +419,7 @@ install - written for bitGen from their documented behaviour. bitGen ships none 
 ## 🧩 Ming layered design - Ming-Image (3.9.0; in ComfyUI since 3.12.0)
 
 Settings ▸ Add-ons ▸ 🧩 Ming layered design downloads the files you tick from [Comfy-Org/Ming-Image](https://huggingface.co/Comfy-Org/Ming-Image)
-(MIT - Comfy-Org's repacks of inclusionAI / Ant Group's [Ming-Image-0.2-Design](https://huggingface.co/inclusionAI/Ming-Image-0.2-Design)
+(MIT - Comfy-Org's repacks of inclusionAI / Ant Group's [Ming-Image-0.1-Design](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design), [Ming-Image-0.2-Design](https://huggingface.co/inclusionAI/Ming-Image-0.2-Design)
 and [Ming-Image-0.1-Design-Layer](https://huggingface.co/inclusionAI/Ming-Image-0.1-Design-Layer), both MIT, with their Ling-mini-2.0
 text encoders and VAE) into ComfyUI's models folders. ComfyUI (GPL-3.0, a separate program bitGen talks to over HTTP) runs them in
 its own Ming-Image nodes. scripts/ming_graph.py (bitGen's own) builds the graphs - the design one after Comfy-Org's published

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.13.2** — 🧩 Ming in ComfyUI: the Design Set Could Not Download - It Asked for a 0.2 Text Encoder That Comfy-Org's Repo Does Not Have (Their Template Names It); 0.1's Encoder Does Not Fit 0.2 (a Different Connector), So the Design Is 0.1 Design With Its Own Encoder, 0.2 Once a 0.2 Encoder Is Listed; Exact File Sizes
 - **3.13.1** — A ComfyUI That Crashes Mid-Render Is Said in Words - After Which Step, With the Last Error Lines of Its Console (comfy.log) - Instead of a Python Traceback (Tim's pi-H3 2-Step Render: ConnectionResetError After Step 2/2)
 - **3.13.0** — Image Editor: an Icon-Only ✂ at the Bottom of the Layers Panel Splits the Selected Layer Into Layers With Ming-Image (Just the Number of Layers, or a List; Cut to the Layer's Shape, the Layer Kept Hidden); ✨ Create With the AI ▸ 🧩 Layered Image - the LLM Plans the Layers, the Ming Box Opens With Them
 - **3.12.2** — π pi-H3 Renders Again on a ComfyUI That Has ComfyUI-piFlow: bitGen's Node Check Sent "Load LakonLab Adapter" Unencoded (Spaces), Which Was Refused Before It Was Sent and Read as "Not Loaded" / "an OLD ComfyUI-piFlow" - the Names Are Encoded Now (the Adapter Swap Sees Your Adapters Too)

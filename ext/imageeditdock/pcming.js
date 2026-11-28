@@ -116,7 +116,7 @@
         <div class="kxrow" style="flex-wrap:wrap;gap:4px 16px;margin-top:4px">
           <label title="${esc(loc.note || "")}"><input type="radio" name="pmEng" value="comfy"${eng === "comfy" ? " checked" : ""}> 🖥 ComfyUI on this computer ${loc.ready ? "✓" : "(files not downloaded - its Download box opens)"}</label>
           <label title="Ming 0.1 Design + Design-Layer are free on OpenRouter (0.2 is used when OpenRouter has it)"><input type="radio" name="pmEng" value="openrouter"${eng === "openrouter" ? " checked" : ""}> ☁ OpenRouter ${orr.key ? "✓" : "(needs your key - 🖥 GPU ▸ Remote generation)"}</label></div>
-        <div style="color:var(--pc-dim);margin-top:6px">Ming-Image-0.2-Design draws the design from the list; Ming-Image-0.1-Design-Layer splits it into your layers (transparent, each named as here). Both run in ComfyUI's own Ming-Image nodes (0.46.0 or newer) with Comfy-Org's files.</div>
+        <div style="color:var(--pc-dim);margin-top:6px">Ming-Image Design draws the design from the list (in ComfyUI 0.1 - Comfy-Org has not published 0.2's text encoder yet; ☁ OpenRouter uses 0.2 when it has it); Ming-Image-0.1-Design-Layer splits it into your layers (transparent, each named as here). Both run in ComfyUI's own Ming-Image nodes (0.46.0 or newer) with Comfy-Org's files.</div>
         <div id="pmMsg" style="color:#e88;min-height:1em"></div>`;
       E.ui.dialog("🧩 Ming Layered Design", html, (d) => {
         const v = (id) => d.querySelector("#" + id), m = (d.querySelector('input[name="pmMode"]:checked') || {}).value || "make";

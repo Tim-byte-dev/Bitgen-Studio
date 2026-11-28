@@ -37,10 +37,10 @@ const PM = require(path.join(ROOT, "ext/imageeditdock/pcming.js"));
   /* ---------------- Comfy-Org's files in the model list */
   const SM = require(path.join(ROOT, "lib/setupModels.js")), CAT = JSON.parse(read("lib/modelCatalog.json"));
   const mi = CAT.models.filter((m) => m.group === "mingimage");
-  check("the catalog: 8 Comfy-Org/Ming-Image files into ComfyUI's diffusion_models / text_encoders / vae, a group for them",
-    mi.length === 8 && mi.every((m) => m.repo === "Comfy-Org/Ming-Image" && m.as === m.file.split("/").pop() && m.dest === "comfy/" + m.file.split("/")[0] && m.size > 0) && CAT.groups.some((g) => g.id === "mingimage"), mi.map((m) => m.file));
-  check("…the files the official ComfyUI template loads (0.2 Design int8, 0.2 text encoder int8, the VAE) + the Design-Layer ones",
-    ["diffusion_models/ming_image_0.2_design_int8_convrot.safetensors", "text_encoders/ming_image_0.2_ling_mini_2.0_int8_convrot.safetensors", "vae/ming_image_vae_bf16.safetensors",
+  check("the catalog: 9 Comfy-Org/Ming-Image files (3.13.2: + 0.2 Design, waiting for its encoder) into ComfyUI's diffusion_models / text_encoders / vae, a group for them",
+    mi.length === 9 && mi.every((m) => m.repo === "Comfy-Org/Ming-Image" && m.as === m.file.split("/").pop() && m.dest === "comfy/" + m.file.split("/")[0] && m.size > 0) && CAT.groups.some((g) => g.id === "mingimage"), mi.map((m) => m.file));
+  check("…3.13.2: the files that ARE in Comfy-Org's repo - 0.1 Design + its own text encoder (no 0.2 encoder there), the VAE, the Design-Layer ones; never the missing 0.2 encoder",
+    !mi.some((m) => /0\.2_ling/.test(m.file)) && ["diffusion_models/ming_image_0.1_design_int8_convrot.safetensors", "text_encoders/ming_image_0.1_ling_mini_2.0_int8_convrot.safetensors", "vae/ming_image_vae_bf16.safetensors",
       "diffusion_models/ming_image_0.1_design_layer_int8_convrot.safetensors", "text_encoders/ming_image_0.1_ling_mini_2.0_layer_int8_convrot.safetensors"].every((f) => mi.some((m) => m.file === f)));
 
   /* ---------------- the add-on */

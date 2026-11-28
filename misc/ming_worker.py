@@ -7,7 +7,8 @@ generate separate layers"
 3.12.0 - Tim: "replace our ming image with this one, https://huggingface.co/Comfy-Org/Ming-Image"
 
 Two steps, each optional:
-  1 the design    Ming-Image-0.2-Design from the layer list's JSON prompt (params.t2i_prompt) -> one flat picture
+  1 the design    Ming-Image Design from the layer list's JSON prompt (params.t2i_prompt) -> one flat picture (in ComfyUI 0.1
+                  Design with its own text encoder; 0.2 once a 0.2 encoder is listed - scripts/ming_graph.py pick, 3.13.2)
   2 the layers    Ming-Image-0.1-Design-Layer splits the flat picture (or params.input - a picture to split) by the plan
                   (params.layer_plan) -> N transparent PNGs, layer 1 the front-most
 engine "comfy":      ComfyUI's own Ming-Image nodes (0.46.0 or newer) with Comfy-Org/Ming-Image's files (int8 unless the bf16
@@ -139,7 +140,7 @@ def comfy(p, job, work):
 
     if gen:
         step += 1
-        say(f"[worker] step {step}/{total} - the design (Ming-Image 0.2 Design)")
+        say(f"[worker] step {step}/{total} - the design ({'Ming-Image 0.2 Design' if '0.2' in pk['design'] else 'Ming-Image 0.1 Design'})")
         say(f"[ming] model {pk['design']} · text encoder {pk['design_te']} · VAE {pk['vae']}")
         try:
             g, notes = mg.build_design({"model": pk["design"], "te": pk["design_te"], "vae": pk["vae"], "prompt": p.get("t2i_prompt") or "",

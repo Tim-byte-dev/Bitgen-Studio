@@ -6,8 +6,9 @@ Tim (verbatim): "replace our ming image with this one, https://huggingface.co/Co
 
 THE DESIGN - Comfy-Org's own template (workflow_templates image_ming_image_01_design_t2i.json), without its optional prompt
 expander and attention switch:
-    UNETLoader (ming_image_0.2_design_*) -> ModelSamplingFlux (1.15 / 0.5, the size) -> BasicScheduler (simple, 12) ---\
-    CLIPLoader (ming_image_0.2_ling_mini_2.0_*, type qwen_image) -> CLIPTextEncode (the layer list's JSON) -> BasicGuider
+    UNETLoader (ming_image_0.1_design_* - 0.2 when its own text encoder is listed, see pick) -> ModelSamplingFlux (1.15 / 0.5,
+    the size) -> BasicScheduler (simple, 12) ; CLIPLoader (that model's ming_image_*_ling_mini_2.0_*, type qwen_image) ->
+    CLIPTextEncode (the layer list's JSON) -> BasicGuider
     EmptyLatentImage (w, h) + RandomNoise + KSamplerSelect (euler) -> SamplerCustomAdvanced -> VAEDecode -> SaveImage
 
 THE LAYERS - Ming-Image-0.1-Design-Layer (Comfy-Org has no template for it; built from what ComfyUI and inclusionAI's code say):
@@ -33,7 +34,7 @@ REQUIRED_LAYERS = ["LoadImage", "ImageScale", "TextEncodeMingImageEdit", "EmptyQ
                    "CFGGuider", "LatentCutToBatch"]
 DESIGN = {"steps": 12, "cfg": 1.0, "sampler": "euler", "scheduler": "simple", "max_shift": 1.15, "base_shift": 0.5}
 LAYERS = {"steps": 12, "cfg": 2.0, "sampler": "euler", "scheduler": "simple", "max_shift": 1.15, "base_shift": 0.5}
-HINT = {"design": "ming_image_0.2_design_int8_convrot.safetensors", "design_te": "ming_image_0.2_ling_mini_2.0_int8_convrot.safetensors",
+HINT = {"design": "ming_image_0.1_design_int8_convrot.safetensors", "design_te": "ming_image_0.1_ling_mini_2.0_int8_convrot.safetensors",
         "layer": "ming_image_0.1_design_layer_int8_convrot.safetensors", "layer_te": "ming_image_0.1_ling_mini_2.0_layer_int8_convrot.safetensors",
         "vae": "ming_image_vae_bf16.safetensors"}
 CLIP_TYPE = "qwen_image"          # Comfy-Org's templates; ComfyUI tells the Ming text encoder by its weights whatever the type
@@ -64,21 +65,34 @@ def pick(unets, clips, vaes, need=("design", "layer"), precision="int8"):
     {design, layer} (lib/mingAddon.js: bf16 for a model whose bf16 set is downloaded)"""
     pd = precision.get("design") if isinstance(precision, dict) else precision
     pl = precision.get("layer") if isinstance(precision, dict) else precision
-    got = {"design": _find(unets, r"ming[-_]?image.*design", prefer_of(pd), avoid=r"layer"),
-           "design_te": _find(clips, r"ming[-_]?image.*ling", ["0.2"], avoid=r"layer"),
+    # 3.13.2 (Tim: "are we using the comfy ming image modes?"): a design model only with ITS OWN text encoder. ComfyUI's Ming
+    # text encoder file carries the Ling-mini-2.0 LLM AND the connector + projections (comfy/text_encoders/ming_image.py
+    # MingImageEncoder); inclusionAI's 0.1 and 0.2 Design share the LLM shards byte for byte but NOT the connector / mlp (their
+    # Hugging Face sha256s, checked 28 Nov 2026). Comfy-Org's repo has 0.1's encoder but no 0.2 one (their template names
+    # ming_image_0.2_ling_mini_2.0_int8_convrot, which is not there) - so 0.2 Design runs only when a 0.2 encoder is listed.
+    no_layer = r"layer"
+    d02 = _find(unets, r"ming[-_]?image[-_]0\.2.*design", prefer_of(pd), avoid=no_layer)
+    t02 = _find(clips, r"ming[-_]?image[-_]0\.2.*ling", prefer_of(pd) + ["w4a8"], avoid=no_layer)
+    d01 = _find(unets, r"ming[-_]?image[-_]0\.1.*design", prefer_of(pd), avoid=no_layer)
+    t01 = _find(clips, r"ming[-_]?image[-_]0\.1.*ling", prefer_of(pd) + ["w4a8"], avoid=no_layer)
+    notes = []
+    if d02 and t02:
+        design, dte = d02, t02
+    elif d01 and t01:
+        design, dte = d01, t01
+        if d02:
+            notes.append(f"{d02} is here but no 0.2 text encoder is (Comfy-Org has not published one) - using 0.1 Design with its own")
+    else:                                                   # names without a version: whatever is there
+        design = d01 or _find(unets, r"ming[-_]?image.*design", prefer_of(pd), avoid=no_layer)
+        dte = t01 or _find(clips, r"ming[-_]?image.*ling", prefer_of(pd) + ["w4a8"], avoid=no_layer)
+        if design and "0.2" in _base(design) and dte and "0.2" not in _base(dte):
+            design = ""                                     # 0.2 with 0.1's encoder: the connector does not fit
+    got = {"design": design, "design_te": dte,
            "layer": _find(unets, r"ming[-_]?image.*design[-_]?layer", prefer_of(pl)),
            "layer_te": _find(clips, r"ming[-_]?image.*ling.*layer", prefer_of(pl)),
            "vae": _find(vaes, r"ming[-_]?image.*vae", ["bf16"])}
-    # the design's text encoder: 0.2's own when listed (it only comes as int8), else 0.1's
-    if got["design_te"] and "0.2" not in _base(got["design_te"]):
-        z = [n for n in (clips or []) if re.search(r"ming[-_]?image[-_]0\.2.*ling", _base(n)) and "layer" not in _base(n)]
-        if z:
-            got["design_te"] = z[0]
     want = ["vae"] + (["design", "design_te"] if "design" in need else []) + (["layer", "layer_te"] if "layer" in need else [])
     missing = [HINT[k] for k in want if not got[k]]
-    notes = []
-    if "design" in need and got["design"] and "0.2" not in _base(got["design"]):
-        notes.append(f"Ming-Image 0.2 Design is not listed - using {got['design']}")
     if missing:
         return dict(got, notes=notes, missing=missing,
                     error="ComfyUI does not list " + ", ".join(missing) + " - " + ADDON + " downloads them (then restart "
