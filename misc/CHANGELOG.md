@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.11.2** — 📌 the Height Pin (and ⇱ Float) on the Audio Docker's 🎹 Edit Booth Tab; pi-H3 Stops Before Queueing When ComfyUI Has Not Loaded Its Nodes (ComfyUI-piFlow) and Says What to Do - Any Missing Node Explained (Not "Fix the Template"); the 16 GB Note No Longer Says RunPod on a pi-H3 Render
 - **3.11.1** — The Sketcher's DAZ Library Finds Your Other Libraries and Folders: Every Top Folder Read (Animals - Daz Horse 3 -, Vehicles, Architecture …), an Animal's Load File Is a 🧍 Figure, 🔍 Find Adds Daz Studio's Own Content Folders (e.g. D:\daz3d\Content)
 - **3.11.0** — ✍ Continue in the Edit Booth's Piano Roll: the Anticipatory Music Transformer (Stanford, Apache-2.0) Writes the Next 1 - 8 Bars of Your Notes in the Same Style, on This Computer - 🎲 Again for Another Take, ↶ Take Back (Our Own Magenta, Step 2)
 - **3.10.0** — 🆕 New and 🧹 Clear on the Edit Booth Timeline: a New Song Starts Empty and Unnamed (the Old One Stays Saved); Clear Removes the Clips, Keyframes, Lanes and Markers but Keeps the Layers and the Name - Both Asked First, One ↶ Undo

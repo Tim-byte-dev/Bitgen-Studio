@@ -17,7 +17,7 @@
 (function (root) {
   "use strict";
   var MAIN = [["previewdock", "Preview"], ["timelinedock", "Timeline"], ["videodock", "StoryBoard"], ["imageeditdock", "Image editor"], ["comfydock", "ComfyUI"],
-    ["musicdock", "Music"], ["sfxdock", "SFX"], ["chatdock", "Prompt chat"], ["promptdock", "Prompt"], ["consoledock", "Console"]];
+    ["musicdock", "Music"], ["sfxdock", "SFX"], ["synthdock", "Edit Booth"], ["chatdock", "Prompt chat"], ["promptdock", "Prompt"], ["consoledock", "Console"]];
   var SIDE = [["ldock", "ldock", "System", "no-left"], ["refs", "refsdock", "References", "no-refs"], ["assets", "assetsdock", "Assets", "no-assets"], ["qdock", "qdock", "Queue", "no-queue"], ["rdock", "rdock", "Gallery", "no-right"]];
   /** a docker header's words without its arrows, buttons' glyphs and pins (pure) */
   function nameOf(t) { return String(t || "").replace(/[▾▸⛶✕]|\u{1F5D7}|\u{1F4CC}/gu, "").replace(/\s+/g, " ").trim().slice(0, 40); }

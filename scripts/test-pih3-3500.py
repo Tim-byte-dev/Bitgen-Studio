@@ -53,6 +53,6 @@ check("the worker fills it: prompt, size, length, seed, the first frame wired, t
       and out["10"]["inputs"]["first_frame"] == ["8", 0] and "last_frame" not in out["10"]["inputs"] and out["8"]["inputs"]["image"] == "first.png", out["10"])
 w = open(os.path.join(ROOT, "misc", "worker.py"), encoding="utf-8").read()
 check("worker.py: pih3.apply after the refs (cfg 1, no 16 GB mode on a pi-H3 graph)",
-      "g, pinotes = _pi.apply(g, _pi.info(base), attention=att)" in w and "if not rp and not is_pi:" in w)
+      "g, pinotes = _pi.apply(g, pinf or _pi.info(base), attention=att)" in w and "if not rp and not is_pi:" in w)
 print(f"\n{N} passed, {F} failed")
 sys.exit(1 if F else 0)

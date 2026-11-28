@@ -127,6 +127,12 @@ try:
     import pih3 as _pi
 except Exception:                  # noqa: BLE001 - the shipped pi-H3 graphs render with their built-in attention
     _pi = None
+# 3.11.2 (Tim's log: "rejected: missing_node_type Node 'pi-H3 2-step DWD adapter' not found"): which custom node pack a node
+# ComfyUI has not loaded comes with, and what to do - scripts/comfy_missing.py
+try:
+    import comfy_missing as _cm
+except Exception:                  # noqa: BLE001 - ComfyUI's own words stay
+    _cm = None
 
 # 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax"): 16 GB mode - DENO's R2V Turbo 8+2 recipe
 # (text encoder unload, 8-step pass, latent upscale + 2 refine steps with sparse attention) on any native H3 render -
@@ -3426,8 +3432,17 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         is_pi = _pi is not None and _pi.detect(g)
         if is_pi:                              # 3.5.0: pi-H3 - its attention, cfg 1 (distilled), no 16 GB mode
             try:
+                pinf = _pi.info(base)
+            except Exception:                  # noqa: BLE001
+                pinf = {}
+            pmiss = _pi.missing(g, pinf) if hasattr(_pi, "missing") else []
+            if pmiss:                          # 3.11.2: before queueing - say which pack and what to do (not "fix the template")
+                ttl = next((((v.get("_meta") or {}).get("title") or "") for v in g.values() if isinstance(v, dict) and v.get("class_type") == pmiss[0]), "")
+                fail("pi-H3: " + (_cm.note(pmiss[0], ttl, pinf.get("version")) if _cm is not None else
+                                  f"this ComfyUI has not loaded the pi-H3 nodes ({', '.join(pmiss)}) - restart ComfyUI (Settings ▸ Add-ons ▸ π pi-H3 installs them)"))
+            try:
                 att = str((((cfg.get("engine") or {}).get("comfy") or {}).get("pih3_attention")) or "auto")
-                g, pinotes = _pi.apply(g, _pi.info(base), attention=att)
+                g, pinotes = _pi.apply(g, pinf or _pi.info(base), attention=att)
                 for n in pinotes:
                     say(f"[comfy] {n}")
             except Exception as e:             # noqa: BLE001 - the graph's own attention stays
@@ -3448,8 +3463,10 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                 elif any(n.startswith("16 GB mode: pass 1 =") for n in n16) and float(cfg_val or 1) > 1:
                     say(f"[comfy] 16 GB mode: cfg {cfg_val} -> 1 (the 8-step LoRAs are distilled with guidance built in)")
                     cfg_val = 1.0
-        elif _vram16_cfg(cfg)["mode"] != "off":
+        elif rp and _vram16_cfg(cfg)["mode"] != "off":
             say("[comfy] 16 GB mode: not used on a RunPod endpoint (its card is not this one)")
+        elif is_pi and _vram16_cfg(cfg)["mode"] != "off":   # 3.11.2: the note said "RunPod" for a pi-H3 render on this PC
+            say("[comfy] 16 GB mode: not used for pi-H3 (2 / 4 steps - it has its own recipe)")
         if params.get("upscale_stage"):        # 2.312.0: the video docker's upscaler
             if _us is None and params.get("upscale_take"):
                 raise RuntimeError("scripts/upscalestage.py did not load - the take cannot be upscaled")
@@ -3627,6 +3644,18 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                         say(f"[comfy] link repair: {f}")
                     say("[comfy] queueing again with the repaired links")
                     return _attempt(graph)
+            if err.get("type") == "missing_node_type":   # 3.11.2: a node pack not loaded - not a broken workflow
+                xi = err.get("extra_info") or {}
+                ct = xi.get("class_type") or next((v.get("class_type") for v in graph.values() if isinstance(v, dict)
+                                                   and (v.get("_meta") or {}).get("title") and (v.get("_meta") or {}).get("title") in str(err.get("message", ""))), "")
+                ver = ""
+                try:
+                    with urllib.request.urlopen(base + "/system_stats", timeout=5) as r:
+                        ver = str(((json.loads(r.read().decode("utf-8")) or {}).get("system") or {}).get("comfyui_version") or "")
+                except Exception:                       # noqa: BLE001
+                    pass
+                fail("ComfyUI rejected the workflow: " + (_cm.note(ct, xi.get("node_title") or "", ver) if _cm is not None
+                     else "a node it needs is not loaded - install its custom node pack and restart ComfyUI"))
             fail("ComfyUI rejected the workflow - the node errors above name the "
                  "exact inputs; fix them in the template or re-export from ComfyUI.")
         t0 = time.time()

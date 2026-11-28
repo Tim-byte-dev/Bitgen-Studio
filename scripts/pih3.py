@@ -20,7 +20,7 @@ workflow table ranks them:
     2 Kijai's Sol-Attn (github.com/kijai/ComfyUI-SolAttn_triton - SolAttnPatch, BF16, any GPU Triton supports)
     3 the built-in one (kept)
 Every other input of the node it puts in takes that node's own default (ComfyUI's object_info).
-Pure except info() (object_info + system_stats): detect, steps_of, spark_class, apply.
+Pure except info() (object_info + system_stats): detect, steps_of, spark_class, apply, missing (3.11.2).
 """
 import json
 import urllib.request
@@ -94,9 +94,22 @@ def _fill(spec, model_link, steps):
     return ins
 
 
+PACK_NODES = (ADAPTER, "pi-Flow Scheduler", "DWD Decode")   # 3.11.2: the ComfyUI-piFlow nodes every pi-H3 graph needs
+
+
+def missing(g, inf):
+    """3.11.2: the ComfyUI-piFlow nodes this graph uses that this ComfyUI has not loaded - [] when they are there, or when
+    ComfyUI could not be asked (then ComfyUI itself says what it is missing)"""
+    if not (inf or {}).get("reached"):
+        return []
+    used = {v.get("class_type") for v in (g or {}).values() if isinstance(v, dict)}
+    have = (inf or {}).get("classes") or {}
+    return [c for c in PACK_NODES if c in used and c not in have]
+
+
 def info(base, timeout=10):
-    """{classes: {class: object_info}, gpu: its name} - what this ComfyUI has for pi-H3's attention"""
-    out = {"classes": {}, "gpu": ""}
+    """{classes: {class: object_info}, gpu: its name, version, reached} - what this ComfyUI has for pi-H3"""
+    out = {"classes": {}, "gpu": "", "version": "", "reached": False}
 
     def get(path):
         try:
@@ -104,11 +117,13 @@ def info(base, timeout=10):
                 return json.loads(r.read().decode("utf-8"))
         except Exception:                   # noqa: BLE001
             return None
-    for cls in SPARK + (KJ, ADAPTER):
+    for cls in SPARK + (KJ,) + PACK_NODES:
         j = get(f"/object_info/{cls}")
         if isinstance(j, dict) and j.get(cls):
             out["classes"][cls] = j[cls]
     st = get("/system_stats") or {}
+    out["reached"] = bool(st)
+    out["version"] = str((st.get("system") or {}).get("comfyui_version") or "")
     devs = st.get("devices") or []
     if devs:
         out["gpu"] = str(devs[0].get("name") or "")

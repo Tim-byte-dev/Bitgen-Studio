@@ -7155,6 +7155,11 @@ orange line shows where it will go - and let go.
   then Kijai's Sol-Attn, else ComfyUI's built-in one (INT8, a little softer); the job's log says which. cfg is 1 and 16 GB
   mode is skipped (it is already 2 / 4 steps). Needs ComfyUI 0.45 or newer, restarted after installing. The adapters are
   under the MiniMax H3 Community License, like MiniMax H3 itself.
+  **3.11.2:** when ComfyUI has not loaded the pi-H3 nodes (ComfyUI-piFlow - not restarted since they were installed, a
+  ComfyUI older than 0.45, or the pack failed to import), the render stops before it is queued and says so: restart ComfyUI,
+  update it when it is too old (it names its version), else look in ComfyUI's console for **IMPORT FAILED** next to
+  ComfyUI-piFlow. Any other node ComfyUI is missing is explained the same way (which node, install its pack, restart) - the
+  workflow itself is fine.
 - 2.574.0: **theme edit mode ▸ Text on any words** - a docker's title bar (pick it: Text shows its title, aimed at that
   docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
   given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old
@@ -9242,6 +9247,8 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   reads **Audio** with the tabs **🎵 Music · 🎚 Stems · 💥 SFX**: a tab shows that one and puts the others away. Each tab
   keeps its own height, ▾ fold, ⛶ maximize and ⇱ float. Anything that opens one of them - a workspace, a saved docker
   layout, voice chat - opens it as the Audio docker's tab. A tab whose extension is turned off is not offered.
+  **3.11.2:** the **🎹 Edit Booth** tab has the **📌 height pin** (and ⇱ float) in the Audio docker's title bar too - like 🎵 Music
+  and 💥 SFX: 📌 pins it at the height it shows, 📌 again lets it be any height; kept with the docker layout.
   **2.966.0:** the Stems tab is gone - the tabs are **🎵 Music · 💥 SFX · 🎹 Edit Booth**. Splitting a song into its vocals and
   instrumental is the 🎹 Edit Booth tab's **✂ Separate vocals** (on the picked layer, two new layers); a music video's song
   segments are on the StoryBoard's song strip (Load audio). An older install's Stems folder is left alone and never loaded.

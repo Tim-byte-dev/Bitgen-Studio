@@ -10,7 +10,7 @@ const check = (n, cond, got) => (cond ? ok(n) : bad(n, got));
 
 const d = U.defaults();
 // 2.299.1: + stemsdock (it had no stored height or state)
-check("defaults cover the eight bottom docks (sfx included; stems retired in 2.966.0) and five side docks", Object.keys(d).length === 13 && !d.stemsdock && d.sfxdock && d.sfxdock.height === 220 && d.imageeditdock.state === "closed" && d.comfydock.state === "closed", Object.keys(d));
+check("defaults cover the nine bottom docks (sfx included; stems retired in 2.966.0; 3.11.2: + the Edit Booth) and five side docks", Object.keys(d).length === 14 && d.synthdock && d.synthdock.height === 460 && !d.stemsdock && d.sfxdock && d.sfxdock.height === 220 && d.imageeditdock.state === "closed" && d.comfydock.state === "closed", Object.keys(d));
 check("...chat and console ship closed, everything else open",
   d.chatdock.state === "closed" && d.consoledock.state === "closed" && d.timelinedock.state === "open" && d.ldock.state === "open", d);
 check("...bottom docks carry a height, side docks a width",
