@@ -3438,7 +3438,14 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
             pmiss = _pi.missing(g, pinf) if hasattr(_pi, "missing") else []
             if pmiss:                          # 3.11.2: before queueing - say which pack and what to do (not "fix the template")
                 ttl = next((((v.get("_meta") or {}).get("title") or "") for v in g.values() if isinstance(v, dict) and v.get("class_type") == pmiss[0]), "")
-                fail("pi-H3: " + (_cm.note(pmiss[0], ttl, pinf.get("version")) if _cm is not None else
+                hint = ""                      # 3.12.1: an OLD ComfyUI-piFlow / where it is / why it did not import
+                if _cm is not None and hasattr(_cm, "piflow_report"):
+                    try:
+                        hint = _cm.piflow_report(cfg, Path(__file__).resolve().parent.parent, pinf,
+                                                 (lambda: _cc._log_entries(base)) if _cc is not None else None)
+                    except Exception:          # noqa: BLE001 - the plain note stays
+                        hint = ""
+                fail("pi-H3: " + (hint or _cm.note(pmiss[0], ttl, pinf.get("version"))) if _cm is not None else ("pi-H3: " +
                                   f"this ComfyUI has not loaded the pi-H3 nodes ({', '.join(pmiss)}) - restart ComfyUI (Settings ▸ Add-ons ▸ π pi-H3 installs them)"))
             try:
                 att = str((((cfg.get("engine") or {}).get("comfy") or {}).get("pih3_attention")) or "auto")

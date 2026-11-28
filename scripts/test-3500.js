@@ -28,7 +28,7 @@ const PA = require(path.join(ROOT, "lib/pih3Addon.js")), Models = require(path.j
     check("install with no adapter ticked: refused in words", !r0.ok && /tick an adapter/.test(r0.error), r0);
     const got = [], L = [];
     const r = await PA.install((l) => L.push(l), ["dwd4"], { place: pl, git: "", base: ROOT, styles: () => ["pi-H3 (2 steps)"],
-      fetchRepo: async (url, dir) => { got.push(url); fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, "lakonlab_loaders.py"), ""); return { ok: true }; },
+      fetchRepo: async (url, dir) => { got.push(url); fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, "lakonlab_loaders.py"), ""); fs.writeFileSync(path.join(dir, "__init__.py"), "NODE_CLASS_MAPPINGS = {\"Load LakonLab Adapter\": 1}"); /* 3.12.1: a real 1.4+ copy registers it */ return { ok: true }; },
       download: async (m) => { got.push(m.id); put(m.id); return { ok: true }; } });
     check("install (4 steps ticked): ComfyUI-piFlow, then ONLY the 4-step adapter + H3's model / encoder / VAEs - not the 2-step one; the licence said",
       r.ok && got.join() === "https://github.com/Lakonik/ComfyUI-piFlow,pih3_dwd4,h3_fl2va,h3_te,h3_vvae,h3_avae" && L.some((l) => /MiniMax H3 Community License/.test(l)), { r, got });

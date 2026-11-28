@@ -117,7 +117,8 @@ def info(base, timeout=10):
                 return json.loads(r.read().decode("utf-8"))
         except Exception:                   # noqa: BLE001
             return None
-    for cls in SPARK + (KJ,) + PACK_NODES:
+    old = ("Load pi-Flow Model", "pi-Flow Sampler", "ModelSamplingPiFlow")   # 3.12.1: in every ComfyUI-piFlow - an OLD one loaded?
+    for cls in SPARK + (KJ,) + PACK_NODES + old:
         j = get(f"/object_info/{cls}")
         if isinstance(j, dict) and j.get(cls):
             out["classes"][cls] = j[cls]

@@ -7163,6 +7163,13 @@ orange line shows where it will go - and let go.
   update it when it is too old (it names its version), else look in ComfyUI's console for **IMPORT FAILED** next to
   ComfyUI-piFlow. Any other node ComfyUI is missing is explained the same way (which node, install its pack, restart) - the
   workflow itself is fine.
+  **3.12.1:** the pi-H3 nodes only came in **ComfyUI-piFlow 1.4.0** (20 Nov 2026) - an older copy still loads, it just has
+  none of them, so restarting does not help. That copy is usually the Comfy registry's / ComfyUI-Manager's `comfyui-piflow`
+  (no git; on Windows the same folder as `ComfyUI-piFlow`, which Install used to keep). **Settings ▸ Add-ons ▸ π pi-H3 ▸
+  Install** now puts any copy without the pi-H3 nodes aside as `<name>.old-<version>.disabled` (ComfyUI skips it - delete it
+  once pi-H3 works), git-pulls a git copy, and fetches the newest; then restart ComfyUI. A stopped render now says which case
+  it is: an old ComfyUI-piFlow loaded (with its folder and version), the copy there but not loaded (is the ComfyUI you run
+  the one in Settings ▸ ComfyUI?), ComfyUI's own "IMPORT FAILED" lines for it, or that it is not in custom_nodes at all.
 - 2.574.0: **theme edit mode ▸ Text on any words** - a docker's title bar (pick it: Text shows its title, aimed at that
   docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
   given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old
