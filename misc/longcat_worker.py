@@ -96,6 +96,17 @@ def main():
                  {k: params.get(k) or "" for k in ("model", "dmd", "opsd", "whisper", "te", "vae")})
     if pk.get("error"):
         fail(pk["error"])
+    # 3.16.1: a umT5 with no tokenizer inside ("invalid tokenizer" in CLIPLoader) - another listed one, or what to download
+    try:
+        import te_tokenizer as _tt
+        tc = _tt.choose(W.listed(base, "CLIPLoader", "clip_name"), pk["te"], cfg, Path(__file__).resolve().parent.parent)
+    except Exception:
+        tc = {"te": pk["te"], "note": "", "error": ""}
+    if tc.get("error"):
+        fail(tc["error"])
+    if tc.get("note"):
+        say(f"[worker] {tc['note']}")
+    pk["te"] = tc.get("te") or pk["te"]
     for n in pk.get("notes") or []:
         say(f"[worker] {n}")
     say(f"[worker] model {pk['model']} · LoRAs {pk['dmd']} + {pk['opsd']} · Whisper {pk['whisper']} · text encoder {pk['te']} · VAE {pk['vae']}")

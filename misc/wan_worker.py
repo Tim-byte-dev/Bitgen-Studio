@@ -212,6 +212,16 @@ def main():
             + pk["models"][1] if fam == "wan22" and len(pk["models"]) > 1 else ""))
     te = WG.pick_file(listed(base, "CLIPLoader", "clip_name"), str((style.get("te") or [""])[0] or ""),
                       r"umt5", WG.TE_HINT)
+    try:   # 3.16.1: a umT5 with no tokenizer inside ("invalid tokenizer" in CLIPLoader) - another listed one, or what to download
+        import te_tokenizer as _tt
+        tc = _tt.choose(listed(base, "CLIPLoader", "clip_name"), te, cfg, Path(__file__).resolve().parent.parent)
+    except Exception:
+        tc = {"te": te, "note": "", "error": ""}
+    if tc.get("error"):
+        fail(tc["error"])
+    if tc.get("note"):
+        say(f"[worker] {tc['note']}")
+    te = tc.get("te") or te
     vae = WG.pick_file(listed(base, "VAELoader", "vae_name"), str(style.get("vae") or ""),
                        r"wan_?2[._]1_?vae|wan2\.1_vae|wan_2\.1_vae", WG.VAE_HINT)
     clipv = WG.pick_file(listed(base, "CLIPVisionLoader", "clip_name"), "", r"clip_vision_h", WG.CLIPV_HINT) \

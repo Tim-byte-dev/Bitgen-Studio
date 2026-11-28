@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **3.16.1** — LongCat Avatar / Wan: a umT5 Text Encoder With No Tokenizer Inside ("Invalid Tokenizer" in ComfyUI's CLIPLoader - Weights-Only Copies Such as nsfw_wan_umt5-xxl_bf16 or umt5-xxl-enc-bf16) Is Swapped for One That Has It, or the Download Box Offers Comfy-Org's; the Error Explains Itself
 - **3.16.0** — Image Editor: 🕳 Text Tunnel - Drag a Square or a Circle and a Word Is Repeated Down Four Walls (or Round Rings) Toward a See-Through Hole, in True Perspective; 7 Presets; a Picked Tunnel Changes Live; a Rectangle / Ellipse Shape Layer Turns Into One
 - **3.15.0** — Every Queued Job Keeps the Settings It Was Queued With - a Change Made While the Queue Runs Reaches Only the Jobs Queued After It (the API Keys Stay Current; the Job's Log Says What Changed)
 - **3.14.1** — MMH3_NativeAudio_MV Renders From a Plain Generate: Its ComfyUI Graph (Converted From Its UI Export) Is Made Before Any Job of It Runs - ComfyUI Started First If Needed - Not Only From the Scene Board ("Workflow for ref2va Not Found")

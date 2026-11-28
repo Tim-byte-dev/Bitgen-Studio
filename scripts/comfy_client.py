@@ -65,6 +65,13 @@ def explain_execution_error(messages):
         return ""
     if is_oom(messages):
         return OOM_ADVICE
+    if "invalid tokenizer" in blob:
+        # 3.16.1: a weights-only umT5 / T5 text encoder (no 'spiece_model' inside) - scripts/te_tokenizer.py
+        try:
+            import te_tokenizer as _tt
+            return _tt.INVALID_TOKENIZER_ADVICE
+        except Exception:
+            return "\n\n[worker] 'invalid tokenizer': the text encoder file has no tokenizer inside - use Comfy-Org's umt5_xxl_fp8_e4m3fn_scaled.safetensors"
     if is_h3_internals_mismatch(messages):
         # BEFORE the sage branch on purpose: a traceback that walks through a
         # patched attention path mentions sageattention, and blaming Sage for a
